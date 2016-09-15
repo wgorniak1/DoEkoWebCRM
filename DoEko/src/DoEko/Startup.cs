@@ -87,7 +87,8 @@ namespace DoEko
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 //serviceScope.ServiceProvider.GetService<DoEkoContext>().Database.Migrate();
-                //serviceScope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
+                serviceScope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
+
                 //serviceScope.ServiceProvider.GetService<DoEkoContext>().EnsureSeedData();
             }
         }
