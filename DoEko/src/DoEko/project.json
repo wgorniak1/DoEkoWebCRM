@@ -1,7 +1,7 @@
 {
   "title": "DoEko Web CRM",
   "copyright": "WGorniak",
-  "language": "pl",
+  "language": "",
   "userSecretsId": "aspnet-DoEko-f1a0df89-4704-4d71-b263-540e4c9c650f",
 
   "dependencies": {
