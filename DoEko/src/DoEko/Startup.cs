@@ -59,16 +59,16 @@ namespace DoEko
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
-            {
+            //if (env.IsDevelopment())
+            //{
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/Home/Error");
+            //}
 
             app.UseStaticFiles();
 
@@ -82,6 +82,15 @@ namespace DoEko
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // Seed Address initial catalog
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                //serviceScope.ServiceProvider.GetService<DoEkoContext>().Database.Migrate();
+                serviceScope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
+
+                //serviceScope.ServiceProvider.GetService<DoEkoContext>().EnsureSeedData();
+            }
         }
     }
 }

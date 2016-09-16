@@ -1,6 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@inject Microsoft.AspNetCore.Hosting.IHostingEnvironment env;
+
+
+<p>
+    @env.EnvironmentName
+</p>
 
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">
@@ -65,7 +71,7 @@
     </a>
 </div>
 
-<p>PRODUCTION</p>
+<p>DEVELOPMENT</p>
 
 <div class="row">
     <div class="col-md-3">
