@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using DoEko.Models.Identity;
 using DoEko.Services;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko
 {
@@ -38,7 +40,8 @@ namespace DoEko
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
+            services.AddAuthorization();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -46,7 +49,12 @@ namespace DoEko
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            AuthorizationPolicy requireAuthenticatedUser = new 
+                AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+            services.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser)); });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -71,7 +79,6 @@ namespace DoEko
             //}
 
             app.UseStaticFiles();
-
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
@@ -91,6 +98,10 @@ namespace DoEko
 
                 //serviceScope.ServiceProvider.GetService<DoEkoContext>().EnsureSeedData();
             }
+
+            // Seed initial roles & admin
+            app.EnsureRolesCreated();
+
         }
     }
 }
