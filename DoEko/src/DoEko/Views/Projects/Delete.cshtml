@@ -1,0 +1,72 @@
+@using DoEko.ViewModels
+
+@model DoEko.Models.DoEko.Project
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Project</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EndDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EndDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RealEnd)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RealEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RealStart)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RealStart)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ShortDescription)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ShortDescription)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.StartDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.StartDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd>
+            @Model.Status.DisplayName()
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UEFundsLevel)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UEFundsLevel)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </form>
+</div>
