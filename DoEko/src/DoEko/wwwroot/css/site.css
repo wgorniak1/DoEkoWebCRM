@@ -48,3 +48,22 @@ textarea {
     display: none
   }
 }
+
+.wg-navbar-logo{
+    background-image: url("../images/doekogrupa_logo.png");
+    background-repeat: no-repeat;
+    background-size: 40px auto;
+    background-position: left center;
+    margin-left:  5px;
+    padding-left: 45px;
+}
+
+.wg-link-nounderline:hover,
+.wg-link-nounderline:focus,
+.wg-link-nounderline:visited{
+    text-decoration: none;
+}
+
+.wg-panel-heading{
+    cursor: pointer;
+}

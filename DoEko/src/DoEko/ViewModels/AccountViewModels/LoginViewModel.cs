@@ -8,15 +8,15 @@ namespace DoEko.ViewModels.AccountViewModels
 {
     public class LoginViewModel
     {
-        [Required]
-        [Display(Name ="Login")]
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
+        [Display(Name ="Konto użytkownika")]
         public string UserName { get; set; }
 
         //[required]
         //[emailaddress]
         //public string email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
         [DataType(DataType.Password)]
         [Display(Name ="Hasło")]
         public string Password { get; set; }
