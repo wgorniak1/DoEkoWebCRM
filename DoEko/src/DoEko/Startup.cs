@@ -97,10 +97,10 @@ namespace DoEko
             // Seed Address initial catalog
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                //serviceScope.ServiceProvider.GetService<DoEkoContext>().Database.Migrate();
+                serviceScope.ServiceProvider.GetService<DoEkoContext>().Database.Migrate();
                 serviceScope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
 
-                //serviceScope.ServiceProvider.GetService<DoEkoContext>().EnsureSeedData();
+                serviceScope.ServiceProvider.GetService<DoEkoContext>().EnsureSeedData();
             }
 
             // Seed initial roles & admin
