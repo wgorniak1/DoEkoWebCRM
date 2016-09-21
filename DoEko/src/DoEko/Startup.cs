@@ -13,6 +13,7 @@ using DoEko.Models.Identity;
 using DoEko.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using DoEko.Models.DoEko;
 
 namespace DoEko
 {
@@ -43,6 +44,9 @@ namespace DoEko
             services.AddAuthorization();
 
             services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDbContext<DoEkoContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
