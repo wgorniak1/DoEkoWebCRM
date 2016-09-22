@@ -1,0 +1,42 @@
+@model DoEko.Models.DoEko.Investment
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Investment</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.InspectionStatus)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.InspectionStatus)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LandRegisterNo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LandRegisterNo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PlotNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PlotNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.InvestmentId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -53,6 +53,8 @@ namespace DoEko.Migrations
                     b.Property<string>("UserName")
                         .HasAnnotation("MaxLength", 256);
 
+                    b.Property<string>("name");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")

@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using DoEko.Models.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    if (User.IsInRole(Roles.Admin))
+    {
+        <ul class="nav navbar-nav">
+            <li><a asp-area="" asp-controller="Projects" asp-action="Index">Projekty</a></li>
+            <li><a asp-area="" asp-controller="Contracts" asp-action="Index">Umowy</a></li>
+            <li><a asp-area="" asp-controller="User" asp-action="Index">Użytkownicy</a></li>
+            <li><a asp-area="" asp-controller="Settings" asp-action="Index">Ustawienia</a></li>
+        </ul>
+    }
+    else if (User.IsInRole("contractManager"))
+    {
+        <ul class="nav navbar-nav">
+            <li><a asp-area="" asp-controller="Projects" asp-action="Index">Projekty</a></li>
+            <li><a asp-area="" asp-controller="Contracts" asp-action="Index">Umowy</a></li>
+            <li><a asp-area="" asp-controller="Surveys" asp-action="Index">Inspekcje</a></li>
+            <li><a asp-area="" asp-controller="Reports" asp-action="Index">Raporty</a></li>
+            <li><a asp-area="" asp-controller="PriceList" asp-action="Index">Cenniki</a></li>
+        </ul>
+    }
+    else if (User.IsInRole("Inspector"))
+    {
+        <ul class="nav navbar-nav">
+            <li><a asp-area="" asp-controller="Survey" asp-action="Index">Moje inspekcje</a></li>
+            <li><a asp-area="" asp-controller="Survey" asp-action="About">Inspekcje</a></li>
+        </ul>
+    }
+
+}

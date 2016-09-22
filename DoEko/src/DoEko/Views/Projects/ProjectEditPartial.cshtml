@@ -1,0 +1,95 @@
+@using DoEko.ViewModels
+@using DoEko.Models.DoEko
+
+@model Project
+
+@*<form asp-action="Edit">*@
+    <div class="form-horizontal">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" asp-for="ProjectId" />
+        @if (Model.ParentProjectId != null)
+        {
+            <div class="form-group">
+                <label asp-for="ParentProjectId" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <select asp-for="ParentProjectId" disabled="Disabled" class="form-control" asp-items="ViewBag.ParentProjectId"></select>
+                    <span asp-validation-for="ParentProjectId" class="text-danger" />
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <label asp-for="ShortDescription" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="ShortDescription" class="form-control" />
+                <span asp-validation-for="ShortDescription" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="StartDate" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="EndDate" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RealStart" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RealStart" class="form-control" />
+                <span asp-validation-for="RealStart" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RealEnd" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RealEnd" class="form-control" />
+                <span asp-validation-for="RealEnd" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Status" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Status" class="form-control" disabled="Disabled" asp-items="Html.GetEnumSelectList(typeof(ProjectStatus))"></select>
+                <span asp-validation-for="Status" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="UEFundsLevel" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="UEFundsLevel" class="form-control" asp-items="Html.GetEnumSelectList(typeof(UEFundsLevel))"></select>
+                <span asp-validation-for="UEFundsLevel" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit"  value="Zapisz" class="btn btn-primary" />
+                
+                @if (!String.IsNullOrEmpty(ViewBag.ReturnUrl))
+                {
+                    <a href="@ViewBag.ReturnUrl" class="btn btn-default" asp->Anuluj</a>
+                }
+                else
+                {
+                    <a asp-action="Index" class="btn btn-default" asp->Anuluj</a>
+                }
+            </div>
+        </div>
+    </div>
+@*</form>*@

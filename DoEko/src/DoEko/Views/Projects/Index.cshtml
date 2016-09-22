@@ -1,0 +1,90 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@using System.Reflection;
+@using DoEko.ViewModels
+@model IEnumerable<DoEko.Models.DoEko.Project>
+
+@{
+    ViewData["Title"] = "Lista Projektów";
+}
+
+<!--Navigation-->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home">Str. Domowa</a></li>
+    <li class="active">Lista Projektów</li>
+</ol>
+
+<!--Title-->
+<h2>Lista Projektów</h2>
+<p class="text-success">@ViewData["StatusMessage"]</p>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Utwórz Nowy</a>
+</p>
+
+<!--List-->
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProjectId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ParentProject)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ShortDescription)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EndDate)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.ProjectId">
+                        @Html.DisplayFor(modelItem => item.ProjectId)
+                    </a>
+                </td>
+                <td>
+                    @if (item.ParentProjectId.HasValue)
+                    {
+                        <a asp-action="Details" asp-route-id="@item.ParentProjectId">
+                            @Html.DisplayFor(modelItem => item.ParentProject.ShortDescription)
+                        </a>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.ProjectId">
+                        @Html.DisplayFor(modelItem => item.ShortDescription)
+                    </a>
+                </td>
+                <td>
+                    @item.Status.DisplayName()
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProjectId">Edytuj</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProjectId">Usuń</a>
+                    @*<a asp-action="Create" asp-route-ParentId="@item.ProjectId">Utwórz Podprojekt</a>*@
+
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>

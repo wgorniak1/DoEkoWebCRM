@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using DoEko.Models.Identity;
 using DoEko.Services;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using DoEko.Models.DoEko;
 
 namespace DoEko
 {
@@ -38,15 +41,24 @@ namespace DoEko
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
+            services.AddAuthorization();
+
             services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDbContext<DoEkoContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            AuthorizationPolicy requireAuthenticatedUser = new 
+                AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+            services.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser)); });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -71,7 +83,6 @@ namespace DoEko
             }
 
             app.UseStaticFiles();
-
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
@@ -86,11 +97,15 @@ namespace DoEko
             // Seed Address initial catalog
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                //serviceScope.ServiceProvider.GetService<DoEkoContext>().Database.Migrate();
+                serviceScope.ServiceProvider.GetService<DoEkoContext>().Database.Migrate();
                 serviceScope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
 
-                //serviceScope.ServiceProvider.GetService<DoEkoContext>().EnsureSeedData();
+                serviceScope.ServiceProvider.GetService<DoEkoContext>().EnsureSeedData();
             }
+
+            // Seed initial roles & admin
+            app.EnsureRolesCreated();
+
         }
     }
 }

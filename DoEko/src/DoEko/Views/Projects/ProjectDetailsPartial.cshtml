@@ -1,0 +1,75 @@
+@using DoEko.ViewModels
+@model DoEko.Models.DoEko.Project
+
+<div class="form-horizontal">
+
+    @if (Model.ParentProjectId != null)
+    {
+        <div class="form-group">
+            <label asp-for="ParentProjectId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <p class="form-control-static">
+                    @Html.DisplayFor(model => model.ParentProject.ShortDescription)
+                </p>
+            </div>
+        </div>
+    }
+
+    <div class="form-group">
+        <label asp-for="StartDate" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.StartDate)
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EndDate" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.EndDate)
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="RealStart" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.RealStart)
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="RealEnd" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <span class="form-control-static">
+                @Html.DisplayFor(model => model.RealEnd)
+            </span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Status" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <span class="form-control-static">
+                @Model.Status.DisplayName()
+            </span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="UEFundsLevel" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <p class="form-control-static">
+                @Model.UEFundsLevel.DisplayName()
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.Description)
+            </p>
+        </div>
+    </div>
+</div>

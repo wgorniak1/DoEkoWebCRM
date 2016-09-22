@@ -1,0 +1,64 @@
+﻿@using DoEko.ViewModels
+@model IEnumerable<DoEko.Models.DoEko.Contract>
+<div class="table-responsive">
+    <table class="table table-condensed table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ContractDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FullfilmentDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Number)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ShortDescription)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Type)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContractDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullfilmentDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShortDescription)
+                </td>
+                <td>
+                    @item.Status.DisplayName()
+                </td>
+                <td>
+                    @item.Type.DisplayName()
+                </td>
+                <td>
+                    <a asp-action="Edit"    asp-controller="Contracts" asp-route-id="@item.ContractId">
+                        <span class="glyphicon glyphicon-pencil"></span> 
+                    </a>|
+                    <a asp-action="Details" asp-controller="Contracts" asp-route-id="@item.ContractId">
+                        <span class="glyphicon glyphicon-eye-open"></span>
+                    </a>|
+                    <a asp-action="Delete"  asp-controller="Contracts" asp-route-id="@item.ContractId">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>

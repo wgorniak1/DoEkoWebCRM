@@ -1,0 +1,99 @@
+@model DoEkoWebCRM.Models.DoEko.Addresses.Address
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<form asp-action="Edit">
+    <div class="form-horizontal">
+        <h4>Address</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="AddressId" />
+        <div class="form-group">
+            <label asp-for="ApartmentNo" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="ApartmentNo" class="form-control" />
+                <span asp-validation-for="ApartmentNo" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingNo" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingNo" class="form-control" />
+                <span asp-validation-for="BuildingNo" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="City" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CommuneId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="CommuneId" class="form-control" asp-items="ViewBag.CommuneId"></select>
+                <span asp-validation-for="CommuneId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CommuneType" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="CommuneType" class="form-control" asp-items="ViewBag.CommuneType"></select>
+                <span asp-validation-for="CommuneType" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CountryId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="CountryId" class="form-control" asp-items="ViewBag.CountryId"></select>
+                <span asp-validation-for="CountryId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="DistrictId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="DistrictId" class="form-control" asp-items="ViewBag.DistrictId"></select>
+                <span asp-validation-for="DistrictId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PostalCode" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PostalCode" class="form-control" />
+                <span asp-validation-for="PostalCode" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="StateId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="StateId" class="form-control" asp-items="ViewBag.StateId"></select>
+                <span asp-validation-for="StateId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Street" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Street" class="form-control" />
+                <span asp-validation-for="Street" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
