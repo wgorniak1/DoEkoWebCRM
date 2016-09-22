@@ -67,3 +67,22 @@ textarea {
 .wg-panel-heading{
     cursor: pointer;
 }
+
+.wg-tile-blue{
+    background-color: #2e8bcc;
+}
+
+.wg-tile-orange{
+   background-color: #f39c12;
+}
+.wg-tile-grey{
+    background-color: #7f8c8d;
+}
+
+.wg-tile-medium{
+    color: white;
+    min-height: 150px;
+    max-height: 150px;
+    min-width: 150px;
+    max-width: 150px;
+}

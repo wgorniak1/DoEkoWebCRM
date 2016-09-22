@@ -172,6 +172,73 @@ namespace DoEko.Controllers
             return View(project);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Unlink(int? id, string ReturnUrl = null)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Projects.SingleOrDefaultAsync(m => m.ProjectId == id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            if (!Url.IsLocalUrl(ReturnUrl))
+            {
+                ViewData["ReturnUrl"] = Url.Action("Index", "Projects");
+            }
+            else
+            {
+                ViewData["ReturnUrl"] = ReturnUrl;
+            }
+
+            return View(project);
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Unlink")]
+        public async Task<IActionResult> UnlinkConfirmed(int id, string ReturnUrl = null)
+        {
+
+            var project = await _context.Projects.SingleOrDefaultAsync(m => m.ProjectId == id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                project.ParentProjectId = null;
+                _context.Update(project);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProjectExists(project.ProjectId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            if (ReturnUrl != null)
+            {
+                return Redirect(ReturnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
         // GET: Projects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

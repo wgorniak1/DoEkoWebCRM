@@ -49,7 +49,11 @@
                         <a asp-action="Edit" asp-route-id="@item.ProjectId">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </a> |
-                        <a asp-action="Unlink" asp-route-id="@item.ProjectId">Odepnij</a>
+                        <a asp-action="Unlink" 
+                           asp-route-Id="@item.ProjectId" 
+                           asp-route-ReturnUrl="@Url.Action("Details","Projects", new { Id = item.ParentProjectId }, null,null,"details")">
+                            Odepnij
+                        </a>
                     </td>
                 </tr>
             }

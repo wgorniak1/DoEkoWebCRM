@@ -9,6 +9,7 @@ namespace DoEko.Models.DoEko
             : base(options)
         { }
 
+        public DbSet<ControlParameter> Settings { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<Investment> Investments { get; set; }
