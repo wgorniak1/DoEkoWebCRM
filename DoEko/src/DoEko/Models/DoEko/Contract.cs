@@ -95,6 +95,13 @@ namespace DoEko.Models.DoEko
         
         [Display(Description = "Opis", Name = "Projekt", ShortName = "Projekt")]
         public virtual Project Project { get; set; }
+
+        public int CompanyId
+        {
+            get { return CompanyId; }
+            private set { this.CompanyId = Project.CompanyId; }
+        }
+        public virtual Company Company { get; set; }
         /// <summary>
         /// 
         /// </summary>

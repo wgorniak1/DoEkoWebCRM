@@ -8,9 +8,10 @@ using DoEko.Models.DoEko;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20160923093701_Investment")]
+    partial class Investment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -207,8 +208,6 @@ namespace DoEko.Migrations.DoEko
                     b.Property<int>("ContractId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("CompanyId");
-
                     b.Property<DateTime>("ContractDate");
 
                     b.Property<DateTime?>("FullfilmentDate");
@@ -228,8 +227,6 @@ namespace DoEko.Migrations.DoEko
                     b.Property<int>("Type");
 
                     b.HasKey("ContractId");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasIndex("ProjectId");
 
@@ -263,7 +260,8 @@ namespace DoEko.Migrations.DoEko
                     b.Property<int?>("AddressId")
                         .IsRequired();
 
-                    b.Property<int>("ContractId");
+                    b.Property<int?>("ContractId")
+                        .IsRequired();
 
                     b.Property<int>("InspectionStatus");
 
@@ -284,29 +282,10 @@ namespace DoEko.Migrations.DoEko
                     b.ToTable("Investment");
                 });
 
-            modelBuilder.Entity("DoEko.Models.DoEko.InvestmentOwner", b =>
-                {
-                    b.Property<Guid>("InvestmentId");
-
-                    b.Property<Guid>("OwnerId");
-
-                    b.Property<bool>("Sponsor");
-
-                    b.HasKey("InvestmentId", "OwnerId");
-
-                    b.HasIndex("InvestmentId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("InvestmentOwner");
-                });
-
             modelBuilder.Entity("DoEko.Models.DoEko.Project", b =>
                 {
                     b.Property<int>("ProjectId")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<int>("CompanyId");
 
                     b.Property<string>("Description")
                         .HasAnnotation("MaxLength", 200);
@@ -330,8 +309,6 @@ namespace DoEko.Migrations.DoEko
                     b.Property<int>("UEFundsLevel");
 
                     b.HasKey("ProjectId");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasIndex("ParentProjectId");
 
@@ -432,11 +409,6 @@ namespace DoEko.Migrations.DoEko
 
             modelBuilder.Entity("DoEko.Models.DoEko.Contract", b =>
                 {
-                    b.HasOne("DoEko.Models.DoEko.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("DoEko.Models.DoEko.Project", "Project")
                         .WithMany("Contracts")
                         .HasForeignKey("ProjectId")
@@ -456,24 +428,8 @@ namespace DoEko.Migrations.DoEko
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("DoEko.Models.DoEko.InvestmentOwner", b =>
-                {
-                    b.HasOne("DoEko.Models.DoEko.Investment", "Investment")
-                        .WithMany("InvestmentOwners")
-                        .HasForeignKey("InvestmentId");
-
-                    b.HasOne("DoEko.Models.DoEko.BusinessPartner", "Owner")
-                        .WithMany("InvestmentOwners")
-                        .HasForeignKey("OwnerId");
-                });
-
             modelBuilder.Entity("DoEko.Models.DoEko.Project", b =>
                 {
-                    b.HasOne("DoEko.Models.DoEko.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("DoEko.Models.DoEko.Project", "ParentProject")
                         .WithMany("ChildProjects")
                         .HasForeignKey("ParentProjectId");

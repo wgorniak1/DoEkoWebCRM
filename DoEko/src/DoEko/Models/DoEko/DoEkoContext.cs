@@ -10,14 +10,15 @@ namespace DoEko.Models.DoEko
         { }
 
         public DbSet<ControlParameter> Settings { get; set; }
+        public DbSet<Company> Companies { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<Investment> Investments { get; set; }
-        public DbSet<Owner> Owners { get; set; }
+        public DbSet<BusinessPartner> BusinessPartners { get; set; }
         public DbSet<InvestmentOwner> InvestmentOwners { get; set; }
-        public DbSet<OwnerInstitution> Institutions { get; set; }
-        public DbSet<OwnerPerson> OwnerPeople { get; set; }
-        public DbSet<Survey> Surveys { get; set; }
+        public DbSet<BusinessPartnerPerson> BPPersons { get; set; }
+        public DbSet<BusinessPartnerEntity> BPEntities { get; set; }
+        //public DbSet<Survey> Surveys { get; set; }
         public DbSet<Address> Addresses { get; set; }
 
         //Address Catalog

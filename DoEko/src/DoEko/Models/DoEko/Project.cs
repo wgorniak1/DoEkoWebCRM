@@ -127,5 +127,16 @@ namespace DoEko.Models.DoEko
         [Display(Description = "Lista umów dla projektu", Name = "Umowy", ShortName = "Umowy")]
         public virtual ICollection<Contract> Contracts { get; set; }
         //inwestycje bez umów
+
+        /// <summary>
+        ///
+        /// </summary>
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
+        [Display(Description = "Jednostka gospodarcza (spółka)", Name = "Jednostka Gospodarcza", ShortName = "Jedn.Gosp.")]
+        public int CompanyId { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Company Company { get; set; }
     }
 }

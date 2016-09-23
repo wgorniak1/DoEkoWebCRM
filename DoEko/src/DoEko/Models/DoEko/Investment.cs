@@ -1,4 +1,5 @@
 ﻿using DoEko.Models.DoEko.Addresses;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -39,7 +40,7 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Key]
         [Display(Description = "Opis", Name = "Id Inwestycji",ShortName = "Id Inwestycji")]
-        public int InvestmentId { get; set; }
+        public Guid InvestmentId { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -85,11 +86,11 @@ namespace DoEko.Models.DoEko
 
         //inspector
         //wlasciciel / inwestor
-        /// <summary>
-        /// 
-        /// </summary>
-        [Display(Description = "Opis", Name = "Ankiety", ShortName = "Ankiety")]
-        public virtual ICollection<Survey> Surveys { get; set; }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[Display(Description = "Opis", Name = "Ankiety", ShortName = "Ankiety")]
+        //public virtual ICollection<Survey> Surveys { get; set; }
         /// <summary>
         /// 
         /// </summary>
