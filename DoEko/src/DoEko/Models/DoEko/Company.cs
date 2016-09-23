@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
+    [Table(nameof(Company))]
     public class Company
     {
         [Key]
