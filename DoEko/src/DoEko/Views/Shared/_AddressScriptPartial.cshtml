@@ -1,0 +1,75 @@
+﻿<script type="text/javascript">
+    $(function () {
+        if ($("#Address_StateId").val() == '0') {
+            var StateDefaultValue = "<option value='0'>Wybierz województwo</option>";
+            $("#Address_DistrictId").html(StateDefaultValue).show();
+        }
+
+        if ($("#Address_DistrictId").val() == '0') {
+            var CommuneDefaultValue = "<option value='0'>Wybierz powiat</option>";
+            $("#Address_CommuneId").html(CommuneDefaultValue).show();
+        }
+
+
+        $("#Address_StateId").change(function () {
+            var selectedItemValue = $(this).val();
+
+            var ddlProducts = $("#Address_DistrictId");
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Action("GetDistrictsByStateId", "Addresses")',
+                data: { "id": selectedItemValue },
+                success: function (data) {
+                    ddlProducts.html('');
+                    $.each(data, function (id, option) {
+                        ddlProducts.append($('<option></option>').val(option.id).html(option.name));
+                    });
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Found error to load district!!.');
+                }
+            });
+            var CommuneDefaultValue = "<option value='0'>Wybierz powiat</option>";
+            $("#Address_CommuneId").html(CommuneDefaultValue).show();
+        });
+
+        $("#Address_DistrictId").change(function () {
+            var selectedItemValue = $(this).val();
+            var selectedStateId = $("#Address_StateId").val();
+
+            var ddlCommune = $("#Address_CommuneId");
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Action("GetCommunesByStateDistrictId", "Addresses")',
+                data: { "stateid": selectedStateId,
+                        "districtid": selectedItemValue },
+                success: function (data) {
+                    ddlCommune.html('');
+                    $.each(data, function (id, option) {
+                        ddlCommune.append($('<option></option>').val(option.id).html(option.name));
+                    });
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Found error to load commune!!.');
+                }
+            });
+        });
+
+        $("#Address_CommuneId").change(function () {
+            var selectedItem = $(this).val();
+            var communeType = $("#Address_CommuneType");
+
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Action("GetCommuneTypeByName", "Addresses")',
+                data: { "name": selectedItem },
+                success: function (data) {
+                    communeType.val(data); }
+            })
+        });
+
+    });
+</script>

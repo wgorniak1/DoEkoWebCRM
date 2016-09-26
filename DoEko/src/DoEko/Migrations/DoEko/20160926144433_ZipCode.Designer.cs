@@ -8,9 +8,10 @@ using DoEko.Models.DoEko;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20160926144433_ZipCode")]
+    partial class ZipCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -40,8 +41,7 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<int>("DistrictId");
 
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
+                    b.Property<int>("PostalCode")
                         .HasAnnotation("MaxLength", 5);
 
                     b.Property<int>("StateId");

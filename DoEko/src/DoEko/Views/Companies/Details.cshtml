@@ -1,0 +1,60 @@
+@model DoEko.Models.DoEko.Company
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Company</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.KRSId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.KRSId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name2)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name2)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RegonId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RegonId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TaxId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TaxId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.CompanyId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

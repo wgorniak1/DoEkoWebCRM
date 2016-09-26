@@ -1,0 +1,85 @@
+@model DoEko.Models.DoEko.Company
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<form asp-action="Edit">
+    <div class="form-horizontal">
+        <h4>Company</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="CompanyId" />
+        <div class="form-group">
+            <label asp-for="AddressId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="AddressId" class="form-control" asp-items="ViewBag.AddressId"></select>
+                <span asp-validation-for="AddressId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="KRSId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="KRSId" class="form-control" />
+                <span asp-validation-for="KRSId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Name" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Name2" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Name2" class="form-control" />
+                <span asp-validation-for="Name2" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PhoneNumber" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RegonId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RegonId" class="form-control" />
+                <span asp-validation-for="RegonId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="TaxId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="TaxId" class="form-control" />
+                <span asp-validation-for="TaxId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

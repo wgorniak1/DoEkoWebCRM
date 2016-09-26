@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DoEko.Models.DoEko
 {
     [Table(nameof(Company))]
-    public class Company
+    public class Company : IAddressRelated
     {
         [Key]
         public int CompanyId { get; set; }
@@ -56,7 +56,7 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
-        public virtual Address Address { get; set; }
+        public Address Address { get; set; }
 
     }
 }

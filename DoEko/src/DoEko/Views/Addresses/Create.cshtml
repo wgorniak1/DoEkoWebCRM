@@ -6,7 +6,7 @@
 
 <h2>Nowy</h2>
 
-<form asp-action="Create">
+<form asp-action="Create" asp-controller="Addresses" asp-route-ReturnUrl="@ViewData["ReturnUrl"]">
     <div class="form-horizontal">
         <h4>Addres</h4>
         <hr />
@@ -74,21 +74,19 @@
         <div class="form-group">
             <label asp-for="CountryId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="CountryId" class ="form-control" asp-items="ViewBag.CountryId"></select>
+                <select asp-for="CountryId" class ="form-control" asp-items="ViewBag.CountryId" ></select>
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
+                <a asp-action="Index">Back to List</a>
             </div>
         </div>
     </div>
 </form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
