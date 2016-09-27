@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using DoEko.Models.Validation;
 
 namespace DoEko.Models.DoEko
 {
@@ -13,17 +14,18 @@ namespace DoEko.Models.DoEko
     {
         [Key]
         public int CompanyId { get; set; }
-        [Required]
-        [StringLength(30)]
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
+        [StringLength(30,ErrorMessage ="Długość pola {0} nie może przekroczyć {1} znaków")]
         [Display(Description = "", Name = "Nazwa", ShortName = "Nazwa")]
         public string Name { get; set; }
-        [StringLength(30)]
+        [StringLength(30, ErrorMessage = "Długość pola {0} nie może przekroczyć {1} znaków")]
         [Display(Description = "", Name = "Nazwa cd.", ShortName = "Nazwa cd.")]
         public string Name2 { get; set; }
         /// <summary>
         /// 
         /// </summary>
         [Display(Description = "", Name = "REGON", ShortName = "REGON")]
+        [Regon(ErrorMessage = "Regon jest nieprawidłowy")]
         public string RegonId { get; set; }
         /// <summary>
         /// 

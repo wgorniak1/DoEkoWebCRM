@@ -8,7 +8,7 @@
 
 <form asp-action="Create" asp-controller="Addresses" asp-route-ReturnUrl="@ViewData["ReturnUrl"]">
     <div class="form-horizontal">
-        <h4>Addres</h4>
+        <h4>Adres</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -80,8 +80,8 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-                <a asp-action="Index">Back to List</a>
+                <input type="submit" value="Utwórz" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-default">Anuluj</a>
             </div>
         </div>
     </div>
@@ -89,83 +89,6 @@
 
 
 @section Scripts {
+    @{await Html.RenderPartialAsync("_AddressScriptPartial");}
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
-<script type="text/javascript">
-    $(function () {
-        if ($("#StateId").val() == '0') {
-            var StateDefaultValue = "<option value='0'>Wybierz województwo</option>";
-            $("#DistrictId").html(StateDefaultValue).show();
-        }
-
-        if ($("#DistrictId").val() == '0') {
-            var CommuneDefaultValue = "<option value='0'>Wybierz powiat</option>";
-            $("#CommuneId").html(CommuneDefaultValue).show();
-        }
-
-
-        $("#StateId").change(function () {
-            var selectedItemValue = $(this).val();
-
-            var ddlProducts = $("#DistrictId");
-            $.ajax({
-                cache: false,
-                type: "GET",
-                url: '@Url.Action("GetDistrictsByStateId", "Addresses")',
-                data: { "id": selectedItemValue },
-                success: function (data) {
-                    ddlProducts.html('');
-                    $.each(data, function (id, option) {
-                        ddlProducts.append($('<option></option>').val(option.id).html(option.name));
-                    });
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('Found error to load district!!.');
-                }
-            });
-            var CommuneDefaultValue = "<option value='0'>Wybierz powiat</option>";
-            $("#CommuneId").html(CommuneDefaultValue).show();
-        });
-
-        $("#DistrictId").change(function () {
-            var selectedItemValue = $(this).val();
-            var selectedStateId = $("#StateId").val();
-
-            var ddlCommune = $("#CommuneId");
-            $.ajax({
-                cache: false,
-                type: "GET",
-                url: '@Url.Action("GetCommunesByStateDistrictId", "Addresses")',
-                data: { "stateid": selectedStateId,
-                        "districtid": selectedItemValue },
-                success: function (data) {
-                    ddlCommune.html('');
-                    $.each(data, function (id, option) {
-                        ddlCommune.append($('<option></option>').val(option.id).html(option.name));
-                    });
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('Found error to load commune!!.');
-                }
-            });
-        });
-
-        $("#CommuneId").change(function () {
-            var selectedItem = $(this).val();
-            var communeType = $("#CommuneType");
-
-            $.ajax({
-                cache: false,
-                type: "GET",
-                url: '@Url.Action("GetCommuneTypeByName", "Addresses")',
-                data: { "name": selectedItem },
-                success: function (data) {
-                    communeType.val(data); }
-            })
-        });
-
-    });
-</script>
-
 }

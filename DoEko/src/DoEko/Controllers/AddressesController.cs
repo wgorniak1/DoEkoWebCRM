@@ -9,7 +9,7 @@ using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Addresses;
 using DoEko.ViewModels;
 
-namespace DoEkoWebCRM.Controllers
+namespace DoEko.Controllers
 {
     public class AddressesController : Controller
     {
@@ -47,13 +47,17 @@ namespace DoEkoWebCRM.Controllers
         // GET: Addresses/Create
         public IActionResult Create()
         {
-            IList<Country> countries = _context.Countries.OrderBy(c => c.Name).ToList();
-            countries.Insert(0, new Country { CountryId = 0, Name = "Wybierz" });
-            ViewData["CountryId"] = new SelectList(countries, "CountryId", "Name",countries.SingleOrDefault(c => c.Key == "PL").CountryId);
+            //IList<Country> countries = _context.Countries.OrderBy(c => c.Name).ToList();
+            //countries.Insert(0, new Country { CountryId = 0, Name = "Wybierz" });
+            //ViewData["CountryId"] = new SelectList(countries, "CountryId", "Name",countries.SingleOrDefault(c => c.Key == "PL").CountryId);
 
-            IList<State> states = _context.States.OrderBy(s => s.Text).ToList();
-            states.Insert(0, new State { StateId = 0, Text = "Wybierz" });
-            ViewData["StateId"] = new SelectList(states, "StateId", "Text");
+            //IList<State> states = _context.States.OrderBy(s => s.Text).ToList();
+            //states.Insert(0, new State { StateId = 0, Text = "Wybierz" });
+            //ViewData["StateId"] = new SelectList(states, "StateId", "Text");
+            ViewData["CountryId"] = GetCountries(_context, 0);
+            ViewData["StateId"] = GetStates(_context, 0);
+            ViewData["DistrictId"] = GetDistricts(_context, 0, 0);
+            ViewData["CommuneId"] = GetCommunes(_context, 0, 0, 0, 0);
             return View();
         }
 
@@ -66,14 +70,15 @@ namespace DoEkoWebCRM.Controllers
         {
             if (ModelState.IsValid)
             {
+                address.CommuneId /= 10; //drop down related conversion
                 _context.Add(address);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["StateId"] = new SelectList(_context.Communes, "StateId", "Text", address.StateId);
-            ViewData["CountryId"] = new SelectList(_context.Countries, "CountryId", "Key", address.CountryId);
-            ViewData["StateId"] = new SelectList(_context.Districts, "StateId", "Text", address.StateId);
-            ViewData["StateId"] = new SelectList(_context.States, "StateId", "CapitalCity", address.StateId);
+            ViewData["CountryId"] = GetCountries(_context, address.CountryId);
+            ViewData["StateId"] = GetStates(_context, address.StateId);
+            ViewData["DistrictId"] = GetDistricts(_context, address.StateId, address.DistrictId);
+            ViewData["CommuneId"] = GetCommunes(_context, address.StateId, address.DistrictId, address.CommuneId / 10, (CommuneType) Enum.Parse(typeof(CommuneType), (address.CommuneId % 10).ToString()));
             return View(address);
         }
 
@@ -90,10 +95,10 @@ namespace DoEkoWebCRM.Controllers
             {
                 return NotFound();
             }
-            ViewData["StateId"] = new SelectList(_context.Communes, "StateId", "Text", address.StateId);
-            ViewData["CountryId"] = new SelectList(_context.Countries, "CountryId", "Key", address.CountryId);
-            ViewData["StateId"] = new SelectList(_context.Districts, "StateId", "Text", address.StateId);
-            ViewData["StateId"] = new SelectList(_context.States, "StateId", "CapitalCity", address.StateId);
+            ViewData["CountryId"] = GetCountries(_context, address.CountryId);
+            ViewData["StateId"] = GetStates(_context, address.StateId);
+            ViewData["DistrictId"] = GetDistricts(_context, address.StateId, address.DistrictId);
+            ViewData["CommuneId"] = GetCommunes(_context, address.StateId, address.DistrictId, address.CommuneId, address.CommuneType);
             return View(address);
         }
 
@@ -129,10 +134,10 @@ namespace DoEkoWebCRM.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["StateId"] = new SelectList(_context.Communes, "StateId", "Text", address.StateId);
-            ViewData["CountryId"] = new SelectList(_context.Countries, "CountryId", "Key", address.CountryId);
-            ViewData["StateId"] = new SelectList(_context.Districts, "StateId", "Text", address.StateId);
-            ViewData["StateId"] = new SelectList(_context.States, "StateId", "CapitalCity", address.StateId);
+            ViewData["CountryId"] = GetCountries(_context, address.CountryId);
+            ViewData["StateId"] = GetStates(_context, address.StateId);
+            ViewData["DistrictId"] = GetDistricts(_context, address.StateId, address.DistrictId);
+            ViewData["CommuneId"] = GetCommunes(_context, address.StateId, address.DistrictId, address.CommuneId / 10, (CommuneType)Enum.Parse(typeof(CommuneType), (address.CommuneId % 10).ToString()));
             return View(address);
         }
 
@@ -169,59 +174,106 @@ namespace DoEkoWebCRM.Controllers
             return _context.Addresses.Any(e => e.AddressId == id);
         }
 
-        public JsonResult GetCommuneTypeByName(string name)
+        public JsonResult GetCommuneTypeAJAX(int communeId)
         {
-            CommuneType result;
-            Enum.TryParse(name, out result);
+            CommuneType result = (CommuneType)Enum.ToObject(typeof(CommuneType), communeId % 10);
+            
             return Json(result);
         }
-        public JsonResult GetDistrictsByStateId(int id)
+        public JsonResult GetDistrictsAJAX(int id)
         {
-            IList<District> districts = new List<District>();
-            if (id > 0)
+            return Json( GetDistricts(_context, id, 0)
+                            .Select(d => new { id = d.Value, name = d.Text })
+                            .ToList());
+        }
+
+        public JsonResult GetCommunesAJAX(int stateId, int districtId)
+        {
+            return Json( GetCommunes(_context, stateId, districtId, 0,0)
+                            .Select(c => new { id = c.Value, name = c.Text })
+                            .ToList() );
+        }
+
+        public static SelectList GetStates(DoEkoContext context, int currentStateId)
+        {
+            List<State> states = context.States.OrderBy(s => s.Text).ToList<State>();
+            states.Insert(0, new State { StateId = 0, Text = "Wybierz" });
+            return new SelectList(states, "StateId", "Text", currentStateId);
+        }
+
+        public static SelectList GetDistricts(DoEkoContext context, int currentStateId, int currentDistrictId)
+        {
+            IList<District> districts;
+            if (currentStateId != 0)
             {
-                districts = _context.Districts
-                    .Where(d => d.StateId == id)
+                districts = context
+                    .Districts
+                    .Where(d => d.StateId == currentStateId)
                     .OrderBy(d => d.Text)
-                    .ToList<District>();
+                    .ToList();
+
+                districts.Insert(0, new District { DistrictId = 0, Text = "Wybierz" });
             }
             else
             {
-                districts.Insert(0, new District { DistrictId = 0, Text = "--Wybierz województwo--" });
+                districts = new List<District>();
+                districts.Insert(0, new District { DistrictId = 0, Text = "Wybierz województwo" });
             }
-            var result = (from d in districts
-                          select new
-                          {
-                              id = d.DistrictId,
-                              name = d.Text
-                          }).ToList();
 
-            return Json(result);
+            return new SelectList(districts, "DistrictId", "Text", currentDistrictId);
         }
 
-        public JsonResult GetCommunesByStateDistrictId(int stateid, int districtid)
+        public static SelectList GetCommunes(DoEkoContext context, int currentStateId, int currentDistrictId, int currentCommuneId, CommuneType currentCommuneType)
         {
-            IList<Commune> communes = new List<Commune>();
-            if (districtid > 0)
+            IList<Commune> communes;
+
+            if (currentDistrictId != 0)
             {
-                communes = _context.Communes
-                    .Where(c => c.StateId == stateid && c.DistrictId  == districtid)
+                communes = context
+                    .Communes.Where(c => c.StateId == currentStateId && c.DistrictId == currentDistrictId)
+                    .Select(m => new Commune {
+                        StateId = m.StateId,
+                        DistrictId = m.DistrictId,
+                        CommuneId = m.CommuneId * 10 + Convert.ToUInt16(m.Type),
+                        Type       = m.Type,
+                        Text = m.Text + "(" //+ m.Type.DisplayName().ToString() + ")"
+                    })
                     .OrderBy(c => c.Text)
                     .ToList();
+                
+                communes.Insert(0, new Commune
+                {
+                    StateId = currentStateId,
+                    DistrictId = currentDistrictId,
+                    CommuneId = 0,
+                    Type = 0,
+                    Text = "Wybierz"
+                });
             }
             else
             {
-                communes.Insert(0, new Commune { CommuneId = 0, Text = "--Wybierz powiat--" });
+                communes = new List<Commune>();
+                communes.Insert(0, new Commune {
+                    StateId = currentStateId,
+                    DistrictId = currentDistrictId,
+                    CommuneId = 0,
+                    Type = 0,
+                    Text = "Wybierz Powiat"
+                });
             }
-            var result = (from d in communes
-                          select new
-                          {
-                              id = d.CommuneId,
-                              name = d.Text + " (" + d.Type.DisplayName() + ")"
-                          }).ToList();
-            return Json(result);
+
+            return new SelectList(communes, "CommuneId", "Text", currentCommuneId * 10 + (int)currentCommuneType);
         }
 
+        public static SelectList GetCountries(DoEkoContext context, int currentCountryId)
+        {
+            IList<Country> countries = context.Countries.OrderBy(c => c.Name).ToList();
+            if (currentCountryId == 0)
+            {
+                currentCountryId = countries.SingleOrDefault(c => c.Key == "PL").CountryId;
+            }
 
+            return new SelectList(countries, "CountryId", "Name", currentCountryId);
+        }
     }
 }

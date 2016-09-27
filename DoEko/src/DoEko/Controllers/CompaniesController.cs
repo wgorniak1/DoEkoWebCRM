@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Addresses;
+using DoEko.ViewModels;
 
 namespace DoEko.Controllers
 {
@@ -46,19 +47,15 @@ namespace DoEko.Controllers
         // GET: Companies/Create
         public IActionResult Create()
         {
-            IList<Country> countries = _context.Countries.OrderBy(c => c.Name).ToList();
-            countries.Insert(0, new Country { CountryId = 0, Name = "Wybierz" });
-            //Country Poland = countries.SingleOrDefault(c => c.Key == "PL");
-
-            ViewData["CountryId"] = new SelectList(countries, "CountryId", "Name", countries.SingleOrDefault(c => c.Key == "PL").CountryId);
-
-            IList<State> states = _context.States.OrderBy(s => s.Text).ToList();
-            states.Insert(0, new State { StateId = 0, Text = "Wybierz" });
-            ViewData["StateId"] = new SelectList(states, "StateId", "Text");
+            ViewData["CountryId"] = AddressesController.GetCountries(_context, 0);
+            ViewData["StateId"] = AddressesController.GetStates(_context, 0);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, 0, 0);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, 0, 0, 0, 0);
 
             Company model = new Company();
             model.Address = new Models.DoEko.Addresses.Address();
-            model.Address.CountryId = countries.SingleOrDefault(c => c.Key == "PL").CountryId;
+            model.Address.CountryId = _context.Countries.SingleOrDefault(c => c.Key == "PL").CountryId;
+
             return View(model);
         }
 
@@ -69,13 +66,22 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Address,Email,KRSId,Name,Name2,PhoneNumber,RegonId,TaxId")] Company company)
         {
+            company.Address.CommuneId /= 10;
             if (ModelState.IsValid)
             {
+                
                 _context.Add(company.Address);
                 _context.Add(company);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+            ModelState.AddModelError("KRSId", "b³¹d");
+
+            ViewData["CountryId"] = AddressesController.GetCountries(_context, company.Address.CountryId);
+            ViewData["StateId"] = AddressesController.GetStates(_context, company.Address.StateId);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, company.Address.StateId, company.Address.DistrictId);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, company.Address.StateId, company.Address.DistrictId, company.Address.CommuneId, company.Address.CommuneType);//(CommuneType)Enum.Parse(typeof(CommuneType), (company.Address.CommuneId % 10).ToString()));
+
             return View(company);
         }
 
