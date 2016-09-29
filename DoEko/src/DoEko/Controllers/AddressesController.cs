@@ -235,12 +235,15 @@ namespace DoEko.Controllers
                         StateId = m.StateId,
                         DistrictId = m.DistrictId,
                         CommuneId = m.CommuneId * 10 + Convert.ToUInt16(m.Type),
-                        Type       = m.Type,
-                        Text = m.Text + "(" //+ m.Type.DisplayName().ToString() + ")"
+                        Type = m.Type,
+                        Text = m.Text
                     })
                     .OrderBy(c => c.Text)
                     .ToList();
-                
+
+                for (int i = 0; i < communes.Count; i++)
+                    communes[i].Text = communes[i].Text + " (" + communes[i].Type.DisplayName() + ")";
+
                 communes.Insert(0, new Commune
                 {
                     StateId = currentStateId,

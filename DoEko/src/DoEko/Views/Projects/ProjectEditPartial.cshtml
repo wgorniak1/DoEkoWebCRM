@@ -20,6 +20,14 @@
         }
 
         <div class="form-group">
+            <label asp-for="Company.Name" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input disabled asp-for="Company.Name" class="form-control" />
+                <span asp-validation-for="Company.Name" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="form-group">
             <label asp-for="ShortDescription" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="ShortDescription" class="form-control" />

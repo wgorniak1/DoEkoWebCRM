@@ -80,7 +80,7 @@ namespace DoEko.Models.DoEko.Addresses
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
         [Column(Order = 10)]
-        [StringLength(5, ErrorMessage = "Proszę ", MinimumLength = 1)]
+        [StringLength(5, ErrorMessage = "Długość pola {0} nie może przekroczyć {1} znaków", MinimumLength = 1)]
         [Display(Description = "Opis", Name = "Nr Budynku", ShortName = "Nr Bud.")]
         public string BuildingNo { get; set; }
         /// <summary>

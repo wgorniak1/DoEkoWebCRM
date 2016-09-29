@@ -1,4 +1,5 @@
 ﻿using DoEko.Models.DoEko.Addresses;
+using DoEko.Models.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,19 +20,20 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         [Display(Description = "", Name = "NIP", ShortName = "NIP")]
+        [NIP(ErrorMessage ="Nr Nip jest nieprawidłowy")]
         public string TaxId { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [Required]
+        [Required(ErrorMessage ="Pole {0} jest obowiązkowe")]
         [DataType(DataType.PhoneNumber)]
         [Display(Description = "", Name = "Nr Telefonu", ShortName = "Tel.")]
         public string PhoneNumber { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [Required]
-        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage ="Pole {0} jest obowiązkowe")]
+        [DataType(DataType.EmailAddress,ErrorMessage ="Proszę podać prawidłowy adres e-mail")]
         [Display(Description = "", Name = "Adres e-mail", ShortName = "E-mail")]
         public string Email { get; set; }
         /// <summary>

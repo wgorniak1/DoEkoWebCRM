@@ -1,31 +1,29 @@
-@model IEnumerable<DoEko.Models.DoEko.Company>
+﻿@model IEnumerable<DoEko.Models.DoEko.Company>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Spółki";
 }
 
-<h2>Index</h2>
+<!--Navigation-->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home">Str. Domowa</a></li>
+    <li class="active">Lista spółek</li>
+</ol>
+
+<!--Title-->
+<h2>Lista Spółek</h2>
+<p class="text-success">@ViewData["StatusMessage"]</p>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>Utwórz Nową</a>
 </p>
-<table class="table">
+
+
+<table class="table table-responsive" >
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.KRSId)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name2)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.RegonId)
@@ -33,6 +31,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.TaxId)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AddressId)
+            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -40,19 +42,8 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.KRSId)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Name2)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.RegonId)
@@ -61,9 +52,13 @@
                 @Html.DisplayFor(modelItem => item.TaxId)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.CompanyId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CompanyId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CompanyId">Delete</a>
+                @Html.Partial("_AddressDetailPartial", item)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.CompanyId">Zmień</a> |
+                <a asp-action="Details" asp-route-id="@item.CompanyId">Szczegóły</a> |
+                
+                <a asp-action="Delete" asp-route-id="@item.CompanyId">Usuń</a>
             </td>
         </tr>
 }

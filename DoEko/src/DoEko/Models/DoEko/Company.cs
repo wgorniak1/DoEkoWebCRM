@@ -36,11 +36,13 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         [Display(Description = "", Name = "NIP", ShortName = "NIP")]
+        [NIP(ErrorMessage = "Nr NIP jest nieprawidłowy")]
+        [RegularExpression("^[0-9]{3}(-)[0-9]{3}(-)[0-9]{2}(-)[0-9]{2}$",ErrorMessage = "Proszę wprowadzić NIP w formacie 000-000-00-00")]
         public string TaxId { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [DataType(DataType.PhoneNumber)]
+        [DataType(DataType.PhoneNumber,ErrorMessage = "Nr telefonu jest nieprawidłowy")]
         [Display(Description = "", Name = "Nr Telefonu", ShortName = "Tel.")]
         public string PhoneNumber { get; set; }
         /// <summary>

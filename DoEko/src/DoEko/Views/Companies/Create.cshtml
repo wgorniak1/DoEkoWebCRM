@@ -1,4 +1,4 @@
-@model DoEko.Models.DoEko.Company
+﻿@model DoEko.Models.DoEko.Company
 
 @{
     ViewData["Title"] = "Nowa jednostka gospodarcza";
@@ -10,7 +10,7 @@
     <div class="form-horizontal">
         <h4>Jednostka gospodarcza</h4>
         <hr />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="All" class="text-danger"></div>
 
         <div class="form-group">
             <label asp-for="Name" class="col-md-2 control-label"></label>
@@ -36,7 +36,7 @@
         <div class="form-group">
             <label asp-for="TaxId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="TaxId" class="form-control" />
+                <input asp-for="TaxId" class="form-control" placeholder="000-000-00-00" />
                 <span asp-validation-for="TaxId" class="text-danger" />
             </div>
         </div>
@@ -65,7 +65,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Utw�rz" class="btn btn-default" />
+                <input type="submit" value="Utwórz" class="btn btn-default" />
                 <a asp-action="Index" asp-controller="Home" class="btn btn-primary" >Anuluj</a>    
             </div>
         </div>

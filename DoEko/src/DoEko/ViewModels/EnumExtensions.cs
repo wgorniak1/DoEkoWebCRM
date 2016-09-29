@@ -9,6 +9,10 @@ namespace DoEko.ViewModels
 {
     public static class EnumExtensions
     {
+        public static string GetName2( Enum value)
+        {
+            return "Test";
+        }
         public static string DisplayName(this Enum value)
         {
             if (value != null)

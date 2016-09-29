@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DoEko.Models.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,11 +10,11 @@ namespace DoEko.Models.DoEko
 {
     public class BusinessPartnerPerson : BusinessPartner
     {
-        [Required]
+        [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
         [StringLength(30)]
         [Display(Description = "", Name = "Imię", ShortName = "Imię")]
         public string FirstName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
         [StringLength(30)]
         [Display(Description = "", Name = "Nazwisko", ShortName = "Nazwisko")]
         public string LastName { get; set; }
@@ -51,11 +52,15 @@ namespace DoEko.Models.DoEko
             private set { }
         }
 
-        [Required]
-        [RegularExpression("")]
+        [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
+        [RegularExpression("^[0-9]{11}$",ErrorMessage ="Nr PESEL jest nieprawidłowy")]
         [Display(Description = "", Name = "Nr PESEL", ShortName = "PESEL")]
+        [PESEL(ErrorMessage ="Nr PESEL jest nieprawidłowy")]
         public string Pesel { get; set; }
-        [RegularExpression("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [RegularExpression("^[A-Z]{3}( )[0-9]{6}$",ErrorMessage ="Proszę podać nr w formacie 'ABC 123456'")]
         [Display(Description = "", Name = "Nr dowodu osobistego", ShortName = "Dowód os.")]
         public string IdNumber { get; set; }
     }

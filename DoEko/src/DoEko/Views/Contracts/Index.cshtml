@@ -2,14 +2,23 @@
 @model IEnumerable<DoEko.Models.DoEko.Contract>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Umowy";
 }
 
-<h2>Umowy</h2>
+<!--Navigation-->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home">Str. Domowa</a></li>
+    <li class="active">Lista umów</li>
+</ol>
+
+<!--Title-->
+<h2>Lista Umów</h2>
+<p class="text-success">@ViewData["StatusMessage"]</p>
 
 <p>
-    <a asp-action="Create">Utwórz nową</a>
+    <a asp-action="Create" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Utwórz Nową</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>

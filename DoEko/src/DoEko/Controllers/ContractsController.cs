@@ -58,6 +58,7 @@ namespace DoEko.Controllers
 
             ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription");
+            ViewData["CompanyId"] = new SelectList(_context.Companies.Where(m => m.Name.ToUpper().ToString().Contains("DoEko")).ToList(), "CompanyId", "Name");
             return View();
         }
 

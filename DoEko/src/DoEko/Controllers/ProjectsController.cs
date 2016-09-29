@@ -68,6 +68,7 @@ namespace DoEko.Controllers
                 ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", ParentId);
                 ViewData["ParentProjectId"] = ParentId;
             }
+            //Return link
             if (!Url.IsLocalUrl(ReturnUrl))
             {
                 ViewData["ReturnUrl"] = Url.Action("Index","Projects");
@@ -76,7 +77,9 @@ namespace DoEko.Controllers
             {
                 ViewData["ReturnUrl"] = ReturnUrl;
             }
-            
+            //Comp.code
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", _context.Companies.FirstOrDefault().CompanyId);
+
             return View();
         }
 
@@ -86,26 +89,30 @@ namespace DoEko.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("Description,EndDate,ParentProjectId,RealEnd,RealStart,ShortDescription,StartDate,UEFundsLevel")] Project project, string ReturnUrl = null)
+            [Bind("CompanyId,Description,EndDate,ParentProjectId,RealEnd,RealStart,ShortDescription,StartDate,UEFundsLevel")] Project project, string ReturnUrl = null)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
+                ViewData["ParentProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", project.ParentProjectId);
+                ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", project.CompanyId);
 
-                project.Status = ProjectStatus.New;
-                _context.Add(project);
-                await _context.SaveChangesAsync();
-                if (!Url.IsLocalUrl(ReturnUrl))
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return Redirect(ReturnUrl);
-                }
-                
+                return View(project);                
             }
-            ViewData["ParentProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", project.ParentProjectId);
-            return View(project);
+            project.Status = ProjectStatus.New;
+
+            _context.Add(project);
+
+            await _context.SaveChangesAsync();
+
+            if (!Url.IsLocalUrl(ReturnUrl))
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return Redirect(ReturnUrl);
+            }
+
         }
 
         // GET: Projects/Edit/5
@@ -123,9 +130,10 @@ namespace DoEko.Controllers
             }
             ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ParentProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", project.ParentProjectId);
+
             //ViewData["Status"] = new SelectList(from ProjectStatus e in Enum.GetValues(typeof(ProjectStatus)) select new { Id = e, Name = e.ToString() }, "Id", "Name", project.Status);
             //ViewData["UEFundsLevel"] = new SelectList(from UEFundsLevel e in Enum.GetValues(typeof(UEFundsLevel)) select new { Id = e, Name = e.ToString() }, "Id", "Name", project.UEFundsLevel);
-            
+
             return View(project);
         }
 

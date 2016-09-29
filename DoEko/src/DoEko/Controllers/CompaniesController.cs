@@ -69,13 +69,11 @@ namespace DoEko.Controllers
             company.Address.CommuneId /= 10;
             if (ModelState.IsValid)
             {
-                
                 _context.Add(company.Address);
                 _context.Add(company);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ModelState.AddModelError("KRSId", "b³¹d");
 
             ViewData["CountryId"] = AddressesController.GetCountries(_context, company.Address.CountryId);
             ViewData["StateId"] = AddressesController.GetStates(_context, company.Address.StateId);
@@ -93,12 +91,20 @@ namespace DoEko.Controllers
                 return NotFound();
             }
 
-            var company = await _context.Companies.SingleOrDefaultAsync(m => m.CompanyId == id);
+            var company = await _context.Companies.Include(m => m.Address).SingleOrDefaultAsync(m => m.CompanyId == id);
             if (company == null)
             {
                 return NotFound();
             }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "BuildingNo", company.AddressId);
+           
+
+            ViewData["CountryId"] = AddressesController.GetCountries(_context, company.Address.CountryId);
+            ViewData["StateId"] = AddressesController.GetStates(_context, company.Address.StateId);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, company.Address.StateId, company.Address.DistrictId);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, company.Address.StateId, company.Address.DistrictId, company.Address.CommuneId, company.Address.CommuneType);
+
+            company.Address.CommuneId *= 10;
+            company.Address.CommuneId += (int)company.Address.CommuneType;
             return View(company);
         }
 
@@ -107,17 +113,18 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CompanyId,AddressId,Email,KRSId,Name,Name2,PhoneNumber,RegonId,TaxId")] Company company)
+        public async Task<IActionResult> Edit(int id, [Bind("CompanyId,Address,Email,KRSId,Name,Name2,PhoneNumber,RegonId,TaxId")] Company company)
         {
             if (id != company.CompanyId)
             {
                 return NotFound();
             }
-
+            company.Address.CommuneId /= 10;
             if (ModelState.IsValid)
             {
                 try
                 {
+                   // _context.Update(company.Address);
                     _context.Update(company);
                     await _context.SaveChangesAsync();
                 }
@@ -134,7 +141,12 @@ namespace DoEko.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "BuildingNo", company.AddressId);
+
+            ViewData["CountryId"] = AddressesController.GetCountries(_context, company.Address.CountryId);
+            ViewData["StateId"] = AddressesController.GetStates(_context, company.Address.StateId);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, company.Address.StateId, company.Address.DistrictId);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, company.Address.StateId, company.Address.DistrictId, company.Address.CommuneId, company.Address.CommuneType);
+
             return View(company);
         }
 
