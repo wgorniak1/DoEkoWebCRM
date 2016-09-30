@@ -67,6 +67,10 @@ namespace DoEko.Controllers
             {
                 
             }
+            catch (InvalidOperationException)
+            {
+
+            }
             if (ParentProj != 0)
             {
                 if (!ProjectExists(ParentProj))
