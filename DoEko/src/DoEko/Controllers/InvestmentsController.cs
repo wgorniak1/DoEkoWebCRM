@@ -143,7 +143,6 @@ namespace DoEko.Controllers
             {
                 return NotFound();
             }
-            investment.Address.CommuneId /= 10;
             if (ModelState.IsValid)
             {
                 try
