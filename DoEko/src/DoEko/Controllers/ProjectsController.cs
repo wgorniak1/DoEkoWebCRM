@@ -57,17 +57,26 @@ namespace DoEko.Controllers
 
         public IActionResult Create(int? ParentId, string ReturnUrl = null)
         {
+            int ParentProj = 0;
             //Parent Project
-            if (ParentId != null)
+            try
             {
-                if (!ProjectExists(ParentId.Value))
+                ParentProj = ParentId.Value;
+            }
+            catch (NullReferenceException)
+            {
+                
+            }
+            if (ParentProj != 0)
+            {
+                if (!ProjectExists(ParentProj))
                 {
                     return RedirectToAction("Index", new { StatusMessage = 1 } );
                     //return NotFound();
                 }
 
-                ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", ParentId.Value);
-                ViewData["ParentProjectId"] = ParentId.Value;
+                ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", ParentProj);
+                ViewData["ParentProjectId"] = ParentProj;
             }
             //Return link
             if (!Url.IsLocalUrl(ReturnUrl))
