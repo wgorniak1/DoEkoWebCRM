@@ -66,6 +66,7 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Address,Email,KRSId,Name,Name2,PhoneNumber,RegonId,TaxId")] Company company)
         {
+            company.Address.CommuneType = (CommuneType)Enum.ToObject(typeof(CommuneType), company.Address.CommuneId % 10);
             company.Address.CommuneId /= 10;
             if (ModelState.IsValid)
             {

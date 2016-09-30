@@ -136,6 +136,9 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, Investment investment, string ReturnUrl = null)
         {
+            investment.Address.CommuneType = (CommuneType)Enum.ToObject(typeof(CommuneType), investment.Address.CommuneId % 10);
+            investment.Address.CommuneId /= 10;
+
             if (id != investment.InvestmentId)
             {
                 return NotFound();

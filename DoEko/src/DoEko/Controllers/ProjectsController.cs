@@ -66,8 +66,8 @@ namespace DoEko.Controllers
                     //return NotFound();
                 }
 
-                ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", ParentId);
-                ViewData["ParentProjectId"] = ParentId;
+                ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", ParentId.Value);
+                ViewData["ParentProjectId"] = ParentId.Value;
             }
             //Return link
             if (!Url.IsLocalUrl(ReturnUrl))
