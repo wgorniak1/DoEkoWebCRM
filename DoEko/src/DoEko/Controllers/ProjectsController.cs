@@ -43,6 +43,7 @@ namespace DoEko.Controllers
                 .Include(p => p.ChildProjects)
                 .Include(p => p.ParentProject)
                 .Include(p => p.Contracts)
+                .Include(p => p.Company)
                 .SingleOrDefaultAsync(m => m.ProjectId == id);
             if (project == null)
             {
@@ -123,7 +124,9 @@ namespace DoEko.Controllers
                 return NotFound();
             }
             
-            var project = await _context.Projects.SingleOrDefaultAsync(m => m.ProjectId == id);
+            var project = await _context.Projects
+                .Include( p => p.Company)
+                .SingleOrDefaultAsync(m => m.ProjectId == id);
             if (project == null)
             {
                 return NotFound();

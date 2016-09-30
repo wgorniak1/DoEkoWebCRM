@@ -33,11 +33,18 @@ namespace DoEko.Controllers
                 return NotFound();
             }
 
-            var contract = await _context.Contracts.SingleOrDefaultAsync(m => m.ContractId == id);
+            var contract = await _context.Contracts
+                .Include(c => c.Company)
+                .Include(c => c.Project)
+                .Include(c => c.Investments).ThenInclude(i => i.Address)
+                .Include(c => c.Investments).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .SingleOrDefaultAsync(m => m.ContractId == id);
             if (contract == null)
             {
                 return NotFound();
             }
+
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
 
             return View(contract);
         }
@@ -46,6 +53,7 @@ namespace DoEko.Controllers
        
         public IActionResult Create(int? ProjectId, string ReturnUrl = null)
         {
+
             if (ProjectId.HasValue)
             {
                 if (!ProjectExists(ProjectId.Value))
@@ -54,11 +62,19 @@ namespace DoEko.Controllers
                     //return NotFound();
                 }
                 ViewData["ProjectId"] = ProjectId;
+                Project project = _context.Projects.SingleOrDefault(p => p.ProjectId == ProjectId);
+
+                ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", project.CompanyId);
+            }
+            else
+            {
+                ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name");
             }
 
             ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription");
-            ViewData["CompanyId"] = new SelectList(_context.Companies.Where(m => m.Name.ToUpper().ToString().Contains("DoEko")).ToList(), "CompanyId", "Name");
+            
+
             return View();
         }
 
@@ -67,7 +83,7 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ContractDate,FullfilmentDate,Number,ProjectId,ShortDescription,Type")] Contract contract, string ReturnUrl = null)
+        public async Task<IActionResult> Create([Bind("ContractDate,FullfilmentDate,Number,ProjectId,ShortDescription,Type, CompanyId")] Contract contract, string ReturnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -75,14 +91,14 @@ namespace DoEko.Controllers
                 _context.Add(contract);
                 await _context.SaveChangesAsync();
 
-                if (ReturnUrl != null)
-                {
-                    return Redirect(ReturnUrl);
-                }
-                else
-                {
-                    return RedirectToAction("Index");
-                }
+                //if (ReturnUrl != null)
+                //{
+                //    return Redirect(ReturnUrl);
+                //}
+                //else
+                //{
+                    return RedirectToAction("Edit",new { Id = contract.ContractId, ReturnUrl = ReturnUrl });
+                //}
                 //contract = await _context.Contracts.Include(c => c.Investments).SingleOrDefaultAsync(c => c.ContractId == contract.ContractId);
             }
             ViewData["ReturnUrl"]   = ReturnUrl;
@@ -91,19 +107,25 @@ namespace DoEko.Controllers
         }
 
         // GET: Contracts/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, string ReturnUrl = null)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var contract = await _context.Contracts.SingleOrDefaultAsync(m => m.ContractId == id);
+            var contract = await _context.Contracts
+                .Include( c => c.Company)
+                .Include( c => c.Project)
+                .Include( c => c.Investments)
+                .SingleOrDefaultAsync(m => m.ContractId == id);
             if (contract == null)
             {
                 return NotFound();
             }
+            ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", contract.ProjectId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
             return View(contract);
         }
 
@@ -112,7 +134,7 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ContractId,ContractDate,FullfilmentDate,Number,ProjectId,ShortDescription,Status,Type")] Contract contract)
+        public async Task<IActionResult> Edit(int id, Contract contract, string ReturnUrl = null)
         {
             if (id != contract.ContractId)
             {
@@ -137,9 +159,19 @@ namespace DoEko.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                if (ReturnUrl != null)
+                {
+                    return Redirect(ReturnUrl);               
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
             }
+            ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", contract.ProjectId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name",contract.CompanyId);
+
             return View(contract);
         }
 

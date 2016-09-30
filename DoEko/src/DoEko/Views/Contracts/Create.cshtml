@@ -30,9 +30,17 @@
                         <option value="">Wybierz projekt</option>
                     </select>
                 }
+                <span asp-validation-for="ProjectId" class="text-danger"></span>
             </div>
         </div>
-
+        <div class="form-group">
+            <label asp-for="CompanyId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="CompanyId" class="form-control" asp-items="@ViewBag.CompanyId">
+                </select>
+                <span asp-validation-for="CompanyId" class="text-danger" />
+            </div>
+        </div>
         <div class="form-group">
             <label asp-for="Type" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -45,7 +53,7 @@
         <div class="form-group">
             <label asp-for="Number" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Number" class="form-control" />
+                <input asp-for="Number" class="form-control" placeholder="12345/A/1/2016"/>
                 <span asp-validation-for="Number" class="text-danger" />
             </div>
         </div>

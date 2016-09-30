@@ -33,7 +33,7 @@ namespace DoEko.Models.DoEko
         Completed
     }
     [Table(nameof(Investment))]
-    public class Investment
+    public class Investment : IAddressRelated
     {   
         /// <summary>
         /// 
@@ -46,9 +46,20 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
         [Display(Description = "Opis", Name = "Umowa", ShortName = "Umowa")]
+        public int ContractId { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "Opis", Name = "Umowa", ShortName = "Umowa")]
         public virtual Contract Contract { get; set; }
         //public virtual Project Project { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
+        [Display(Description = "Opis", Name = "Adres", ShortName = "Adres")]
+        public int AddressId { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -58,15 +69,15 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(11,MinimumLength = 11)]
-        [RegularExpression("")]
+        [StringLength(19,MinimumLength = 19,ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
+        [RegularExpression("^[0-9]{6}(_)[0-9]{1}(.)[0-9]{4}(.)[0-9]{3}(/)[0-9]{1}$", ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
         [Display(Description = "Opis", Name = "Nr Działki", ShortName = "Nr Działki")]
         public string PlotNumber { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(11, MinimumLength = 11)]
-        [RegularExpression("")]
+        [StringLength(15, MinimumLength = 15, ErrorMessage ="Proszę podać numer w formacie AA1A/12345678/1")]
+        [RegularExpression("^[A-Z]{2}[0-9]{1}[A-Z]{1}(/)[0-9]{8}(/)[0-9]{1}$", ErrorMessage = "Proszę podać numer w formacie AA1A/12345678/1")]
         [Display(Description = "Opis", Name = "Nr Ks.Wieczystej", ShortName = "Nr Ks.Wieczystej")]
         public string LandRegisterNo { get; set; }
         /// <summary>
@@ -85,6 +96,9 @@ namespace DoEko.Models.DoEko
         public InspectionStatus InspectionStatus { get; set; }
 
         //inspector
+        [Display(Description = "Opis", Name = "Inspektor", ShortName = "Inspektor")]
+        public Guid? InspectorId { get; set; }
+
         //wlasciciel / inwestor
         ///// <summary>
         ///// 

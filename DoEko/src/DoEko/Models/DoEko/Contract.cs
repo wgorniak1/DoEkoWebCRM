@@ -80,7 +80,7 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
-        [StringLength(maximumLength: 50, ErrorMessage = "Maksymalna długość opisu {0}", MinimumLength = 3)]
+        [StringLength(maximumLength: 50, ErrorMessage = "Pole {0} powinno mieć przynajmniej {2} i nie więcej niż {1} znaków", MinimumLength = 3)]
         [Display(Description = "Opis", Name = "Krótki Opis", ShortName = "Krótki Opis")]
         public string ShortDescription { get; set; }
         /// <summary>

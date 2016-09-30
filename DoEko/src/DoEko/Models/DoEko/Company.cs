@@ -16,7 +16,7 @@ namespace DoEko.Models.DoEko
         public int CompanyId { get; set; }
         [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
         [StringLength(30,ErrorMessage ="Długość pola {0} nie może przekroczyć {1} znaków")]
-        [Display(Description = "", Name = "Nazwa", ShortName = "Nazwa")]
+        [Display(Description = "", Name = "Nazwa Spółki", ShortName = "Nazwa")]
         public string Name { get; set; }
         [StringLength(30, ErrorMessage = "Długość pola {0} nie może przekroczyć {1} znaków")]
         [Display(Description = "", Name = "Nazwa cd.", ShortName = "Nazwa cd.")]

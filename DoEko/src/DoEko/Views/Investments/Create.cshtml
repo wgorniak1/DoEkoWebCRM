@@ -1,56 +1,68 @@
-@model DoEko.Models.DoEko.Investment
+﻿@model DoEko.Models.DoEko.Investment
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nowa Inwestycja";
 }
 
-<h2>Create</h2>
+<h2>Nowa</h2>
 
-<form asp-action="Create">
+<form asp-action="Create" asp-route-ReturnUrl="@ViewBag.ReturnUrl">
     <div class="form-horizontal">
-        <h4>Investment</h4>
+        <h4>Inwestycja</h4>
         <hr />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        
+        @Html.Partial("_AddressForm", Model)
+
+        @*<div class="form-group">
             <label asp-for="InspectionStatus" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <select asp-for="InspectionStatus" class="form-control"></select>
                 <span asp-validation-for="InspectionStatus" class="text-danger" />
             </div>
-        </div>
+        </div>*@
+        <input asp-for="ContractId" hidden value="@ViewBag.ContractId" />
+
         <div class="form-group">
             <label asp-for="LandRegisterNo" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="LandRegisterNo" class="form-control" />
+                <input asp-for="LandRegisterNo" class="form-control" placeholder="AA1A/12345678/1"/>
                 <span asp-validation-for="LandRegisterNo" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="PlotNumber" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="PlotNumber" class="form-control" />
+                <input asp-for="PlotNumber" class="form-control" placeholder="112233_4.5678.123/1"/>
                 <span asp-validation-for="PlotNumber" class="text-danger" />
             </div>
         </div>
-        <div class="form-group">
+        @*<div class="form-group">
             <label asp-for="Status" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <select asp-for="Status" class="form-control"></select>
                 <span asp-validation-for="Status" class="text-danger" />
             </div>
-        </div>
+        </div>*@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Utwórz" class="btn btn-primary" />
+
+                @if (!String.IsNullOrEmpty(ViewBag.ReturnUrl))
+            {
+                    <a href="@ViewBag.ReturnUrl" class="btn btn-default" asp->Anuluj</a>
+                }
+                else
+                {
+                    <a asp-action="Index" class="btn btn-default" asp->Anuluj</a>
+                }
             </div>
         </div>
+
     </div>
 </form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
+    @{await Html.RenderPartialAsync("_AddressScriptPartial");}
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
