@@ -58,7 +58,7 @@ namespace DoEko.Controllers
         public IActionResult Create(int? ParentId, string ReturnUrl = null)
         {
             //Parent Project
-            if (ParentId.HasValue)
+            if (ParentId != null)
             {
                 if (!ProjectExists(ParentId.Value))
                 {
