@@ -49,7 +49,7 @@
                     @{ApplicationUser user = await UserManager.FindByIdAsync(item.InspectorId.ToString());}
                     @if (user != null)
                     {
-                        @user.UserName;
+                        @user.UserName
                     };
                     
                 </td>

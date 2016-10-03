@@ -94,20 +94,18 @@
         $(function () {
             $("#AGyes").change(function () {
                 $('#AddressForm').collapse('hide');
-                $('#SameLocation').prop('checked', true);
+                $('#SameLocation').val('True')
             })
             $("#AGno").change(function () {
                 $('#AddressForm').collapse('show');
-                $('#SameLocation').prop('checked', false);
+                $('#SameLocation').val('False')
             })
 
             $("#SGyes").change(function () {
-                $('#Sponsor').prop('checked', true);
-                alert('aaa');
+                $('#Sponsor').val('True')
             })
             $("#SGno").change(function () {
-                $('#Sponsor').removeProp('checked');
-                alert($('#Sponsor'));
+                $('#Sponsor').val('False')
             })
 
         })

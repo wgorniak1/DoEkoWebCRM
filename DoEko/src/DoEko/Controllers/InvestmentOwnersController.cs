@@ -67,6 +67,9 @@ namespace DoEko.Controllers
             ViewData["StateId"] = AddressesController.GetStates(_context, model.Address.StateId);
             ViewData["DistrictId"] = AddressesController.GetDistricts(_context, model.Address.StateId, model.Address.DistrictId);
             ViewData["CommuneId"] = AddressesController.GetCommunes(_context, model.Address.StateId, model.Address.DistrictId, model.Address.CommuneId, model.Address.CommuneType);
+            model.Address.CommuneId *= 10;
+            model.Address.CommuneId += (int)model.Address.CommuneType;
+
             if (!string.IsNullOrEmpty(ReturnUrl))
             {
                 ViewData["ReturnUrl"] = ReturnUrl;
