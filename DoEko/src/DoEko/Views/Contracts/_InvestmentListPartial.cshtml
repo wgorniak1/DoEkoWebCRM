@@ -33,11 +33,21 @@
                     @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
                 </td>
                 <td>
+                    <table>
+                        <tbody>
                     @foreach (var io in item.InvestmentOwners)
                     {
                         BusinessPartnerPerson bp = (BusinessPartnerPerson)io.Owner;
-                        @bp.LastName
+                        <tr>
+                            <td>
+                        @(bp.LastName + ' ' + bp.FirstName)
+                            </td>
+                            <td>@('(' + bp.Pesel + ')')</td>
+                        </tr>
                     }
+
+                        </tbody>
+                    </table>
                 </td>
                 <td>
                     @item.Status.DisplayName()
@@ -50,7 +60,7 @@
                     @if (user != null)
                     {
                         @user.UserName
-                    };
+                    }
                     
                 </td>
                 <td>

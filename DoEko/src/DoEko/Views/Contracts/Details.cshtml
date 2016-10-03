@@ -38,22 +38,22 @@
         </div>
     </div>
     <div class="panel panel-info">
-        <div class="panel-heading wg-panel-heading" role="tab" id="heading-subprojects" data-toggle="collapse" data-parent="#panel-group" data-target="#investments">
+        <div class="panel-heading wg-panel-heading" role="tab" id="heading-investments" data-toggle="collapse" data-parent="#panel-group" data-target="#investments">
             <div class="btn-group pull-right">
                 <a asp-action="Create"
                    asp-controller="Investments"
                    asp-route-ContractId="@Model.ContractId"
-                   asp-route-ReturnUrl="@Url.Action("Details","Contracts", new { Id = Model.ContractId }, null,null,"subprojects")">
+                   asp-route-ReturnUrl="@Url.Action("Details","Contracts", new { Id = Model.ContractId }, null,null,"heading-investments")">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </a>
             </div>
             <h4 class="panel-title">
-                <a class="collapsed wg-link-nounderline" role="button"  href="#subprojects" aria-expanded="false" aria-controls="subprojects">
+                <a class="collapsed wg-link-nounderline" role="button"  href="#investments" aria-expanded="false" aria-controls="investments">
                     Inwestycje
                 </a>
             </h4>
         </div>
-        <div id="investments" class="panel-collapse collapse" role="tabpanel" aria-labelledby="header-subprojects">
+        <div id="investments" class="panel-collapse collapse" role="tabpanel" aria-labelledby="header-investments">
             @await Html.PartialAsync("_InvestmentListPartial",Model.Investments)
         </div>
     </div>
