@@ -6,7 +6,7 @@
 
 <h2>Nowa</h2>
 
-<form asp-action="Create" asp-controller="Companies" >
+<form asp-action="Create" asp-controller="Companies">
     <div class="form-horizontal">
         <h4>Jednostka gospodarcza</h4>
         <hr />
@@ -47,7 +47,9 @@
                 <span asp-validation-for="KRSId" class="text-danger" />
             </div>
         </div>
-        @Html.Partial("_AddressForm", Model)
+
+        @Html.Partial("../Shared/Address/_AddressFormPartial.cshtml", Model)
+
         <div class="form-group">
             <label asp-for="Email" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -65,19 +67,18 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Utwórz" class="btn btn-default" />
-                <a asp-action="Index" asp-controller="Home" class="btn btn-primary" >Anuluj</a>    
+                <input type="submit" value="Utwórz" class="btn btn-primary" />
+                @if (!string.IsNullOrEmpty(ViewBag.ReturnUrl))
+                {
+                    <a href="@ViewBag.ReturnUrl" class="btn btn-default">Anuluj</a>
+                }
+                <a asp-action="Index" class="btn btn-default" >Anuluj</a>    
             </div>
         </div>
     </div>
 </form>
 
-<div>
-    
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_AddressScriptPartial");}
+    @{await Html.RenderPartialAsync("../Shared/Address/_AddressScriptPartial.cshtml");}
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-

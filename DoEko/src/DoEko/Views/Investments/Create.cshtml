@@ -1,18 +1,18 @@
 ﻿@model DoEko.Models.DoEko.Investment
 
 @{
-    ViewData["Title"] = "Nowa Inwestycja";
+    ViewData["Title"] = "Nowa Inwestycja - Lokalizacja";
 }
 
 <h2>Nowa</h2>
 
 <form asp-action="Create" asp-route-ReturnUrl="@ViewBag.ReturnUrl">
     <div class="form-horizontal">
-        <h4>Inwestycja</h4>
+        <h4>Inwestycja | Adres</h4>
         <hr />
         <div asp-validation-summary="All" class="text-danger"></div>
         
-        @Html.Partial("_AddressForm", Model)
+        @Html.Partial("../Shared/Address/_AddressFormPartial", Model)
 
         @*<div class="form-group">
             <label asp-for="InspectionStatus" class="col-md-2 control-label"></label>
@@ -63,6 +63,6 @@
 </form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_AddressScriptPartial");}
+    @{await Html.RenderPartialAsync("../Shared/Address/_AddressScriptPartial");}
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

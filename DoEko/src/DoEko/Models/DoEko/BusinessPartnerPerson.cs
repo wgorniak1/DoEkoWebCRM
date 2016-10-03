@@ -21,7 +21,6 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// Birth date is calculated from PESEL
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         [Display(Description = "", Name = "Data Urodz.", ShortName = "Data Ur.")]
@@ -31,8 +30,8 @@ namespace DoEko.Models.DoEko
                 if (Pesel.Length == 11)
                 {
                     ushort year = UInt16.Parse(Pesel.Substring(0, 2));
-                    ushort month = UInt16.Parse(Pesel.Substring(3, 2));
-                    ushort day = UInt16.Parse(Pesel.Substring(5, 2));
+                    ushort month = UInt16.Parse(Pesel.Substring(2, 2));
+                    ushort day = UInt16.Parse(Pesel.Substring(4, 2));
 
                     if (month >= 21 && month < 41) //person born between 2000 - 2099 
                     {

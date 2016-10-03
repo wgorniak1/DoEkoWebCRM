@@ -87,12 +87,13 @@ namespace DoEko.Controllers
                 _context.Add(investment.Address);
                 _context.Add(investment);
                 await _context.SaveChangesAsync();
-                if (!string.IsNullOrEmpty(ReturnUrl))
-                {
-                    return Redirect(ReturnUrl);
-                }
-                else
-                return RedirectToAction("Index");
+                return RedirectToAction("Create", "InvestmentOwners",new { InvestmentId = investment.InvestmentId, ReturnUrl = ReturnUrl});
+                //if (!string.IsNullOrEmpty(ReturnUrl))
+                //{
+                //    return Redirect(ReturnUrl);
+                //}
+                //else
+                //return RedirectToAction("Index");
             }
             ViewData["CountryId"] = AddressesController.GetCountries(_context, investment.Address.CountryId);
             ViewData["StateId"] = AddressesController.GetStates(_context, investment.Address.StateId);

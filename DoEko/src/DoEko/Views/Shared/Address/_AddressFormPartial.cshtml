@@ -1,49 +1,47 @@
 ﻿@using DoEko.Models.DoEko.Addresses
 @using DoEko.Models.DoEko
 @model IAddressRelated
-
+<input type="hidden" asp-for="Address.AddressId" />
 <div class="form-group">
     <label asp-for="Address.Street" class="col-md-2 control-label"></label>
     <div class="col-md-10">
-        <input asp-for="Address.Street" class="form-control" />
+        <input asp-for="Address.Street" class="form-control Address" />
         <span asp-validation-for="Address.Street" class="text-danger" />
     </div>
 </div>
 <div class="form-group">
     <label asp-for="Address.BuildingNo" class="col-md-2 control-label"></label>
     <div class="col-md-10">
-        <input asp-for="Address.BuildingNo" class="form-control" />
+        <input asp-for="Address.BuildingNo" class="form-control Address" />
         <span asp-validation-for="Address.BuildingNo" class="text-danger" />
     </div>
 </div>
 <div class="form-group">
     <label asp-for="Address.ApartmentNo" class="col-md-2 control-label"></label>
     <div class="col-md-10">
-        <input asp-for="Address.ApartmentNo" class="form-control" />
+        <input asp-for="Address.ApartmentNo" class="form-control Address" />
         <span asp-validation-for="Address.ApartmentNo" class="text-danger" />
     </div>
 </div>
 <div class="form-group">
-    @*@Html.LabelFor(model => model.Address.PostalCode)*@
     <label asp-for="Address.PostalCode" class="col-md-2 control-label"></label>
     <div class="col-md-10">
         <input asp-for="Address.PostalCode" 
-               placeholder="00-000"
-               class="form-control" asp-format="{0:##-###}"/>
+               class="form-control Address" />
         <span asp-validation-for="Address.PostalCode" class="text-danger" />
     </div>
 </div>
 <div class="form-group">
     <label asp-for="Address.City" class="col-md-2 control-label"></label>
     <div class="col-md-10">
-        <input asp-for="Address.City" class="form-control" />
+        <input asp-for="Address.City" class="form-control Address" />
         <span asp-validation-for="Address.City" class="text-danger" />
     </div>
 </div>
 <div class="form-group">
     <label asp-for="Address.StateId" class="col-md-2 control-label"></label>
     <div class="col-md-10">
-        <select asp-for="Address.StateId" class="form-control" asp-items="ViewBag.StateId">
+        <select asp-for="Address.StateId" class="form-control Address" asp-items="ViewBag.StateId">
             <option value="">Wybierz</option>
         </select>
         
@@ -53,7 +51,7 @@
 <div class="form-group">
     <label asp-for="Address.DistrictId" class="col-md-2 control-label"></label>
     <div class="col-md-10">
-        <select asp-for="Address.DistrictId" class="form-control" asp-items="ViewBag.DistrictId">
+        <select asp-for="Address.DistrictId" class="form-control Address" asp-items="ViewBag.DistrictId">
             <option value="">Wybierz</option>
         </select>
         <span asp-validation-for="Address.DistrictId" class="text-danger" />        
@@ -62,7 +60,7 @@
 <div class="form-group">
     <label asp-for="Address.CommuneId" class="col-md-2 control-label"></label>
     <div class="col-md-10">
-        <select asp-for="Address.CommuneId" class="form-control" asp-items="ViewBag.CommuneId" >
+        <select asp-for="Address.CommuneId" class="form-control Address" asp-items="ViewBag.CommuneId" >
             <option value="">Wybierz</option>
         </select>
         <span asp-validation-for="Address.CommuneId" class="text-danger" />
@@ -72,7 +70,7 @@
 <div class="form-group">
     <label asp-for="Address.CountryId" class="col-md-2 control-label"></label>
     <div class="col-md-10">
-        <select asp-for="Address.CountryId" class="form-control" asp-items="ViewBag.CountryId"></select>
+        <select asp-for="Address.CountryId" class="form-control Address" asp-items="ViewBag.CountryId"></select>
         <span asp-validation-for="Address.CountryId" class="text-danger" />    
     </div>
 </div>

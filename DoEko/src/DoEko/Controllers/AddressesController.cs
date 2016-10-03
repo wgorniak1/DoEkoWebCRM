@@ -197,7 +197,7 @@ namespace DoEko.Controllers
         public static SelectList GetStates(DoEkoContext context, int currentStateId)
         {
             List<State> states = context.States.OrderBy(s => s.Text).ToList<State>();
-            //states.Insert(0, new State { Text = "Wybierz" });
+            
             return new SelectList(states, "StateId", "Text", currentStateId);
         }
 
@@ -212,12 +212,12 @@ namespace DoEko.Controllers
                     .OrderBy(d => d.Text)
                     .ToList();
 
-//                districts.Insert(0, new District { DistrictId = 0, Text = "Wybierz" });
+
             }
             else
             {
                 districts = new List<District>();
-//                districts.Insert(0, new District { DistrictId = 0, Text = "Wybierz województwo" });
+
             }
 
             return new SelectList(districts, "DistrictId", "Text", currentDistrictId);
@@ -244,25 +244,10 @@ namespace DoEko.Controllers
                 for (int i = 0; i < communes.Count; i++)
                     communes[i].Text = communes[i].Text + " (" + communes[i].Type.DisplayName() + ")";
 
-                //communes.Insert(0, new Commune
-                //{
-                //    StateId = currentStateId,
-                //    DistrictId = currentDistrictId,
-                //    CommuneId = 0,
-                //    Type = 0,
-                //    Text = "Wybierz"
-                //});
             }
             else
             {
                 communes = new List<Commune>();
-                //communes.Insert(0, new Commune {
-                //    StateId = currentStateId,
-                //    DistrictId = currentDistrictId,
-                //    CommuneId = 0,
-                //    Type = 0,
-                //    Text = "Wybierz Powiat"
-                //});
             }
 
             return new SelectList(communes, "CommuneId", "Text", currentCommuneId * 10 + (int)currentCommuneType);

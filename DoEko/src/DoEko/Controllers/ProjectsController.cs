@@ -57,31 +57,18 @@ namespace DoEko.Controllers
 
         public IActionResult Create(int? ParentId, string ReturnUrl = null)
         {
-            int ParentProj = 0;
-            //Parent Project
-            try
+            if (ParentId.HasValue)
             {
-                ParentProj = ParentId.Value;
-            }
-            catch (NullReferenceException)
-            {
-                
-            }
-            catch (InvalidOperationException)
-            {
-
-            }
-            if (ParentProj != 0)
-            {
-                if (!ProjectExists(ParentProj))
+                if (!ProjectExists(ParentId.Value))
                 {
-                    return RedirectToAction("Index", new { StatusMessage = 1 } );
-                    //return NotFound();
+                    //return RedirectToAction("Index", new { StatusMessage = 1 } );
+                    return NotFound();
                 }
 
-                ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", ParentProj);
-                ViewData["ParentProjectId"] = ParentProj;
+                ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", ParentId.Value);
+                ViewData["ParentProjectId"]   = ParentId.Value;
             }
+
             //Return link
             if (!Url.IsLocalUrl(ReturnUrl))
             {
@@ -158,7 +145,7 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Description,EndDate,ParentProjectId,RealEnd,RealStart,ShortDescription,StartDate,Status,UEFundsLevel")] Project project, string ReturnUrl = null)
+        public async Task<IActionResult> Edit(int id, Project project, string ReturnUrl = null)
         {
             if (id != project.ProjectId)
             {
@@ -192,6 +179,7 @@ namespace DoEko.Controllers
                     return RedirectToAction("Index");
                 }
             }
+            ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ParentProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", project.ParentProjectId);
             return View(project);
         }

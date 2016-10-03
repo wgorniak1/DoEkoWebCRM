@@ -19,7 +19,7 @@
     <a asp-action="Create" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Utwórz Nową</a>
 </p>
 
-<table class="table">
+<table class="table table-bordered table-responsive table-hover table-striped">
     <thead>
         <tr>
             <th>
@@ -71,9 +71,15 @@
                 @Html.DisplayFor(modelItem => item.Type)
             </td>*@
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ContractId">Edytuj</a> |
-                @*<a asp-action="Details" asp-route-id="@item.ContractId">Details</a>*@ |
-                <a asp-action="Delete" asp-route-id="@item.ContractId">Usuń</a>
+                <a asp-action="Edit" asp-route-id="@item.ContractId">
+                    Edytuj
+                </a> |
+                <a asp-action="Details" asp-route-id="@item.ContractId">
+                    Przeglądaj
+                </a> |
+                <a asp-action="Delete" asp-route-id="@item.ContractId" title="Usuń umowę wraz z wszystkich inwestycjami oraz ankietami, adresami">
+                    Usuń
+                </a>
             </td>
         </tr>
 }

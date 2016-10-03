@@ -54,11 +54,11 @@ namespace DoEko.Models.DoEko.Addresses
         /// </summary>
         [Required(ErrorMessage ="{0} jest polem obowiązkowym")]
         [Column(Order = 7)]
-        [StringLength(6, ErrorMessage = "Kod pocztowy ma długość 5 cyfr oddzielonych znakiem '-'", MinimumLength = 6)]
+        [StringLength(6, ErrorMessage = "Proszę wprowadzić {0} w formacie 00-000", MinimumLength = 6)]
         [DataType(DataType.PostalCode)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:##-###}")]
-        [Display(Description = "", Name = "Kod Poczty", ShortName = "Kod P.")]
-        [RegularExpression(pattern: "^[0-9]{2}-[0-9]{3}$",ErrorMessage = "Kod pocztowy należy wprowadzić w formacie 00-000")]
+        [Display(Description = "", Name = "Kod Poczty", ShortName = "Kod P.",Prompt = "00-000")]
+        [RegularExpression(pattern: @"^([0-9]{2}-[0-9]{3})$",ErrorMessage = "Proszę wprowadzić {0} w formacie 00-000")]
         public string PostalCode { get; set; }
         /// <summary>
         /// 

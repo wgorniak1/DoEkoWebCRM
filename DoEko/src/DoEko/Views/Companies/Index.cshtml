@@ -52,7 +52,7 @@
                 @Html.DisplayFor(modelItem => item.TaxId)
             </td>
             <td>
-                @Html.Partial("_AddressDetailPartial", item)
+                @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.CompanyId">Zmień</a> |

@@ -8,6 +8,8 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <input type="hidden" asp-for="ProjectId" />
+        <input type="hidden" asp-for="CompanyId" />
+
         @if (Model.ParentProjectId != null)
         {
             <div class="form-group">

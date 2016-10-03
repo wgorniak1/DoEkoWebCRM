@@ -165,7 +165,7 @@ namespace DoEko.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Details",new { Id = contract.ContractId});
                 }
             }
             ViewData["ReturnUrl"] = ReturnUrl;

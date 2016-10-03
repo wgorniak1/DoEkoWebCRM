@@ -1,4 +1,6 @@
 ﻿/// <autosync enabled="true" />
+/// <reference path="js/addressdropdown.min.js" />
+/// <reference path="js/javascript.js" />
 /// <reference path="js/site.js" />
 /// <reference path="lib/bootstrap/dist/js/bootstrap.js" />
 /// <reference path="lib/jquery/dist/jquery.js" />

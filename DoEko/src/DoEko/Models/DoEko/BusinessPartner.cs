@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
-    public class BusinessPartner
+    public class BusinessPartner : IAddressRelated
     {
         /// <summary>
         /// 

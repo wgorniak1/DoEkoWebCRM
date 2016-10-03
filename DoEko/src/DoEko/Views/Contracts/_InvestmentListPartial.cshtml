@@ -30,7 +30,7 @@
     @foreach (var item in Model) {
             <tr>
                 <td>
-                    @Html.Partial("_AddressDetailPartial", item)
+                    @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
                 </td>
                 <td>
                     @foreach (var io in item.InvestmentOwners)
