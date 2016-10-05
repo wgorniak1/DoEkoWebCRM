@@ -5,77 +5,165 @@
 
 @model IEnumerable<DoEko.Models.DoEko.Investment>
 <div class="table-responsive">
-    <table class="table table-condensed table-hover">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Address)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.InvestmentOwners)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Status)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.InspectionStatus)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.InspectorId)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    @foreach (var item in Model) {
-            <tr>
-                <td>
-                    @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
-                </td>
-                <td>
-                    <table>
-                        <tbody>
-                    @foreach (var io in item.InvestmentOwners)
-                    {
-                        BusinessPartnerPerson bp = (BusinessPartnerPerson)io.Owner;
-                        <tr>
-                            <td>
-                        @(bp.LastName + ' ' + bp.FirstName)
-                            </td>
-                            <td>@('(' + bp.Pesel + ')')</td>
-                        </tr>
-                    }
 
-                        </tbody>
-                    </table>
-                </td>
-                <td>
-                    @item.Status.DisplayName()
-                </td>
-                <td>
-                    @item.InspectionStatus.DisplayName()
-                </td>
-                <td>
-                    @{ApplicationUser user = await UserManager.FindByIdAsync(item.InspectorId.ToString());}
-                    @if (user != null)
-                    {
-                        @user.UserName
-                    }
-                    
-                </td>
-                <td>
-                    <a asp-action="Edit"    asp-controller="Investments" asp-route-id="@item.InvestmentId">
-                        <span class="glyphicon glyphicon-pencil"></span> 
-                    </a>|
-                    <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId">
-                        <span class="glyphicon glyphicon-eye-open"></span>
-                    </a>|
-                    <a asp-action="Delete"  asp-controller="Investments" asp-route-id="@item.InvestmentId">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </a>
-                </td>
-            </tr>
-    }
-        </tbody>
-    </table>
-</div>
+    @if (ViewBag.EditInspector)
+    {
+
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>
+                            <input class="checkbox" type="checkbox" id="AllRowsSelector" name="AllRowsSelector"/>
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Address)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.InvestmentOwners)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.InspectionStatus)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.InspectorId)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><input type="checkbox" class="singlerowselector" name="InvestmentId[]" value="@item.InvestmentId" /></td>
+
+                                <td>
+                                    @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
+                                </td>
+                                <td>
+                                    <table>
+                                        <tbody>
+                                            @foreach (var io in item.InvestmentOwners)
+                                            {
+                                                BusinessPartnerPerson bp = (BusinessPartnerPerson)io.Owner;
+                                                <tr>
+                                                    <td>
+                                                        @(bp.LastName + ' ' + bp.FirstName)
+                                                    </td>
+                                                    <td>@('(' + bp.Pesel + ')')</td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td>
+                                    @item.Status.DisplayName()
+                                </td>
+                                <td>
+                                    @item.InspectionStatus.DisplayName()
+                                </td>
+                                <td>
+                                    @{ApplicationUser user = await UserManager.FindByIdAsync(item.InspectorId.ToString());}
+                                    @if (user != null)
+                                    {
+                                        @user.UserName
+                                    }
+
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>|
+                                    <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                    </a>|
+                                    <a asp-action="Delete" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                                       }
+                    </tbody>
+        </table>
+}
+else
+{
+                                            <table class="table table-condensed table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            @Html.DisplayNameFor(model => model.Address)
+                                                        </th>
+                                                        <th>
+                                                            @Html.DisplayNameFor(model => model.InvestmentOwners)
+                                                        </th>
+                                                        <th>
+                                                            @Html.DisplayNameFor(model => model.Status)
+                                                        </th>
+                                                        <th>
+                                                            @Html.DisplayNameFor(model => model.InspectionStatus)
+                                                        </th>
+                                                        <th>
+                                                            @Html.DisplayNameFor(model => model.InspectorId)
+                                                        </th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model)
+                {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
+                                                            </td>
+                                                            <td>
+                                                                <table>
+                                                                    <tbody>
+                                                                        @foreach (var io in item.InvestmentOwners)
+                                                                        {
+                                                                            BusinessPartnerPerson bp = (BusinessPartnerPerson)io.Owner;
+                                                                            <tr>
+                                                                                <td>
+                                                                                    @(bp.LastName + ' ' + bp.FirstName)
+                                                                                </td>
+                                                                                <td>@('(' + bp.Pesel + ')')</td>
+                                                                            </tr>
+                                                                        }
+
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                            <td>
+                                                                @item.Status.DisplayName()
+                                                            </td>
+                                                            <td>
+                                                                @item.InspectionStatus.DisplayName()
+                                                            </td>
+                                                            <td>
+                                                                @{ApplicationUser user = await UserManager.FindByIdAsync(item.InspectorId.ToString());}
+                                                                @if (user != null)
+                                                                {
+                                                                    @user.UserName
+                                                                }
+
+                                                            </td>
+                                                            <td>
+                                                                <a asp-action="Edit" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                                </a>|
+                                                                <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                                                </a>|
+                                                                <a asp-action="Delete" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                                    }
+                                                </tbody>
+                                            </table>
+}
+    </div>

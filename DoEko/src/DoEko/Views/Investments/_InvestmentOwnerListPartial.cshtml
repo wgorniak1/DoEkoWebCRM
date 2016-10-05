@@ -1,0 +1,65 @@
+﻿@using DoEko.ViewModels
+@using DoEko.Models.DoEko
+
+@model IEnumerable<DoEko.Models.DoEko.InvestmentOwner>
+@{
+    BusinessPartnerPerson PersonOwner;
+}
+
+<div class="table-responsive">
+    <table class="table table-condensed table-hover">
+        <thead>
+            <tr>
+                <th>Inwestor</th>
+                <th>Nazwisko, Imię</th>
+                <th>PESEL</th>
+                <th>NIP</th>
+                <th>Nr Dowodu Os.</th>
+                <th>Adres e-mail</th>
+                <th>Telefon</th>
+                <th>Adres</th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+
+        PersonOwner = (BusinessPartnerPerson) item.Owner;
+
+            <tr>
+                <td>
+                    @if (item.Sponsor)
+                    {
+                        <span class="glyphicon glyphicon-ok-sign"></span>
+                    }
+                </td>
+                <td>@(PersonOwner.LastName + " " + PersonOwner.FirstName)</td>
+                <td>@PersonOwner.Pesel</td>
+                <td>@PersonOwner.TaxId</td>
+                <td>@PersonOwner.IdNumber</td>
+                <td>@PersonOwner.Email</td>
+                <td>@PersonOwner.PhoneNumber</td>
+                <td>
+                    @Html.Partial("../Shared/Address/_AddressDetailPartial", PersonOwner)
+                </td>
+                <td>
+                    <a asp-action="Edit"    asp-controller="InvestmentOwners" 
+                       asp-route-Investmentid="@item.InvestmentId"
+                       asp-route-Ownerid="@item.OwnerId">
+                        <span class="glyphicon glyphicon-pencil"></span> 
+                    </a>|
+                    <a asp-action="Details" asp-controller="InvestmentOwners" 
+                       asp-route-Investmentid="@item.InvestmentId"
+                       asp-route-Ownerid="@item.OwnerId">
+                        <span class="glyphicon glyphicon-eye-open"></span>
+                    </a>|
+                    <a asp-action="Delete"  asp-controller="InvestmentOwners" 
+                       asp-route-Investmentid="@item.InvestmentId"
+                       asp-route-Ownerid="@item.OwnerId">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>

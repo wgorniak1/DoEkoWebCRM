@@ -6,16 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
+using Microsoft.AspNetCore.Identity;
+using DoEko.Models.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DoEko.Controllers
 {
     public class ContractsController : Controller
     {
         private readonly DoEkoContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public ContractsController(DoEkoContext context)
+        public ContractsController(DoEkoContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> RoleManager)
         {
-            _context = context;    
+            _context = context;
+            _userManager = userManager;
+            _roleManager = RoleManager;
         }
 
         // GET: Contracts
@@ -26,7 +33,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Contracts/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, bool editInspector = false, string returnUrl = null)
         {
             if (id == null)
             {
@@ -36,16 +43,21 @@ namespace DoEko.Controllers
             var contract = await _context.Contracts
                 .Include(c => c.Company)
                 .Include(c => c.Project)
-                .Include(c => c.Investments).ThenInclude(i => i.Address)
+                .Include(c => c.Investments).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
                 .Include(c => c.Investments).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
                 .SingleOrDefaultAsync(m => m.ContractId == id);
             if (contract == null)
             {
                 return NotFound();
             }
-
+            ViewData["EditInspector"] = editInspector;
             ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
+            ViewData["ReturnUrl"] = returnUrl;
+            IdentityRole inspectorRole = await _roleManager.FindByNameAsync(Roles.Inspector);
 
+            var users = _userManager.Users.Where(u => u.Roles.Select(r => r.RoleId).Contains(inspectorRole.Id)).ToList();
+
+            ViewData["InspectorId"] = new SelectList(users, "Id", "UserName");
             return View(contract);
         }
 

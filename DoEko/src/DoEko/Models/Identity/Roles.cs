@@ -9,6 +9,7 @@ namespace DoEko.Models.Identity
     {
         private static readonly string[] roles = { "Admin", "Inspector", "ContractManager", "Reader", "Writer" };
         public static string Admin { get { return roles[0]; } }
+        public static string Inspector { get { return roles[1]; } }
 
         public static IEnumerable<string> All { get { return roles; } }
     }

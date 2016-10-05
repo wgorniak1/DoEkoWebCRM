@@ -87,6 +87,8 @@ namespace DoEko.ViewModels.UserViewModel
             users = allUsers.Select(userItem => new UserItemViewModel
             {
                 UserName = userItem.UserName,
+                FirstName = userItem.FirstName,
+                LastName = userItem.LastName,
                 Email = userItem.Email,
                 LockoutEnabled = userItem.LockoutEnabled,
                 LockoutEnd = userItem.LockoutEnd,
@@ -130,6 +132,8 @@ namespace DoEko.ViewModels.UserViewModel
             // 
             users = _userManager.Users.Select(userItem => new UserItemViewModel
             {
+                FirstName = userItem.FirstName,
+                LastName = userItem.LastName,
                 UserName = userItem.UserName,
                 Email = userItem.Email,
                 LockoutEnabled = userItem.LockoutEnabled,

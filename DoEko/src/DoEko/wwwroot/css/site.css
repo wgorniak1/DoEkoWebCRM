@@ -66,6 +66,8 @@ textarea {
 
 .wg-panel-heading{
     cursor: pointer;
+    padding: 5px 6px;
+    font-size: 12px;
 }
 
 .wg-tile-blue{

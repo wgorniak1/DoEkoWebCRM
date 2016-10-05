@@ -34,8 +34,9 @@ namespace DoEko.Controllers
             }
 
             var investment = await _context.Investments
-                .Include( i => i.Address)
-                .Include( i => i.InvestmentOwners)
+                .Include(i=> i.Contract).ThenInclude(c=>c.Project)
+                .Include( i => i.Address).ThenInclude(a=>a.Commune)
+                .Include( i => i.InvestmentOwners).ThenInclude(io=>io.Owner).ThenInclude(o=>o.Address).ThenInclude(a=>a.Commune)
                 .SingleOrDefaultAsync(m => m.InvestmentId == id);
             if (investment == null)
             {
@@ -176,6 +177,34 @@ namespace DoEko.Controllers
             ViewData["CommuneId"] = AddressesController.GetCommunes(_context, investment.Address.StateId, investment.Address.DistrictId, investment.Address.CommuneId, investment.Address.CommuneType);
 
             return View(investment);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignInspector(Guid InspectorId, Guid[] InvestmentId, string ReturnUrl)
+        {
+            //update
+            foreach (Guid item in InvestmentId)
+            {
+                Investment singleInvestment = await _context.Investments.SingleOrDefaultAsync(m => m.InvestmentId == item);
+                if (singleInvestment != null)
+                {
+                    singleInvestment.InspectorId = InspectorId;
+
+                    _context.Update(singleInvestment);
+                }
+            }
+            //Save changes
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+
+                throw;
+            }
+
+            return Redirect(ReturnUrl);
         }
 
         // GET: Investments/Delete/5

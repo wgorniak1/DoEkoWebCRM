@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DoEko.ViewModels;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoEko.Models.DoEko.Addresses
@@ -106,5 +107,43 @@ namespace DoEko.Models.DoEko.Addresses
         /// 
         /// </summary>
         public Commune Commune { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [NotMapped]
+        public string FirstLine
+        {
+            get
+            {
+                string addressLine  = (string.IsNullOrEmpty(Street)) ? City + " " + BuildingNo : Street + " " + BuildingNo;
+                addressLine += (string.IsNullOrEmpty(ApartmentNo)) ? null : ("/" + ApartmentNo).ToString();
+
+                return addressLine;
+            }
+            private set
+            {
+
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        [NotMapped]
+        public string SecondLine
+        {
+            get
+            {
+                //if (Commune != null)
+                //{
+                string addressLine = PostalCode + ", ";
+                addressLine += (string.IsNullOrEmpty(Street)) ? Commune.Text + "(" + CommuneType.DisplayName() + ")" : City;
+                //}
+                return addressLine;
+            }
+            private set
+            {
+
+            }
+        }
     }
 }

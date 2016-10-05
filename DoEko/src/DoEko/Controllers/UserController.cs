@@ -78,7 +78,10 @@ namespace DoEko.Controllers
             ViewBag.ReturnUrl= returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
+                var user = new ApplicationUser {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    UserName = model.UserName, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -113,6 +116,8 @@ namespace DoEko.Controllers
 
             var UserDetailsVM = new UserDetailsViewModel
             {
+                FirstName = appUser.FirstName,
+                LastName = appUser.LastName,
                 UserID = appUser.Id,
                 UserName = appUser.UserName,
                 Email = appUser.Email,
@@ -133,6 +138,8 @@ namespace DoEko.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByIdAsync(model.UserID);
+                user.LastName = model.LastName;
+                user.FirstName = model.FirstName;
                 var result = await _userManager.SetEmailAsync(user, model.Email);
 
                 if (result.Succeeded)
