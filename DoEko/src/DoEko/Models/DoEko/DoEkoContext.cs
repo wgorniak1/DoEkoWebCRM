@@ -1,5 +1,7 @@
 ﻿using DoEko.Models.DoEko.Addresses;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 
 namespace DoEko.Models.DoEko
 {
@@ -8,7 +10,7 @@ namespace DoEko.Models.DoEko
         public DoEkoContext(DbContextOptions<DoEkoContext> options)
             : base(options)
         { }
-
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<ControlParameter> Settings { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Project> Projects { get; set; }
@@ -73,15 +75,17 @@ namespace DoEko.Models.DoEko
         public override int SaveChanges()
         {
             this.ChangeTracker.DetectChanges();
+            //Added
+            var newEntries = this.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added);
 
-            //var entries = this.ChangeTracker.Entries<CartItem>()
-            //    .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+            foreach (var entry in newEntries)
+            {
+                entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
+                //entry.Property("Createdby").CurrentValue = UserID;
+            }
 
-            //foreach (var entry in entries)
-            //{
-            //    entry.Property("LastUpdated").CurrentValue = DateTime.UtcNow;
-            //}
-
+            //var modified = this.ChangeTracker.Entries<Payment>()
             return base.SaveChanges();
         }
     }
