@@ -254,6 +254,32 @@ namespace DoEko.Migrations.DoEko
                     b.ToTable("Settings");
                 });
 
+            modelBuilder.Entity("DoEko.Models.DoEko.File", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("ChangedAt");
+
+                    b.Property<Guid>("ChangedBy");
+
+                    b.Property<int?>("ContractId");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid?>("ParentId");
+
+                    b.Property<string>("ParentType");
+
+                    b.Property<int?>("ProjectId");
+
+                    b.Property<string>("Url");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("File");
+                });
+
             modelBuilder.Entity("DoEko.Models.DoEko.Investment", b =>
                 {
                     b.Property<Guid>("InvestmentId")
@@ -306,23 +332,38 @@ namespace DoEko.Migrations.DoEko
                     b.Property<Guid>("PaymentId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<double>("Amount");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("money");
 
                     b.Property<DateTime>("ChangedAt");
 
                     b.Property<Guid>("ChangedBy");
 
+                    b.Property<int>("ContractId");
+
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<Guid>("CreatedBy");
+
+                    b.Property<Guid?>("InvestmentId");
+
+                    b.Property<bool>("NotNeeded");
 
                     b.Property<DateTime>("PaymentDate");
 
                     b.Property<DateTime>("PostingDate");
 
+                    b.Property<bool>("RseFotovoltaic");
+
+                    b.Property<bool>("RseHeatPump");
+
+                    b.Property<bool>("RseSolar");
+
                     b.Property<string>("SourceRow");
 
                     b.HasKey("PaymentId");
+
+                    b.HasIndex("InvestmentId");
 
                     b.ToTable("Payment");
                 });
@@ -490,6 +531,13 @@ namespace DoEko.Migrations.DoEko
                     b.HasOne("DoEko.Models.DoEko.BusinessPartner", "Owner")
                         .WithMany("InvestmentOwners")
                         .HasForeignKey("OwnerId");
+                });
+
+            modelBuilder.Entity("DoEko.Models.DoEko.Payment", b =>
+                {
+                    b.HasOne("DoEko.Models.DoEko.Investment")
+                        .WithMany("Payments")
+                        .HasForeignKey("InvestmentId");
                 });
 
             modelBuilder.Entity("DoEko.Models.DoEko.Project", b =>

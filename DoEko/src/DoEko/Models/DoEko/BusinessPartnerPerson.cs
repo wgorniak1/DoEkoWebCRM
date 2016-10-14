@@ -27,6 +27,10 @@ namespace DoEko.Models.DoEko
         public DateTime BirthDate
         {
             get {
+                if (Pesel == null)
+                {
+                    return DateTime.MinValue;
+                }
                 if (Pesel.Length == 11)
                 {
                     ushort year = UInt16.Parse(Pesel.Substring(0, 2));

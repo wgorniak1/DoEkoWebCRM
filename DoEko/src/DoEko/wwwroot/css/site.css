@@ -64,10 +64,13 @@ textarea {
     text-decoration: none;
 }
 
+.wg-panel-tab{
+  padding: 5px 6px;
+}
 .wg-panel-heading{
     cursor: pointer;
-    padding: 5px 6px;
-    font-size: 12px;
+    padding-top: 6px;
+    /*font-size: 12px;*/
 }
 
 .wg-tile-blue{

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching;
 using DoEko.Models.Identity;
 using DoEko.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -43,6 +44,8 @@ namespace DoEko
         {
             services.AddAuthorization();
 
+            services.AddSingleton<IConfiguration>(Configuration);
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -59,6 +62,13 @@ namespace DoEko
                     .Build();
 
             services.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser)); });
+
+            //Session
+            services.AddMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
+                options.CookieName = ".DoEko";
+            });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -84,7 +94,7 @@ namespace DoEko
 
             app.UseStaticFiles();
             app.UseIdentity();
-
+            app.UseSession();
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 
             app.UseMvc(routes =>

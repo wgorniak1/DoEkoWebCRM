@@ -1,0 +1,25 @@
+@model DoEko.Models.DoEko.Payment
+
+@{ 
+    int temp = 3;
+}
+<input asp-for="PaymentId" type="hidden">
+<div class="btn-group" data-toggle="buttons" style="width:100%; padding-bottom:5px;">
+    <label class="btn btn-default btn-sm" style="width:33%">
+        <input asp-for="RseFotovoltaic" type="checkbox" autocomplete="off">
+        Inst. Fotowolt.
+    </label>
+
+    <label class="btn btn-default btn-sm" style="width:34%">
+        <input asp-for="RseHeatPump" type="checkbox" autocomplete="off">
+        Pompa ciep³a
+    </label>
+
+    <label class="btn btn-default btn-sm" style="width:33%">
+        <input asp-for="RseSolar" type="checkbox" autocomplete="off">
+        Inst. Solar.
+    </label>
+</div>
+<select asp-for="InvestmentId" asp-items="@ViewBag.DLInvestments" class="form-control btn-sm">
+    <option value="">Wybierz Inwestycjê</option>
+</select>

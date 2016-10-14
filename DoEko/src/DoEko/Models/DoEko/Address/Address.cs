@@ -145,5 +145,18 @@ namespace DoEko.Models.DoEko.Addresses
 
             }
         }
+        [NotMapped]
+        public string SingleLine
+        {
+            get
+            {
+                string address = FirstLine + ", " + SecondLine;
+                return address;
+            }
+            private set
+            {
+
+            }
+        }
     }
 }

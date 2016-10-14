@@ -18,7 +18,11 @@
     "Microsoft.AspNetCore.Routing": "1.0.1",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
+    "Microsoft.AspNetCore.Session": "1.0.0",
     "Microsoft.AspNetCore.StaticFiles": "1.0.0",
+    "Microsoft.Data.Edm": "5.7.0",
+    "Microsoft.Data.OData": "5.7.0",
+    "Microsoft.Data.Services.Client": "5.7.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.0.1",
     "Microsoft.EntityFrameworkCore.SqlServer.Design": {
       "version": "1.0.1",
@@ -28,6 +32,7 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
+    "Microsoft.Extensions.Caching.Memory": "1.0.0",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0",
@@ -47,6 +52,7 @@
       "type": "build"
     },
     "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
+    "System.Spatial": "5.7.0",
     "WindowsAzure.Storage": "7.2.1"
   },
 

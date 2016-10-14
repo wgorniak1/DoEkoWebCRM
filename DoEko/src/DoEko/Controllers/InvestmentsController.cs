@@ -7,16 +7,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Addresses;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace DoEko.Controllers
 {
     public class InvestmentsController : Controller
     {
         private readonly DoEkoContext _context;
-
-        public InvestmentsController(DoEkoContext context)
+        private readonly AzureStorage _azure;
+        
+        public InvestmentsController(DoEkoContext context, IConfiguration configuration)
         {
             _context = context;
+            _azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
         }
 
         // GET: Investments
@@ -235,7 +240,177 @@ namespace DoEko.Controllers
             return RedirectToAction("Index");
         }
 
-        private bool InvestmentExists(Guid id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadDataFromFile(FormCollection Form, int ContractId)
+        {
+            bool error = false;
+            IList<string> errMessage = new List<string>();
+
+            var file = Request.Form.Files.SingleOrDefault(f => f.FileName.ToLower().Contains(".csv"));
+            if (file == null)
+            {
+                //return Red;
+            }
+
+            _azure.UploadAsync(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
+
+            StreamReader sr = new StreamReader(file.OpenReadStream());
+            string CsvRecord;
+
+            //IList<string> CsvTable = new List<String>();
+
+            //
+            Address InvAddress;
+            Investment Investment;
+            BusinessPartnerPerson OwnerPerson;
+            Address OwnerAddress;
+            InvestmentOwner InvOwner;
+            //
+            int ctryPoland = _context.Countries.Single(c => c.Key == "PL").CountryId;
+            int i = 0;
+            //
+            try
+            {
+                while ((CsvRecord = sr.ReadLine()) != null)
+                {
+                    i = i + 1;
+                    if (i<3)
+                    {
+                        continue;
+                    }
+                    //CsvTable.Add(CsvRecord.Replace("\"", ""));
+                    var LineFields = CsvRecord.Split(';');
+                    if (LineFields.Length == 29)
+                    {
+                        InvAddress = new Address();
+
+                        foreach (var field in LineFields)
+                        {
+                            field.Trim(' ');
+                        }
+
+                        InvAddress.CountryId = ctryPoland;
+                        InvAddress.StateId = _context.States.Single(s => s.Key == LineFields[16].ToUpper()).StateId;
+                        InvAddress.DistrictId = _context.Districts.Single(s => s.StateId == InvAddress.StateId && s.Text.ToUpper() == LineFields[17].ToUpper()).DistrictId;
+                        InvAddress.CommuneType = (CommuneType)int.Parse(LineFields[19]);//(Models.DoEko.Addresses.CommuneType)Enum.Parse(typeof(Models.DoEko.Addresses.CommuneType), LineFields[19].ToString().ToUpper()),
+                        InvAddress.CommuneId = _context.Communes.Single(s => s.StateId == InvAddress.StateId &&
+                                                                                s.DistrictId == InvAddress.DistrictId &&
+                                                                                s.Type == InvAddress.CommuneType &&
+                                                                                s.Text.ToUpper() == LineFields[18].ToUpper()).CommuneId;
+                        InvAddress.PostalCode = LineFields[20].ToUpper().Substring(0, LineFields[20].Length > 5 ? 5 : LineFields[20].Length);
+                        InvAddress.City = LineFields[21].Substring(0, LineFields[21].Length>50 ? 50: LineFields[21].Length);
+                        InvAddress.Street = LineFields[22].Substring(0, LineFields[22].Length > 50 ? 50 : LineFields[22].Length);
+                        InvAddress.BuildingNo = LineFields[23].ToUpper().Substring(0, LineFields[23].Length > 10 ? 10 : LineFields[23].Length); ;
+                        InvAddress.ApartmentNo = LineFields[24].ToUpper().Substring(0, LineFields[24].Length > 11 ? 11 : LineFields[24].Length); ;
+
+                        Investment = new Investment();
+                        Investment.InvestmentId = Guid.NewGuid();
+                        Investment.Address = InvAddress;
+                        Investment.ContractId = ContractId;
+                        Investment.PlotNumber = LineFields[25].ToUpper();
+                        Investment.LandRegisterNo = LineFields[26].ToUpper();
+                        Investment.InspectionStatus = InspectionStatus.NotExists;
+                        Investment.Status = InvestmentStatus.Initial;
+                        
+                        OwnerAddress = new Address();
+
+                        OwnerAddress.CountryId = ctryPoland;
+                        OwnerAddress.StateId = _context.States.Single(s => s.Key == LineFields[5].ToUpper()).StateId;
+                        OwnerAddress.DistrictId = _context.Districts.Single(s => s.StateId == OwnerAddress.StateId && s.Text.ToUpper() == LineFields[6].ToString().ToUpper()).DistrictId;
+                        OwnerAddress.CommuneType = (Models.DoEko.Addresses.CommuneType)int.Parse(LineFields[8]);
+                        OwnerAddress.CommuneId = _context.Communes.Single(s => s.StateId == OwnerAddress.StateId     &&
+                                                                               s.DistrictId == OwnerAddress.DistrictId &&
+                                                                               s.Type == OwnerAddress.CommuneType      &&
+                                                                               s.Text.ToUpper() == LineFields[7].ToUpper()).CommuneId;
+
+
+                        OwnerAddress.PostalCode = LineFields[9].ToUpper().Substring(0, LineFields[9].Length > 5 ? 5 : LineFields[9].Length);
+                        OwnerAddress.City = LineFields[10].Substring(0, LineFields[10].Length > 50 ? 50 : LineFields[10].Length);
+                        OwnerAddress.Street = LineFields[11].Substring(0, LineFields[21].Length > 50 ? 50 : LineFields[11].Length); ;
+                        OwnerAddress.BuildingNo = LineFields[12].ToUpper().Substring(0, LineFields[12].Length > 10 ? 10 : LineFields[12].Length); ;
+                        OwnerAddress.ApartmentNo = LineFields[13].ToUpper().Substring(0, LineFields[13].Length > 10 ? 10 : LineFields[13].Length);
+
+                        OwnerPerson = new BusinessPartnerPerson();
+
+                        OwnerPerson.BusinessPartnerId = Guid.NewGuid();
+                        OwnerPerson.Address = OwnerAddress;
+                        OwnerPerson.FirstName = LineFields[14].Substring(0, LineFields[14].Length > 30 ? 30 : LineFields[14].Length);
+                        OwnerPerson.LastName = LineFields[15].Substring(0, LineFields[15].Length > 30 ? 30 : LineFields[15].Length);
+                        OwnerPerson.PhoneNumber = LineFields[27].Substring(0, LineFields[27].Length > 16 ? 16 : LineFields[27].Length);
+                        OwnerPerson.Email = "Nie ustawiony";
+                        InvOwner = new InvestmentOwner();
+                        InvOwner.InvestmentId = Investment.InvestmentId;
+                        InvOwner.OwnerId = OwnerPerson.BusinessPartnerId;
+
+                        _context.Add(InvAddress);
+                        int x = await _context.SaveChangesAsync();
+                        _context.Add(Investment);
+                        x = await _context.SaveChangesAsync();
+                        _context.Add(OwnerAddress);
+                        x = await _context.SaveChangesAsync();
+                        _context.Add(OwnerPerson);
+                        x = await _context.SaveChangesAsync();
+                        _context.Add(InvOwner);
+                        x = await _context.SaveChangesAsync();
+
+
+                    };
+                }
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                error = true;
+                errMessage.Add("B³¹d w linii" + i.ToString());
+            }
+            catch (NullReferenceException)
+            {
+                error = true;
+                errMessage.Add("B³¹d w linii" + i.ToString());
+            }
+            catch (ArgumentNullException)
+            {
+
+                error = true;
+                errMessage.Add("B³¹d w linii " + i.ToString());
+            }
+            catch (InvalidOperationException)
+            {
+                error = true;
+                errMessage.Add("B³¹d w linii " + i.ToString());
+            }
+            catch (OutOfMemoryException)
+            {
+                error = true;
+                errMessage.Add("B³¹d w linii " + i.ToString());
+            }
+            catch (FormatException)
+            {
+                error = true;
+                errMessage.Add("B³¹d w linii " + i.ToString());
+            }
+
+            sr.Close();
+
+            if (error)
+            {
+                TempData["FileUploadResult"] = false;
+                TempData["FileUploadType"]  = "Import Inwestycji";
+                TempData["FileUploadError"] = errMessage;
+                return RedirectToAction("Details", "Contracts", new { Id = ContractId });
+            }
+            else
+            {
+                TempData["FileUploadResult"]  = true;
+                TempData["FileUploadType"]  = "Import Inwestycji";
+
+                TempData["FileUploadSuccess"] = "Pomyœlnie wczytano listê inwestycji" ;
+
+                return RedirectToAction("Details", "Contracts", new { Id = ContractId });
+            }
+        }
+    
+    private bool InvestmentExists(Guid id)
         {
             return _context.Investments.Any(e => e.InvestmentId == id);
         }

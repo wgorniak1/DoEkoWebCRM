@@ -50,6 +50,31 @@ namespace DoEko.Controllers
             {
                 return NotFound();
             }
+            if (TempData.ContainsKey("FileUploadResult"))
+            {
+                if ((bool)TempData["FileUploadResult"] == true)
+                {
+                    ViewData["FileUploadResult"]  = true;
+                    ViewData["FileUploadMessage"] = TempData["FileUploadSuccess"];
+                }
+                else
+                {
+                    ViewData["FileUploadResult"]  = false;
+                    ViewData["FileUploadMessage"] = TempData["FileUploadError"];
+                }
+
+                ViewData["FileUploadFinished"]    = true;
+                ViewData["FileUploadType"]    = TempData["FileUploadType"];
+            } 
+            else
+            {
+                ViewData["FileUploadFinished"] = false;
+            }
+            
+            //Payments
+            ViewData["PaymentsExists"] = _context.Payments.Where(p => p.ContractId == id && p.NotNeeded == false && p.InvestmentId == null).Any();
+            // end of payments
+
             ViewData["EditInspector"] = editInspector;
             ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
             ViewData["ReturnUrl"] = returnUrl;

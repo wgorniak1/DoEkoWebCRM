@@ -7,16 +7,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers
-{
+{ 
+    [Authorize(Roles = "Admin")]
     public class ProjectsController : Controller
     {
-        private readonly DoEkoContext _context;
+        private readonly DoEkoContext   _context;
+        private readonly IConfiguration _configuration;
 
-        public ProjectsController(DoEkoContext context)
+        public ProjectsController(DoEkoContext context, IConfiguration configuration)
         {
-            _context = context;    
+            _context = context;
+            _configuration = configuration;
         }
 
         // GET: Projects
@@ -49,6 +55,8 @@ namespace DoEko.Controllers
             {
                 return NotFound();
             }
+
+            project.Attachments = GetAttachments(project.ProjectId);
 
             return View(project);
         }
@@ -282,6 +290,28 @@ namespace DoEko.Controllers
         private bool ProjectExists(int id)
         {
             return _context.Projects.Any(e => e.ProjectId == id);
+        }
+
+        private IList<File> GetAttachments(int id)
+        {
+            AzureStorage account = new AzureStorage(_configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
+
+            CloudBlobContainer Container = account.GetBlobContainer(enuAzureStorageContainerType.Project);
+            var ContainerBlockBlobs = Container.ListBlobs(prefix: id.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+            List<File> FileList = new List<File>();
+
+            foreach (var BlockBlob in ContainerBlockBlobs)
+            {
+                FileList.Add(new File
+                {
+                    Name = BlockBlob.Uri.Segments.Last(),
+                    ChangedAt = BlockBlob.Properties.LastModified.Value.LocalDateTime,
+                    Url = BlockBlob.Uri.ToString()
+                });
+            };
+            return FileList;
+
         }
     }
 }

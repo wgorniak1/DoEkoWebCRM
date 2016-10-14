@@ -110,6 +110,10 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Display(Description = "Opis", Name = "Właściciele", ShortName = "Właściciele")]
         public virtual ICollection<InvestmentOwner> InvestmentOwners { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "Opis", Name = "Wpłaty", ShortName = "Wpłaty")]
+        public ICollection<Payment> Payments { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -9,6 +10,16 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
+    public enum PaymentType
+    {
+        [Display(Name = "Inst. solarna")]
+        Solar,
+        [Display(Name = "Inst. fotowoltaiczna")]
+        Fotovoltaic,
+        [Display(Name = "Pompa ciepła")]
+        HeatPump
+    }
+
     [Table(name:"Payment")]
     public class Payment
     {
@@ -21,10 +32,11 @@ namespace DoEko.Models.DoEko
         /// Amount paid by the customer
         /// </summary>
         [DataType(DataType.Currency)]
+        [Column(TypeName = "money")]
         [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
         [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         [Display(Description = "", Name = "Kwota wpłaty", ShortName = "Kwota")]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -56,6 +68,46 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         public Guid ChangedBy { get; set; }
+        public Boolean RseFotovoltaic { get; set; }
+        public Boolean RseSolar { get; set; }
+        public Boolean RseHeatPump { get; set; }
 
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[NotMapped]
+        //public PaymentType[] Types
+        //{
+        //    get
+        //    {
+        //        int[] types = Array.ConvertAll(TypeAsString.Split(';'), int.Parse);
+
+        //        var enuTypes = new PaymentType[types.Count()];
+
+        //        for (int i = 0; i < types.Count(); i++)
+        //        {
+        //            enuTypes[i] = (PaymentType)types[i];
+        //        }
+        //        return enuTypes;
+        //    }
+        //    set
+        //    {
+        //        var _data = value;
+        //        TypeAsString = String.Join(";", _data.Select(p => p.ToString()).ToArray());
+        //    }
+        //}
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[EditorBrowsable(EditorBrowsableState.Never)]
+        //public string TypeAsString { get; set; }
+
+        public Guid? InvestmentId { get; set; }
+
+        public int ContractId { get; set; }
+        /// <summary>
+        /// When user marks payment as not applicable for this contract
+        /// </summary>
+        public Boolean NotNeeded { get; set; }
     }
 }

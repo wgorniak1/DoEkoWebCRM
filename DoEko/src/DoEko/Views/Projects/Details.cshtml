@@ -1,9 +1,8 @@
 ﻿@model DoEko.Models.DoEko.Project
-
+@using DoEko.ViewModels
 @{
     ViewData["Title"] = "Szczegóły Projektu";
 }
-
 <!-- Navigation -->
 <ol class="breadcrumb">
     <li><a asp-action="Index" asp-controller="Home">Str. Domowa</a></li>
@@ -79,4 +78,126 @@
             @await Html.PartialAsync("ProjectContractsListPartial", Model.Contracts)
         </div>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading wg-panel-heading clearfix" role="tab" id="heading-files">
+            <h4 class="panel-title pull-left wg-file-toggler" style="padding-top:7.5px;"
+                data-toggle="collapse" data-parent="#panel-group" data-target="#files">
+                Załączniki
+            </h4>
+            <div class="btn-group pull-right">
+                <button type="button" 
+                        id="FIToggle"
+                        class="btn btn-primary btn-sm" 
+                        title="Załącz pliki">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+                <button type="button"
+                        id="FIClose"
+                        class="btn btn-danger btn-sm"
+                        title="Załącz pliki" style="display:none">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </div>
+        </div>
+        <div id="files" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-files">
+          <div  class="panel-body">
+              @* @await Html.PartialAsync("ProjectFilesListPartial", Model.)*@
+                <table class="table table-responsive table-striped ">
+                    <caption id="FICaption" hidden>
+                        <input id="FIObjectType" name="FIObjectType" type="hidden" value="@nameof(Model)" />
+                        <input id="FIObjectId" name="FIObjectId" type="hidden" value="@Model.ProjectId" />
+                        <input id="FIreturnUrl" name="FIreturnUrl" type="hidden" value="@Url.Action("Details","Projects", new { Id = Model.ProjectId }, null,null,"files")" />
+                        <input id="FIFile" name="FIFile[]" type="file" multiple class="file-loading">
+                        <div id="FIResultError" style="margin-top:10px;display:none"></div>
+                        <div id="FIResultSuccess" class="alert alert-success fade in" style="margin-top:10px;display:none"></div>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>
+                                <input class="checkbox" type="checkbox" id="AllRowsSelector" name="AllRowsSelector" />
+                            </th>
+                            <th>Nazwa pliku</th>
+                            <th>Data ostatniej zmiany</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       @foreach (var file in Model.Attachments)
+                       {
+                        <tr>
+                            <td><input type="checkbox" class="singlerowselector" name="File[]" value="@file" /></td>  
+                            <td>
+                                <a href="@file.Url" title="@file.Name">
+                                    <span class="glyphicon glyphicon-file"></span>@file.Name
+                                </a>
+                            </td>
+                            <td>@file.ChangedAt</td>
+                            <td>
+                                <a href="#"><span class="glyphicon glyphicon-trash"></span></a>
+                            </td>
+                        </tr>
+                       }
+                    </tbody>
+                </table>
+            </div>
+          
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+
+
+
+<script>
+    
+    $("#FIToggle").click(function () {
+        $("#FIToggle").hide();
+        $("#FIClose").show();
+        $("#FICaption").show();        
+    });
+
+    $("#FIClose").click(function () {
+        $("#FIToggle").show();
+        $("#FIClose").hide();
+        $("#FICaption").hide();
+    });
+
+
+    $("#FIFile").fileinput({
+        language: "pl",
+        uploadUrl: "/files/upload", // server upload action
+        uploadExtraData: function () {
+            return {
+                Type: $("#FIObjectType").val(),
+                Id: $("#FIObjectId").val(),
+                ReturnUrl: $("#FIReturnUrl").val()
+            }
+        },
+        uploadAsync: false,
+        showPreview: true,
+        showClose: true,
+        browseOnZoneClick: true,
+        showBrowse: false,
+        //allowedFileExtensions: ['jpg', 'png', 'gif'],
+        maxFileCount: 5,
+        maxFileSize: 10000,
+        elErrorContainer: '#FIResultError',
+
+        progressClass: "progress-bar progress-bar-success active"
+    //}).on('filebatchpreupload', function (event, data, id, index) {
+    //    $('#FIResultSuccess').html('<h4>Upload Status</h4><ul></ul>').hide();
+    //}).on('fileuploaded', function (event, data, id, index) {
+    //    var fname = data.files[index].name,
+    //        out = '<li>' + 'Uploaded file # ' + (index + 1) + ' - ' +
+    //            fname + ' successfully.' + '</li>';
+    //    $('#FIResultSuccess ul').append(out);
+    //    $('#FIResultSuccess').fadeIn('slow');
+    }).on('filebatchuploadsuccess', function (event, data, previewId, index) {
+        var form = data.form, files = data.files, extra = data.extra,
+            response = data.response, reader = data.reader;
+        window.location.reload();
+    });;
+</script>
+
+}

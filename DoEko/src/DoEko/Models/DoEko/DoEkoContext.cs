@@ -32,7 +32,7 @@ namespace DoEko.Models.DoEko
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            
             //country
             modelBuilder.Entity<Country>().HasAlternateKey(p => p.Key);
             //state
@@ -82,7 +82,7 @@ namespace DoEko.Models.DoEko
             foreach (var entry in newEntries)
             {
                 entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
-                //entry.Property("Createdby").CurrentValue = UserID;
+                //entry.Property("Createdby").CurrentValue = 
             }
 
             //var modified = this.ChangeTracker.Entries<Payment>()
