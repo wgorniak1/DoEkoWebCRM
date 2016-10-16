@@ -1,5 +1,4 @@
 ﻿@model DoEko.Models.DoEko.Project
-
 @{
     ViewData["Title"] = "Edycja Danych Projektu";
 }
@@ -16,48 +15,38 @@
 
 <!--Panels-->
 <div class="panel-group" id="collapse" role="tablist" aria-multiselectable="true">
-    <form asp-action="Edit" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
         <div class="panel panel-default">
-            <div class="panel-heading" role="tab" id="heading-project">
+            <div class="panel-heading wg-panel-heading clearfix" role="tab" id="heading-project">
+                <h4 class="panel-title wg-panel-title pull-left">
+                    Informacje szczegółowe
+                </h4>
                 <div class="btn-group pull-right">
                     @*<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span>*@
                     @*<input type="submit" hidden />*@
                     @*<span class="glyphicon glyphicon glyphicon-ok" aria-hidden="true"></span>
                     <a asp-action="Index" class="glyphicon glyphicon glyphicon-remove">Anuluj</a>*@
                 </div>
-                <h4 class="panel-title">
-                    <a class="wg-link-nounderline" role="button" data-toggle="collapse" data-parent="#collapse" href="#" aria-expanded="true" aria-controls="project">
-                        Informacje szczegółowe
-                    </a>
-                </h4>
             </div>
             <div id="project" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-project">
                 <div class="panel-body">
-                    @await Html.PartialAsync("ProjectEditPartial")
+    <form asp-action="Edit" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
+                    @await Html.PartialAsync("_ProjectEditPartial")
+    </form>
                 </div>
             </div>
         </div>
-    </form>
-    <div class="panel panel-info">
-        <div class="panel-heading" role="tab" id="heading-subprojects">
-            <h4 class="panel-title">
-                <a class="collapsed wg-link-nounderline" role="button" data-toggle="collapse" data-parent="#collapse" href="#" aria-expanded="false" aria-controls="subprojects">
+    <div class="panel panel-default">
+        <div class="panel-heading wg-panel-heading" role="tab" id="heading-subprojects">
+            <h4 class="panel-title wg-panel-title">
                     Podprojekty
-                </a>
             </h4>
-        </div>
-        <div id="subprojects" class="panel-collapse collapse" role="tabpanel" aria-labelledby="header-subprojects">
         </div>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="heading-contracts">
-            <h4 class="panel-title">
-                <a class="collapsed wg-link-nounderline" role="button" data-toggle="collapse" data-parent="#collapse" href="#" aria-expanded="false" aria-controls="contracts">
-                    Umowy
-                </a>
+        <div class="panel-heading wg-panel-heading" role="tab" id="heading-contracts">
+            <h4 class="panel-title wg-panel-title">
+                Umowy
             </h4>
-        </div>
-        <div id="contracts" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-contracts">
         </div>
     </div>
 </div>

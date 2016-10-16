@@ -20,5 +20,17 @@
     "inputFiles": [
       "wwwroot/js/AddressDropDown.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap-fileinput/js/locales/pl.min.js",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap-fileinput/js/locales/pl.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap-fileinput/js/locales/LANG.min.js",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap-fileinput/js/locales/LANG.js"
+    ]
   }
 ]

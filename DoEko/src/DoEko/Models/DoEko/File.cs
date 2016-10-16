@@ -10,6 +10,7 @@ namespace DoEko.Models.DoEko
     {
         [Key]
         public Guid Id { get; set; }
+        [Display(AutoGenerateField = true,AutoGenerateFilter = true,Description = "Nazwa pliku",Name = "Nazwa pliku", Order = 1,Prompt = "Nazwa pliku", ShortName = "Nazwa")]
         public string Name { get; set; }
         public string Url { get; set; }
         public string ParentType { get; set; }

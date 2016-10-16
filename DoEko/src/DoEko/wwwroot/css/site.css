@@ -63,16 +63,6 @@ textarea {
 .wg-link-nounderline:visited{
     text-decoration: none;
 }
-
-.wg-panel-tab{
-  padding: 5px 6px;
-}
-.wg-panel-heading{
-    cursor: pointer;
-    padding-top: 6px;
-    /*font-size: 12px;*/
-}
-
 .wg-tile-blue{
     background-color: #2e8bcc;
 }
@@ -90,4 +80,27 @@ textarea {
     max-height: 150px;
     min-width: 150px;
     max-width: 150px;
+}
+
+/*Collapsible panels settings:*/
+.wg-panel-heading{
+    cursor: pointer;
+    padding: 4px;
+    padding-left: 15px; 
+}
+
+.wg-panel-title{
+    margin: 0;
+    padding: 0;
+    padding-top: 6px;
+    font-size: 16px;
+    color: inherit;
+}
+
+/*class for elements placed inside div.panel-heading[data-toggle="collapse"]
+    js on click event disables event propagation to parent div, 
+    so button clicked on collapsible panel header doesn't toggle the panel
+*/
+wg-panel-header-button{
+
 }

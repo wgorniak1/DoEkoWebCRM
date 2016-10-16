@@ -36,7 +36,7 @@
         msgInvalidFileType: 'Nieznny typ pliku "{name}". Tylko następujące rodzaje plików "{types}", są obsługiwane.',
         msgInvalidFileExtension: 'Złe rozszerzenie dla pliku "{name}". Tylko następujące rozszerzenia plików "{extensions}", są obsługiwane.',
         msgUploadAborted: 'Plik przesyłanie zostało przerwane',
-        msgUploadThreshold: 'Processing...',
+        msgUploadThreshold: 'Przetwarzanie...',
         msgValidationError: 'Błąd walidacji',
         msgLoading: 'Wczytywanie pliku {index} z {files} &hellip;',
         msgProgress: 'Wczytywanie pliku {index} z {files} - {name} - {percent}% zakończone.',
@@ -49,24 +49,24 @@
         msgImageResizeError: 'Nie udało się uzyskać wymiary obrazu, aby zmienić rozmiar.',
         msgImageResizeException: 'Błąd podczas zmiany rozmiaru obrazu.<pre>{errors}</pre>',
         dropZoneTitle: 'Przeciągnij i upuść pliki tu &hellip;',
-        dropZoneClickTitle: '<br>(or click to select {files})',
+        dropZoneClickTitle: '<br>(lub kliknij i wybierz {files})',
         fileActionSettings: {
             removeTitle: 'Usuń plik',
             uploadTitle: 'przesyłanie pliku',
             zoomTitle: 'Pokaż szczegóły',
-            dragTitle: 'Move / Rearrange',
+            dragTitle: 'Przesuń / Zmień',
             indicatorNewTitle: 'Jeszcze nie przesłanych',
             indicatorSuccessTitle: 'Dodane',
             indicatorErrorTitle: 'Prześlij błąd',
-            indicatorLoadingTitle: 'Zamieszczanie ...'
+            indicatorLoadingTitle: 'Ładowanie ...'
         },
         previewZoomButtonTitles: {
-            prev: 'View previous file',
-            next: 'View next file',
-            toggleheader: 'Toggle header',
-            fullscreen: 'Toggle full screen',
-            borderless: 'Toggle borderless mode',
-            close: 'Close detailed preview'
+            prev: 'Przejdź do poprzedniego pliku',
+            next: 'Przejdź do następnego pliku',
+            toggleheader: 'Przełącz nagłówek',
+            fullscreen: 'Przełącz pełny ekran',
+            borderless: 'Przełącz tryb borderless',
+            close: 'Zamknij podgląd szczegółowy'
         }
     };
 })(window.jQuery);

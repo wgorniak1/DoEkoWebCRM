@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/lib/bootstrap-fileinput/css/fileinput.min.css" media="all" type="text/css" />
     </environment>
+    
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -55,12 +56,7 @@
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
 
-        <!-- optionally if you need a theme like font awesome theme you can include
-        it as mentioned below -->
-        <script src="~/lib/bootstrap-fileinput/js/locales/fa.js"></script>
-        <!-- optionally if you need translation for your language then include
-        locale file as mentioned below -->
-        <script src="~/lib/bootstrap-fileinput/js/locales/pl.js"></script>
+        <script src="~/lib/bootstrap-fileinput/js/locales/pl.min.js"></script>
 
     </environment>
     <environment names="Staging,Production">
@@ -79,6 +75,8 @@
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
+
+        <script src="~/lib/bootstrap-fileinput/js/locales/pl.min.js"></script>
     </environment>
 
     @RenderSection("scripts", required: false)

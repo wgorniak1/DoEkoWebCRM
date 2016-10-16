@@ -24,7 +24,7 @@
             <ul>
                 @foreach (var msg in ViewBag.FileUploadMessage)
                 {
-                    <li>@msg.</li>
+                    <li>@msg</li>
                 } 
             </ul>
         </div>
@@ -39,14 +39,13 @@
     }
 }
 
-
 <!--Panels-->
 @if (ViewBag.EditInspector)
 {
 <div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
-        <div class="panel-heading clearfix wg-panel-tab" role="tab" id="heading-details">
-            <h4 class="panel-title pull-left wg-panel-heading">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-details">
+            <h4 class="panel-title pull-left wg-panel-title">
                 Dane Umowy
             </h4>
             <div class="btn-group pull-right">
@@ -54,8 +53,8 @@
                     asp-controller="Contracts"
                     asp-route-Id="@Model.ContractId"
                     asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "details")"
-                    class="btn btn-primary btn-sm">
-                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                    class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-edit"></span>
                 </a>
             </div>
         </div>
@@ -66,8 +65,8 @@
               asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "heading-investments")"
               method="post" novalidate="" class="form-inline">
 
-            <div class="panel-heading clearfix wg-panel-tab" role="tab" id="heading-investments">
-                <h4 class="panel-title pull-left wg-panel-heading">
+            <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-investments">
+                <h4 class="panel-title pull-left wg-panel-title">
                     Inwestycje
                 </h4>
                 <div class="btn-group pull-right">
@@ -84,7 +83,7 @@
                             <option value="" selected>Inspektor</option>
                         </select>
 
-                        <button type="submit" class="btn btn-success btn-sm">
+                        <button type="submit" class="btn btn-success btn-sm wg-panel-header-button">
                             <span class="glyphicon glyphicon-user" title="Przypisz inspektora"></span>
                         </button>
 
@@ -93,7 +92,7 @@
                            asp-route-Id="@Model.ContractId"
                            asp-route-ReturnUrl="@ViewBag.ReturnUrl"
                            asp-route-EditInspector="false"
-                           class="btn btn-danger btn-sm">
+                           class="btn btn-danger btn-sm wg-panel-header-button">
                             <span class="glyphicon glyphicon-remove" title="Anuluj"></span>
                         </a>
                     </div>
@@ -103,51 +102,46 @@
             <div id="investments" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="header-investments">
                 @await Html.PartialAsync("_InvestmentListPartial", Model.Investments)
             </div>
-    </form>
+        </form>
+    </div>
 </div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 <script>
     $(function () {
-        
         $('#AllRowsSelector').change (function () {
             $('.singlerowselector').prop('checked', this.checked);
         });
     });
-
 </script>
 
 }
-</div>
 }
 else
 {
 <div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
-        <div class="panel-heading clearfix wg-panel-tab" role="tab" id="heading-details">
-            <h4 class="panel-title pull-left wg-panel-heading"
-                data-toggle="collapse" data-parent="#panel-group" data-target="#details">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-details" data-toggle="collapse" data-parent="#panel-group" data-target="#details">
+            <h4 class="panel-title pull-left wg-panel-title">
                 Dane Umowy
             </h4>
             <div class="btn-toolbar pull-right">
-
                 <a asp-action="Edit"
                     asp-controller="Contracts"
                     asp-route-Id="@Model.ContractId"
                     asp-route-ReturnUrl="@Url.Action("Details","Contracts", new { Id = Model.ContractId }, null,null,"details")"
                    title="Edytuj podstawowe informacje o umowie" 
-                   class="btn btn-primary btn-sm">
+                   class="btn btn-primary btn-sm wg-panel-header-button">
                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 </a>
 
-                <label for="INFUpload" class="btn btn-primary btn-sm" title="Importuj inwestycje">
+                <label for="INFUpload" class="btn btn-primary btn-sm wg-panel-header-button" title="Importuj inwestycje">
                     <span class="glyphicon glyphicon-save-file"></span>
                 </label>
 
-                <label for="FIFile" class="btn btn-primary btn-sm" title="Importuj wyciąg z iPKO">
+                <label for="FIFile" class="btn btn-primary btn-sm wg-panel-header-button" title="Importuj wyciąg z iPKO">
                     <span class="glyphicon glyphicon-usd"></span>
                 </label>
-
             </div>
         </div>
         <div id="details" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-details">
@@ -157,20 +151,18 @@ else
         </div>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading clearfix wg-panel-tab" role="tab" id="heading-investments">
-
-            <h4 class="panel-title pull-left wg-panel-heading"
-                data-toggle="collapse" data-parent="#panel-group" data-target="#investments">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-investments" data-toggle="collapse" data-parent="#panel-group" data-target="#investments">
+            <h4 class="panel-title pull-left wg-panel-title">
                 Inwestycje
             </h4>
             <div class="btn-toolbar pull-right">
-                        
+
                 <a asp-action="Create"
                     asp-controller="Investments"
                     asp-route-ContractId="@Model.ContractId"
                     asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "heading-investments")"
-                    class="btn btn-primary btn-sm">
-                    <span class="glyphicon glyphicon-plus" title="Dodaj nową Inwestycję" aria-hidden="true"></span>
+                    class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-plus" title="Dodaj nową Inwestycję"></span>
                 </a>
                         
                 <a asp-action="Details"
@@ -178,15 +170,15 @@ else
                     asp-route-Id="@Model.ContractId"
                     asp-route-ReturnUrl="@ViewBag.ReturnUrl"
                     asp-route-EditInspector="true"
-                                                class="btn btn-primary btn-sm">
-
+                    class="btn btn-primary btn-sm wg-panel-header-button">
                     <span class="glyphicon glyphicon-user" title="Przypisz inspektora"></span>
                 </a>
 
                 @if (ViewBag.PaymentsExists)
                 {
                     <a asp-action="AssignInvestment" asp-controller="Payments"
-                       asp-route-ContractId="@Model.ContractId" class="btn btn-primary btn-sm"
+                       asp-route-ContractId="@Model.ContractId" 
+                       class="btn btn-primary btn-sm wg-panel-header-button"
                        title="Przypisz wpłaty do inwestycji">
                         <span class="glyphicon glyphicon-random"></span>
                     </a>
@@ -274,4 +266,4 @@ else
 </script>
 
 }
-        }
+}

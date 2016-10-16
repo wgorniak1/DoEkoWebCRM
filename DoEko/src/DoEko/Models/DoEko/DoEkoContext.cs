@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using DoEko.Models.DoEko;
 
 namespace DoEko.Models.DoEko
 {
@@ -88,5 +89,7 @@ namespace DoEko.Models.DoEko
             //var modified = this.ChangeTracker.Entries<Payment>()
             return base.SaveChanges();
         }
+
+        public DbSet<File> File { get; set; }
     }
 }

@@ -11,34 +11,32 @@
     <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
 </ol>
 <!--Title-->
-<h2><small>Inwestycja</small> @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</h2>
+<h2><small>Inwestycja</small> @Model.Address.SingleLine</h2>
 
 <div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
         <div class="panel-heading wg-panel-heading clearfix" 
              role="tab" 
-             id="heading-details"
+             id="heading-details" 
              data-toggle="collapse"
              data-target="#details"
              data-parent="#panel-group" 
              href="#details" 
              aria-expanded="true" 
              aria-controls="details">
-            <h4 class="panel-title pull-left" style="padding-top: 7.5px;">
+            
+            <h4 class="panel-title wg-panel-title pull-left">
                 Dane podstawowe
-            </h4>
+            </h4>                
 
-            <div class="btn-group pull-right">
-                <a asp-action="Edit"
-                   asp-controller="Investments"
-                   asp-route-Id="@Model.InvestmentId"
-                   asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-details")"
-                   class="btn btn-primary btn-sm">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                </a>
-            </div>
+            <a asp-action="Edit" asp-controller="Investments"
+               asp-route-Id="@Model.InvestmentId"
+               asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-details")"
+               class="btn btn-primary btn-sm pull-right wg-panel-header-button">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            </a>                       
         </div>
-        <div id="details" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-details">
+        <div id="details" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-details">
             <div class="panel-body">
                 @Html.Partial("_InvestmentDetailsPartial", Model)                
             </div>
@@ -55,19 +53,19 @@
              aria-expanded="false" 
              aria-controls="owners">
 
-            <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> 
+            <h4 class="panel-title wg-panel-title pull-left"> 
                 Właściciele
             </h4>
-            <div class="btn-group pull-right">
+
+            @*<div class="btn-group pull-right">*@
                 <a asp-action="Create"
                    asp-controller="InvestmentOwners"
                    asp-route-InvestmentId="@Model.InvestmentId"
                    asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-owners")"
-                   class="btn btn-primary btn-sm">
+                   class="btn btn-primary btn-sm wg-panel-header-button">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </a>
-            </div>
-
+            @*</div>*@
         </div>
         <div id="owners" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-owners">
             <div class="panel-body">
@@ -86,7 +84,7 @@
              aria-expanded="false"
              aria-controls="surveys">
 
-            <h4 class="panel-title pull-left" style="padding-top: 7.5px;">
+            <h4 class="panel-title wg-panel-title pull-left" style="padding-top: 7.5px;">
                 Źródła (Ankiety)
             </h4>
             <div class="btn-group pull-right">
@@ -94,7 +92,7 @@
                    asp-controller="Surveys"
                    asp-route-InvestmentId="@Model.InvestmentId"
                    asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-surveys")"
-                   class="btn btn-primary btn-sm">
+                   class="btn btn-primary btn-sm wg-panel-header-button">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                     Dodaj
                 </a>
