@@ -15,6 +15,8 @@ using DoEko.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using DoEko.Models.DoEko;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace DoEko
 {
@@ -91,6 +93,13 @@ namespace DoEko
             //{
             //    app.UseExceptionHandler("/Home/Error");
             //}
+            app.UseRequestLocalization( 
+                new RequestLocalizationOptions {
+                    DefaultRequestCulture = new RequestCulture("pl-PL","pl-PL"),
+                    SupportedUICultures = new List<CultureInfo> { new CultureInfo("pl-PL")},
+                    SupportedCultures = new List<CultureInfo> { new CultureInfo("pl-PL") }
+                });
+
 
             app.UseStaticFiles();
             app.UseIdentity();
