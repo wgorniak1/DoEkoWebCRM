@@ -133,11 +133,15 @@ namespace DoEko.Models.DoEko.Addresses
         {
             get
             {
-                //if (Commune != null)
-                //{
-                string addressLine = PostalCode + ", ";
-                addressLine += (string.IsNullOrEmpty(Street)) ? Commune.Text + "(" + CommuneType.DisplayName() + ")" : City;
-                //}
+                string addressLine = PostalCode + " ";
+                if (Commune != null)
+                {
+                    addressLine += (string.IsNullOrEmpty(Street)) ? Commune.Text + "(" + CommuneType.DisplayName() + ")" : City;
+                }
+                else
+                {
+                    addressLine += City;
+                }
                 return addressLine;
             }
             private set

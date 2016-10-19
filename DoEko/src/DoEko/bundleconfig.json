@@ -32,5 +32,11 @@
     "inputFiles": [
       "wwwroot/lib/bootstrap-fileinput/js/locales/LANG.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/CustomValidationWithDataAnnotation.min.js",
+    "inputFiles": [
+      "wwwroot/js/CustomValidationWithDataAnnotation.js"
+    ]
   }
 ]

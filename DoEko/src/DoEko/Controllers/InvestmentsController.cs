@@ -235,6 +235,7 @@ namespace DoEko.Controllers
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var investment = await _context.Investments.SingleOrDefaultAsync(m => m.InvestmentId == id);
+
             _context.Investments.Remove(investment);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

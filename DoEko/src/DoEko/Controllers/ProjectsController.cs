@@ -10,6 +10,7 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace DoEko.Controllers
 { 
@@ -305,7 +306,7 @@ namespace DoEko.Controllers
             {
                 FileList.Add(new File
                 {
-                    Name = BlockBlob.Uri.Segments.Last(),
+                    Name = WebUtility.UrlDecode(BlockBlob.Uri.Segments.Last()),
                     ChangedAt = BlockBlob.Properties.LastModified.Value.LocalDateTime,
                     Url = BlockBlob.Uri.ToString()
                 });

@@ -157,4 +157,21 @@
     });;
 </script>
 
+    <script type="text/javascript">
+        $("button[data-bind]").one('click',function () {
+            var filename = $(this).attr("data-bind");
+            $("#DeleteConfirmationFileName").text(filename);
+            $("#FileDeleteFormName").attr('value', filename);
+        })
+
+        $("#DeleteConfirmationSubmit").one('click', function (e) {
+            $("#FileDeleteFormSubmit").click();
+        })
+    </script>
+
+    <script type="text/javascript">
+        function deleteCompleted() {
+            alert("completed");
+        }
+    </script>
 }

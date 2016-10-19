@@ -35,9 +35,13 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
-        [Display(Description = "", Name = "NIP", ShortName = "NIP")]
+        /// 
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
+        [StringLength(13, ErrorMessage = "Proszę wprowadzić {0} w formacie 000-000-00-00", MinimumLength = 13)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:###-###-##-##}")]
+        [Display(Description = "", Name = "NIP", ShortName = "NIP", Prompt ="000-000-00-00")]
         [NIP(ErrorMessage = "Nr NIP jest nieprawidłowy")]
-        [RegularExpression("^[0-9]{3}(-)[0-9]{3}(-)[0-9]{2}(-)[0-9]{2}$",ErrorMessage = "Proszę wprowadzić NIP w formacie 000-000-00-00")]
+        [RegularExpression(pattern: @"^[0-9]{3}(-)[0-9]{3}(-)[0-9]{2}(-)[0-9]{2}$", ErrorMessage = "Proszę wprowadzić {0} w formacie 000-000-00-00")]
         public string TaxId { get; set; }
         /// <summary>
         /// 

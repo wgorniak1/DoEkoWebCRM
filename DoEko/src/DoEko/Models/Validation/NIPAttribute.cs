@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,13 +8,38 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.Validation
 {
-    public class NIPAttribute : ValidationAttribute//, IClientModelValidator
+    public class NIPAttribute : ValidationAttribute, IClientModelValidator
     {
         private string _nip;
 
         public NIPAttribute()
         {
         }
+
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            MergeAttribute(context.Attributes, "data-val", "true");
+            MergeAttribute(context.Attributes, "data-val-nip", GetErrorMessage());
+        }
+
+        private bool MergeAttribute(
+            IDictionary<string, string> attributes,
+            string key,
+            string value)
+            {
+                if (attributes.ContainsKey(key))
+                {
+                    return false;
+                }
+                attributes.Add(key, value);
+                return true;
+            }
+    
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {

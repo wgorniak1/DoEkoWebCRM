@@ -51,7 +51,7 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
+    "Microsoft.WindowsAzure.ConfigurationManager": "3.2.2",
     "System.Spatial": "5.7.0",
     "WindowsAzure.Storage": "7.2.1"
   },

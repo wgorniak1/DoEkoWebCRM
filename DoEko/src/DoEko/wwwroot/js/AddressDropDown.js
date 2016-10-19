@@ -1,10 +1,10 @@
 ﻿$(function () {
-    if ($("#Address_StateId").val() == '') {
+    if ($("#Address_StateId").val() === '') {
         var DistrictDefaultValue = "<option value=''>Wybierz województwo</option>";
         $("#Address_DistrictId").html(DistrictDefaultValue).show;
     }
 
-    if ($("#Address_DistrictId").val() == '') {
+    if ($("#Address_DistrictId").val() === '') {
         var CommuneDefaultValue = "<option value=''>Wybierz powiat</option>";
         $("#Address_CommuneId").html(CommuneDefaultValue).show();
     }
@@ -15,7 +15,7 @@
         var ddlDistricts = $("#Address_DistrictId");
         var ddlCommunes = $("#Address_CommuneId");
 
-        if (selectedItemValue == '') {
+        if (selectedItemValue === '') {
             ddlDistricts.html("<option value=''>Wybierz województwo</option>").show;
         }
         else
@@ -45,7 +45,7 @@
         var selectedStateId = $("#Address_StateId").val();
         var ddlCommune = $("#Address_CommuneId");
 
-        if (selectedItemValue == '') {
+        if (selectedItemValue === '') {
             ddlCommune.html("<option value=''>Wybierz Powiat</option>").show;
         }
         else
@@ -87,7 +87,7 @@
             error: function (xhr, ajaxOptions, thrownError) {
                 alert('Błąd przy zapisywaniu rodzaju gminy!');
             }
-        })
+        });
     });
 
 });

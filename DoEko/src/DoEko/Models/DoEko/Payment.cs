@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
-    public enum PaymentType
+    public enum SurveyType
     {
         [Display(Name = "Inst. solarna")]
         Solar,
@@ -76,17 +76,17 @@ namespace DoEko.Models.DoEko
         ///// 
         ///// </summary>
         //[NotMapped]
-        //public PaymentType[] Types
+        //public SurveyType[] Types
         //{
         //    get
         //    {
         //        int[] types = Array.ConvertAll(TypeAsString.Split(';'), int.Parse);
 
-        //        var enuTypes = new PaymentType[types.Count()];
+        //        var enuTypes = new SurveyType[types.Count()];
 
         //        for (int i = 0; i < types.Count(); i++)
         //        {
-        //            enuTypes[i] = (PaymentType)types[i];
+        //            enuTypes[i] = (SurveyType)types[i];
         //        }
         //        return enuTypes;
         //    }

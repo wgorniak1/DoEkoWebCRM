@@ -84,6 +84,34 @@ namespace DoEko.Controllers
             return Json("OK");
         }
 
+        public JsonResult Delete(enuAzureStorageContainerType Type, int? Id, Guid? Guid,
+                                         string Name, string ReturnUrl = null)
+        {
+            CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            string Key = "Not assigned";
+            if (Id != null)
+            {
+                Key = Id.ToString();
+            }
+            else if (Guid != null)
+            {
+                Key = Guid.ToString();
+            }
+            
+            string fullname = Key + '/' + Name;
+            CloudBlockBlob blob = Container.GetBlockBlobReference(fullname);
+            try
+            {
+                blob.Delete();
+
+                return Json("OK");
+            }
+            catch (Microsoft.WindowsAzure.Storage.StorageException)
+            {
+                return Json("Error");
+            }
+        }
+
         private IList<Models.DoEko.File> Files(enuAzureStorageContainerType Type, string Key)
         {
             CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);

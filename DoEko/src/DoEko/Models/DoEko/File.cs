@@ -20,6 +20,7 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
+        [Display(AutoGenerateField = true, AutoGenerateFilter = true, Description = "Data ostatniej zmiany", Name = "Ostatnia zmiana", Order = 1, ShortName = "Zmieniono")]
         public DateTime ChangedAt { get; set; }
         /// <summary>
         /// 

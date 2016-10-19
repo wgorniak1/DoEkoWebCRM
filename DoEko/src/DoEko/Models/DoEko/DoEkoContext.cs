@@ -54,7 +54,7 @@ namespace DoEko.Models.DoEko
             modelBuilder.Entity<InvestmentOwner>().HasOne(io => io.Investment)
                             .WithMany(i => i.InvestmentOwners)
                             .HasForeignKey(io => io.InvestmentId)
-                            .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+                            .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
 
             // Projekt Parent - Child relation
             modelBuilder.Entity<Project>()
