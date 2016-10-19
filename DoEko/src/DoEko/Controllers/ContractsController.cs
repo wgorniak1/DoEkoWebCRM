@@ -134,7 +134,7 @@ namespace DoEko.Controllers
                 //}
                 //else
                 //{
-                    return RedirectToAction("Edit",new { Id = contract.ContractId, ReturnUrl = ReturnUrl });
+                return RedirectToAction("Details","Projects", new { Id = contract.ProjectId });
                 //}
                 //contract = await _context.Contracts.Include(c => c.Investments).SingleOrDefaultAsync(c => c.ContractId == contract.ContractId);
             }
