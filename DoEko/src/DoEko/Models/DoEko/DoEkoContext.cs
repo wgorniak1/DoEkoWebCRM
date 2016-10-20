@@ -21,7 +21,7 @@ namespace DoEko.Models.DoEko
         public DbSet<InvestmentOwner> InvestmentOwners { get; set; }
         public DbSet<BusinessPartnerPerson> BPPersons { get; set; }
         public DbSet<BusinessPartnerEntity> BPEntities { get; set; }
-        //public DbSet<Survey> Surveys { get; set; }
+        public DbSet<Survey> Surveys { get; set; }
         public DbSet<Address> Addresses { get; set; }
 
         //Address Catalog

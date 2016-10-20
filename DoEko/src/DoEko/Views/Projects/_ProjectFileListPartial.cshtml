@@ -18,58 +18,59 @@
         </div>
     </div>
 </div>
+<div class="table-responsive">
+    <table class="table table-striped table-condensed table-hover">
+        <caption id="FICaption" hidden>
+            <input id="FIObjectType" name="FIObjectType" type="hidden" value="@nameof(Model)" />
+            <input id="FIObjectId"   name="FIObjectId"   type="hidden" value="@Model.ProjectId" />
+            <input id="FIreturnUrl"  name="FIreturnUrl"  type="hidden" value="@Url.Action("Details","Projects", new { Id = Model.ProjectId }, null,null,"files")" />
+            <input id="FIFile"       name="FIFile[]"     type="file"   multiple class="file-loading">
+            <div id="FIResultError" style="margin-top:10px;display:none"></div>
+            <div id="FIResultSuccess" class="alert alert-success fade in" style="margin-top:10px;display:none"></div>
+        </caption>
 
-<table class="table table-responsive table-striped table-condensed table-hover">
-    <caption id="FICaption" hidden>
-        <input id="FIObjectType" name="FIObjectType" type="hidden" value="@nameof(Model)" />
-        <input id="FIObjectId"   name="FIObjectId"   type="hidden" value="@Model.ProjectId" />
-        <input id="FIreturnUrl"  name="FIreturnUrl"  type="hidden" value="@Url.Action("Details","Projects", new { Id = Model.ProjectId }, null,null,"files")" />
-        <input id="FIFile"       name="FIFile[]"     type="file"   multiple class="file-loading">
-        <div id="FIResultError" style="margin-top:10px;display:none"></div>
-        <div id="FIResultSuccess" class="alert alert-success fade in" style="margin-top:10px;display:none"></div>
-    </caption>
-
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Attachments.FirstOrDefault().Name)</th>
-            <th>@Html.DisplayNameFor(model => model.Attachments.FirstOrDefault().ChangedAt)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@if (Model.Attachments.Count > 0)
-{
-    @foreach (var file in Model.Attachments)
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Attachments.FirstOrDefault().Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Attachments.FirstOrDefault().ChangedAt)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @if (Model.Attachments.Count > 0)
     {
-        <tr>
-            <td>
-                <a href="@file.Url" title="@file.Name" class="wg-link-nounderline">
-                    <span class="glyphicon glyphicon-file"></span> @Html.DisplayFor(modelItem => file.Name)
-                </a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => file.ChangedAt)
-            </td>
-            <td>
+        @foreach (var file in Model.Attachments)
+        {
+            <tr>
+                <td>
+                    <a href="@file.Url" title="@file.Name" class="wg-link-nounderline">
+                        <span class="glyphicon glyphicon-file"></span> @Html.DisplayFor(modelItem => file.Name)
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => file.ChangedAt)
+                </td>
+                <td>
                 
-                <button class="btn btn-default btn-sm pull-right"
-                        title="@("Usuń " + file.Name)"
-                        data-bind="@file.Name"
-                        data-toggle="modal" 
-                        data-target="#DeleteConfirmationModal">
-                    <span class="glyphicon glyphicon-trash"></span>
-                </button>
+                    <button class="btn btn-default btn-sm pull-right"
+                            title="@("Usuń " + file.Name)"
+                            data-bind="@file.Name"
+                            data-toggle="modal" 
+                            data-target="#DeleteConfirmationModal">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
                 
-            </td>
-        </tr>
+                </td>
+            </tr>
+        }
     }
-}
-else
-{
-    <tr><td colspan="3">Nie załączono jeszcze żadnych plików</td></tr>
-}
-    </tbody>
-</table>
+    else
+    {
+        <tr><td colspan="3">Nie załączono jeszcze żadnych plików</td></tr>
+    }
+        </tbody>
+    </table>
+</div>
 <form id="FileDeleteForm" 
       class="navbar-form"
       hidden

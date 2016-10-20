@@ -10,15 +10,7 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
-    public enum SurveyType
-    {
-        [Display(Name = "Inst. solarna")]
-        Solar,
-        [Display(Name = "Inst. fotowoltaiczna")]
-        Fotovoltaic,
-        [Display(Name = "Pompa ciepła")]
-        HeatPump
-    }
+    
 
     [Table(name:"Payment")]
     public class Payment

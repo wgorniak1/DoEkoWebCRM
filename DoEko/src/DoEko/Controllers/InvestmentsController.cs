@@ -10,6 +10,7 @@ using DoEko.Models.DoEko.Addresses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using DoEko.ViewModels.InvestmentViewModels;
 
 namespace DoEko.Controllers
 {
@@ -42,6 +43,7 @@ namespace DoEko.Controllers
                 .Include(i=> i.Contract).ThenInclude(c=>c.Project)
                 .Include( i => i.Address).ThenInclude(a=>a.Commune)
                 .Include( i => i.InvestmentOwners).ThenInclude(io=>io.Owner).ThenInclude(o=>o.Address).ThenInclude(a=>a.Commune)
+                .Include( i => i.Surveys)
                 .SingleOrDefaultAsync(m => m.InvestmentId == id);
             if (investment == null)
             {
@@ -63,17 +65,11 @@ namespace DoEko.Controllers
             ViewData["StateId"] = AddressesController.GetStates(_context, 0);
             ViewData["DistrictId"] = AddressesController.GetDistricts(_context, 0, 0);
             ViewData["CommuneId"] = AddressesController.GetCommunes(_context, 0, 0, 0, 0);
-
-            Investment model = new Investment();
-            model.Address = new Models.DoEko.Addresses.Address();
-            model.Address.CountryId = _context.Countries.SingleOrDefault(c => c.Key == "PL").CountryId;
-            if (ContractId.HasValue)
-            {
-                model.ContractId = ContractId.Value;
-                ViewData["ContractId"] = ContractId.Value;
-            }
-
-            return View(model);
+      
+            CreateViewModel ViewModel = ContractId.HasValue ? new CreateViewModel(_context.Contracts.SingleOrDefault(c => c.ContractId == ContractId),
+                                                                _context.Countries.SingleOrDefault(c => c.Key == "PL").CountryId) 
+                                                            : new CreateViewModel(_context.Countries.SingleOrDefault(c => c.Key == "PL").CountryId);
+            return View(ViewModel);
         }
 
         // POST: Investments/Create
@@ -81,32 +77,69 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Investment investment, string ReturnUrl = null)
+        public async Task<IActionResult> Create(CreateViewModel InvestmentVM, string ReturnUrl = null)
         {
-            
-            investment.Address.CommuneType = (CommuneType) Enum.ToObject(typeof(CommuneType), investment.Address.CommuneId % 10);
-            investment.Address.CommuneId /= 10;
+            Investment investment = InvestmentVM.AsBase();
+
             if (ModelState.IsValid)
             {
                 investment.InvestmentId = Guid.NewGuid();
 
                 _context.Add(investment.Address);
                 _context.Add(investment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Create", "InvestmentOwners",new { InvestmentId = investment.InvestmentId, ReturnUrl = ReturnUrl});
-                //if (!string.IsNullOrEmpty(ReturnUrl))
-                //{
-                //    return Redirect(ReturnUrl);
-                //}
-                //else
-                //return RedirectToAction("Index");
-            }
-            ViewData["CountryId"] = AddressesController.GetCountries(_context, investment.Address.CountryId);
-            ViewData["StateId"] = AddressesController.GetStates(_context, investment.Address.StateId);
-            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, investment.Address.StateId, investment.Address.DistrictId);
-            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, investment.Address.StateId, investment.Address.DistrictId, investment.Address.CommuneId, investment.Address.CommuneType);//(CommuneType)Enum.Parse(typeof(CommuneType), (company.Address.CommuneId % 10).ToString()));
 
-            return View(investment);
+                if (InvestmentVM.RseFotovoltaic)
+                {
+                    Survey Survey = new Survey
+                    {
+                        SurveyId = Guid.NewGuid(),
+                        InvestmentId = investment.InvestmentId,
+                        Type = SurveyType.Fotovoltaic,
+                        Status = SurveyStatus.New
+                    };
+                    _context.Add(Survey);
+                }
+
+                if (InvestmentVM.RseHeatPump)
+                {
+                    Survey Survey = new Survey
+                    {
+                        SurveyId = Guid.NewGuid(),
+                        InvestmentId = investment.InvestmentId,
+                        Type = SurveyType.HeatPump,
+                        Status = SurveyStatus.New
+                    };
+                    _context.Add(Survey);
+                }
+
+                if (InvestmentVM.RseSolar)
+                {
+                    Survey Survey = new Survey
+                    {
+                        SurveyId = Guid.NewGuid(),
+                        InvestmentId = investment.InvestmentId,
+                        Type = SurveyType.Solar,
+                        Status = SurveyStatus.New
+                    };
+                    _context.Add(Survey);
+                }
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Create", "InvestmentOwners", new { InvestmentId = investment.InvestmentId, ReturnUrl = ReturnUrl });
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+            ViewData["CountryId"] = AddressesController.GetCountries(_context, InvestmentVM.Address.CountryId);
+            ViewData["StateId"] = AddressesController.GetStates(_context, InvestmentVM.Address.StateId);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, InvestmentVM.Address.StateId, InvestmentVM.Address.DistrictId);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, InvestmentVM.Address.StateId, InvestmentVM.Address.DistrictId, InvestmentVM.Address.CommuneId, InvestmentVM.Address.CommuneType);
+
+            return View(InvestmentVM);
 
         }
 

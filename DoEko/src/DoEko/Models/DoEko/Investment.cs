@@ -100,11 +100,6 @@ namespace DoEko.Models.DoEko
         public Guid? InspectorId { get; set; }
 
         //wlasciciel / inwestor
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //[Display(Description = "Opis", Name = "Ankiety", ShortName = "Ankiety")]
-        //public virtual ICollection<Survey> Surveys { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -115,5 +110,10 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Display(Description = "Opis", Name = "Wpłaty", ShortName = "Wpłaty")]
         public ICollection<Payment> Payments { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "Ankiety", Name = "Ankiety", ShortName = "Ankiety")]
+        public virtual ICollection<Survey> Surveys { get; set; }
     }
 }

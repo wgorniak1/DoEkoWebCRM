@@ -1,26 +1,22 @@
-﻿@*@using DoEko.ViewModels
+﻿@using DoEko.ViewModels
 @using DoEko.Models.DoEko
-@using DoEko.Models.Identity*@
-TBD. Lista ankiet
-@*@model IEnumerable<DoEko.Models.DoEko.>
+@using DoEko.Models.Identity
+
+@model IEnumerable<DoEko.Models.DoEko.Survey>
 <div class="table-responsive">
-    <table class="table table-condensed table-hover">
+    <table class="table table-condensed table-hover table-striped">
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Address)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.InvestmentOwners)
+                    @Html.DisplayNameFor(model => model.Type)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Status)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.InspectionStatus)
+                    @Html.DisplayNameFor(model => model.IsPaid)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.InspectorId)
                 </th>
                 <th></th>
             </tr>
@@ -29,52 +25,42 @@ TBD. Lista ankiet
     @foreach (var item in Model) {
             <tr>
                 <td>
-                    @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
-                </td>
-                <td>
-                    <table>
-                        <tbody>
-                    @foreach (var io in item.InvestmentOwners)
-                    {
-                        BusinessPartnerPerson bp = (BusinessPartnerPerson)io.Owner;
-                        <tr>
-                            <td>
-                        @(bp.LastName + ' ' + bp.FirstName)
-                            </td>
-                            <td>@('(' + bp.Pesel + ')')</td>
-                        </tr>
-                    }
-
-                        </tbody>
-                    </table>
+                    @item.Type.DisplayName()
                 </td>
                 <td>
                     @item.Status.DisplayName()
                 </td>
                 <td>
-                    @item.InspectionStatus.DisplayName()
-                </td>
-                <td>
-                    @{ApplicationUser user = await UserManager.FindByIdAsync(item.InspectorId.ToString());}
-                    @if (user != null)
+                    @if (item.IsPaid)
                     {
-                        @user.UserName
+                        <span class="text-success">Tak</span>
                     }
-                    
+                    else
+                    {
+                        <span class="text-danger">Nie</span>
+                    }
                 </td>
                 <td>
-                    <a asp-action="Edit"    asp-controller="Investments" asp-route-id="@item.InvestmentId">
-                        <span class="glyphicon glyphicon-pencil"></span> 
-                    </a>|
-                    <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId">
-                        <span class="glyphicon glyphicon-eye-open"></span>
-                    </a>|
-                    <a asp-action="Delete"  asp-controller="Investments" asp-route-id="@item.InvestmentId">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </a>
+                    ...
+                </td>
+                <td>
+                    <div class="pull-right">
+                        <a asp-action="Details" asp-controller="Surveys" asp-route-id="@item.InvestmentId"
+                           class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </a>
+                        <a asp-action="Edit"    asp-controller="Surveys" asp-route-id="@item.InvestmentId"
+                            class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-pencil"></span> 
+                        </a>
+                        <a asp-action="Cancel"  asp-controller="Surveys" asp-route-id="@item.InvestmentId"
+                            class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-ban-circle"></span>
+                        </a>
+                    </div>
                 </td>
             </tr>
     }
         </tbody>
     </table>
-</div>*@
+</div>

@@ -1,4 +1,4 @@
-﻿@model DoEko.Models.DoEko.Investment
+﻿@model DoEko.ViewModels.InvestmentViewModels.CreateViewModel
 
 @{
     ViewData["Title"] = "Nowa Inwestycja - Lokalizacja";
@@ -21,7 +21,7 @@
                 <span asp-validation-for="InspectionStatus" class="text-danger" />
             </div>
         </div>*@
-        <input asp-for="ContractId" hidden value="@ViewBag.ContractId" />
+        <input asp-for="ContractId" hidden/>
 
         <div class="form-group">
             <label asp-for="LandRegisterNo" class="col-md-2 control-label"></label>
@@ -37,13 +37,55 @@
                 <span asp-validation-for="PlotNumber" class="text-danger" />
             </div>
         </div>
-        @*<div class="form-group">
-            <label asp-for="Status" class="col-md-2 control-label"></label>
+
+        <div class="form-group">
+            <label asp-for="RseHeatPump" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="Status" class="form-control"></select>
-                <span asp-validation-for="Status" class="text-danger" />
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input asp-for="RseHeatPump" type="radio" autocomplete="off" value="true" />
+                        Tak
+                    </label>
+                    <label class="btn btn-default active">
+                        <input asp-for="RseHeatPump" type="radio" autocomplete="off" checked value="false" />
+                        Nie
+                    </label>
+                </div>
+                <span asp-validation-for="RseHeatPump" class="text-danger" />
             </div>
-        </div>*@
+        </div>
+        <div class="form-group">
+            <label asp-for="RseSolar" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input asp-for="RseSolar" type="radio" autocomplete="off" value="true" />
+                        Tak
+                    </label>
+                    <label class="btn btn-default active">
+                        <input asp-for="RseSolar" type="radio" autocomplete="off" checked value="false" />
+                        Nie
+                    </label>
+                </div>
+                <span asp-validation-for="RseSolar" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RseFotovoltaic" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input asp-for="RseFotovoltaic" type="radio" autocomplete="off" value="true" />
+                        Tak
+                    </label>
+                    <label class="btn btn-default active">
+                        <input asp-for="RseFotovoltaic" type="radio" autocomplete="off" checked value="false" />
+                        Nie
+                    </label>
+                </div>
+                <span asp-validation-for="RseFotovoltaic" class="text-danger" />
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Dalej" class="btn btn-primary" />
@@ -58,7 +100,6 @@
                 }
             </div>
         </div>
-
     </div>
 </form>
 

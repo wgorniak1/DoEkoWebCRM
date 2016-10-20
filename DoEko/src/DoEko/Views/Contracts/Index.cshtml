@@ -18,70 +18,71 @@
 <p>
     <a asp-action="Create" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Utwórz Nową</a>
 </p>
-
-<table class="table table-bordered table-responsive table-hover table-striped">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Project.ShortDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Number)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContractDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ShortDescription)
-            </th>
-            @*<th>
-                @Html.DisplayNameFor(model => model.FullfilmentDate)
-            </th>*@
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            @*<th>
-                @Html.DisplayNameFor(model => model.Type)
-            </th>*@
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Project.ShortDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Number)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContractDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShortDescription)
-            </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.FullfilmentDate)
-            </td>*@
-            <td>
-                @item.Status.DisplayName()
-            </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>*@
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ContractId">
-                    Edytuj
-                </a> |
-                <a asp-action="Details" asp-route-id="@item.ContractId">
-                    Przeglądaj
-                </a> |
-                <a asp-action="Delete" asp-route-id="@item.ContractId" title="Usuń umowę wraz z wszystkich inwestycjami oraz ankietami, adresami">
-                    Usuń
-                </a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Project.ShortDescription)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Number)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ContractDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ShortDescription)
+                </th>
+                @*<th>
+                    @Html.DisplayNameFor(model => model.FullfilmentDate)
+                </th>*@
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                @*<th>
+                    @Html.DisplayNameFor(model => model.Type)
+                </th>*@
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Project.ShortDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContractDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShortDescription)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.FullfilmentDate)
+                </td>*@
+                <td>
+                    @item.Status.DisplayName()
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>*@
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ContractId">
+                        Edytuj
+                    </a> |
+                    <a asp-action="Details" asp-route-id="@item.ContractId">
+                        Przeglądaj
+                    </a> |
+                    <a asp-action="Delete" asp-route-id="@item.ContractId" title="Usuń umowę wraz z wszystkich inwestycjami oraz ankietami, adresami">
+                        Usuń
+                    </a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>

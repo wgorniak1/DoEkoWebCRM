@@ -8,9 +8,10 @@ using DoEko.Models.DoEko;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20161019140408_Survey 1st attempt")]
+    partial class Survey1stattempt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -578,7 +579,7 @@ namespace DoEko.Migrations.DoEko
             modelBuilder.Entity("DoEko.Models.DoEko.Survey", b =>
                 {
                     b.HasOne("DoEko.Models.DoEko.Investment", "Investment")
-                        .WithMany("Surveys")
+                        .WithMany()
                         .HasForeignKey("InvestmentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

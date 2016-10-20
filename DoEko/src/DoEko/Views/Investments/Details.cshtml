@@ -32,7 +32,8 @@
             <a asp-action="Edit" asp-controller="Investments"
                asp-route-Id="@Model.InvestmentId"
                asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-details")"
-               class="btn btn-primary btn-sm pull-right wg-panel-header-button">
+               class="btn btn-primary btn-sm pull-right wg-panel-header-button"
+               title="Edytuj">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             </a>                       
         </div>
@@ -57,7 +58,7 @@
                 Właściciele
             </h4>
 
-            @*<div class="btn-group pull-right">*@
+            <div class="btn-group pull-right">
                 <a asp-action="Create"
                    asp-controller="InvestmentOwners"
                    asp-route-InvestmentId="@Model.InvestmentId"
@@ -65,7 +66,7 @@
                    class="btn btn-primary btn-sm wg-panel-header-button">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </a>
-            @*</div>*@
+            </div>
         </div>
         <div id="owners" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-owners">
             <div class="panel-body">
@@ -87,20 +88,19 @@
             <h4 class="panel-title wg-panel-title pull-left" style="padding-top: 7.5px;">
                 Źródła (Ankiety)
             </h4>
-            <div class="btn-group pull-right">
+            @*<div class="btn-group pull-right">
                 <a asp-action="Create"
                    asp-controller="Surveys"
                    asp-route-InvestmentId="@Model.InvestmentId"
                    asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-surveys")"
                    class="btn btn-primary btn-sm wg-panel-header-button">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    Dodaj
                 </a>
-            </div>
+            </div>*@
         </div>
         <div id="surveys" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-survey">
             <div class="panel-body">
-                @Html.Partial("_SurveyListPartial")
+                @Html.Partial("_SurveyListPartial", Model.Surveys)
             </div>
         </div>
     </div>
