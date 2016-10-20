@@ -5,10 +5,10 @@
 @model IEnumerable<DoEko.Models.DoEko.Investment>
 
 @{
-    ViewData["Title"] = "Moje inspekcje";
+    ViewData["Title"] = "Inspekcje nieprzypisane";
 }
 
-<h2>Moje inspekcje</h2>
+<h2>Inspekcje nieprzypisane</h2>
 <div class="table-responsive">
     <table class="table table-condensed table-hover">
         <thead>
@@ -31,7 +31,7 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr class="InvestmentRow wg-table-row-clickable" data-bind="@item.InvestmentId">
+                <tr>
                     <td>
                         @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
                     </td>
@@ -58,30 +58,53 @@
                     <td>
                         @item.InspectionStatus.DisplayName()
                     </td>
-                    <td id="InvestmentRowCol">
+                    <td id="@("Replace_" + item.InvestmentId)">
                         <div class="pull-right">
-                            @*<a asp-action="Edit" asp-controller="Investments" asp-route-id="@item.InvestmentId"
-                               class="btn btn-default btn-sm">
-                                <span class="glyphicon glyphicon-pencil text-primary"></span>
-                            </a>*@
-                            <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId"
-                               class="btn btn-default btn-sm">
-                                <span class="glyphicon glyphicon-eye-open text-primary"></span>
+                            <button id="Assign" class="btn btn-default btn-sm text-primary" data-bind="@item.InvestmentId" title="Pobierz" type="submit" >
+                                <span class="glyphicon glyphicon-hand-left  text-primary"></span> Pobierz
+                            </button>
+                            <a href="#" id="Assigned" class="btn btn-default btn-sm disabled" title="Pobrano" style="display:none;">
+                                <span class="glyphicon glyphicon-hand-down text-primary"></span> Pobrano
                             </a>
-                        </div>
+                        </div>                        
                     </td>
                 </tr>
-                            }
+            }
         </tbody>
     </table>
 </div>
+<form id="AssignForm"
+      hidden
+      class="navbar-form"
+      asp-action="AssignInspector"
+      asp-controller="Investments"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="replace"
+      data-ajax-failed="AssignFailed"
+      data-ajax-complete="AssignCompleted">
+    <input id="InspectorId" name="InspectorId" form="AssignForm" type="hidden" value="@ViewBag.UserId" />
+    <input id="AssignFormInvestmentId" name="InvestmentId" form="AssignForm" type="hidden" value="" />
+</form>
 
-@section scripts{
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        $(".InvestmentRow").one('click', function () {
-            var alink =
-            $(this).children("td#InvestmentRowCol").children('div').children('a');
-            window.location.href = alink.attr('href');
-        });
+        $("button[data-bind]").one('click', function () {
+            var investmentId = $(this).attr("data-bind");
+            $("#AssignFormInvestmentId").attr('value', investmentId);
+            $("#AssignForm").submit();
+        })
+
+        function AssignFailed() {
+            alert("Wyst¹pi³ problem z przypisaniem inspektora. Proszê odœwie¿yæ stronê i powtórzyæ dzia³anie jeœli to nie pomo¿e, proszê skontaktowac siê z administratorem.");
+        }
+
+        function AssignCompleted(){
+            var investmentId = $("#AssignFormInvestmentId").attr('value');
+            var id = "#Replace_" + investmentId.toString();
+            $(id).children('div').children('#Assign').hide();
+            $(id).children('div').children('#Assigned').show();
+        }
     </script>
 }

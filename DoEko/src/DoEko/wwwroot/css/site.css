@@ -81,7 +81,10 @@ textarea {
     min-width: 150px;
     max-width: 150px;
 }
-
+/*clickable table row*/
+.wg-table-row-clickable{
+    cursor: pointer;
+}
 /*Collapsible panels settings:*/
 .wg-panel-heading{
     cursor: pointer;

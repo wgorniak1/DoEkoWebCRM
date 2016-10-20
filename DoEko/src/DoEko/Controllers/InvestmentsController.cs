@@ -11,6 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using DoEko.ViewModels.InvestmentViewModels;
+using Microsoft.AspNetCore.Identity;
+using DoEko.Models.Identity;
+using DoEko.Models;
 
 namespace DoEko.Controllers
 {
@@ -18,11 +21,13 @@ namespace DoEko.Controllers
     {
         private readonly DoEkoContext _context;
         private readonly AzureStorage _azure;
-        
-        public InvestmentsController(DoEkoContext context, IConfiguration configuration)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public InvestmentsController(DoEkoContext context, IConfiguration configuration, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
+            _userManager = userManager;    
         }
 
         // GET: Investments
@@ -31,6 +36,37 @@ namespace DoEko.Controllers
             return View(await _context.Investments.ToListAsync());
         }
 
+        // GET: My Investments
+        [HttpGet]
+        public async Task<IActionResult> List()
+        {
+            Guid UserId;
+            Guid.TryParse( _userManager.GetUserId(User), out UserId);
+
+            var model = await _context.Investments
+                .Where(i => i.InspectorId == UserId)
+                .Include(i => i.Address)
+                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .ToListAsync();
+
+            return View(model);
+        }
+        // GET: Unassigned Investments
+        [HttpGet]
+        public async Task<IActionResult> ListUnassigned()
+        {
+            //Guid UserId;
+            //Guid.TryParse(_userManager.GetUserId(User), out UserId);
+            ViewData["UserId"] = _userManager.GetUserId(User);
+
+            var model = await _context.Investments.Where(i => i.InspectorId == null)
+                .Include(i=>i.Address)
+                .Include(i=>i.InvestmentOwners).ThenInclude(io=>io.Owner)
+                .ToListAsync();
+
+
+            return View(model);
+        }
         // GET: Investments/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
@@ -220,15 +256,21 @@ namespace DoEko.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignInspector(Guid InspectorId, Guid[] InvestmentId, string ReturnUrl)
         {
+            IDictionary<string,string> result = new Dictionary<string, string>();
+            
             //update
             foreach (Guid item in InvestmentId)
             {
                 Investment singleInvestment = await _context.Investments.SingleOrDefaultAsync(m => m.InvestmentId == item);
                 if (singleInvestment != null)
                 {
-                    singleInvestment.InspectorId = InspectorId;
-
-                    _context.Update(singleInvestment);
+                    if (singleInvestment.InspectorId == null)
+                    {
+                        singleInvestment.InspectorId = InspectorId;
+                        _context.Update(singleInvestment);
+                    }
+                    else
+                        result.Add("InvestmentAlreadyAssigned", singleInvestment.InvestmentId.ToString());
                 }
             }
             //Save changes
@@ -238,11 +280,27 @@ namespace DoEko.Controllers
             }
             catch (DbUpdateException)
             {
-
-                throw;
+                if (Request.IsAjaxRequest())
+                    throw;
+                else
+                    return View();
             }
 
-            return Redirect(ReturnUrl);
+            if (Request.IsAjaxRequest())
+            {
+                if (result.Count != 0)
+                {
+                    return Json("Error");
+                }
+                return Json("ok");
+            }
+            else
+            {
+                if (ReturnUrl != null)
+                    return Redirect(ReturnUrl);
+                else
+                    return RedirectToAction("Index");
+            }
         }
 
         // GET: Investments/Delete/5
