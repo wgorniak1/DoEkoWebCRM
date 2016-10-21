@@ -126,7 +126,7 @@ namespace DoEko.Controllers
 
                 if (InvestmentVM.RseFotovoltaic)
                 {
-                    Survey Survey = new Survey
+                    SurveyEnergy Survey = new SurveyEnergy
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
@@ -138,7 +138,7 @@ namespace DoEko.Controllers
 
                 if (InvestmentVM.RseHeatPump)
                 {
-                    Survey Survey = new Survey
+                    SurveyCentralHeating Survey = new SurveyCentralHeating
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
@@ -150,7 +150,7 @@ namespace DoEko.Controllers
 
                 if (InvestmentVM.RseSolar)
                 {
-                    Survey Survey = new Survey
+                    SurveyHotWater Survey = new SurveyHotWater
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,

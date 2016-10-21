@@ -28,21 +28,67 @@ namespace DoEko.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid Id, string ReturnUrl = null)
         {
-            Survey GenericSurvey = await _context.Surveys
-                .Include(s=>s.Investment).ThenInclude(i=>i.Address)
-                .Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io=>io.Owner)
+
+            SurveyHotWater SurveyHW = await _context.SurveysHW
+                .Include(s => s.Investment).ThenInclude(i => i.Address)
+                .Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
                 .SingleOrDefaultAsync(s => s.SurveyId == Id);
-            switch (GenericSurvey.Type)
+            if (SurveyHW != null)
             {
-                case SurveyType.Solar:
-                    return View("DetailsHW", (SurveyHotWater)GenericSurvey);
-                case SurveyType.Fotovoltaic:
-                    return View("DetailsEN", (SurveyEnergy)GenericSurvey);
-                case SurveyType.HeatPump:
-                    return View("DetailsCH", (SurveyCentralHeating)GenericSurvey);
-                default:
-                    return View(GenericSurvey);
+                return View("DetailsHW", SurveyHW);
             }
+
+            SurveyEnergy SurveyEN = await _context.SurveysEN
+                .Include(s => s.Investment).ThenInclude(i => i.Address)
+                .Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .SingleOrDefaultAsync(s => s.SurveyId == Id);
+            if (SurveyEN != null)
+            {
+                return View("DetailsEN", SurveyEN);
+            }
+
+            SurveyCentralHeating SurveyCH = await _context.SurveysCH
+                .Include(s => s.Investment).ThenInclude(i => i.Address)
+                .Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .SingleOrDefaultAsync(s => s.SurveyId == Id);
+            if (SurveyCH != null)
+            {
+                return View("DetailsCH", SurveyCH);
+            }
+
+            return NotFound();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DetailsCH(SurveyCentralHeating model, string ReturnUrl = null)
+        {
+            _context.SurveysCH.Update(model);
+            await _context.SaveChangesAsync();
+             return RedirectToAction("Details", "Investments", new { Id = model.InvestmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DetailsEN(SurveyEnergy model, string ReturnUrl = null)
+        {
+            _context.SurveysEN.Update(model);
+            await _context.SaveChangesAsync();
+             return RedirectToAction("Details", "Investments", new { Id = model.InvestmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DetailsHW(SurveyHotWater model, string ReturnUrl = null)
+        {
+            _context.SurveysHW.Update(model);
+            await _context.SaveChangesAsync();
+            //if (User.IsInRole("Inspector"))
+            //{
+            //    return RedirectToAction("List");
+            //}
+             return RedirectToAction("Details", "Investments", new { Id = model.InvestmentId });
+        }
+
     }
 }

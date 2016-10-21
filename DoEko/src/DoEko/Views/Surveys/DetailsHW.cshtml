@@ -1,17 +1,36 @@
-@model DoEko.Models.DoEko.SurveyHotWater
+﻿@model DoEko.Models.DoEko.SurveyHotWater
 
 @{
-    ViewData["Title"] = "DetailsHW";
+    ViewData["Title"] = "Solary";
 }
 
-<h2>DetailsHW</h2>
+<h2>Solary / Pompa Ciepła</h2>
 
 <form asp-action="DetailsHW">
     <div class="form-horizontal">
-        <h4>SurveyHotWater</h4>
+        <h4>Ciepła Woda Użytkowa</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="SurveyId" />
+        <input type="hidden" asp-for="SurveyId" />
+        <input type="hidden" asp-for="Status" />
+        <input type="hidden" asp-for="Type" />
+        <input type="hidden" asp-for="InvestmentId" />
+        @*<div class="form-group">
+            <label asp-for="Status" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Status" class="form-control"></select>
+                <span asp-validation-for="Status" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Type" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Type" class="form-control"></select>
+                <span asp-validation-for="Type" class="text-danger" />
+            </div>
+        </div>*@
+
+
         <div class="form-group">
             <label asp-for="BuildingCompletionYear" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -43,21 +62,21 @@
         <div class="form-group">
             <label asp-for="BuildingState" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="BuildingState" class="form-control"></select>
+                <select asp-for="BuildingState" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.BuildingState))"></select>
                 <span asp-validation-for="BuildingState" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="BuildingType" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="BuildingType" class="form-control"></select>
+                <select asp-for="BuildingType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.BuildingType))"></select>
                 <span asp-validation-for="BuildingType" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="BuildingType2" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="BuildingType2" class="form-control"></select>
+                <select asp-for="BuildingType2" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.BuildingType2))"></select>
                 <span asp-validation-for="BuildingType2" class="text-danger" />
             </div>
         </div>
@@ -71,7 +90,7 @@
         <div class="form-group">
             <label asp-for="BusinessActivity" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="BusinessActivity" class="form-control"></select>
+                <select asp-for="BusinessActivity" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.BusinessActivity))"></select>
                 <span asp-validation-for="BusinessActivity" class="text-danger" />
             </div>
         </div>
@@ -92,35 +111,35 @@
         <div class="form-group">
             <label asp-for="CentralHeatingFuel" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="CentralHeatingFuel" class="form-control"></select>
+                <select asp-for="CentralHeatingFuel" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.FuelType))"></select>
                 <span asp-validation-for="CentralHeatingFuel" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="CentralHeatingType" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="CentralHeatingType" class="form-control"></select>
+                <select asp-for="CentralHeatingType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.CentralHeatingType))"></select>
                 <span asp-validation-for="CentralHeatingType" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="HotWaterFuel" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="HotWaterFuel" class="form-control"></select>
+                <select asp-for="HotWaterFuel" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.FuelType))"></select>
                 <span asp-validation-for="HotWaterFuel" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="HotWaterType" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="HotWaterType" class="form-control"></select>
+                <select asp-for="HotWaterType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.HotWaterType))"></select>
                 <span asp-validation-for="HotWaterType" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="InstallationLocalization" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="InstallationLocalization" class="form-control"></select>
+                <select asp-for="InstallationLocalization" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.InstallationLocalization))"></select>
                 <span asp-validation-for="InstallationLocalization" class="text-danger" />
             </div>
         </div>
@@ -132,22 +151,8 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="InvestmentId" class="control-label col-md-2"></label>
-            <div class="col-md-10">
-                <select asp-for="InvestmentId" class="form-control" asp-items="ViewBag.InvestmentId"></select>
-                <span asp-validation-for="InvestmentId" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="IsPaid" />
-                    <label asp-for="IsPaid"></label>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
+        
+        @*<div class="form-group">
             <label asp-for="Status" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <select asp-for="Status" class="form-control"></select>
@@ -160,7 +165,7 @@
                 <select asp-for="Type" class="form-control"></select>
                 <span asp-validation-for="Type" class="text-danger" />
             </div>
-        </div>
+        </div>*@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <div class="checkbox">
@@ -320,7 +325,7 @@
         <div class="form-group">
             <label asp-for="RoofMaterial" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="RoofMaterial" class="form-control"></select>
+                <select asp-for="RoofMaterial" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.RoofMaterial))"></select>
                 <span asp-validation-for="RoofMaterial" class="text-danger" />
             </div>
         </div>
@@ -349,7 +354,7 @@
         <div class="form-group">
             <label asp-for="TargetHotWaterType" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="TargetHotWaterType" class="form-control"></select>
+                <select asp-for="TargetHotWaterType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.TargetHotWaterType))"></select>
                 <span asp-validation-for="TargetHotWaterType" class="text-danger" />
             </div>
         </div>
@@ -371,15 +376,19 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+                <input type="submit" value="Zapisz (w.robocza)" class="btn btn-primary" />
+                @*@if (User.IsInRole("Inspector"))
+                {
+                    <a asp-action="MyList" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Anuluj</a>
+                }
+                else
+                {*@
+                    <a asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Anuluj</a>
+                           </div>
         </div>
     </div>
 </form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
