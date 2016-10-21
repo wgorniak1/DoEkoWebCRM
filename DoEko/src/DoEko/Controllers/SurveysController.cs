@@ -28,12 +28,21 @@ namespace DoEko.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid Id, string ReturnUrl = null)
         {
-            Survey survey = await _context.Surveys
+            Survey GenericSurvey = await _context.Surveys
                 .Include(s=>s.Investment).ThenInclude(i=>i.Address)
                 .Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io=>io.Owner)
                 .SingleOrDefaultAsync(s => s.SurveyId == Id);
-
-            return View(survey);
+            switch (GenericSurvey.Type)
+            {
+                case SurveyType.Solar:
+                    return View("DetailsHW", (SurveyHotWater)GenericSurvey);
+                case SurveyType.Fotovoltaic:
+                    return View("DetailsEN", (SurveyEnergy)GenericSurvey);
+                case SurveyType.HeatPump:
+                    return View("DetailsCH", (SurveyCentralHeating)GenericSurvey);
+                default:
+                    return View(GenericSurvey);
+            }
         }
     }
 }
