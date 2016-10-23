@@ -130,7 +130,7 @@ namespace DoEko.Controllers
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
-                        Type = SurveyType.Fotovoltaic,
+                        Type = SurveyType.Energy,
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
@@ -142,7 +142,7 @@ namespace DoEko.Controllers
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
-                        Type = SurveyType.HeatPump,
+                        Type = SurveyType.CentralHeating,
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
@@ -154,7 +154,7 @@ namespace DoEko.Controllers
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
-                        Type = SurveyType.Solar,
+                        Type = SurveyType.SolarHotWater,
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);

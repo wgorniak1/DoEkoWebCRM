@@ -115,5 +115,7 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Display(Description = "Ankiety", Name = "Ankiety", ShortName = "Ankiety")]
         public virtual ICollection<Survey> Surveys { get; set; }
+
+
     }
 }

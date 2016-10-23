@@ -136,7 +136,7 @@ namespace DoEko.Models.DoEko.Addresses
                 string addressLine = PostalCode + " ";
                 if (Commune != null)
                 {
-                    addressLine += (string.IsNullOrEmpty(Street)) ? Commune.Text + "(" + CommuneType.DisplayName() + ")" : City;
+                    addressLine += (string.IsNullOrEmpty(Street)) ? Commune.FullName : City;
                 }
                 else
                 {

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,7 +75,7 @@ namespace DoEko.Controllers
                                         p.RseHeatPump    == false && 
                                         p.RseSolar       == false ).Any())
                 {
-                    ModelState.AddModelError(string.Empty, $"Proszê wybraæ przynajmniej jedno Ÿród³o, jeœli przypisano inwestycjê");
+                    ModelState.AddModelError(string.Empty, $"ProszÄ™ wybraÄ‡ przynajmniej jedno ÅºrÃ³dÅ‚o, jeÅ›li przypisano inwestycjÄ™");
                 }
                 else
                 {
@@ -153,14 +153,17 @@ namespace DoEko.Controllers
                     var LineFields = CsvLine.Split(';');
                     if (LineFields.Length == 12)
                     {
-                        payment = new Payment { ContractId = ContractId, SourceRow = CsvLine };
-                        if (DateTime.TryParse(LineFields[1].ToString(), out date))
+                        payment = new Payment {
+                            ContractId = ContractId,
+                            SourceRow = CsvLine
+                            };
+                        if (DateTime.TryParse(LineFields[0].ToString(), out date))
                         {
                             payment.PaymentDate = date;
                         }
                         if (DateTime.TryParse(LineFields[1].ToString(), out date))
                         {
-                            payment.PaymentDate = date;
+                            payment.PostingDate = date;
                         }
                         if (decimal.TryParse(LineFields[3].Replace('.',',').ToString(), out amount))
                         {
@@ -185,10 +188,10 @@ namespace DoEko.Controllers
             if (error)
             {
                 TempData["FileUploadResult"]  = false;
-                TempData["FileUploadType"]    = "Import Wp³at";
+                TempData["FileUploadType"]    = "Import WpÅ‚at";
 
                 IList<string> msg = new List<string>();
-                msg.Add("B³¹d podczas przetwarzania pliku wp³at");
+                msg.Add("BÅ‚Ä…d podczas przetwarzania pliku wpÅ‚at");
 
                 TempData["FileUploadError"] = msg;
                 return RedirectToAction("Details", "Contracts", new { Id = ContractId });
@@ -196,8 +199,8 @@ namespace DoEko.Controllers
             else
             {
                 TempData["FileUploadResult"] = true;
-                TempData["FileUploadType"] = "Import Wp³at";
-                TempData["FileUploadSuccess"] = "Pomyœlnie wczytano listê wp³at";
+                TempData["FileUploadType"] = "Import WpÅ‚at";
+                TempData["FileUploadSuccess"] = "PomyÅ›lnie wczytano listÄ™ wpÅ‚at";
 
                 return RedirectToAction("AssignInvestment", new { ContractId = ContractId });
             }

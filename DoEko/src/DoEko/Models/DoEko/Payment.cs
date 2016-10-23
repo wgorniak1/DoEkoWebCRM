@@ -47,6 +47,7 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedAt { get; set; }
         /// <summary>
         /// 
@@ -55,6 +56,7 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime ChangedAt { get; set; }
         /// <summary>
         /// 

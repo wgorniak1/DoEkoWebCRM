@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DoEko.ViewModels;
 
 namespace DoEko.Models.DoEko.Addresses
 {
@@ -70,6 +71,16 @@ namespace DoEko.Models.DoEko.Addresses
         /// </summary>
         [ForeignKey("StateId,DistrictId")]
         public virtual District District { get; set; }
+
+        [NotMapped]
+        public string FullName
+        {
+            get
+            {
+                return Text + '(' + Type.DisplayName() + ')';
+            }
+            private set { }
+        }
         
     }
 }

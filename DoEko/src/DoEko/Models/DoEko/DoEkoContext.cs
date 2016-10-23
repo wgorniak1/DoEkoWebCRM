@@ -26,6 +26,8 @@ namespace DoEko.Models.DoEko
         public DbSet<SurveyCentralHeating> SurveysCH { get; set; }
         public DbSet<SurveyEnergy> SurveysEN { get; set; }
 
+        public DbSet<PriceList> PriceLists { get; set; }
+
         public DbSet<Address> Addresses { get; set; }
 
         //Address Catalog
@@ -74,23 +76,29 @@ namespace DoEko.Models.DoEko
 
             // Inwestycja - kaskadowe usuwanie zabrionione
             //modelBuilder.Entity<Investment>().HasOne(i => i.Address).WithMany().HasForeignKey(a => a.AddressId).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+            //Cennnik, klucz kompozytowy: gmina, okres, typ ankiety
+            modelBuilder.Entity<PriceList>().HasKey(pl => new { pl.StateId, pl.DistrictId, pl.CommuneId, pl.CommuneType, pl.ValidFrom, pl.ValidTo, pl.SurveyType });
+            //Cennik, klucz obcy: gmina
+            modelBuilder.Entity<PriceList>().HasOne(pl => pl.Commune).WithMany().HasForeignKey(c => new { c.StateId, c.DistrictId, c.CommuneId, c.CommuneType }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Payment>().Property(p => p.CreatedAt).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Payment>().Property(p => p.ChangedAt).ValueGeneratedOnAddOrUpdate();
 
         }
 
         public override int SaveChanges()
         {
-            this.ChangeTracker.DetectChanges();
-            //Added
-            var newEntries = this.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added);
+            //this.ChangeTracker.DetectChanges();
+            ////Added
+            //var newEntries = this.ChangeTracker.Entries()
+            //    .Where(e => e.State == EntityState.Added);
 
-            foreach (var entry in newEntries)
-            {
-                entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
-                //entry.Property("Createdby").CurrentValue = 
-            }
+            //foreach (var entry in newEntries)
+            //{
+            //    entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
+            //}
 
-            //var modified = this.ChangeTracker.Entries<Payment>()
+            ////var modified = this.ChangeTracker.Entries<Payment>()
             return base.SaveChanges();
         }
 

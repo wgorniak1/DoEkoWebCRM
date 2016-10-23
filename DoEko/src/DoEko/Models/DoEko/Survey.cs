@@ -15,17 +15,17 @@ namespace DoEko.Models.DoEko
         /// Przeznaczenie: Ciepła woda użytkowa
         /// </summary>
         [Display(Name = "Inst. solarna")]
-        Solar,
+        SolarHotWater,
         /// <summary>
         /// Instalacja fotowoltaiczna
         /// </summary>
         [Display(Name = "Inst. fotowoltaiczna")]
-        Fotovoltaic,
+        Energy,
         /// <summary>
         /// 
         /// </summary>
-        [Display(Name = "Pompa ciepła")]
-        HeatPump
+        [Display(Name = "Pompa Ciepła")]
+        CentralHeating
     }
     public enum SurveyStatus
     {
@@ -38,7 +38,10 @@ namespace DoEko.Models.DoEko
         [Display(Name = "Do poprawy")]
         Rejected,
         [Display(Name = "Zatwierdzona")]
-        Approved
+        Approved,
+        [Display(Name = "Anulowana")]
+        Cancelled
+
     }
 
     public enum SurveyCancelType
