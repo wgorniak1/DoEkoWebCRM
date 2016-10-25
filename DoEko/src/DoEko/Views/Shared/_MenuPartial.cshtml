@@ -34,7 +34,7 @@
             <li><a asp-area="" asp-controller="PriceList" asp-action="Index">Cenniki</a></li>
         </ul>
     }
-    else if (User.IsInRole("Inspector"))
+    else if (User.IsInRole(Roles.Inspector))
     {
         <ul class="nav navbar-nav">
             <li><a asp-area="" asp-controller="Investments" asp-action="List">Moje inspekcje</a></li>
