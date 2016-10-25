@@ -6,16 +6,19 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using DoEko.ViewModels.UserViewModel;
 using DoEko.Models.Identity;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 
 namespace DoEko.Controllers
 {
-    [Authorize(Roles = "Admin")]
-    public class UserController : Controller
+    [Authorize(Roles = Roles.Admin)]
+    public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserController(
+        public UsersController(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager)
         {
@@ -97,7 +100,7 @@ namespace DoEko.Controllers
                         //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
                         //await _signInManager.SignInAsync(user, isPersistent: false);
                         //_logger.LogInformation(3, "User created a new account with password.");
-                        return RedirectToLocal(returnUrl);
+                        return RedirectToAction("Index");
                     }
                 }
                 AddErrors(result);
@@ -112,7 +115,17 @@ namespace DoEko.Controllers
         public async Task<ActionResult> Details(string id, string returnUrl = null)
         {
             //Temporary model for role list
+            IdentityRole userRole;
             var appUser = await _userManager.FindByIdAsync(id);
+            try
+            {
+                var userRoleNames     = await _userManager.GetRolesAsync(appUser);
+                userRole = await _roleManager.FindByNameAsync(userRoleNames.FirstOrDefault());
+            }
+            catch (System.Exception)
+            {
+                userRole = new IdentityRole();
+            }
 
             var UserDetailsVM = new UserDetailsViewModel
             {
@@ -121,11 +134,10 @@ namespace DoEko.Controllers
                 UserID = appUser.Id,
                 UserName = appUser.UserName,
                 Email = appUser.Email,
-                RoleNames = await _userManager.GetRolesAsync(await _userManager.FindByNameAsync(appUser.UserName))
+                RoleId = userRole.Id
             };
-
             //
-            ViewBag.ReturnUrl = returnUrl;
+            ViewData["RoleId"] = new SelectList(_roleManager.Roles.ToList(), "Id", "Name", userRole);
             
             return View(UserDetailsVM);
         }
@@ -140,11 +152,20 @@ namespace DoEko.Controllers
                 var user = await _userManager.FindByIdAsync(model.UserID);
                 user.LastName = model.LastName;
                 user.FirstName = model.FirstName;
-                var result = await _userManager.SetEmailAsync(user, model.Email);
+                //var result = await _userManager.SetEmailAsync(user, model.Email);
+                var result = await _userManager.UpdateAsync(user);
 
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddToRolesAsync(user, model.RoleNames);
+
+                    var userRoleNames = await _userManager.GetRolesAsync(user);
+                    IdentityRole userRole = await _roleManager.FindByNameAsync(userRoleNames.FirstOrDefault());
+                    if (userRole.Id != model.RoleId)
+                    {
+                        var role = _roleManager.Roles.Where(r => r.Id == model.RoleId).First();
+                        result = await _userManager.AddToRoleAsync(user, role.Name);
+                    }
+
                     if (result.Succeeded)
                     {
                         // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
@@ -155,15 +176,41 @@ namespace DoEko.Controllers
                         //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
                         //await _signInManager.SignInAsync(user, isPersistent: false);
                         //_logger.LogInformation(3, "User created a new account with password.");
-                        return RedirectToLocal(returnUrl);
+                        return RedirectToAction("Index");
                     }
                 }
                 AddErrors(result);
             }
+            
+            ViewData["RoleId"] = new SelectList(_roleManager.Roles.ToList(), "Id", "Name", model.RoleId);
 
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
+        // POST: Contracts/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string Id)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(Id);
+                var result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                
+                    return Ok();
+                else
+                    return Json("Error");
+                
+            }
+            catch (Exception)
+            {
+                return Json(new { result = false, responsemessage = "B³¹d" });
+            }
+        }
+
 
 
         #region Helpers

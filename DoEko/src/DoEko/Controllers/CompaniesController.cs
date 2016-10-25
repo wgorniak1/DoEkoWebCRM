@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Addresses;
 using DoEko.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using DoEko.Models.Identity;
 
 namespace DoEko.Controllers
 {
+    [Authorize(Roles = Roles.Admin)]
     public class CompaniesController : Controller
     {
         private readonly DoEkoContext _context;

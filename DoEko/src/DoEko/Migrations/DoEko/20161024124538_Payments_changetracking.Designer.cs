@@ -8,9 +8,10 @@ using DoEko.Models.DoEko;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20161024124538_Payments_changetracking")]
+    partial class Payments_changetracking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -337,13 +338,15 @@ namespace DoEko.Migrations.DoEko
                     b.Property<decimal>("Amount")
                         .HasColumnType("money");
 
-                    b.Property<DateTime>("ChangedAt");
+                    b.Property<DateTime>("ChangedAt")
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<Guid>("ChangedBy");
 
                     b.Property<int>("ContractId");
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<Guid>("CreatedBy");
 

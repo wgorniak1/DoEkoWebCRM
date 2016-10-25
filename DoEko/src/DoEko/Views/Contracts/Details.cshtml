@@ -16,27 +16,45 @@
 <h2><small>Umowa nr </small>@Html.DisplayFor(model => model.Number)</h2>
 @if (ViewBag.FileUploadFinished)
 {
-    if (!ViewBag.FileUploadResult)
+    if (ViewBag.FileUploadResult == 8)
     {
         <div class="alert alert-danger alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <strong>@ViewBag.FileUploadType</strong>
+            <strong>@ViewBag.FileUploadType</strong><br />
+            <span>Błędy</span>
             <ul>
-                @foreach (var msg in ViewBag.FileUploadMessage)
+                @foreach (var msg in ViewBag.FileUploadErrorMessage)
                 {
                     <li>@msg</li>
                 } 
             </ul>
         </div>
     }
-    else
+    else if (ViewBag.FileUploadResult == 4)
+    {
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>@ViewBag.FileUploadType</strong><br />
+            <span>@(ViewBag.FileUploadSuccessMessage)</span><br />
+            <span>Błędy</span>
+            <ul>
+                @foreach (var msg in ViewBag.FileUploadErrorMessage)
+                {
+                    <li>@msg</li>
+                }
+            </ul>
+            
+        </div>
+    }
+    else if (ViewBag.FileUploadResult == 0)
     {
         <div class="alert alert-success alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <strong>@ViewBag.FileUploadType</strong><br/>
-            @(ViewBag.FileUploadMessage).
+            <strong>@ViewBag.FileUploadType</strong><br />
+            @(ViewBag.FileUploadSuccessMessage)
         </div>
     }
+
 }
 
 <!--Panels-->
@@ -211,7 +229,9 @@ else
       asp-action="UploadDataFromFile"
       asp-controller="Investments"
       method="post"
-      enctype="multipart/form-data" hidden>
+      enctype="multipart/form-data" 
+      accept-charset="UTF-8"
+      hidden>
     
     <input id="INFUpload" name="INFFiles[]"
            type="file" hidden class="hidden"

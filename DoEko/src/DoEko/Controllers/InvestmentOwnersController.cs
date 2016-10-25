@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using DoEko.ViewModels.InvestmentOwnerViewModels;
 using DoEko.Models.DoEko.Addresses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers
 {
+    [Authorize()]
     public class InvestmentOwnersController : Controller
     {
         private readonly DoEkoContext _context;

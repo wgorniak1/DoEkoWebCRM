@@ -9,9 +9,11 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using DoEko.Models.DoEko;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers
 {
+    [Authorize()]
     public class FilesController : Controller
     { 
         public FilesController(IConfiguration Configuration)

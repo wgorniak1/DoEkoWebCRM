@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DoEko.Controllers
 {
+    [Authorize()]
     public class SurveysController : Controller
     {
         private readonly DoEkoContext _context;

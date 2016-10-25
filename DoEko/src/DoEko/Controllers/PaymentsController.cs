@@ -10,18 +10,23 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using DoEko.Models.Identity;
 
 namespace DoEko.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = Roles.Admin)]
     public class PaymentsController : Controller
     {
         private readonly DoEkoContext _context;
         private readonly AzureStorage _azure;
 
-        public PaymentsController(DoEkoContext context, IConfiguration configuration)
+        public PaymentsController(DoEkoContext context, IConfiguration configuration
+            , UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _context.CurrentUserId = User != null ? userManager.GetUserId(User) : "Not Set";
+
             _azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
         }
 
@@ -124,6 +129,9 @@ namespace DoEko.Controllers
         public async Task<IActionResult> UploadPaymentFile(FormCollection Form, int ContractId)
         {
             bool error = false;
+            int index;
+            IList<string> msg = new List<string>();
+
 
             var file = Request.Form.Files.SingleOrDefault(f => f.FileName.ToLower().Contains(".csv"));
             if (file == null)
@@ -146,10 +154,12 @@ namespace DoEko.Controllers
             Payment payment;
             DateTime date;
             Decimal amount;
+            index = 0;
             try
             {
                 foreach (string CsvLine in CsvTable)
                 {
+                    index += 1;
                     var LineFields = CsvLine.Split(';');
                     if (LineFields.Length == 12)
                     {
@@ -179,26 +189,23 @@ namespace DoEko.Controllers
                 }
 
             }
-            catch (Exception)
+            catch (Exception exc)
             {
                 error = true;
-
+                msg.Add("Błąd podczas przetwarzania w wierszu " + index.ToString());
+                msg.Add(exc.Message);
             }
 
             if (error)
             {
-                TempData["FileUploadResult"]  = false;
+                TempData["FileUploadResult"]  = 8;
                 TempData["FileUploadType"]    = "Import Wpłat";
-
-                IList<string> msg = new List<string>();
-                msg.Add("Błąd podczas przetwarzania pliku wpłat");
-
                 TempData["FileUploadError"] = msg;
                 return RedirectToAction("Details", "Contracts", new { Id = ContractId });
             }
             else
             {
-                TempData["FileUploadResult"] = true;
+                TempData["FileUploadResult"] = 0;
                 TempData["FileUploadType"] = "Import Wpłat";
                 TempData["FileUploadSuccess"] = "Pomyślnie wczytano listę wpłat";
 

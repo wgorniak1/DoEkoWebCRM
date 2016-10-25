@@ -8,9 +8,10 @@ using DoEko.Models.DoEko;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20161023101711_test23")]
+    partial class test23
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -337,13 +338,15 @@ namespace DoEko.Migrations.DoEko
                     b.Property<decimal>("Amount")
                         .HasColumnType("money");
 
-                    b.Property<DateTime>("ChangedAt");
+                    b.Property<DateTime>("ChangedAt")
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<Guid>("ChangedBy");
 
                     b.Property<int>("ContractId");
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<Guid>("CreatedBy");
 
@@ -496,9 +499,11 @@ namespace DoEko.Migrations.DoEko
                     b.Property<Guid>("PaymentId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("ChangedAt");
+                    b.Property<DateTime>("ChangedAt")
+                        .ValueGeneratedOnAddOrUpdate();
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<bool>("checkme");
 
@@ -514,9 +519,11 @@ namespace DoEko.Migrations.DoEko
                     b.Property<int>("PaymentId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("ChangedAt");
+                    b.Property<DateTime>("ChangedAt")
+                        .ValueGeneratedOnAddOrUpdate();
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<bool>("checkme");
 

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using DoEko.Models.DoEko;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
@@ -11,6 +13,9 @@ namespace DoEko.Models.DoEko
         public DoEkoContext(DbContextOptions<DoEkoContext> options)
             : base(options)
         { }
+
+        public DbSet<test> tests { get; set; }
+        public DbSet<test1> tests1 { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<ControlParameter> Settings { get; set; }
         public DbSet<Company> Companies { get; set; }
@@ -35,6 +40,7 @@ namespace DoEko.Models.DoEko
         public DbSet<State> States { get; set; }
         public DbSet<District> Districts { get; set; }
         public DbSet<Commune> Communes { get; set; }
+        public DbSet<File> File { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -81,27 +87,142 @@ namespace DoEko.Models.DoEko
             //Cennik, klucz obcy: gmina
             modelBuilder.Entity<PriceList>().HasOne(pl => pl.Commune).WithMany().HasForeignKey(c => new { c.StateId, c.DistrictId, c.CommuneId, c.CommuneType }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Payment>().Property(p => p.CreatedAt).ValueGeneratedOnAdd();
-            modelBuilder.Entity<Payment>().Property(p => p.ChangedAt).ValueGeneratedOnAddOrUpdate();
+            //modelBuilder.Entity<Payment>().Property(p => p.CreatedAt).ValueGeneratedOnAdd();
+            //modelBuilder.Entity<Payment>().Property(p => p.ChangedAt).ValueGeneratedOnAddOrUpdate();
 
         }
 
         public override int SaveChanges()
         {
-            //this.ChangeTracker.DetectChanges();
-            ////Added
-            //var newEntries = this.ChangeTracker.Entries()
-            //    .Where(e => e.State == EntityState.Added);
+            this.ChangeTracker.DetectChanges();
+            var newEntries = this.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added);
 
-            //foreach (var entry in newEntries)
-            //{
-            //    entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
-            //}
+            foreach (var entry in newEntries)
+            {
+                try
+                {
+                    entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
+                }
+                catch (Exception)
+                {
+                }
 
-            ////var modified = this.ChangeTracker.Entries<Payment>()
+                try
+                {
+                    entry.Property("ChangedAt").CurrentValue = DateTime.UtcNow;
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    entry.Property("CreatedBy").CurrentValue = this.CurrentUserId;
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    entry.Property("ChangedBy").CurrentValue = this.CurrentUserId;
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            var modifiedEntries = this.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Modified);
+            foreach (var entry in modifiedEntries)
+            {
+                try
+                {
+                    entry.Property("ChangedAt").CurrentValue = DateTime.UtcNow;
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    entry.Property("ChangedBy").CurrentValue = this.CurrentUserId;
+                }
+                catch (Exception)
+                {
+                }
+            }
             return base.SaveChanges();
         }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            this.ChangeTracker.DetectChanges();
+            var newEntries = this.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added);
 
-        public DbSet<File> File { get; set; }
+            foreach (var entry in newEntries)
+            {
+                try
+                {
+                    entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    entry.Property("ChangedAt").CurrentValue = DateTime.UtcNow;
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    entry.Property("CreatedBy").CurrentValue = this.CurrentUserId;
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    entry.Property("ChangedBy").CurrentValue = this.CurrentUserId;
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            var modifiedEntries = this.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Modified);
+            foreach (var entry in modifiedEntries)
+            {
+                try
+                {
+                    entry.Property("ChangedAt").CurrentValue = DateTime.UtcNow;
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    entry.Property("ChangedBy").CurrentValue = this.CurrentUserId;
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public string CurrentUserId { get; set; }
+
+        
+
     }
 }

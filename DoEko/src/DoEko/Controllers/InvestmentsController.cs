@@ -14,9 +14,12 @@ using DoEko.ViewModels.InvestmentViewModels;
 using Microsoft.AspNetCore.Identity;
 using DoEko.Models.Identity;
 using DoEko.Models;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers
 {
+    [Authorize()]
     public class InvestmentsController : Controller
     {
         private readonly DoEkoContext _context;
@@ -304,6 +307,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Investments/Delete/5
+        [Authorize(Roles = Roles.Admin + "," + Roles.User)]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -323,6 +327,7 @@ namespace DoEko.Controllers
         // POST: Investments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin + "," + Roles.User)]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var investment = await _context.Investments.SingleOrDefaultAsync(m => m.InvestmentId == id);
@@ -334,175 +339,183 @@ namespace DoEko.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadDataFromFile(FormCollection Form, int ContractId)
+        [Authorize(Roles = Roles.Admin)]
+        public IActionResult UploadDataFromFile(FormCollection Form, int ContractId)
         {
-            bool error = false;
             IList<string> errMessage = new List<string>();
+            int success = 0;
 
             var file = Request.Form.Files.SingleOrDefault(f => f.FileName.ToLower().Contains(".csv"));
             if (file == null)
             {
-                //return Red;
+                errMessage.Add("B³¹d odczytu pliku");
+                TempData["FileUploadResult"] = 8;
+                TempData["FileUploadType"] = "Import Inwestycji";
+                TempData["FileUploadError"] = errMessage;
+                return RedirectToAction("Details", "Contracts", new { Id = ContractId });
             }
 
-            _azure.UploadAsync(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
-
-            StreamReader sr = new StreamReader(file.OpenReadStream());
-            string CsvRecord;
-
-            //IList<string> CsvTable = new List<String>();
+            //_azure.UploadAsync(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
 
             //
+            StreamReader sr = new StreamReader(file.OpenReadStream());
+            
+            //
+            string CsvRecord;
             Address InvAddress;
             Investment Investment;
-            BusinessPartnerPerson OwnerPerson;
             Address OwnerAddress;
+            BusinessPartnerPerson OwnerPerson;
             InvestmentOwner InvOwner;
             //
             int ctryPoland = _context.Countries.Single(c => c.Key == "PL").CountryId;
             int i = 0;
             //
-            try
+            while ((CsvRecord = sr.ReadLine()) != null)
             {
-                while ((CsvRecord = sr.ReadLine()) != null)
+                if (errMessage.Count > 5)
                 {
-                    i = i + 1;
-                    if (i<3)
-                    {
-                        continue;
-                    }
-                    //CsvTable.Add(CsvRecord.Replace("\"", ""));
-                    var LineFields = CsvRecord.Split(';');
-                    if (LineFields.Length == 29)
+                    break;
+                }
+                i += 1;
+                if (i<3) continue;
+                    
+                var LineFields = CsvRecord.Split(';');
+                if (LineFields.Length < 29)
+                {
+                    errMessage.Add("B³¹d struktury danych w wierszu " + i.ToString());
+                    continue;
+                }
+                for (int k = 0; k < LineFields.Length; k++)
+                {
+                    LineFields[k] = LineFields[k].TrimStart().TrimEnd().Trim();
+                }
+
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    try
                     {
                         InvAddress = new Address();
 
-                        foreach (var field in LineFields)
-                        {
-                            field.Trim(' ');
-                        }
-
                         InvAddress.CountryId = ctryPoland;
-                        InvAddress.StateId = _context.States.Single(s => s.Key == LineFields[16].ToUpper()).StateId;
-                        InvAddress.DistrictId = _context.Districts.Single(s => s.StateId == InvAddress.StateId && s.Text.ToUpper() == LineFields[17].ToUpper()).DistrictId;
-                        InvAddress.CommuneType = (CommuneType)int.Parse(LineFields[19]);//(Models.DoEko.Addresses.CommuneType)Enum.Parse(typeof(Models.DoEko.Addresses.CommuneType), LineFields[19].ToString().ToUpper()),
+                        InvAddress.StateId = _context.States.Single(s => s.Key == LineFields[17].ToUpper()).StateId;
+                        InvAddress.DistrictId = _context.Districts.Single(s => s.StateId == InvAddress.StateId && s.Text.ToUpper() == LineFields[18].ToUpper()).DistrictId;
+                        InvAddress.CommuneType = (CommuneType)int.Parse(LineFields[20]);//(Models.DoEko.Addresses.CommuneType)Enum.Parse(typeof(Models.DoEko.Addresses.CommuneType), LineFields[19].ToString().ToUpper()),
                         InvAddress.CommuneId = _context.Communes.Single(s => s.StateId == InvAddress.StateId &&
                                                                                 s.DistrictId == InvAddress.DistrictId &&
                                                                                 s.Type == InvAddress.CommuneType &&
-                                                                                s.Text.ToUpper() == LineFields[18].ToUpper()).CommuneId;
-                        InvAddress.PostalCode = LineFields[20].ToUpper().Substring(0, LineFields[20].Length > 5 ? 5 : LineFields[20].Length);
-                        InvAddress.City = LineFields[21].Substring(0, LineFields[21].Length>50 ? 50: LineFields[21].Length);
-                        InvAddress.Street = LineFields[22].Substring(0, LineFields[22].Length > 50 ? 50 : LineFields[22].Length);
-                        InvAddress.BuildingNo = LineFields[23].ToUpper().Substring(0, LineFields[23].Length > 10 ? 10 : LineFields[23].Length); ;
-                        InvAddress.ApartmentNo = LineFields[24].ToUpper().Substring(0, LineFields[24].Length > 11 ? 11 : LineFields[24].Length); ;
+                                                                                s.Text.ToUpper() == LineFields[19].ToUpper()).CommuneId;
+                        InvAddress.PostalCode = LineFields[21].ToUpper().Substring(0, LineFields[21].Length > 6 ? 6 : LineFields[21].Length);
+                        InvAddress.City = LineFields[22].Substring(0, LineFields[22].Length > 50 ? 50 : LineFields[22].Length);
+                        InvAddress.Street = LineFields[23].Substring(0, LineFields[23].Length > 50 ? 50 : LineFields[23].Length);
+                        InvAddress.BuildingNo = LineFields[24].ToUpper().Substring(0, LineFields[24].Length > 10 ? 10 : LineFields[24].Length); ;
+                        InvAddress.ApartmentNo = LineFields[25].ToUpper().Substring(0, LineFields[25].Length > 11 ? 11 : LineFields[25].Length); ;
 
                         Investment = new Investment();
                         Investment.InvestmentId = Guid.NewGuid();
                         Investment.Address = InvAddress;
                         Investment.ContractId = ContractId;
-                        Investment.PlotNumber = LineFields[25].ToUpper();
-                        Investment.LandRegisterNo = LineFields[26].ToUpper();
+                        Investment.PlotNumber = LineFields[26].ToUpper();
+                        Investment.LandRegisterNo = LineFields[27].ToUpper();
                         Investment.InspectionStatus = InspectionStatus.NotExists;
                         Investment.Status = InvestmentStatus.Initial;
-                        
+
                         OwnerAddress = new Address();
 
                         OwnerAddress.CountryId = ctryPoland;
-                        OwnerAddress.StateId = _context.States.Single(s => s.Key == LineFields[5].ToUpper()).StateId;
-                        OwnerAddress.DistrictId = _context.Districts.Single(s => s.StateId == OwnerAddress.StateId && s.Text.ToUpper() == LineFields[6].ToString().ToUpper()).DistrictId;
-                        OwnerAddress.CommuneType = (Models.DoEko.Addresses.CommuneType)int.Parse(LineFields[8]);
-                        OwnerAddress.CommuneId = _context.Communes.Single(s => s.StateId == OwnerAddress.StateId     &&
-                                                                               s.DistrictId == OwnerAddress.DistrictId &&
-                                                                               s.Type == OwnerAddress.CommuneType      &&
-                                                                               s.Text.ToUpper() == LineFields[7].ToUpper()).CommuneId;
+                        OwnerAddress.StateId = _context.States.Single(s => s.Key == LineFields[6].ToUpper()).StateId;
+                        OwnerAddress.DistrictId = _context.Districts.Single(s => s.StateId == OwnerAddress.StateId && s.Text.ToUpper() == LineFields[7].ToString().ToUpper()).DistrictId;
+                        OwnerAddress.CommuneType = (Models.DoEko.Addresses.CommuneType)int.Parse(LineFields[9]);
+                        OwnerAddress.CommuneId = _context.Communes.Single(s => s.StateId == OwnerAddress.StateId &&
+                                                                                s.DistrictId == OwnerAddress.DistrictId &&
+                                                                                s.Type == OwnerAddress.CommuneType &&
+                                                                                s.Text.ToUpper() == LineFields[8].ToUpper()).CommuneId;
 
-
-                        OwnerAddress.PostalCode = LineFields[9].ToUpper().Substring(0, LineFields[9].Length > 5 ? 5 : LineFields[9].Length);
-                        OwnerAddress.City = LineFields[10].Substring(0, LineFields[10].Length > 50 ? 50 : LineFields[10].Length);
-                        OwnerAddress.Street = LineFields[11].Substring(0, LineFields[21].Length > 50 ? 50 : LineFields[11].Length); ;
-                        OwnerAddress.BuildingNo = LineFields[12].ToUpper().Substring(0, LineFields[12].Length > 10 ? 10 : LineFields[12].Length); ;
-                        OwnerAddress.ApartmentNo = LineFields[13].ToUpper().Substring(0, LineFields[13].Length > 10 ? 10 : LineFields[13].Length);
+                        OwnerAddress.PostalCode = LineFields[10].ToUpper().Substring(0, LineFields[10].Length > 6 ? 6 : LineFields[10].Length);
+                        OwnerAddress.City = LineFields[11].Substring(0, LineFields[11].Length > 50 ? 50 : LineFields[11].Length);
+                        OwnerAddress.Street = LineFields[12].Substring(0, LineFields[12].Length > 50 ? 50 : LineFields[12].Length);
+                        OwnerAddress.BuildingNo = LineFields[13].ToUpper().Substring(0, LineFields[13].Length > 10 ? 10 : LineFields[13].Length);
+                        OwnerAddress.ApartmentNo = LineFields[14].ToUpper().Substring(0, LineFields[14].Length > 10 ? 10 : LineFields[14].Length);
 
                         OwnerPerson = new BusinessPartnerPerson();
 
                         OwnerPerson.BusinessPartnerId = Guid.NewGuid();
                         OwnerPerson.Address = OwnerAddress;
-                        OwnerPerson.FirstName = LineFields[14].Substring(0, LineFields[14].Length > 30 ? 30 : LineFields[14].Length);
-                        OwnerPerson.LastName = LineFields[15].Substring(0, LineFields[15].Length > 30 ? 30 : LineFields[15].Length);
-                        OwnerPerson.PhoneNumber = LineFields[27].Substring(0, LineFields[27].Length > 16 ? 16 : LineFields[27].Length);
+                        OwnerPerson.FirstName = LineFields[15].Substring(0, LineFields[15].Length > 30 ? 30 : LineFields[15].Length);
+                        OwnerPerson.LastName = LineFields[16].Substring(0, LineFields[16].Length > 30 ? 30 : LineFields[16].Length);
+                        OwnerPerson.PhoneNumber = LineFields[28].Substring(0, LineFields[28].Length > 16 ? 16 : LineFields[28].Length);
                         OwnerPerson.Email = "Nie ustawiony";
                         InvOwner = new InvestmentOwner();
                         InvOwner.InvestmentId = Investment.InvestmentId;
                         InvOwner.OwnerId = OwnerPerson.BusinessPartnerId;
 
                         _context.Add(InvAddress);
-                        int x = await _context.SaveChangesAsync();
                         _context.Add(Investment);
-                        x = await _context.SaveChangesAsync();
                         _context.Add(OwnerAddress);
-                        x = await _context.SaveChangesAsync();
                         _context.Add(OwnerPerson);
-                        x = await _context.SaveChangesAsync();
                         _context.Add(InvOwner);
-                        x = await _context.SaveChangesAsync();
 
+                        if (LineFields[5].Contains("TAK"))
+                        {
+                            SurveyEnergy srvEN = new SurveyEnergy { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.Energy };
+                            _context.Add(srvEN);
+                        }
+                        if (LineFields[4].Contains("TAK"))
+                        {
+                            SurveyHotWater srvHW = new SurveyHotWater { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.SolarHotWater };
+                            _context.Add(srvHW);
+                        }
+                        if (LineFields[3].Contains("TAK"))
+                        {
+                            SurveyCentralHeating srvCH = new SurveyCentralHeating { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.CentralHeating };
+                            _context.Add(srvCH);
+                        }
 
-                    };
+                        int x = _context.SaveChanges();
+
+                        transaction.Commit();
+                        transaction.Dispose();
+                        success += 1;
+                    }
+                    catch (Exception exc)
+                    {
+                        transaction.Rollback();
+
+                        errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
+                    }
                 }
             }
-            catch (ArgumentOutOfRangeException)
-            {
-                error = true;
-                errMessage.Add("B³¹d w linii" + i.ToString());
-            }
-            catch (NullReferenceException)
-            {
-                error = true;
-                errMessage.Add("B³¹d w linii" + i.ToString());
-            }
-            catch (ArgumentNullException)
-            {
-
-                error = true;
-                errMessage.Add("B³¹d w linii " + i.ToString());
-            }
-            catch (InvalidOperationException)
-            {
-                error = true;
-                errMessage.Add("B³¹d w linii " + i.ToString());
-            }
-            catch (OutOfMemoryException)
-            {
-                error = true;
-                errMessage.Add("B³¹d w linii " + i.ToString());
-            }
-            catch (FormatException)
-            {
-                error = true;
-                errMessage.Add("B³¹d w linii " + i.ToString());
-            }
+            //catch (ArgumentOutOfRangeException)
+            //catch (NullReferenceException)
+            //catch (ArgumentNullException)
+            //catch (InvalidOperationException)
+            //catch (OutOfMemoryException)
+            //catch (FormatException)
 
             sr.Close();
 
-            if (error)
+            if (errMessage.Count != 0)
             {
-                TempData["FileUploadResult"] = false;
                 TempData["FileUploadType"]  = "Import Inwestycji";
+                TempData["FileUploadResult"] = 8;
                 TempData["FileUploadError"] = errMessage;
-                return RedirectToAction("Details", "Contracts", new { Id = ContractId });
+                if (success != 0)
+                {
+                    TempData["FileUploadResult"] = 4;
+                    TempData["FileUploadSuccess"] = "Pomyœlnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
+                }
             }
             else
             {
-                TempData["FileUploadResult"]  = true;
                 TempData["FileUploadType"]  = "Import Inwestycji";
-
-                TempData["FileUploadSuccess"] = "Pomyœlnie wczytano listê inwestycji" ;
-
-                return RedirectToAction("Details", "Contracts", new { Id = ContractId });
+                TempData["FileUploadResult"]  = 0;
+                TempData["FileUploadSuccess"] = "Pomyœlnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
             }
+
+            return RedirectToAction("Details", "Contracts", new { Id = ContractId });
         }
     
-    private bool InvestmentExists(Guid id)
+        private bool InvestmentExists(Guid id)
         {
             return _context.Investments.Any(e => e.InvestmentId == id);
         }

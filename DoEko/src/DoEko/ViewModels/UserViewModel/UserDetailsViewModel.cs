@@ -21,7 +21,7 @@ namespace DoEko.ViewModels.UserViewModel
         public string LastName { get; set; }
 
         [Required]
-        [StringLength(30, ErrorMessage = "{0} musi mieć przynajmniej {2} i maksymalnie {1} znaków.", MinimumLength = 8)]
+        [StringLength(30, ErrorMessage = "{0} musi mieć przynajmniej {2} i maksymalnie {1} znaków.", MinimumLength = 5)]
         [Display(Name = "Nazwa użytkownika")]
         public string UserName { get; set; }
 
@@ -31,19 +31,23 @@ namespace DoEko.ViewModels.UserViewModel
         [Display(Name = "Adres e-mail")]
         public string Email { get; set; }
 
-        [Required]
-        [StringLength(16, ErrorMessage = "{0} musi mieć przynajmniej {2} i maksymalnie {1} znaków", MinimumLength = 8)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Hasło")]
-        public string Password { get; set; }
+        //[Required]
+        //[StringLength(16, ErrorMessage = "{0} musi mieć przynajmniej {2} i maksymalnie {1} znaków", MinimumLength = 8)]
+        //[DataType(DataType.Password)]
+        //[Display(Name = "Hasło")]
+        //public string Password { get; set; }
 
-        [DataType(DataType.Password)]
-        [Display(Name = "Powtórz hasło")]
-        [Compare(nameof(Password), ErrorMessage = "{0} nie jest identyczne z Hasło.")]
-        public string ConfirmPassword { get; set; }
+        //[DataType(DataType.Password)]
+        //[Display(Name = "Powtórz hasło")]
+        //[Compare(nameof(Password), ErrorMessage = "{0} nie jest identyczne z Hasło.")]
+        //public string ConfirmPassword { get; set; }
+
+        //[Required]
+        //[Display(Name = "Przypisany do roli")]
+        //public IList<string> RoleNames { get; set; }
 
         [Required]
         [Display(Name = "Przypisany do roli")]
-        public IList<string> RoleNames { get; set; }
+        public string RoleId { get; set; }
     }
 }

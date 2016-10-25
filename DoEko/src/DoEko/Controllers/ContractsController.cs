@@ -9,9 +9,11 @@ using DoEko.Models.DoEko;
 using Microsoft.AspNetCore.Identity;
 using DoEko.Models.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers
 {
+    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
     public class ContractsController : Controller
     {
         private readonly DoEkoContext _context;
@@ -52,19 +54,11 @@ namespace DoEko.Controllers
             }
             if (TempData.ContainsKey("FileUploadResult"))
             {
-                if ((bool)TempData["FileUploadResult"] == true)
-                {
-                    ViewData["FileUploadResult"]  = true;
-                    ViewData["FileUploadMessage"] = TempData["FileUploadSuccess"];
-                }
-                else
-                {
-                    ViewData["FileUploadResult"]  = false;
-                    ViewData["FileUploadMessage"] = TempData["FileUploadError"];
-                }
-
-                ViewData["FileUploadFinished"]    = true;
                 ViewData["FileUploadType"]    = TempData["FileUploadType"];
+                ViewData["FileUploadResult"]  = TempData["FileUploadResult"];
+                ViewData["FileUploadSuccessMessage"] = TempData["FileUploadSuccess"];
+                ViewData["FileUploadErrorMessage"] = TempData["FileUploadError"];
+                ViewData["FileUploadFinished"] = true;                
             } 
             else
             {

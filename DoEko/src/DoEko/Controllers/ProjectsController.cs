@@ -11,10 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
+using DoEko.Models.Identity;
 
 namespace DoEko.Controllers
-{ 
-    [Authorize(Roles = "Admin")]
+{
+    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
     public class ProjectsController : Controller
     {
         private readonly DoEkoContext   _context;
@@ -63,7 +64,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Projects/Create
-
+        [Authorize(Roles = Roles.Admin)]
         public IActionResult Create(int? ParentId, string ReturnUrl = null)
         {
             if (ParentId.HasValue)
@@ -98,6 +99,7 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Create(
             [Bind("CompanyId,Description,EndDate,ParentProjectId,RealEnd,RealStart,ShortDescription,StartDate,UEFundsLevel")] Project project, string ReturnUrl = null)
         {
@@ -126,6 +128,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int? id, string ReturnUrl = null)
         {
             if (id == null)
@@ -154,6 +157,7 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int id, Project project, string ReturnUrl = null)
         {
             if (id != project.ProjectId)
@@ -194,6 +198,7 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Unlink(int? id, string ReturnUrl = null)
         {
 
@@ -224,6 +229,7 @@ namespace DoEko.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Unlink")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> UnlinkConfirmed(int id, string ReturnUrl = null)
         {
 
@@ -261,6 +267,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Projects/Delete/5
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -280,6 +287,7 @@ namespace DoEko.Controllers
         // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var project = await _context.Projects.SingleOrDefaultAsync(m => m.ProjectId == id);

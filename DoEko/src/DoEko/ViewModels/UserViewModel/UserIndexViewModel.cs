@@ -17,13 +17,13 @@ namespace DoEko.ViewModels.UserViewModel
     {
         public List<UserItemViewModel> users { get; private set; }
 
-        public SelectList RoleList(string selectedRoleId)
+        public SelectList RoleList(string selectedRoleId = null)
         {
             IdentityRole selectedRole = new IdentityRole();
 
             if (!string.IsNullOrEmpty(selectedRoleId))
             {
-                selectedRole = _roleManager.Roles.Where(r => r.Id == selectedRoleId).First();
+                selectedRole = _roleManager.Roles.Where(r => r.Id == selectedRoleId).FirstOrDefault();
 
             }
 

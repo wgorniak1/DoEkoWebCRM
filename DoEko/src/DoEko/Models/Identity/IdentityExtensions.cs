@@ -34,7 +34,9 @@ namespace DoEko.Models.Identity
                     {
                         UserName = "Admin",
                         Email = "WebCRM.Admin@doeko.pl",
-                        EmailConfirmed = true
+                        EmailConfirmed = true,
+                        FirstName = "Uzupełnić",
+                        LastName = "Uzupełnić"
                     };
                     var AccountCreateResult = await userManager.CreateAsync(admin, "sKs@q8u1");
 
