@@ -69,15 +69,15 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(19,MinimumLength = 19,ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
-        [RegularExpression("^[0-9]{6}(_)[0-9]{1}(.)[0-9]{4}(.)[0-9]{3}(/)[0-9]{1}$", ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
+        //[StringLength(19,MinimumLength = 19,ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
+        //[RegularExpression("^[0-9]{6}(_)[0-9]{1}(.)[0-9]{4}(.)[0-9]{3}(/)[0-9]{1}$", ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
         [Display(Description = "Opis", Name = "Nr Działki", ShortName = "Nr Działki")]
         public string PlotNumber { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(15, MinimumLength = 15, ErrorMessage ="Proszę podać numer w formacie AA1A/12345678/1")]
-        [RegularExpression("^[A-Z]{2}[0-9]{1}[A-Z]{1}(/)[0-9]{8}(/)[0-9]{1}$", ErrorMessage = "Proszę podać numer w formacie AA1A/12345678/1")]
+        //[StringLength(15, MinimumLength = 15, ErrorMessage ="Proszę podać numer w formacie AA1A/12345678/1")]
+        //[RegularExpression("^[A-Z]{2}[0-9]{1}[A-Z]{1}(/)[0-9]{8}(/)[0-9]{1}$", ErrorMessage = "Proszę podać numer w formacie AA1A/12345678/1")]
         [Display(Description = "Opis", Name = "Nr Ks.Wieczystej", ShortName = "Nr Ks.Wieczystej")]
         public string LandRegisterNo { get; set; }
         /// <summary>

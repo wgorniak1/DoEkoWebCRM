@@ -450,28 +450,36 @@ namespace DoEko.Controllers
                         InvOwner.OwnerId = OwnerPerson.BusinessPartnerId;
 
                         _context.Add(InvAddress);
+                        int x = _context.SaveChanges();
                         _context.Add(Investment);
+                        x = _context.SaveChanges();
                         _context.Add(OwnerAddress);
+                        x = _context.SaveChanges();
                         _context.Add(OwnerPerson);
+                        x = _context.SaveChanges();
                         _context.Add(InvOwner);
+                        x = _context.SaveChanges();
 
                         if (LineFields[5].Contains("TAK"))
                         {
                             SurveyEnergy srvEN = new SurveyEnergy { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.Energy };
                             _context.Add(srvEN);
+                            x = _context.SaveChanges();
                         }
                         if (LineFields[4].Contains("TAK"))
                         {
                             SurveyHotWater srvHW = new SurveyHotWater { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.SolarHotWater };
                             _context.Add(srvHW);
+                            x = _context.SaveChanges();
                         }
                         if (LineFields[3].Contains("TAK"))
                         {
                             SurveyCentralHeating srvCH = new SurveyCentralHeating { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.CentralHeating };
                             _context.Add(srvCH);
+                            x = _context.SaveChanges();
                         }
 
-                        int x = _context.SaveChanges();
+                        //int x = _context.SaveChanges();
 
                         transaction.Commit();
                         transaction.Dispose();
