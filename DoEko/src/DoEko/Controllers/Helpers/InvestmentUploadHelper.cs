@@ -402,7 +402,8 @@ namespace DoEko.Controllers.Helpers
                 //PHONE
                 cellNumber = InvestmentUploadRecord.OwnerPhone;
                 cellValue = _record[(int)cellNumber];
-                if (cellValue.GetNumbers().Length != 9)
+                int len = cellValue.GetNumbers().Length;
+                if (len > 0 && len != 9)
                 {
                     throw new InvestmentUploadException(cellNumber.DisplayName(), cellValue);
                 }
