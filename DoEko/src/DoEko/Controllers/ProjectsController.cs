@@ -35,6 +35,23 @@ namespace DoEko.Controllers
                 ViewData["StatusMessage"] = StatusMessage.Value;
             }
 
+            if (TempData.ContainsKey("ProjectDeleteError"))
+            {
+                ViewData["ProjectDeleteFinished"] = true;
+                ViewData["ProjectDeleteResult"]   = false;
+                ViewData["ProjectDeleteMessage"]  = TempData["ProjectDeleteError"];
+            }
+            else if (TempData.ContainsKey("ProjectDeleteSuccess"))
+            {
+                ViewData["ProjectDeleteFinished"] = true;
+                ViewData["ProjectDeleteResult"]   = true;
+                ViewData["ProjectDeleteMessage"]  = TempData["ProjectDeleteSuccess"];
+            }
+            else
+            {
+                ViewData["ProjectDeleteFinished"] = false;
+            }
+
             var doEkoContext = _context.Projects.Include(p => p.ParentProject);
             return View(await doEkoContext.ToListAsync());
         }
@@ -290,10 +307,52 @@ namespace DoEko.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var project = await _context.Projects.SingleOrDefaultAsync(m => m.ProjectId == id);
+            List<BusinessPartner> owners = new List<BusinessPartner>();
+
+            var project = await _context.Projects
+                .Include(p => p.Contracts)
+                    .ThenInclude(c=>c.Investments)
+                        .ThenInclude(i=>i.Address)                
+                .Include(p => p.Contracts)
+                    .ThenInclude(c => c.Investments)
+                        .ThenInclude(i => i.InvestmentOwners)
+                            .ThenInclude(io=>io.Owner)
+                .SingleOrDefaultAsync(m => m.ProjectId == id);
+
+            foreach (var contract in project.Contracts)
+            {
+                foreach (var inv in contract.Investments)
+                {
+                    foreach (var io in inv.InvestmentOwners)
+                    { owners.Add(io.Owner); }
+
+                    _context.InvestmentOwners.RemoveRange(inv.InvestmentOwners);
+                    _context.Addresses.Remove(inv.Address);
+                }
+
+                _context.Investments.RemoveRange(contract.Investments);
+
+                _context.Payments.RemoveRange(_context.Payments.Where(p => p.ContractId == contract.ContractId).ToList());
+            }
+
+            _context.BusinessPartners.RemoveRange(owners);
+
             _context.Projects.Remove(project);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception exc)
+            {
+                //IList<string> errMessage = new List<string>();
+                TempData["ProjectDeleteError"] = "Wyst¹pi³ b³¹d podczas usuwania projektu: " + exc.Message;
+                return RedirectToAction("Index");
+            }
+            TempData["ProjectDeleteSuccess"] = "Projekt " + project.ShortDescription + " zosta³ trwale usuniêty.";
             return RedirectToAction("Index");
+
         }
 
         private bool ProjectExists(int id)
