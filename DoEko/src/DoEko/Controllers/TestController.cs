@@ -8,6 +8,8 @@ using DoEko.Models.DoEko;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DoEko.Models.Identity;
+using DoEko.Models.DoEko.Addresses;
+using DoEko.Controllers.Helpers;
 
 namespace DoEko.Controllers
 {
@@ -104,6 +106,60 @@ namespace DoEko.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult csvTest()
+        {
+            string line = "1; 98,40 z³ ; 80,00 z³ ;Kocio³ na Pellet;;;Lubelskie;Janowski;Chrzanów (Gmina W.);37-500; Tuczempy ;Mickiewicza;44;;Ryszard;Trelka;Podlaskie;Bia³ostocki;Choroszcz (Gmina M-W);37-500;Tuczempy;Mickiewicza;3A;1;266;30621;661 111 760;;;";
+
+            InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context);
+            uploadhelper.ContractId = _context.Contracts.First().ContractId;
+
+            try
+            {   
+                //set line to parse
+                uploadhelper.Record = line;
+
+
+                Address InvestmentAddress = uploadhelper.ParseInvestmentAddress();
+                Investment Investment = uploadhelper.ParseInvestment();
+                Investment.Address = InvestmentAddress;
+
+                Address OwnerAddress = uploadhelper.ParseOwnerAddress();
+                BusinessPartnerPerson Owner = (BusinessPartnerPerson) uploadhelper.ParseInvestmentOwner();
+
+                if (OwnerAddress.SingleLine == InvestmentAddress.SingleLine)
+                {
+                    Owner.Address = InvestmentAddress;
+                    OwnerAddress = null;
+                }
+                else
+                {
+                    Owner.Address = OwnerAddress;
+                }
+
+                InvestmentOwner InvestmentOwner = new InvestmentOwner
+                {
+                    Investment = Investment,
+                    InvestmentId = Investment.InvestmentId,
+                    Owner = Owner,
+                    OwnerId = Owner.BusinessPartnerId
+                };
+
+                ICollection<Survey> Surveys = uploadhelper.ParseSurveys();
+                foreach (var Survey in Surveys)
+                {
+                    Survey.Investment = Investment;
+                    Survey.InvestmentId = Investment.InvestmentId;
+                };
+                
+            }
+            catch (Exception exc)
+            {
+                return Json(exc.Message);
+            }
+
+            return Json("ok");
         }
     }
 }

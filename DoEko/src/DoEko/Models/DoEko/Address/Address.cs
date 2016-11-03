@@ -1,4 +1,4 @@
-﻿using DoEko.ViewModels;
+﻿using DoEko.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

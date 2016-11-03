@@ -40,6 +40,9 @@ namespace DoEko.Models.DoEko
     [Table(nameof(SurveyHotWater))]
     public class SurveyHotWater : Survey
     {
+        public SurveyRSETypeHotWater RSEType { get; set; }
+
+
         //Moc głównego źródła ciepła dla c.w.u. ("moc pieca") [kW]
         public Double Current { get; set; }
         //Czy istnieje pomieszczenie techniczne(kotłownia)

@@ -16,6 +16,9 @@ using DoEko.Models.Identity;
 using DoEko.Models;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
+using System.Collections.ObjectModel;
+using DoEko.Controllers.Helpers;
 
 namespace DoEko.Controllers
 {
@@ -157,7 +160,7 @@ namespace DoEko.Controllers
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
-                        Type = SurveyType.SolarHotWater,
+                        Type = SurveyType.HotWater,
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
@@ -359,127 +362,86 @@ namespace DoEko.Controllers
 
             //
             StreamReader sr = new StreamReader(file.OpenReadStream());
-            
+
             //
-            string CsvRecord;
-            Address InvAddress;
+            InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context);
+            uploadhelper.ContractId = ContractId;
+            //
+            ICollection<Survey> Surveys;
+            Address InvestmentAddress;
+            BusinessPartnerPerson Owner;
+            InvestmentOwner InvestmentOwner;
             Investment Investment;
             Address OwnerAddress;
-            BusinessPartnerPerson OwnerPerson;
-            InvestmentOwner InvOwner;
-            //
-            int ctryPoland = _context.Countries.Single(c => c.Key == "PL").CountryId;
+            string CsvRecord;
             int i = 0;
+
             //
             while ((CsvRecord = sr.ReadLine()) != null)
             {
-                if (errMessage.Count > 5)
-                {
-                    break;
-                }
+                if (errMessage.Count > 5) break;
+
                 i += 1;
-                if (i<3) continue;
-                    
-                var LineFields = CsvRecord.Split(';');
-                if (LineFields.Length < 29)
+                if (!(i>1))
                 {
-                    errMessage.Add("B³¹d struktury danych w wierszu " + i.ToString());
                     continue;
                 }
-                for (int k = 0; k < LineFields.Length; k++)
-                {
-                    LineFields[k] = LineFields[k].TrimStart().TrimEnd().Trim();
-                }
-
                 using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
-                        InvAddress = new Address();
+                        //set line to parse
+                        uploadhelper.Record = CsvRecord;
 
-                        InvAddress.CountryId = ctryPoland;
-                        InvAddress.StateId = _context.States.Single(s => s.Key == LineFields[17].ToUpper()).StateId;
-                        InvAddress.DistrictId = _context.Districts.Single(s => s.StateId == InvAddress.StateId && s.Text.ToUpper() == LineFields[18].ToUpper()).DistrictId;
-                        InvAddress.CommuneType = (CommuneType)int.Parse(LineFields[20]);//(Models.DoEko.Addresses.CommuneType)Enum.Parse(typeof(Models.DoEko.Addresses.CommuneType), LineFields[19].ToString().ToUpper()),
-                        InvAddress.CommuneId = _context.Communes.Single(s => s.StateId == InvAddress.StateId &&
-                                                                                s.DistrictId == InvAddress.DistrictId &&
-                                                                                s.Type == InvAddress.CommuneType &&
-                                                                                s.Text.ToUpper() == LineFields[19].ToUpper()).CommuneId;
-                        InvAddress.PostalCode = LineFields[21].ToUpper().Substring(0, LineFields[21].Length > 6 ? 6 : LineFields[21].Length);
-                        InvAddress.City = LineFields[22].Substring(0, LineFields[22].Length > 50 ? 50 : LineFields[22].Length);
-                        InvAddress.Street = LineFields[23].Substring(0, LineFields[23].Length > 50 ? 50 : LineFields[23].Length);
-                        InvAddress.BuildingNo = LineFields[24].ToUpper().Substring(0, LineFields[24].Length > 10 ? 10 : LineFields[24].Length); ;
-                        InvAddress.ApartmentNo = LineFields[25].ToUpper().Substring(0, LineFields[25].Length > 11 ? 11 : LineFields[25].Length); ;
+                        InvestmentAddress = uploadhelper.ParseInvestmentAddress();
+                        Investment = uploadhelper.ParseInvestment();
+                        Investment.Address = InvestmentAddress;
 
-                        Investment = new Investment();
-                        Investment.InvestmentId = Guid.NewGuid();
-                        Investment.Address = InvAddress;
-                        Investment.ContractId = ContractId;
-                        Investment.PlotNumber = LineFields[26].ToUpper();
-                        Investment.LandRegisterNo = LineFields[27].ToUpper();
-                        Investment.InspectionStatus = InspectionStatus.NotExists;
-                        Investment.Status = InvestmentStatus.Initial;
+                        OwnerAddress = uploadhelper.ParseOwnerAddress();
+                        Owner = (BusinessPartnerPerson)uploadhelper.ParseInvestmentOwner();
 
-                        OwnerAddress = new Address();
-
-                        OwnerAddress.CountryId = ctryPoland;
-                        OwnerAddress.StateId = _context.States.Single(s => s.Key == LineFields[6].ToUpper()).StateId;
-                        OwnerAddress.DistrictId = _context.Districts.Single(s => s.StateId == OwnerAddress.StateId && s.Text.ToUpper() == LineFields[7].ToString().ToUpper()).DistrictId;
-                        OwnerAddress.CommuneType = (Models.DoEko.Addresses.CommuneType)int.Parse(LineFields[9]);
-                        OwnerAddress.CommuneId = _context.Communes.Single(s => s.StateId == OwnerAddress.StateId &&
-                                                                                s.DistrictId == OwnerAddress.DistrictId &&
-                                                                                s.Type == OwnerAddress.CommuneType &&
-                                                                                s.Text.ToUpper() == LineFields[8].ToUpper()).CommuneId;
-
-                        OwnerAddress.PostalCode = LineFields[10].ToUpper().Substring(0, LineFields[10].Length > 6 ? 6 : LineFields[10].Length);
-                        OwnerAddress.City = LineFields[11].Substring(0, LineFields[11].Length > 50 ? 50 : LineFields[11].Length);
-                        OwnerAddress.Street = LineFields[12].Substring(0, LineFields[12].Length > 50 ? 50 : LineFields[12].Length);
-                        OwnerAddress.BuildingNo = LineFields[13].ToUpper().Substring(0, LineFields[13].Length > 10 ? 10 : LineFields[13].Length);
-                        OwnerAddress.ApartmentNo = LineFields[14].ToUpper().Substring(0, LineFields[14].Length > 10 ? 10 : LineFields[14].Length);
-
-                        OwnerPerson = new BusinessPartnerPerson();
-
-                        OwnerPerson.BusinessPartnerId = Guid.NewGuid();
-                        OwnerPerson.Address = OwnerAddress;
-                        OwnerPerson.FirstName = LineFields[15].Substring(0, LineFields[15].Length > 30 ? 30 : LineFields[15].Length);
-                        OwnerPerson.LastName = LineFields[16].Substring(0, LineFields[16].Length > 30 ? 30 : LineFields[16].Length);
-                        OwnerPerson.PhoneNumber = LineFields[28].Substring(0, LineFields[28].Length > 16 ? 16 : LineFields[28].Length);
-                        OwnerPerson.Email = "Nie ustawiony";
-                        InvOwner = new InvestmentOwner();
-                        InvOwner.InvestmentId = Investment.InvestmentId;
-                        InvOwner.OwnerId = OwnerPerson.BusinessPartnerId;
-
-                        _context.Add(InvAddress);
-                        int x = _context.SaveChanges();
-                        _context.Add(Investment);
-                        x = _context.SaveChanges();
-                        _context.Add(OwnerAddress);
-                        x = _context.SaveChanges();
-                        _context.Add(OwnerPerson);
-                        x = _context.SaveChanges();
-                        _context.Add(InvOwner);
-                        x = _context.SaveChanges();
-
-                        if (LineFields[5].Contains("TAK"))
+                        if (OwnerAddress.SingleLine == InvestmentAddress.SingleLine)
                         {
-                            SurveyEnergy srvEN = new SurveyEnergy { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.Energy };
-                            _context.Add(srvEN);
-                            x = _context.SaveChanges();
+                            Owner.Address = InvestmentAddress;
+                            OwnerAddress = null;
                         }
-                        if (LineFields[4].Contains("TAK"))
+                        else
                         {
-                            SurveyHotWater srvHW = new SurveyHotWater { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.SolarHotWater };
-                            _context.Add(srvHW);
-                            x = _context.SaveChanges();
-                        }
-                        if (LineFields[3].Contains("TAK"))
-                        {
-                            SurveyCentralHeating srvCH = new SurveyCentralHeating { SurveyId = Guid.NewGuid(), InvestmentId = Investment.InvestmentId, Type = SurveyType.CentralHeating };
-                            _context.Add(srvCH);
-                            x = _context.SaveChanges();
+                            Owner.Address = OwnerAddress;
                         }
 
+                        InvestmentOwner = new InvestmentOwner
+                        {
+                            Investment = Investment,
+                            InvestmentId = Investment.InvestmentId,
+                            Owner = Owner,
+                            OwnerId = Owner.BusinessPartnerId
+                        };
+
+                        Surveys = uploadhelper.ParseSurveys();
+                        foreach (var Survey in Surveys)
+                        {
+                            Survey.Investment = Investment;
+                            Survey.InvestmentId = Investment.InvestmentId;
+                        };
+
+                        _context.Add(InvestmentAddress);
                         //int x = _context.SaveChanges();
+                        _context.Add(Investment);
+                        //x = _context.SaveChanges();
+                        if (OwnerAddress != null)
+                        {
+                            _context.Add(OwnerAddress);
+                            //x = _context.SaveChanges();
+                        }
+                        _context.Add(Owner);
+                        //x = _context.SaveChanges();
+                        _context.Add(InvestmentOwner);
+                        //x = _context.SaveChanges();
+                        _context.AddRange(Surveys);
+                        //x = _context.SaveChanges();
+
+                        int x = _context.SaveChanges();
 
                         transaction.Commit();
                         transaction.Dispose();
@@ -488,7 +450,6 @@ namespace DoEko.Controllers
                     catch (Exception exc)
                     {
                         transaction.Rollback();
-
                         errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
                     }
                 }
@@ -528,4 +489,5 @@ namespace DoEko.Controllers
             return _context.Investments.Any(e => e.InvestmentId == id);
         }
     }
+
 }

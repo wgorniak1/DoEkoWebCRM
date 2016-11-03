@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DoEko.ViewModels;
+using DoEko.Models;
 
 namespace DoEko.Models.DoEko.Addresses
 {

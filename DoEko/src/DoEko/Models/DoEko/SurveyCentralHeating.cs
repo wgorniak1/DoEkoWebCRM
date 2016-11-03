@@ -9,5 +9,6 @@ namespace DoEko.Models.DoEko
     [Table(nameof(SurveyCentralHeating))]
     public class SurveyCentralHeating : Survey
     {
+        public SurveyRSETypeCentralHeating RSEType { get; set; }
     }
 }

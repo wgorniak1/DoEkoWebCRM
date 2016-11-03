@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Addresses;
-using DoEko.ViewModels;
+using DoEko.Models;
 using Microsoft.AspNetCore.Authorization;
 using DoEko.Models.Identity;
 

@@ -4,11 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using DoEko.ViewModels.UserViewModel;
 using DoEko.Models.Identity;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using DoEko.ViewModels.UserViewModel;
 
 namespace DoEko.Controllers
 {

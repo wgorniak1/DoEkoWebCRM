@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace DoEko.ViewModels
+namespace DoEko.Models
 {
     public static class EnumExtensions
     {

@@ -7,26 +7,47 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
-
     public enum SurveyType
     {
         /// <summary>
-        /// Instalacja Solarna = Kolektory płaskie lub Pompa ciepła
+        /// Pompa ciepła gruntowa / kocioł na pellet
+        /// Przeznaczenie: Centralne Ogrzewanie
+        /// </summary>
+        [Display(Name = "Centralne Ogrzewanie")]
+        CentralHeating,
+        /// <summary>
+        /// Instalacja Solarna = Kolektory płaskie / próżniowe lub Pompa ciepła
         /// Przeznaczenie: Ciepła woda użytkowa
         /// </summary>
-        [Display(Name = "Inst. solarna")]
-        SolarHotWater,
+        [Display(Name = "Ciepła Woda Użytk.")]
+        HotWater,
         /// <summary>
         /// Instalacja fotowoltaiczna
+        /// Przeznaczenie: Energia Elektryczna
         /// </summary>
-        [Display(Name = "Inst. fotowoltaiczna")]
-        Energy,
-        /// <summary>
-        /// 
-        /// </summary>
-        [Display(Name = "Pompa Ciepła")]
-        CentralHeating
+        [Display(Name = "Energia Elektr.")]
+        Energy
     }
+    public enum SurveyRSETypeCentralHeating
+    {
+        [Display(Name = "Pompa Ciepła Grunt.")]
+        HeatPump = 1,
+        [Display(Name = "Kocioł na Pellet")]
+        PelletBoiler = 2
+    }
+    public enum SurveyRSETypeHotWater
+    {
+        [Display(Name = "Solary")]
+        Solar = 3,
+        [Display(Name = "Pompa Ciepła")]
+        HeatPump = 4
+    }
+    public enum SurveyRSETypeEnergy
+    {
+        [Display(Name = "Panele Fotowolt.")]
+        PhotoVoltaic = 5
+    }
+
     public enum SurveyStatus
     {
         [Display(Name = "Nowa")]
@@ -164,7 +185,7 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [EnumDataType(typeof(SurveyType), ErrorMessage = "Błąd model")]
-        [Display(Description = "Rodzaj OZE", Name = "Rodzaj OZE", ShortName = "Rodzaj OZE")]
+        [Display(Description = "Rodzaj Energii", Name = "Rodzaj Energii", ShortName = "Rodzaj Energii")]
         public SurveyType Type { get; set; }
         /// <summary>
         /// 
