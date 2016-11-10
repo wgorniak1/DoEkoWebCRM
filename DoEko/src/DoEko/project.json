@@ -11,6 +11,7 @@
     "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.0",
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.1",
+    "Microsoft.AspNetCore.Mvc.Razor": "1.0.1",
     "Microsoft.AspNetCore.Razor.Tools": {
       "type": "build",
       "version": "1.0.0-preview2-final"
@@ -52,6 +53,8 @@
       "type": "build"
     },
     "Microsoft.WindowsAzure.ConfigurationManager": "3.2.2",
+    "RazorEngine": "3.9.1",
+    "SendGrid.NetCore": "1.0.0-rtm-00002",
     "System.Spatial": "5.7.0",
     "WindowsAzure.Storage": "7.2.1"
   },

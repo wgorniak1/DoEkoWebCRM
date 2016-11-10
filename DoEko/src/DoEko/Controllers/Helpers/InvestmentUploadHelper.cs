@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using DoEko.Controllers.Extensions;
 
 namespace DoEko.Controllers.Helpers
 {
@@ -238,6 +239,7 @@ namespace DoEko.Controllers.Helpers
         public Address ParseInvestmentAddress()
         {
             Address _addr = new Address();
+            int _tmpAddrId;
             InvestmentUploadRecord cellNumber = InvestmentUploadRecord.InvestmentAddress;
             string cellValue = "";
 
@@ -296,6 +298,24 @@ namespace DoEko.Controllers.Helpers
                 cellNumber = InvestmentUploadRecord.InvestmentApart;
                 cellValue = _record[(int)cellNumber];
                 _addr.ApartmentNo = cellValue.ToUpper().Substring(0, cellValue.Length > 11 ? 10 : cellValue.Length);
+
+                //Search for existing investment with the same address address
+                _tmpAddrId = _context.Addresses.Where(a => a.CountryId == _addr.CountryId &&
+                                                         a.StateId == _addr.StateId &&
+                                                         a.DistrictId == _addr.DistrictId &&
+                                                         a.CommuneType == _addr.CommuneType &&
+                                                         a.CommuneId == _addr.CommuneId &&
+                                                         a.City.ToUpper() == _addr.City.ToUpper() &&
+                                                         a.Street.ToUpper() == _addr.Street.ToUpper() &&
+                                                         a.BuildingNo.ToUpper() == _addr.BuildingNo.ToUpper() &&
+                                                         a.ApartmentNo.ToUpper() == _addr.ApartmentNo.ToUpper()).Select(a => a.AddressId).First();
+                if (_tmpAddrId != 0)
+                {
+                    if (_context.Investments.Where(i => i.AddressId == _tmpAddrId).First() != null)
+                    {
+                        throw new InvestmentUploadException("Istnieje już inwestycja o takim adresie. Rekord Pominięty.");
+                    }
+                }
 
                 return _addr;
             }
@@ -423,6 +443,11 @@ namespace DoEko.Controllers.Helpers
     public class InvestmentUploadException : SystemException
     {
         public InvestmentUploadException() : base() { }
+
+        public InvestmentUploadException(string message) : base(message)
+        {
+        }
+
         public InvestmentUploadException(string fieldname, string fieldvalue)
             : this(fieldname, fieldvalue, "Nieprawidłowa wartość '{1}' w polu '{0}'") { }
 

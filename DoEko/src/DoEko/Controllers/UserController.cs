@@ -80,14 +80,20 @@ namespace DoEko.Controllers
             ViewBag.ReturnUrl= returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser {
+                var user = new ApplicationUser
+                {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    UserName = model.UserName, Email = model.Email };
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    EmailConfirmed = true
+                };
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     var name = await _roleManager.GetRoleNameAsync(await _roleManager.FindByIdAsync(model.RoleId));
+
                     result = await _userManager.AddToRoleAsync(user, name );
                     if (result.Succeeded)
                     {

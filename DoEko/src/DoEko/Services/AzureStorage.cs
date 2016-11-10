@@ -7,8 +7,10 @@ using Microsoft.WindowsAzure.Storage; // Namespace for CloudStorageAccount
 using Microsoft.WindowsAzure.Storage.Blob; // Namespace for Blob storage types
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.Extensions.Options;
+using DoEko.Controllers.Settings;
 
-namespace DoEko.Controllers
+namespace DoEko.Services
 {
     public enum enuAzureStorageContainerType
     {
@@ -17,13 +19,17 @@ namespace DoEko.Controllers
         Investment,
         Survey
     }
-    public class AzureStorage
+    public class AzureStorage : IFileStorage
     {
-        public CloudStorageAccount Account { get; set; }
-        public AzureStorage(string connectionString)
-        {
-            Account = CloudStorageAccount.Parse( connectionString );
+        private readonly CloudStorageAccount Account;
+        //public AzureStorage(string connectionString)
+        //{
+        //    Account = CloudStorageAccount.Parse( connectionString );
+        //}
 
+        public AzureStorage(IOptions<AppSettings> options)
+        {
+            Account = CloudStorageAccount.Parse(options.Value.AzureStorageOptions.ConnectionString);
         }
 
         public CloudBlobContainer GetBlobContainer(enuAzureStorageContainerType ContainerType)
@@ -38,7 +44,7 @@ namespace DoEko.Controllers
             
         }
 
-        public void UploadAsync(IFormFile File, enuAzureStorageContainerType Type, string Key = "Not assigned")
+        public void Upload(IFormFile File, enuAzureStorageContainerType Type, string Key = "Not assigned")
         {
             CloudBlobContainer Container = GetBlobContainer(Type);
             if (File.Length > 0)
@@ -57,6 +63,22 @@ namespace DoEko.Controllers
             }
             //else
                 //return false;
+        }
+
+        public async Task<bool> DeleteFolderAsync(enuAzureStorageContainerType ContainerType, string FolderName)
+        {
+            CloudBlobContainer container = GetBlobContainer(ContainerType);
+            
+            foreach (IListBlobItem blob in container.GetDirectoryReference(FolderName.ToLower()).ListBlobs(true))
+            {
+                if (blob.GetType() == typeof(CloudBlob) || blob.GetType().BaseType == typeof(CloudBlob))
+                {
+                    await ((CloudBlob)blob).DeleteAsync();
+                }
+            }
+
+            return true;
+            
         }
     }
 }

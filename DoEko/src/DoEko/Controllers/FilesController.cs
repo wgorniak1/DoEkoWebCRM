@@ -1,27 +1,28 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System.IO;
-using Microsoft.Extensions.Configuration;
-using DoEko.Models.DoEko;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Extensions.Configuration;
+using DoEko.Services;
 
 namespace DoEko.Controllers
 {
     [Authorize()]
     public class FilesController : Controller
     { 
-        public FilesController(IConfiguration Configuration)
+        public FilesController(IFileStorage fileStorage)
         {
-            _azureStorage = new AzureStorage(Configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
+            //    _azureStorage = new AzureStorage(Configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
+            _fileStorage = fileStorage;
         }
 
-        private AzureStorage _azureStorage;
+        // private AzureStorage _azureStorage;
+        private IFileStorage _fileStorage;
 
         public IActionResult Index()
         {
@@ -31,12 +32,12 @@ namespace DoEko.Controllers
         public IActionResult Upload(enuAzureStorageContainerType Type, int? ID, Guid? Guid, string ReturnUrl = null)
         {
             
-            CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
             List<string> blobs = new List<string>();
             foreach (var blobItem in Container.ListBlobs())
             {
                 blobs.Add(blobItem.Uri.ToString());
-
             }
 
             if (ID != null)
@@ -55,7 +56,8 @@ namespace DoEko.Controllers
         public JsonResult Upload(enuAzureStorageContainerType Type, int? Id, Guid? Guid,
                                  FormCollection Form, string ReturnUrl = null)
         {
-            CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
             string Key = "Not assigned";
             if (Id != null)
             {
@@ -89,7 +91,8 @@ namespace DoEko.Controllers
         public JsonResult Delete(enuAzureStorageContainerType Type, int? Id, Guid? Guid,
                                          string Name, string ReturnUrl = null)
         {
-            CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
             string Key = "Not assigned";
             if (Id != null)
             {
@@ -116,7 +119,8 @@ namespace DoEko.Controllers
 
         private IList<Models.DoEko.File> Files(enuAzureStorageContainerType Type, string Key)
         {
-            CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
             var ContainerBlockBlobs = Container.ListBlobs(prefix: Key, useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             List<Models.DoEko.File> FileList = new List<Models.DoEko.File>();

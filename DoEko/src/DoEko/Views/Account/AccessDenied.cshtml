@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Brak uprawnień";
+}
+
+<h2>@ViewData["Title"]</h2>
+<div class="row">
+    <div class="col-md-12">
+        <h4 class="text-danger">
+            Nie posiadasz uprawnień do wyświetlenia tej zawartości.
+        </h4>
+        <button class="btn btn-primary">Powrót</button>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $("button").click(function () {
+            window.history.back();
+        })
+
+    </script>
+}

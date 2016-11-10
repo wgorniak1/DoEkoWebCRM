@@ -1,15 +1,29 @@
-﻿@model DoEko.Models.DoEko.Investment
+﻿@using DoEko.Models.Identity
+
+@model DoEko.Models.DoEko.Investment
+ 
 @{
     ViewData["Title"] = "Szczegóły Inwestycji";
 }
 <!-- Navigation -->
-<ol class="breadcrumb">
-    <li><a asp-action="Index" asp-controller="Home">Str. Domowa</a></li>
-    <li><a asp-action="Index" asp-controller="Projects">Lista Projektów</a></li>
-    <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.Contract.ProjectId">Projekt @Html.DisplayFor(model => model.Contract.Project.ShortDescription)</a></li>
-    <li><a asp-action="Details" asp-controller="Contracts" asp-route-Id="@Model.ContractId">Umowa @Html.DisplayFor(model => model.Contract.Number)</a></li>
-    <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
-</ol>
+@if (User.IsInRole(Roles.Inspector))
+{
+    <ol class="breadcrumb">
+        <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+        <li><a asp-action="List" asp-controller="Investments">Moje inspekcje</a></li>
+        <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
+    </ol>
+}
+else
+{
+    <ol class="breadcrumb">
+        <li><a asp-action="Index" asp-controller="Home">Str. Domowa</a></li>
+        <li><a asp-action="Index" asp-controller="Projects">Lista Projektów</a></li>
+        <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.Contract.ProjectId">Projekt @Html.DisplayFor(model => model.Contract.Project.ShortDescription)</a></li>
+        <li><a asp-action="Details" asp-controller="Contracts" asp-route-Id="@Model.ContractId">Umowa @Html.DisplayFor(model => model.Contract.Number)</a></li>
+        <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
+    </ol>
+}
 <!--Title-->
 <h2><small>Inwestycja</small> @Model.Address.SingleLine</h2>
 

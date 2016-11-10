@@ -12,6 +12,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using DoEko.Models.Identity;
+using DoEko.Services;
 
 namespace DoEko.Controllers
 {
@@ -19,12 +20,14 @@ namespace DoEko.Controllers
     public class ProjectsController : Controller
     {
         private readonly DoEkoContext   _context;
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
+        private readonly IFileStorage _fileStorage;
 
-        public ProjectsController(DoEkoContext context, IConfiguration configuration)
+        public ProjectsController(DoEkoContext context, IFileStorage fileStorage)
         {
             _context = context;
-            _configuration = configuration;
+            _fileStorage = fileStorage;
+            //_configuration = configuration;
         }
 
         // GET: Projects
@@ -333,7 +336,10 @@ namespace DoEko.Controllers
                 _context.Investments.RemoveRange(contract.Investments);
 
                 _context.Payments.RemoveRange(_context.Payments.Where(p => p.ContractId == contract.ContractId).ToList());
+
             }
+
+            _context.Contracts.RemoveRange(project.Contracts);
 
             _context.BusinessPartners.RemoveRange(owners);
 
@@ -341,7 +347,18 @@ namespace DoEko.Controllers
 
             try
             {
+                Task<bool> result;
+
                 await _context.SaveChangesAsync();
+
+                //delete contract's attachments
+                foreach (var contract in project.Contracts)
+                {
+                    result = _fileStorage.DeleteFolderAsync(enuAzureStorageContainerType.Contract, contract.ContractId.ToString());
+                }
+                //delete project's attachments
+                result = _fileStorage.DeleteFolderAsync(enuAzureStorageContainerType.Project, project.ProjectId.ToString());
+
 
             }
             catch (Exception exc)
@@ -362,9 +379,9 @@ namespace DoEko.Controllers
 
         private IList<File> GetAttachments(int id)
         {
-            AzureStorage account = new AzureStorage(_configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
+            //AzureStorage account = new AzureStorage(_configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
 
-            CloudBlobContainer Container = account.GetBlobContainer(enuAzureStorageContainerType.Project);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Project);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
             var ContainerBlockBlobs = Container.ListBlobs(prefix: id.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             List<File> FileList = new List<File>();

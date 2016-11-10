@@ -1,5 +1,5 @@
 {
-    "MicrosoftAzureStorage": {
-        "doekostorage_AzureStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=doekostorage;AccountKey=HqHbAZQNjUnMe7wvq6Ohi0tnjE8iAilFQusaYoek853arGMdRE2VK0EmKfGJnTzwIrJQCGBOR1t44hG1ggjOoA=="
-    }
+  "MicrosoftAzureStorage": {
+    "doekostorage_AzureStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=doekostorage;AccountKey=HqHbAZQNjUnMe7wvq6Ohi0tnjE8iAilFQusaYoek853arGMdRE2VK0EmKfGJnTzwIrJQCGBOR1t44hG1ggjOoA=="
+  }
 }

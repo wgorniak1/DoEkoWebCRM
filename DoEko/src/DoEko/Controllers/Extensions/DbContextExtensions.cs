@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System.Linq;
 
-namespace DoEko.Models
+namespace DoEko.Controllers.Extensions
 {
     public static class DbContextExtensions
     {

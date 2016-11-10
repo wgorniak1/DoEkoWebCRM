@@ -33,7 +33,9 @@ namespace DoEko.Models.DoEko
         [Display(Name = "Pompa Ciepła Grunt.")]
         HeatPump = 1,
         [Display(Name = "Kocioł na Pellet")]
-        PelletBoiler = 2
+        PelletBoiler = 2,
+        [Display(Name = "Pompa Ciepła Powietrzna")]
+        HeatPumpAir = 3
     }
     public enum SurveyRSETypeHotWater
     {

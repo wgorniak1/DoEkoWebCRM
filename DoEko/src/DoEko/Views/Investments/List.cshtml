@@ -1,4 +1,4 @@
-@using DoEko.ViewModels
+@using DoEko.Controllers.Extensions
 @using DoEko.Models.DoEko
 @using DoEko.Models.Identity
 
@@ -7,8 +7,17 @@
 @{
     ViewData["Title"] = "Moje inspekcje";
 }
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">Moje Inspekcje</li>
+</ol>
 
 <h2>Moje inspekcje</h2>
+<hr />
+@if (Model.ToList().Count != 0)
+{
+
 <div class="table-responsive">
     <table class="table table-condensed table-hover">
         <thead>
@@ -84,4 +93,15 @@
             window.location.href = alink.attr('href');
         });
     </script>
+
+}
+
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="text-info">Aktualnie nie posiadasz przypisanych, aktywnych inspekcji.</h4>
+        </div>
+    </div>
 }

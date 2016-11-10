@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using DoEko.Models.Identity;
+using DoEko.Services;
 
 namespace DoEko.Controllers
 {
@@ -19,15 +20,16 @@ namespace DoEko.Controllers
     public class PaymentsController : Controller
     {
         private readonly DoEkoContext _context;
-        private readonly AzureStorage _azure;
+        private readonly IFileStorage _fileStorage;
+        //private readonly AzureStorage _azure;
 
-        public PaymentsController(DoEkoContext context, IConfiguration configuration
-            , UserManager<ApplicationUser> userManager)
+        public PaymentsController(DoEkoContext context, IFileStorage fileStorage, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _context.CurrentUserId = User != null ? userManager.GetUserId(User) : "Not Set";
 
-            _azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
+            _fileStorage = fileStorage;
+            //_azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
         }
 
         /// <summary>
@@ -139,7 +141,9 @@ namespace DoEko.Controllers
                 //return Red;
             }
 
-            _azure.UploadAsync(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
+            //_azure.Upload(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
+            
+            _fileStorage.Upload(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
 
             StreamReader sr = new StreamReader(file.OpenReadStream());
             string CsvRecord;

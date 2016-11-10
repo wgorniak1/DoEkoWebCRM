@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using DoEko.Models.Identity;
 using DoEko.ViewModels.AccountViewModels;
 using DoEko.Services;
+using DoEko.Controllers.Extensions;
 
 namespace DoEko.Controllers
 {
@@ -37,6 +38,13 @@ namespace DoEko.Controllers
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied(string ReturnUrl = null)
+        {
+            ViewData["returnUrl"] = ReturnUrl;
+            return View();
+        }
         //
         // GET: /Account/Login
         [HttpGet]
@@ -264,20 +272,26 @@ namespace DoEko.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByNameAsync(model.Email);
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                // Send an email with this link
-                //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                //var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                //await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                //   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-                //return View("ForgotPasswordConfirmation");
+                //Prepare e-mail notification data
+                var ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                var mailBody = new DoEko.Services.MailModels.PasswordResetMailModel{
+                    AccountLogin = user.UserName,
+                    PwdResetLink = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = ResetToken }, protocol: HttpContext.Request.Scheme),
+                    Subject = "Wniosek o zmianę hasła"
+                };
+                //send e-mail
+                await _emailSender.SendEmailAsync(user.Email, mailBody.Subject, MailTemplates.PasswordReset.DisplayName(), mailBody);
+
+                return View("ForgotPasswordConfirmation");
             }
 
             // If we got this far, something failed, redisplay form

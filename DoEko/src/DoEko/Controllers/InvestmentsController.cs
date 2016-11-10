@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.ObjectModel;
 using DoEko.Controllers.Helpers;
+using DoEko.Controllers.Extensions;
+using DoEko.Services;
 
 namespace DoEko.Controllers
 {
@@ -26,13 +28,15 @@ namespace DoEko.Controllers
     public class InvestmentsController : Controller
     {
         private readonly DoEkoContext _context;
-        private readonly AzureStorage _azure;
+        //private readonly AzureStorage _azure;
+        private readonly IFileStorage _fileStorage;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public InvestmentsController(DoEkoContext context, IConfiguration configuration, UserManager<ApplicationUser> userManager)
+        public InvestmentsController(DoEkoContext context, IFileStorage fileStorage, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-            _azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
+            _fileStorage = fileStorage;
+            //_azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
             _userManager = userManager;    
         }
 
@@ -130,37 +134,40 @@ namespace DoEko.Controllers
                 _context.Add(investment.Address);
                 _context.Add(investment);
 
-                if (InvestmentVM.RseFotovoltaic)
+                if (InvestmentVM.SurveyEE)
                 {
                     SurveyEnergy Survey = new SurveyEnergy
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
                         Type = SurveyType.Energy,
+                        RSEType = InvestmentVM.RSETypeEE,
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
                 }
 
-                if (InvestmentVM.RseHeatPump)
+                if (InvestmentVM.SurveyCH)
                 {
                     SurveyCentralHeating Survey = new SurveyCentralHeating
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
                         Type = SurveyType.CentralHeating,
+                        RSEType = InvestmentVM.RSETypeCH,
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
                 }
 
-                if (InvestmentVM.RseSolar)
+                if (InvestmentVM.SurveyHW)
                 {
                     SurveyHotWater Survey = new SurveyHotWater
                     {
                         SurveyId = Guid.NewGuid(),
                         InvestmentId = investment.InvestmentId,
                         Type = SurveyType.HotWater,
+                        RSEType = InvestmentVM.RSETypeHW,
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
@@ -359,7 +366,7 @@ namespace DoEko.Controllers
             }
 
             //_azure.UploadAsync(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
-
+            //_fileStorage.Upload(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
             //
             StreamReader sr = new StreamReader(file.OpenReadStream());
 
@@ -444,7 +451,7 @@ namespace DoEko.Controllers
                         int x = _context.SaveChanges();
 
                         transaction.Commit();
-                        transaction.Dispose();
+                        //transaction.Dispose();
                         success += 1;
                     }
                     catch (Exception exc)

@@ -8,5 +8,6 @@ namespace DoEko.Services
     public interface IEmailSender
     {
         Task SendEmailAsync(string email, string subject, string message);
+        Task SendEmailAsync(string email, string subject, string template, object model);
     }
 }

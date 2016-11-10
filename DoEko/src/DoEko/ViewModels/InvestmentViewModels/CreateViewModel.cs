@@ -57,17 +57,32 @@ namespace DoEko.ViewModels.InvestmentViewModels
         /// <summary>
         /// 
         /// </summary>
-        [Display(Description = "", Name = "Inst. fotowoltaiczna", ShortName = "Inst. fotowolt.")]
-        public Boolean RseFotovoltaic { get; set; }
+        [Display(Description = "", Name = "Audyt pod E.E.", ShortName = "E.E.")]
+        public bool SurveyEE { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [Display(Description = "", Name = "Inst. solarna", ShortName = "Inst. solarna")]
-        public Boolean RseSolar { get; set; }
+        [Display(Description = "", Name = "Audyt pod C.O.", ShortName = "C.O.")]
+        public bool SurveyCH { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [Display(Description = "", Name = "Pompa ciepła", ShortName = "Pompa ciepła")]
-        public Boolean RseHeatPump { get; set; }
+        [Display(Description = "", Name = "Audyt pod C.W.U.", ShortName = "C.W.U.")]
+        public bool SurveyHW { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "", Name = "Typ OZE", ShortName = "OZE")]
+        public SurveyRSETypeEnergy RSETypeEE { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "", Name = "Typ OZE", ShortName = "OZE")]
+        public SurveyRSETypeCentralHeating RSETypeCH { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "", Name = "Typ OZE", ShortName = "OZE")]
+        public SurveyRSETypeHotWater RSETypeHW { get; set; }
     }
 }
