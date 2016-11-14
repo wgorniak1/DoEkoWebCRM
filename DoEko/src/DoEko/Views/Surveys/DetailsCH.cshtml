@@ -89,7 +89,7 @@ else
 </nav>
 <br />
 <form asp-action="DetailsCH" enctype="multipart/form-data" id="mainForm">
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Survey.SurveyId" />
     <input type="hidden" asp-for="Survey.InvestmentId" />
 
