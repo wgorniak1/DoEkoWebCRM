@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -9,18 +7,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching;
 using DoEko.Models.Identity;
 using DoEko.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using DoEko.Models.DoEko;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
-using Microsoft.AspNetCore.Http;
 using DoEko.Controllers.Settings;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNet.Builder;
 
 namespace DoEko
 {
@@ -91,7 +87,7 @@ namespace DoEko
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<AppSettings> settings)
+        public void Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<AppSettings> settings)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -100,11 +96,12 @@ namespace DoEko
             //{
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+            
                 app.UseBrowserLink();
             //}
             //else
             //{
-            //    app.UseExceptionHandler("/Home/Error");
+            //app.UseExceptionHandler("/Home/Error");
             //}
             app.UseRequestLocalization( 
                 new RequestLocalizationOptions {

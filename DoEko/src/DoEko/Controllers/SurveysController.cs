@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using DoEko.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using DoEko.Models.DoEko.Survey;
+using DoEko.ViewModels.SurveyViewModels;
+using DoEko.Models.DoEko.Addresses;
 
 namespace DoEko.Controllers
 {
@@ -50,11 +53,27 @@ namespace DoEko.Controllers
 
             SurveyCentralHeating SurveyCH = await _context.SurveysCH
                 .Include(s => s.Investment).ThenInclude(i => i.Address)
-                .Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
                 .SingleOrDefaultAsync(s => s.SurveyId == Id);
             if (SurveyCH != null)
             {
-                return View("DetailsCH", SurveyCH);
+                DetailsCHViewModel model = new DetailsCHViewModel(SurveyCH);
+
+                //ViewData["InvAddrCountryId"] = AddressesController.GetCountries(_context, InvestmentVM.Address.CountryId);
+                ViewData["InvAddrStateId"] = AddressesController.GetStates(_context, model.InvestmentAddress.StateId);
+                ViewData["InvAddrDistrictId"] = AddressesController.GetDistricts(_context, model.InvestmentAddress.StateId, model.InvestmentAddress.DistrictId);
+                ViewData["InvAddrCommuneId"] = AddressesController.GetCommunes(_context, model.InvestmentAddress.StateId, model.InvestmentAddress.DistrictId, model.InvestmentAddress.CommuneId, model.InvestmentAddress.CommuneType);
+
+                for (int i = 0; i < model.Owners.Count(); i++)
+                {
+                    Address _adr = model.Owners.ElementAt(i).Address;
+                    ViewData["OwnerStateId_" + i.ToString()] = AddressesController.GetStates(_context, _adr.StateId);
+                    ViewData["OwnerDistrictId_" + i.ToString()] = AddressesController.GetDistricts(_context, _adr.StateId, _adr.DistrictId);
+                    ViewData["OwnerCommuneId_" + i.ToString()] = AddressesController.GetCommunes(_context, _adr.StateId, _adr.DistrictId, _adr.CommuneId, _adr.CommuneType);
+
+                }
+
+                return View("DetailsCH", model);
             }
 
             return NotFound();
@@ -62,11 +81,42 @@ namespace DoEko.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DetailsCH(SurveyCentralHeating model, string ReturnUrl = null)
+        public async Task<IActionResult> DetailsCH(DetailsCHViewModel model, string ReturnUrl = null)
         {
-            _context.SurveysCH.Update(model);
+            //Adres gmina i typ sklejone w jednym polu        
+            model.InvestmentAddress.CommuneType = (CommuneType)Enum.ToObject(typeof(CommuneType), model.InvestmentAddress.CommuneId % 10);
+            model.InvestmentAddress.CommuneId /= 10;
+            for (int i = 0; i < model.Owners.Count; i++)
+            {
+                model.Owners[i].Address.CommuneType = (CommuneType)Enum.ToObject(typeof(CommuneType), model.Owners[i].Address.CommuneId % 10);
+                model.Owners[i].Address.CommuneId /= 10;
+            }
+
+            SurveyCentralHeating survey = _context.SurveysCH.SingleOrDefault(s => s.SurveyId == model.Survey.SurveyId);
+            
+            switch (survey.Status)
+            {
+                case SurveyStatus.New:
+                    survey.Status = SurveyStatus.Draft;
+                    break;
+                case SurveyStatus.Draft:
+                    break;
+                case SurveyStatus.Approval:
+                    break;
+                case SurveyStatus.Rejected:
+                    survey.Status = SurveyStatus.Draft;
+                    break;
+                case SurveyStatus.Approved:
+                    break;
+                case SurveyStatus.Cancelled:
+                    break;
+                default:
+                    break;
+            }
+
+            //_context.SurveysCH.Update(model);
             await _context.SaveChangesAsync();
-             return RedirectToAction("Details", "Investments", new { Id = model.InvestmentId });
+             return RedirectToAction("Details", "Investments", new { Id = model.Survey.InvestmentId });
         }
 
         [HttpPost]

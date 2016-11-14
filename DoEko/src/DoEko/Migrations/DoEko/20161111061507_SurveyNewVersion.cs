@@ -2,14 +2,226 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using DoEko.Models.DoEko;
-using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Migrations.DoEko
 {
-    public partial class SurveyDetailsHW : Migration
+    public partial class SurveyNewVersion : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "BuildingCompletionYear",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingCurrentEnergyTotal",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingNumberOfHosts",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingOverallArea",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingState",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingType",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingType2",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingUsableArea",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BusinessActivity",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "CentralHeatingFuel",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "CentralHeatingType",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "HotWaterFuel",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "HotWaterType",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "InstallationLocalization",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "InternetConnectionAvailable",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "AirVentilationExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "Azimuth",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BoilerStationExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BoilerStationSizeX",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BoilerStationSizeY",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BoilerStationSizeZ",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingSizeX",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingSizeY",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "BuildingSizeZ",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "ChimneysExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "CirculationExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "Current",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "GroundedSocketsExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "InstalationExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "InstallationSpace",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "LightingRodExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "PresureRegulator",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "RoofEdgeWeight",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "RoofHeight",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "RoofInclinationAngle",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "RoofLightsExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "RoofMaterial",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "RoofRidgeWeight",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "RoofWidth",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "RoofWindowsExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "TargetHotWaterType",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "UnderRoofInstallationExists",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "isDoorSizeEnough",
+                table: "Survey");
+
+            migrationBuilder.AddColumn<int>(
+                name: "OwnershipType",
+                table: "InvestmentOwner",
+                nullable: false,
+                defaultValue: OwnershipType.Type_1);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "InternetAvailable",
+                table: "Investment",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "OnWallPlacementAvailable",
+                table: "Survey",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "Configuration",
+                table: "Survey",
+                nullable: true);
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(
+                name: "OwnershipType",
+                table: "InvestmentOwner");
+
+            migrationBuilder.DropColumn(
+                name: "InternetAvailable",
+                table: "Investment");
+
+            migrationBuilder.DropColumn(
+                name: "OnWallPlacementAvailable",
+                table: "Survey");
+
+            migrationBuilder.DropColumn(
+                name: "Configuration",
+                table: "Survey");
+
             migrationBuilder.AddColumn<short>(
                 name: "BuildingCompletionYear",
                 table: "Survey",
@@ -38,19 +250,19 @@ namespace DoEko.Migrations.DoEko
                 name: "BuildingState",
                 table: "Survey",
                 nullable: false,
-                defaultValue: BuildingState.Completed);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "BuildingType",
                 table: "Survey",
                 nullable: false,
-                defaultValue: BuildingPurpose.Business);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "BuildingType2",
                 table: "Survey",
                 nullable: false,
-                defaultValue: BuildingType.Type_1);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<double>(
                 name: "BuildingUsableArea",
@@ -62,53 +274,37 @@ namespace DoEko.Migrations.DoEko
                 name: "BusinessActivity",
                 table: "Survey",
                 nullable: false,
-                defaultValue: BusinessActivity.Office);
-
-            migrationBuilder.AddColumn<string>(
-                name: "CancelComments",
-                table: "Survey",
-                nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "CancelType",
-                table: "Survey",
-                nullable: true);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "CentralHeatingFuel",
                 table: "Survey",
                 nullable: false,
-                defaultValue: FuelType.Coal);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "CentralHeatingType",
                 table: "Survey",
                 nullable: false,
-                defaultValue: CentralHeatingType.LiquidFuelHeater);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Discriminator",
-                table: "Survey",
-                nullable: false,
-                defaultValue: "");
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "HotWaterFuel",
                 table: "Survey",
                 nullable: false,
-                defaultValue: FuelType.Coal);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "HotWaterType",
                 table: "Survey",
                 nullable: false,
-                defaultValue: HotWaterType.SolidFuelHeater);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "InstallationLocalization",
                 table: "Survey",
                 nullable: false,
-                defaultValue: InstallationLocalization.Roof);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<bool>(
                 name: "InternetConnectionAvailable",
@@ -255,193 +451,6 @@ namespace DoEko.Migrations.DoEko
                 name: "isDoorSizeEnough",
                 table: "Survey",
                 nullable: true);
-        }
-
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "BuildingCompletionYear",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingCurrentEnergyTotal",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingNumberOfHosts",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingOverallArea",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingState",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingType",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingType2",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingUsableArea",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BusinessActivity",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "CancelComments",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "CancelType",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "CentralHeatingFuel",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "CentralHeatingType",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "Discriminator",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "HotWaterFuel",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "HotWaterType",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "InstallationLocalization",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "InternetConnectionAvailable",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "AirVentilationExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "Azimuth",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BoilerStationExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BoilerStationSizeX",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BoilerStationSizeY",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BoilerStationSizeZ",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingSizeX",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingSizeY",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "BuildingSizeZ",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "ChimneysExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "CirculationExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "Current",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "GroundedSocketsExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "InstalationExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "InstallationSpace",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "LightingRodExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "PresureRegulator",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "RoofEdgeWeight",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "RoofHeight",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "RoofInclinationAngle",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "RoofLightsExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "RoofMaterial",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "RoofRidgeWeight",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "RoofWidth",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "RoofWindowsExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "TargetHotWaterType",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "UnderRoofInstallationExists",
-                table: "Survey");
-
-            migrationBuilder.DropColumn(
-                name: "isDoorSizeEnough",
-                table: "Survey");
         }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DoEko.Models.DoEko
+namespace DoEko.Models.DoEko.Survey
 {
     [Table(nameof(SurveyEnergy))]
     public class SurveyEnergy : Survey

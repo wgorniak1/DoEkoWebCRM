@@ -11,11 +11,11 @@
 }
 
 /* Set widths on the form inputs since otherwise they're 100% wide */
-input,
+/*input,
 select,
 textarea {
-    max-width: 280px;
-}
+    max-width: 480px;
+}*/
 
 /* Carousel */
 .carousel-caption p {
@@ -107,3 +107,139 @@ textarea {
 wg-panel-header-button{
 
 }
+
+
+/*--Navigation Tabs as Form step wizard*/
+.nav-tabs.nav-justified .active a, 
+.nav-tabs.nav-justified .active a:hover,
+.nav-tabs.nav-justified .active a:focus {
+    border: unset;
+    border-radius:unset;
+    border-bottom: 5px solid grey;
+}
+.nav-tabs.nav-justified li a:hover,
+.nav-tabs.nav-justified li a:focus{
+    border: unset;
+    border-radius:unset;
+    border-bottom: 5px solid rgb(51,122,183);
+    background-color: white;
+}
+.nav-tabs.nav-justified li a{
+    border: unset;
+    border-radius:unset;
+    border-bottom: 5px solid white;
+    font-size: medium;
+    text-transform:uppercase;
+}
+
+.nav-tabs.nav-justified li a::after{
+    /*float: right !important;*/
+    /*font-family: 'Glyphicons Halflings';*/
+    /*content: "\e258";*/
+    /*height: 30px;
+    width: 30px;
+    content: "";
+    background: url("../images/navbar_separator.svg") no-repeat center center;*/
+}
+
+.nav-tabs.nav-justified li:last-child a::after{
+    /*float: right !important;*/
+    /*font-family: 'Glyphicons Halflings';*/
+    /*content: "";*/
+}
+
+.nav-tabs.nav-justified li{
+    counter-increment: navigation-counter;
+}
+
+.nav-tabs.nav-justified li a::before{
+    content: counter(navigation-counter) '. ';
+}
+
+
+
+
+/*.f1-steps { overflow: hidden; position: relative; margin-top: 20px; }
+.f1-progress { position: absolute; top: 24px; left: 0; width: 100%; height: 1px; background: #ddd; }
+.f1-progress-line { position: absolute; top: 0; left: 0; height: 1px; background: #f35b3f; }
+.f1-step { position: relative; float: left; width: 33.333333%; padding: 0 5px; }
+.f1-step-icon {
+	display: inline-block; width: 40px; height: 40px; margin-top: 4px; background: #ddd;
+	font-size: 16px; color: #fff; line-height: 40px;
+	-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;
+}
+
+.wg-arrow-right {
+  width: 0; 
+  height: 0; 
+  border-top:    35px solid transparent;
+  border-bottom: 35px solid transparent;
+  border-left:   15px solid #2e8bcc;
+}*/
+
+
+
+/*.steps {
+  list-style-type: none;
+  padding: 0;
+}
+.steps li {
+  display: inline-block;
+  margin-bottom: 3px;
+}
+.steps li a, .steps li p {
+  background: #e5f4fd;
+  padding: 8px 20px;
+  color: #0077bf;
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  position: relative;
+  text-indent: 12px;
+}
+.steps li a:hover, .steps li p:hover {
+  text-decoration: none;
+}
+.steps li a:before, .steps li p:before {
+  border-bottom: 18px solid transparent;
+  border-left: 12px solid #fff;
+  border-top: 18px solid transparent;
+  content: "";
+  height: 0;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  margin-top: -18px;
+}
+.steps li a:after, .steps li p:after {
+  border-bottom: 18px solid transparent;
+  border-left: 12px solid #e5f4fd;
+  border-top: 18px solid transparent;
+  content: "";
+  height: 0;
+  position: absolute;
+  left:100%;
+  top: 50%;
+  width: 0;
+  margin-top: -18px;
+  z-index: 1;
+}
+
+.steps li.active a, .steps li.active p {
+  background: #0077bf;
+  color: #fff;
+}
+.steps li.active a:after, .steps li.active p:after {
+  border-left: 12px solid #0077bf;
+}
+.steps li.undone a, .steps li.undone p {
+  background: #eee;
+  color: #333;
+}
+.steps li.undone a:after, .steps li.undone p:after {
+  border-left: 12px solid #eee;
+}
+.steps li.undone p {
+  color: #aaa;
+}*/

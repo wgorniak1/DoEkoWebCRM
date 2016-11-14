@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DoEko.Models.DoEko.Addresses;
 using DoEko.Models.DoEko;
 using System.ComponentModel.DataAnnotations;
+using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.ViewModels.InvestmentViewModels
 {

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using DoEko.Models.Identity;
 using DoEko.Models.DoEko.Addresses;
 using DoEko.Controllers.Helpers;
+using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Controllers
 {

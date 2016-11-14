@@ -5,6 +5,7 @@ using System.Linq;
 using DoEko.Models.DoEko;
 using System.Threading;
 using System.Threading.Tasks;
+using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Models.DoEko
 {
@@ -26,7 +27,7 @@ namespace DoEko.Models.DoEko
         public DbSet<InvestmentOwner> InvestmentOwners { get; set; }
         public DbSet<BusinessPartnerPerson> BPPersons { get; set; }
         public DbSet<BusinessPartnerEntity> BPEntities { get; set; }
-        public DbSet<Survey> Surveys { get; set; }
+        public DbSet<Survey.Survey> Surveys { get; set; }
         public DbSet<SurveyHotWater> SurveysHW { get; set; }
         public DbSet<SurveyCentralHeating> SurveysCH { get; set; }
         public DbSet<SurveyEnergy> SurveysEN { get; set; }

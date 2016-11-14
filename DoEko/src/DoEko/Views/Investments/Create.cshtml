@@ -1,5 +1,5 @@
 ﻿@model DoEko.ViewModels.InvestmentViewModels.CreateViewModel
-
+@using DoEko.Models.DoEko.Survey
 @{
     ViewData["Title"] = "Nowa Inwestycja - Lokalizacja";
 }
@@ -40,7 +40,8 @@
 
         <div class="form-group">
             <label asp-for="SurveyHW" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
+            
+            <div class="col-md-2">
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default">
                         <input asp-for="SurveyHW" type="radio" autocomplete="off" value="true" />
@@ -50,13 +51,17 @@
                         <input asp-for="SurveyHW" type="radio" autocomplete="off" checked value="false" />
                         Nie
                     </label>
+                    <span asp-validation-for="SurveyHW" class="text-danger" />
                 </div>
-                <span asp-validation-for="SurveyHW" class="text-danger" />
+            </div>
+            <div id="RSETypeHW" class="col-md-8" hidden>
+                <select asp-for="RSETypeHW" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeHotWater))"></select>
+                <span asp-validation-for="RSETypeHW" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="SurveyCH" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
+            <div class="col-md-2">
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default">
                         <input asp-for="SurveyCH" type="radio" autocomplete="off" value="true" />
@@ -69,10 +74,14 @@
                 </div>
                 <span asp-validation-for="SurveyCH" class="text-danger" />
             </div>
+            <div id="RSETypeCH" class="col-md-8" hidden>
+                <select asp-for="RSETypeCH" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeCentralHeating))"></select>
+                <span asp-validation-for="RSETypeCH" class="text-danger" />
+            </div>
         </div>
         <div class="form-group">
             <label asp-for="SurveyEE" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
+            <div class="col-md-2">
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default">
                         <input asp-for="SurveyEE" type="radio" autocomplete="off" value="true" />
@@ -84,6 +93,10 @@
                     </label>
                 </div>
                 <span asp-validation-for="SurveyEE" class="text-danger" />
+            </div>
+            <div id="RSETypeEE" class="col-md-8" hidden>
+                <select asp-for="RSETypeEE" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeEnergy))"></select>
+                <span asp-validation-for="RSETypeEE" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
@@ -110,17 +123,32 @@
     <script type="text/javascript">
         $(SurveyHW).change(function () {
             var value = $(this).attr('value').valueOf();
-            alert(value);
+            if (value == "true") {
+                $("#RSETypeHW").show();
+            }
+            else {
+                $("#RSETypeHW").hide();
+            }
         })
 
         $(SurveyEE).change(function () {
             var value = $(this).attr('value').valueOf();
-            alert(value);
+            if (value == "true") {
+                $("#RSETypeEE").show();
+            }
+            else {
+                $("#RSETypeEE").hide();
+            }
         })
 
         $(SurveyCH).change(function () {
             var value = $(this).attr('value').valueOf();
-            alert(value);
+            if (value == "true") {
+                $("#RSETypeCH").show();
+            }
+            else {
+                $("#RSETypeCH").hide();
+            }
         })
     </script>
 }

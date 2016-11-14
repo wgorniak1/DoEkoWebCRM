@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using DoEko.Controllers.Extensions;
+using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Controllers.Helpers
 {

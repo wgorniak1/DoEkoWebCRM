@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Models.DoEko
 {
@@ -114,8 +115,12 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         [Display(Description = "Ankiety", Name = "Ankiety", ShortName = "Ankiety")]
-        public virtual ICollection<Survey> Surveys { get; set; }
-
+        public virtual ICollection<Survey.Survey> Surveys { get; set; }
+        /// <summary>
+        /// Internet w miejscy inwestycji
+        /// </summary>
+        [Display(Description = "Ankiety", Name = "Internet w miejscu inwestycji", ShortName = "Internet")]
+        public bool InternetAvailable { get; set; }
 
     }
 }

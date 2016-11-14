@@ -1,186 +1,1735 @@
-﻿@model DoEko.Models.DoEko.SurveyCentralHeating
-
+﻿@model DoEko.ViewModels.SurveyViewModels.DetailsCHViewModel
+@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko.Survey
+@using DoEko.Models.Identity
 @{
-    ViewData["Title"] = "Pompa Ciepła";
+    ViewData["Title"] = "Centralne Ogrzewanie | Pompa Ciepła";
 }
 
-<h2>Pompa Ciepła / Kocioł na Pellet</h2>
+<!-- Navigation -->
+@if (User.IsInRole(Roles.Inspector))
+{
+    <ol class="breadcrumb">
+        <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+        <li><a asp-action="List" asp-controller="Investments">Moje inspekcje</a></li>
+        <li><a asp-action="Details" asp-controller="Investments">Inwestycja @Model.InvestmentAddress.SingleLine</a></li>
+        <li class="active"></li>
+    </ol>
+}
+else
+{
+    <ol class="breadcrumb">
+        <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+        <li><a asp-action="List" asp-controller="Investments">Moje inspekcje</a></li>
+        <li><a asp-action="Details" asp-controller="Investments" asp-route-id="@Model.Survey.InvestmentId">Inwestycja @Model.InvestmentAddress.SingleLine</a></li>
+        <li class="active">@Model.Survey.Type.DisplayName() | @Model.Survey.RSEType.DisplayName()</li>
+    </ol>
 
-<form asp-action="DetailsCH">
-    <div class="form-horizontal">
-        <h4>Centralne ogrzewanie</h4>
-        <hr />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="SurveyId" />
-        <input type="hidden" asp-for="Status" />
-        <input type="hidden" asp-for="Type" />
-        <input type="hidden" asp-for="InvestmentId" />
+    @*<ol class="breadcrumb">
+        <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+        <li><a asp-action="Index" asp-controller="Projects">Lista Projektów</a></li>
+        <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.Contract.ProjectId">Projekt @Html.DisplayFor(model => model.Contract.Project.ShortDescription)</a></li>
+        <li><a asp-action="Details" asp-controller="Contracts" asp-route-Id="@Model.ContractId">Umowa @Html.DisplayFor(model => model.Contract.Number)</a></li>
+        <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
+    </ol>*@
+}
 
-        <div class="form-group">
-            <label asp-for="BuildingCompletionYear" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="BuildingCompletionYear" class="form-control" />
-                <span asp-validation-for="BuildingCompletionYear" class="text-danger" />
-            </div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group-sm">
+            <label class="control-label">
+                <i class="fa fa-plug" aria-hidden="true"></i> OZE
+            </label>
+            <p class="form-control-static">
+                @Model.Survey.Type.DisplayName() | @Model.Survey.RSEType.DisplayName()
+            </p>
         </div>
-        <div class="form-group">
-            <label asp-for="BuildingCurrentEnergyTotal" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="BuildingCurrentEnergyTotal" class="form-control" />
-                <span asp-validation-for="BuildingCurrentEnergyTotal" class="text-danger" />
-            </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group-sm">
+            <label class="control-label">
+                <i class="fa fa-map-marker" aria-hidden="true"></i> Inwestycja
+            </label>
+            <p class="form-control-static">
+                @Model.InvestmentAddress.SingleLine
+            </p>
         </div>
-        <div class="form-group">
-            <label asp-for="BuildingNumberOfHosts" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="BuildingNumberOfHosts" class="form-control" />
-                <span asp-validation-for="BuildingNumberOfHosts" class="text-danger" />
-            </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group-sm">
+            <label class="control-label">
+                <i class="fa fa-cogs" aria-hidden="true"></i> Status inspekcji
+            </label>
+            <p class="form-control-static">
+                @Model.Survey.Status.DisplayName()
+            </p>
         </div>
-        <div class="form-group">
-            <label asp-for="BuildingOverallArea" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="BuildingOverallArea" class="form-control" />
-                <span asp-validation-for="BuildingOverallArea" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="BuildingState" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="BuildingState" class="form-control"></select>
-                <span asp-validation-for="BuildingState" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="BuildingType" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="BuildingType" class="form-control"></select>
-                <span asp-validation-for="BuildingType" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="BuildingType2" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="BuildingType2" class="form-control"></select>
-                <span asp-validation-for="BuildingType2" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="BuildingUsableArea" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="BuildingUsableArea" class="form-control" />
-                <span asp-validation-for="BuildingUsableArea" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="BusinessActivity" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="BusinessActivity" class="form-control"></select>
-                <span asp-validation-for="BusinessActivity" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="CancelComments" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="CancelComments" class="form-control" />
-                <span asp-validation-for="CancelComments" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="CancelType" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="CancelType" class="form-control" />
-                <span asp-validation-for="CancelType" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="CentralHeatingFuel" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="CentralHeatingFuel" class="form-control"></select>
-                <span asp-validation-for="CentralHeatingFuel" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="CentralHeatingType" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="CentralHeatingType" class="form-control"></select>
-                <span asp-validation-for="CentralHeatingType" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="HotWaterFuel" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="HotWaterFuel" class="form-control"></select>
-                <span asp-validation-for="HotWaterFuel" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="HotWaterType" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="HotWaterType" class="form-control"></select>
-                <span asp-validation-for="HotWaterType" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="InstallationLocalization" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="InstallationLocalization" class="form-control"></select>
-                <span asp-validation-for="InstallationLocalization" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="InternetConnectionAvailable" />
-                    <label asp-for="InternetConnectionAvailable"></label>
+    </div>
+</div>
+<hr />
+<nav>
+    <ul id="stepList" data-step-current="11" class="nav nav-tabs nav-justified">
+        @{ int ownerCount = Model.Owners.Count() + 11;}
+        <li class="active" data-step-from="11" data-step-to="@ownerCount">
+            <a href="#Step_11" data-toggle="tab">Inwestycja<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+        </li>
+        <li data-step-from="21" data-step-to="26">
+            <a href="#Step_21" data-toggle="tab">Opis Budynku<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+        </li>
+        <li data-step-from="31" data-step-to="31">
+            <a href="#Step_31" data-toggle="tab">Opis Działki<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+        </li>
+        <li data-step-from="41" data-step-to="42">
+            <a href="#Step_41" data-toggle="tab">Audyt Energetyczny<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+        </li>
+        <li data-step-from="51" data-step-to="51">
+            <a href="#Step_51" data-toggle="tab">Zdjęcia</a>
+        </li>
+    </ul>
+</nav>
+<br />
+<form asp-action="DetailsCH" enctype="multipart/form-data" id="mainForm">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="Survey.SurveyId" />
+    <input type="hidden" asp-for="Survey.InvestmentId" />
+
+<div class="tab-content">
+    <!--Adres-->
+    <div class="tab-pane fade in active" id="Step_11">
+        <fieldset>
+            <legend>Adres Inwestycji</legend>
+            <input type="hidden" asp-for="InvestmentAddress.AddressId" />
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class='form-group-sm'>
+                        <label asp-for="InvestmentAddress.Street" class="control-label"></label>
+                        <input asp-for="InvestmentAddress.Street" class="form-control" />
+                        <span class="help-block"></span>
+                        <span asp-validation-for="InvestmentAddress.Street" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">                    
+                        <label asp-for="InvestmentAddress.BuildingNo" class="control-label"></label>
+                        <input asp-for="InvestmentAddress.BuildingNo" class="col-sm-1 form-control" />
+                        <span class="help-block"></span>
+                        <span asp-validation-for="InvestmentAddress.BuildingNo" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="InvestmentAddress.ApartmentNo" class="control-label"></label>
+                        <input asp-for="InvestmentAddress.ApartmentNo" class="form-control" />
+                        <span class="help-block"></span>
+                        <span asp-validation-for="InvestmentAddress.ApartmentNo" class="text-danger" />
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="InvestmentId" class="control-label col-md-2"></label>
-            <div class="col-md-10">
-                <select asp-for="InvestmentId" class="form-control" asp-items="ViewBag.InvestmentId"></select>
-                <span asp-validation-for="InvestmentId" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="IsPaid" />
-                    <label asp-for="IsPaid"></label>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="InvestmentAddress.PostalCode"></label>
+                        <input asp-for="InvestmentAddress.PostalCode" class="form-control" />
+                        <span class="help-block"></span>
+                        <span asp-validation-for="InvestmentAddress.PostalCode" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="form-group-sm">
+                        <label asp-for="InvestmentAddress.City" class="control-label"></label>
+                        <input asp-for="InvestmentAddress.City" class="form-control" />
+                        <span class="help-block"></span>
+                        <span asp-validation-for="InvestmentAddress.City" class="text-danger" />
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Status" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="Status" class="form-control"></select>
-                <span asp-validation-for="Status" class="text-danger" />
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="InvestmentAddress.StateId" class="control-label"></label>
+                        <select asp-for="InvestmentAddress.StateId" class="form-control address-state" data-address-key="InvAddr" asp-items="ViewBag.InvAddrStateId">
+                            <option value="">Wybierz</option>
+                        </select>
+                        <span class="help-block"></span>
+                        <span asp-validation-for="InvestmentAddress.StateId" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="InvestmentAddress.DistrictId" class="control-label"></label>
+                        <select asp-for="InvestmentAddress.DistrictId" class="form-control address-district" data-address-key="InvAddr" asp-items="ViewBag.InvAddrDistrictId">
+                            <option value="">Wybierz</option>
+                        </select>
+                        <span class="help-block"></span>
+                        <span asp-validation-for="InvestmentAddress.DistrictId" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="InvestmentAddress.CommuneId" class="control-label"></label>
+                        <select asp-for="InvestmentAddress.CommuneId" class="form-control address-commune" data-address-key="InvAddr" asp-items="ViewBag.InvAddrCommuneId">
+                            <option value="">Wybierz</option>
+                        </select>
+                        <span class="help-block-sm"></span>
+                        <span asp-validation-for="InvestmentAddress.CommuneId" class="text-danger" />
+                        <input asp-for="InvestmentAddress.CommuneType" class="form-control address-communetype" data-address-key="InvAddr" type="hidden" />
+                        <input asp-for="InvestmentAddress.CountryId"   class="form-control" type="hidden" />
+                    </div>
+                </div>        
             </div>
+        </fieldset>    
+    </div>
+    <!--Właściciele-->
+        @{int stepIndex = 11;}
+        @for (int index = 0; index < Model.Owners.Count; index++)
+        {
+            stepIndex++;
+            string textIndex = (index + 1).ToString();
+
+        <div id="Step_@stepIndex.ToString()" class="tab-pane fade">
+            <fieldset id="OwnerData_@stepIndex.ToString()">
+                <legend>
+                    Właściciel # @textIndex z @Model.Owners.Count().ToString()
+
+                        <span class="btn-group-sm">
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button>
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button>
+                        </span>
+                </legend>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].Person.FirstName" class="control-label"></label>
+                            <input asp-for="Owners[index].Person.FirstName" class="form-control" />
+                            <span asp-validation-for="Owners[index].Person.FirstName" class="text-danger" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].Person.LastName" class="control-label"></label>
+                            <input asp-for="Owners[index].Person.LastName" class="form-control" />
+                            <span asp-validation-for="Owners[index].Person.FirstName" class="text-danger" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].Person.Pesel" class="control-label"></label>
+                            <input asp-for="Owners[index].Person.Pesel" class="form-control" />
+                            <span asp-validation-for="Owners[index].Person.Pesel" class="text-danger" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].Person.TaxId" class="control-label"></label>
+                            <input asp-for="Owners[index].Person.TaxId" class="form-control" />
+                            <span asp-validation-for="Owners[index].Person.TaxId" class="text-danger" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].Person.IdNumber" class="control-label"></label>
+                            <input asp-for="Owners[index].Person.IdNumber" class="form-control" />
+                            <span asp-validation-for="Owners[index].Person.IdNumber" class="text-danger" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].Person.Email" class="control-label"></label>
+                            <input asp-for="Owners[index].Person.Email" class="form-control" />
+                            <span asp-validation-for="Owners[index].Person.Email" class="text-danger" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].Person.PhoneNumber" class="control-label"></label>
+                            <input asp-for="Owners[index].Person.PhoneNumber" class="form-control" />
+                            <span asp-validation-for="Owners[index].Person.PhoneNumber" class="text-danger" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].Sponsor" class="control-label"></label>
+                            <input asp-for="Owners[index].Sponsor" type="hidden" />
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-default active">
+                                    <input type="radio" name="SponsorGroup" class="optionbutton-true" data-linked-checkbox="[@index]Owners.Sponsor"
+                                           autocomplete="off"
+                                           checked>
+                                    Tak
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="radio" name="SponsorGroup" class="optionbutton-false" data-linked-checkbox="[@index]Owners.Sponsor"
+                                           autocomplete="off">
+                                    Nie
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group-sm">
+                            <label asp-for="Owners[index].SameAddress" class="control-label"></label>
+                            <input type="hidden" asp-for="Owners[index].SameAddress" />
+                            <div class="btn-group" data-toggle="buttons">
+                                @if (Model.Owners[index].SameAddress)
+	                            {	
+                                <label class="btn btn-default active">
+                                    <input type="radio" name="AddressGroup" class="optionbutton-true" data-linked-checkbox="[@index]Owners.SameAddress" data-linked-container="OwnerAddress_@stepIndex.ToString()"
+                                           autocomplete="off"
+                                           checked>
+                                    Tak
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="radio" name="AddressGroup" class="optionbutton-false" data-linked-checkbox="[@index]Owners.SameAddress" data-linked-container="OwnerAddress_@stepIndex.ToString()"
+                                           autocomplete="off">
+                                    Nie
+                                </label>
+                                }
+                                else
+                                {
+                                    <label class="btn btn-default">
+                                        <input type="radio" name="AddressGroup" class="optionbutton-true" data-linked-checkbox="[@index]Owners.SameAddress" data-linked-container="OwnerAddress_@stepIndex.ToString()"
+                                               autocomplete="off">
+                                        Tak
+                                    </label>
+                                    <label class="btn btn-default active">
+                                        <input type="radio" name="AddressGroup" class="optionbutton-false" data-linked-checkbox="[@index]Owners.SameAddress" data-linked-container="OwnerAddress_@stepIndex.ToString()"
+                                               autocomplete="off" checked>
+                                        Nie
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <!--Adres właściciela-->
+            @{ var collapse = Model.Owners[index].SameAddress == true ? "collapse" : "";}
+            <div id="OwnerAddress_@stepIndex.ToString()" class="@collapse">
+                        <fieldset>
+                            <legend>Adres</legend>
+                            <input type="hidden" asp-for="Owners[index].Address.AddressId" />
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class='form-group-sm'>
+                                        <label asp-for="Owners[index].Address.Street" class="control-label"></label>
+                                        <input asp-for="Owners[index].Address.Street" class="form-control" />
+                                        <span class="help-block"></span>
+                                        <span asp-validation-for="Owners[index].Address.Street" class="text-danger" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group-sm">
+                                        <label asp-for="Owners[index].Address.BuildingNo" class="control-label"></label>
+                                        <input asp-for="Owners[index].Address.BuildingNo" class="col-sm-1 form-control" />
+                                        <span class="help-block"></span>
+                                        <span asp-validation-for="Owners[index].Address.BuildingNo" class="text-danger" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group-sm">
+                                        <label asp-for="Owners[index].Address.ApartmentNo" class="control-label"></label>
+                                        <input asp-for="Owners[index].Address.ApartmentNo" class="form-control" />
+                                        <span class="help-block"></span>
+                                        <span asp-validation-for="Owners[index].Address.ApartmentNo" class="text-danger" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group-sm">
+                                        <label asp-for="Owners[index].Address.PostalCode" class="control-label"></label>
+                                        <input asp-for="Owners[index].Address.PostalCode" class="form-control" />
+                                        <span class="help-block"></span>
+                                        <span asp-validation-for="Owners[index].Address.PostalCode" class="text-danger" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="form-group-sm">
+                                        <label asp-for="Owners[index].Address.City" class="control-label"></label>
+                                        <input asp-for="Owners[index].Address.City" class="form-control" />
+                                        <span class="help-block"></span>
+                                        <span asp-validation-for="Owners[index].Address.City" class="text-danger" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group-sm">
+                                        <label asp-for="Owners[index].Address.StateId" class="control-label"></label>
+                                        @{ SelectList DDState = (SelectList)ViewData["OwnerStateId_" + index.ToString()];}
+                                        <select asp-for="Owners[index].Address.StateId" class="form-control address-state" data-address-key="@index" asp-items="@DDState">
+                                            <option value="">Wybierz</option>
+                                        </select>
+                                        <span class="help-block"></span>
+                                        <span asp-validation-for="Owners[index].Address.StateId" class="text-danger" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group-sm">
+                                        <label asp-for="Owners[index].Address.DistrictId" class="control-label"></label>
+                                        @{ SelectList DDDistrict = (SelectList)ViewData["OwnerDistrictId_" + index.ToString()];}
+                                        <select asp-for="Owners[index].Address.DistrictId" class="form-control address-district" data-address-key="@index" asp-items="@DDDistrict">
+                                            <option value="">Wybierz</option>
+                                        </select>
+                                        <span class="help-block"></span>
+                                        <span asp-validation-for="Owners[index].Address.DistrictId" class="text-danger" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group-sm">
+                                        <label asp-for="Owners[index].Address.CommuneId" class="control-label"></label>
+                                        @{ SelectList DDCommune = (SelectList)ViewData["OwnerCommuneId_" + index.ToString()];}
+                                        <select asp-for="Owners[index].Address.CommuneId" class="form-control address-commune" data-address-key="@index" asp-items="@DDCommune">
+                                            <option value="">Wybierz</option>
+                                        </select>
+                                        <span class="help-block-sm"></span>
+                                        <span asp-validation-for="Owners[index].Address.CommuneId" class="text-danger" />
+                                        <input asp-for="Owners[index].Address.CommuneType" class="form-control address-communetype" data-address-key="@index" type="hidden" />
+                                        <input asp-for="Owners[index].Address.CountryId" class="form-control" type="hidden" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
         </div>
-        <div class="form-group">
-            <label asp-for="Type" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="Type" class="form-control"></select>
-                <span asp-validation-for="Type" class="text-danger" />
+            }
+
+    <!--Budynek / Działka-->
+    <div id="Step_21" class="tab-pane fade">
+        <fieldset>
+            <legend>Informacje ogólne</legend>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.Type" class="control-label"></label>
+                        <select asp-for="Survey.Building.Type" asp-items="Html.GetEnumSelectList(typeof(BuildingType))" class="form-control">
+
+                        </select>
+                        <span asp-validation-for="Survey.Building.Type" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.Status" class="control-label"></label>
+                        <select asp-for="Survey.Building.Status" asp-items="Html.GetEnumSelectList(typeof(BuildingState))" class="form-control">
+
+                        </select>
+                        <span asp-validation-for="Survey.Building.Status" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.CompletionYear" class="control-label"></label>
+                        <input asp-for="Survey.Building.CompletionYear" class="form-control" />
+                        <span asp-validation-for="Survey.Building.CompletionYear" class="text-danger" />
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Zapisz (w.robocza)" class="btn btn-primary" />
-                @*@if (User.IsInRole("Inspector"))
-                {
-                    <a asp-action="MyList" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Anuluj</a>
-                } else
-                {*@
-                    <a asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Anuluj</a>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.TotalArea" class="control-label"></label>
+                        <input asp-for="Survey.Building.TotalArea" class="form-control" />
+                        <span asp-validation-for="Survey.Building.TotalArea" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.UsableArea" class="control-label"></label>
+                        <input asp-for="Survey.Building.UsableArea" class="form-control" />
+                        <span asp-validation-for="Survey.Building.UsableArea" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.NumberOfOccupants" class="control-label"></label>
+                        <input asp-for="Survey.Building.NumberOfOccupants" class="form-control" />
+                        <span asp-validation-for="Survey.Building.NumberOfOccupants" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.Volume" class="control-label"></label>
+                        <input asp-for="Survey.Building.Volume" class="form-control" />
+                        <span asp-validation-for="Survey.Building.Volume" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.WallMaterial" class="control-label"></label>
+                        <select asp-for="Survey.Building.WallMaterial" asp-items="Html.GetEnumSelectList(typeof(WallMaterial))" class="form-control">
+                            </select>
+                        <span asp-validation-for="Survey.Building.WallMaterial" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.WallThickness" class="control-label"></label>
+                        <input asp-for="Survey.Building.WallThickness" class="form-control" />
+                        <span asp-validation-for="Survey.Building.WallThickness" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.InsulationType" class="control-label"></label>
+                        <select asp-for="Survey.Building.InsulationType" asp-items="Html.GetEnumSelectList(typeof(InsulationType))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Building.InsulationType" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.InsulationThickness" class="control-label"></label>
+                        <input asp-for="Survey.Building.InsulationThickness" class="form-control" />
+                        <span asp-validation-for="Survey.Building.InsulationThickness" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.BusinessActivity" class="control-label"></label>
+                        <select asp-for="Survey.Building.BusinessActivity" asp-items="Html.GetEnumSelectList(typeof(BusinessActivity))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Building.BusinessActivity" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div id="Step_22" class="tab-pane fade">
+        <fieldset>
+            <legend>Kotłownia</legend>    
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.RoomExists" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.RoomExists" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.RoomExists" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.IsDoorSizeEnough" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.IsDoorSizeEnough" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.IsDoorSizeEnough" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.Height" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.Height" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.Height" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.Width" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.Width" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.Width" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.Length" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.Length" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.Length" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.GroundedPowerSupply" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.GroundedPowerSupply" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.GroundedPowerSupply" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.AirVentilationExists" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.AirVentilationExists" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.AirVentilationExists" class="text-danger" />                        
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.IsDryAndWarm" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.IsDryAndWarm" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.IsDryAndWarm" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.HighVoltagePowerSupply" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.HighVoltagePowerSupply" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.HighVoltagePowerSupply" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BoilerRoom.Volume" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.Volume" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.Volume" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div id="Step_23" class="tab-pane fade">
+        <fieldset>
+            <legend>Łazienka</legend>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BathRoom.NumberOfBathrooms" class="control-label"></label>
+                        <input asp-for="Survey.BathRoom.NumberOfBathrooms" class="form-control" />
+                        <span asp-validation-for="Survey.BathRoom.NumberOfBathrooms" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BathRoom.BathExsists" class="control-label"></label>
+                        <input asp-for="Survey.BathRoom.BathExsists" class="form-control" />
+                        <span asp-validation-for="Survey.BathRoom.BathExsists" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BathRoom.BathVolume" class="control-label"></label>
+                        <input asp-for="Survey.BathRoom.BathVolume" class="form-control" />
+                        <span asp-validation-for="Survey.BathRoom.BathVolume" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.BathRoom.ShowerExists" class="control-label"></label>
+                        <input asp-for="Survey.BathRoom.ShowerExists" class="form-control" />
+                        <span asp-validation-for="Survey.BathRoom.ShowerExists" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div id="Step_24" class="tab-pane fade">
+        <fieldset>
+            <legend>Klimatyzacja</legend>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.AirCondition.MechVentilationExists" class="control-label"></label>
+                        <input asp-for="Survey.AirCondition.MechVentilationExists" class="form-control" />
+                        <span asp-validation-for="Survey.AirCondition.MechVentilationExists" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.AirCondition.Exists" class="control-label"></label>
+                        <input asp-for="Survey.AirCondition.Exists" class="form-control" />
+                        <span asp-validation-for="Survey.AirCondition.Exists" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.AirCondition.isPlanned" class="control-label"></label>
+                        <input asp-for="Survey.AirCondition.isPlanned" class="form-control" />
+                        <span asp-validation-for="Survey.AirCondition.isPlanned" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.AirCondition.Type" class="control-label"></label>
+                        <input asp-for="Survey.AirCondition.Type" class="form-control" />
+                        <span asp-validation-for="Survey.AirCondition.Type" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div id="Step_25" class="tab-pane fade">
+        <fieldset>
+            <legend>Dach</legend>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Type" class="control-label"></label>
+                        <select asp-for="Survey.Roof.Type" asp-items="Html.GetEnumSelectList(typeof(RoofType))" class="form-control">
+                         </select>
+                        <span asp-validation-for="Survey.Roof.Type" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            @for (int index = 0; index < Model.Survey.Roof.Planes.Count; index++)
+            {
+
+            <!-- połać 1-->
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].BuildingHeight" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].BuildingHeight" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].BuildingHeight" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].OkapHeight" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].OkapHeight" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].OkapHeight" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].RoofLength" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].RoofLength" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].RoofLength" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].EdgeLength" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].EdgeLength" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].EdgeLength" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].RidgeWeight" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].RidgeWeight" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].RidgeWeight" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].SlopeAngle" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].SlopeAngle" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].SlopeAngle" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].Width" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].Width" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].Width" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].Length" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].Length" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].Length" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].SurfaceArea" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].SurfaceArea" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].SurfaceArea" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].SurfaceAzimuth" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Planes[index].SurfaceAzimuth" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Planes[index].SurfaceAzimuth" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Planes[index].RoofMaterial" class="control-label"></label>
+                        <select asp-for="Survey.Roof.Planes[index].RoofMaterial" asp-items="Html.GetEnumSelectList(typeof(RoofMaterial))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Roof.Planes[index].RoofMaterial" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            }
+            <!--Koniec połaci-->
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.LightingProtection" class="control-label"></label>
+                        <input asp-for="Survey.Roof.LightingProtection" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.LightingProtection" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Chimney" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Chimney" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Chimney" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.Windows" class="control-label"></label>
+                        <input asp-for="Survey.Roof.Windows" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.Windows" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.SkyLights" class="control-label"></label>
+                        <input asp-for="Survey.Roof.SkyLights" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.SkyLights" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Roof.InstallationUnderPlane" class="control-label"></label>
+                        <input asp-for="Survey.Roof.InstallationUnderPlane" class="form-control" />
+                        <span asp-validation-for="Survey.Roof.InstallationUnderPlane" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+
+        </fieldset>
+    </div>
+    
+    <div id="Step_26" class="tab-pane fade">
+        <fieldset>
+            <legend>Planowana instalacja</legend>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.InstallationLocalization" class="control-label"></label>
+                        <select asp-for="Survey.Building.InstallationLocalization" asp-items="Html.GetEnumSelectList(typeof(InstallationLocalization))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Building.InstallationLocalization" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.Purpose" class="control-label"></label>
+                        <select asp-for="Survey.Building.Purpose" asp-items="Html.GetEnumSelectList(typeof(BuildingPurpose))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Building.Purpose" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.OnWallPlacementAvailable" class="control-label"></label>
+                        <input asp-for="Survey.OnWallPlacementAvailable" class="form-control" />
+                        <span asp-validation-for="Survey.OnWallPlacementAvailable" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        @*<label asp-for="Survey" class="control-label"></label>
+                        <input asp-for="Survey" class="form-control" />
+                        <span asp-validation-for="Survey" class="text-danger" />*@
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <!--Działka-->
+    <div id="Step_31" class="tab-pane fade">
+        <fieldset>
+            <legend>Działka</legend>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Ground.WetLand" class="control-label"></label>
+                        <input asp-for="Survey.Ground.WetLand" class="form-control" />
+                        <span asp-validation-for="Survey.Ground.WetLand" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Ground.OtherInstallation" class="control-label"></label>
+                        <input asp-for="Survey.Ground.OtherInstallation" class="form-control" />
+                        <span asp-validation-for="Survey.Ground.OtherInstallation" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Ground.Rocks" class="control-label"></label>
+                        <input asp-for="Survey.Ground.Rocks" class="form-control" />
+                        <span asp-validation-for="Survey.Ground.Rocks" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Ground.FormerMilitary" class="control-label"></label>
+                        <input asp-for="Survey.Ground.FormerMilitary" class="form-control" />
+                        <span asp-validation-for="Survey.Ground.FormerMilitary" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Ground.SlopeTerrain" class="control-label"></label>
+                        <input asp-for="Survey.Ground.SlopeTerrain" class="form-control" />
+                        <span asp-validation-for="Survey.Ground.SlopeTerrain" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Ground.Area" class="control-label"></label>
+                        <input asp-for="Survey.Ground.Area" class="form-control" />
+                        <span asp-validation-for="Survey.Ground.Area" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><div class="form-group-sm"></div></div>
+                <div class="col-sm-4"><div class="form-group-sm"></div></div>
+                <div class="col-sm-4"><div class="form-group-sm"></div></div>
+            </div>
+        </fieldset>
+    </div>
+    <!--Audyt-->
+    <div id="Step_41" class="tab-pane fade">
+        <fieldset>
+            <legend>Elektryczność</legend>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.ElectricityPower" class="control-label"></label>
+                        <input asp-for="Survey.Audit.ElectricityPower" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.ElectricityPower" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.PowerCompanyName" class="control-label"></label>
+                        <input asp-for="Survey.Audit.PowerCompanyName" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.PowerCompanyName" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.PowerConsMeterLocation" class="control-label"></label>
+                        <select asp-for="Survey.Audit.PowerConsMeterLocation" asp-items="Html.GetEnumSelectList(typeof(PowerConsMeterLocation))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Audit.PowerConsMeterLocation" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.PowerSupplyType" class="control-label"></label>
+                        <select asp-for="Survey.Audit.PowerSupplyType" asp-items="Html.GetEnumSelectList(typeof(PowerSupplyType))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Audit.PowerSupplyType" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.ElectricityAvgMonthlyCost" class="control-label"></label>
+                        <input asp-for="Survey.Audit.ElectricityAvgMonthlyCost" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.ElectricityAvgMonthlyCost" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.PowerAvgYearlyConsumption" class="control-label"></label>
+                        <input asp-for="Survey.Audit.PowerAvgYearlyConsumption" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.PowerAvgYearlyConsumption" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.PVPowerLevel" class="control-label"></label>
+                        <input asp-for="Survey.Audit.PVPowerLevel" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.PVPowerLevel" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div id="Step_42" class="tab-pane fade">
+        <fieldset>
+            <legend>C.O.</legend>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.CentralHeatingType" class="control-label"></label>
+                        <select asp-for="Survey.Audit.CentralHeatingType" asp-items="Html.GetEnumSelectList(typeof(CentralHeatingType))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Audit.CentralHeatingType" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.CentralHeatingFuel" class="control-label"></label>
+                        <select asp-for="Survey.Audit.CentralHeatingFuel" asp-items="Html.GetEnumSelectList(typeof(FuelType))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Audit.CentralHeatingFuel" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.CHRadiatorsInstalled" class="control-label"></label>
+                        <input asp-for="Survey.Audit.CHRadiatorsInstalled" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.CHRadiatorsInstalled" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.CHRadiatorType" class="control-label"></label>
+                        <select asp-for="Survey.Audit.CHRadiatorType" asp-items="Html.GetEnumSelectList(typeof(CentralHeatingRadiatorType))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Audit.CHRadiatorType" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.CHFRadiantFloorInstalled" class="control-label"></label>
+                        <input asp-for="Survey.Audit.CHFRadiantFloorInstalled" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.CHFRadiantFloorInstalled" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.AverageYearlyFuelConsumption" class="control-label"></label>
+                        <input asp-for="Survey.Audit.AverageYearlyFuelConsumption" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.AverageYearlyFuelConsumption" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.AverageYearlyHeatingCosts" class="control-label"></label>
+                        <input asp-for="Survey.Audit.AverageYearlyHeatingCosts" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.AverageYearlyHeatingCosts" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.BoilerNominalPower" class="control-label"></label>
+                        <input asp-for="Survey.Audit.BoilerNominalPower" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.BoilerNominalPower" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.BoilerMaxTemp" class="control-label"></label>
+                        <input asp-for="Survey.Audit.BoilerMaxTemp" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.BoilerMaxTemp" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.BoilerProductionYear" class="control-label"></label>
+                        <input asp-for="Survey.Audit.BoilerProductionYear" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.BoilerProductionYear" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.BoilerPlannedReplacement" class="control-label"></label>
+                        <input asp-for="Survey.Audit.BoilerPlannedReplacement" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.BoilerPlannedReplacement" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.AdditionalHeatSource" class="control-label"></label>
+                        <input asp-for="Survey.Audit.AdditionalHeatSource" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.AdditionalHeatSource" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.AdditionalHeatParams" class="control-label"></label>
+                        <input asp-for="Survey.Audit.AdditionalHeatParams" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.AdditionalHeatParams" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.FirePlaceWithWater" class="control-label"></label>
+                        <input asp-for="Survey.Audit.FirePlaceWithWater" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.FirePlaceWithWater" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.TankExists" class="control-label"></label>
+                        <input asp-for="Survey.Audit.TankExists" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.TankExists" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.TankVolume" class="control-label"></label>
+                        <input asp-for="Survey.Audit.TankVolume" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.TankVolume" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.TankCoilSize" class="control-label"></label>
+                        <input asp-for="Survey.Audit.TankCoilSize" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.TankCoilSize" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.HWInstalled" class="control-label"></label>
+                        <input asp-for="Survey.Audit.HWInstalled" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.HWInstalled" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.HotWaterType" class="control-label"></label>
+                        <select asp-for="Survey.Audit.HotWaterType" asp-items="Html.GetEnumSelectList(typeof(HotWaterType))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Audit.HotWaterType" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.HotWaterFuel" class="control-label"></label>
+                        <select asp-for="Survey.Audit.HotWaterFuel" asp-items="Html.GetEnumSelectList(typeof(FuelType))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Audit.HotWaterFuel" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.HWSourcePower" class="control-label"></label>
+                        <input asp-for="Survey.Audit.HWSourcePower" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.HWSourcePower" class="text-danger" />
+
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.HWCirculationInstalled" class="control-label"></label>
+                        <input asp-for="Survey.Audit.HWCirculationInstalled" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.HWCirculationInstalled" class="text-danger" />
+
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Audit.HWPressureReductorExists" class="control-label"></label>
+                        <input asp-for="Survey.Audit.HWPressureReductorExists" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.HWPressureReductorExists" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                        @*<label asp-for="Survey.Audit." class="control-label"></label>
+                        <input asp-for="Survey.Audit.HotWaterType" class="form-control" />
+                        <span asp-validation-for="Survey.Audit.HotWaterType" class="text-danger" />*@
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div id="Step_43" class="tab-pane fade">
+        <fieldset>
+            <legend></legend>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-sm">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <!--Zdjęcia-->
+    <div id="Step_51" class="tab-pane fade">
+        @*if (Model.Survey.RSEType == SurveyRSETypeCentralHeating.HeatPump)
+        {}*@
+            <fieldset>
+                <legend>Zdjęcia</legend>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label" for="Picture0">
+                            Ortofotomapa
+                        </label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="input-group-btn ">
+                                    <span class="btn btn-primary">
+                                        Wybierz&hellip; <input type="file" style="display: none;" name="Picture0">
+                                    </span>
+                                </label>
+                                <input type="text" class="form-control" id="Picture0" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label" for="Picture1">
+                            Zdjęcie działki (miejsce proponowane pod odwierty pionowe)
+                        </label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="input-group-btn ">
+                                    <span class="btn btn-primary">
+                                        Wybierz&hellip; <input type="file" style="display: none;" name="Picture1">
+                                    </span>
+                                </label>
+                                <input type="text" class="form-control" id="Picture1" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label" for="Picture2">
+                            Zdjęcie kotłowni
+                        </label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="input-group-btn ">
+                                    <span class="btn btn-primary">
+                                        Wybierz&hellip; <input type="file" style="display: none;" name="Picture2">
+                                    </span>
+                                </label>
+                                <input type="text" class="form-control" id="Picture2" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label" for="Picture3">
+                            Zdjęcie wjazdu na działkę
+                        </label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="input-group-btn ">
+                                    <span class="btn btn-primary">
+                                        Wybierz&hellip; <input type="file" style="display: none;" name="Picture3">
+                                    </span>
+                                </label>
+                                <input type="text" class="form-control" id="Picture3" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label" for="Picture4">
+                            Zdjęcie ściany na montaż parownika(tylko dla pompy powietrze / woda)
+                        </label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="input-group-btn ">
+                                    <span class="btn btn-primary">
+                                        Wybierz&hellip; <input type="file" style="display: none;" name="Picture4">
+                                    </span>
+                                </label>
+                                <input type="text" class="form-control" id="Picture4" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+    </div>
+    <div id="Step_52" class="tab-pane fade">
+        <fieldset>
+            <legend>Pozostałe</legend>
+        </fieldset>
+        
+    </div>
+</div>
+    <br />
+    <div class="row">
+        <div class="col-md-8 col-sm-8">
+            <div class="form-group">
+                <a class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.Survey.InvestmentId">
+                    Anuluj
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-4">
+            <div class="form-group pull-right">        
+                <button type="button" id="stepPrev" class="btn btn-default" disabled>Wstecz</button>
+                <button type="button" id="stepNext" class="btn btn-success">Dalej</button>
+                <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
             </div>
         </div>
     </div>
+
+
+        @*<!-- Kolejny Właściciel POCZĄTEK-->
+        <div id="NewOwner">
+
+        </div>
+        <!-- Kolejny Właściciel KONIEC-->
+
+        <!--Opis Budynku POCZĄTEK-->
+            <div class="form-group">
+                <label asp-for="Survey.Building.BusinessActivity" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Survey.Building.BusinessActivity" class="form-control" />
+                    <span asp-validation-for="Survey.Building.BusinessActivity" class="text-danger" />
+                </div>
+            </div>
+        <div class="form-group">
+            <label asp-for="Survey.Building.CompletionYear" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Survey.Building.CompletionYear" class="form-control" />
+                <span asp-validation-for="Survey.Building.CompletionYear" class="text-danger" />
+            </div>
+        </div>
+
+
+        <!--Opis Budynku KONIEC-->
+
+        <div class="form-group">
+            <label asp-for="Survey.Building.InstallationLocalization" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Survey.Building.InstallationLocalization" class="form-control"></select>
+                <span asp-validation-for="Survey.Building.InstallationLocalization" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="Survey.Building." />
+                    <label asp-for="InternetConnectionAvailable"></label>
+                </div>
+            </div>
+        </div>*@
 </form>
 
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("../Shared/Address/_AddressScriptPartial");}
+    <script>
+        $(function () {
+            $("#stepLast").click(function () {
+                $("#mainForm").valid();
+                $("#mainForm").submit();
+
+            })
+            $("#stepNext").click(function () {
+                $("#mainForm").valid();
+                var StepList = new NavBarStepList("stepList", "stepPrev", "stepNext");
+                StepList.goNext();
+            });
+
+            $("#stepPrev").click(function () {
+                $("#mainForm").valid();
+
+                var StepList = new NavBarStepList("stepList", "stepPrev", "stepNext");
+                StepList.goPrev();
+            });
+
+            $("#stepList li a").click(function () {
+                var targetStep = parseInt($(this).parent("li").attr('data-step-from'), 10);
+
+                var stepList = new NavBarStepList("stepList", "stepPrev", "stepNext");
+
+                stepList.navBar.setCurrentStep(targetStep);
+                if (stepList.navBar.isFirstStep(targetStep)) {
+                    stepList.navButtons.previous.disable();
+                }
+                else {
+                    stepList.navButtons.previous.enable();
+                }
+                
+
+                if (stepList.navBar.isLastStep(targetStep)) {
+                    stepList.navButtons.next.disable();
+                    $("#stepLast").removeClass("hidden");
+                }
+                else {
+                    stepList.navButtons.next.enable();
+                    $("#stepLast").addClass("hidden");
+                }
+                
+            });
+        });
+    </script>
+
+
+
+    <script>
+        $(function () {
+            $(".optionbutton-true").change(function () {
+
+                var checkboxName = $(this).attr('data-linked-checkbox');
+                $('input[name="' + checkboxName + '"]').val('True');
+
+                var containerId = $(this).attr('data-linked-container');
+                if (containerId != "") {
+                    $('#' + containerId).collapse('hide');
+                }
+            });
+            $(".optionbutton-false").change(function () {
+
+                var checkboxName = $(this).attr('data-linked-checkbox');
+                $('input[name="' + checkboxName + '"]').val('False');
+
+                var containerId = $(this).attr('data-linked-container');
+                if (containerId != "") {
+                    $('#' + containerId).collapse('show');
+                }
+            });
+        })
+    </script>
+    <script>
+        $(document).on('change', ':file', function() {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, ''),
+                name = input.attr('name');
+            input.trigger('fileselect', [numFiles, label, name]);
+        });
+        
+        $(document).ready( function() {
+            $(':file').on('fileselect', function(event, numFiles, label, name) {
+                $('#' + name).val(label);
+            });
+        });
+    </script>
 }

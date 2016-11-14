@@ -1,8 +1,8 @@
 ﻿@using DoEko.Controllers.Extensions
 @using DoEko.Models.DoEko
 @using DoEko.Models.Identity
-
-@model IEnumerable<DoEko.Models.DoEko.Survey>
+@using DoEko.Models.DoEko.Survey
+@model IEnumerable<Survey>
 <div class="table-responsive">
     <table class="table table-condensed table-hover table-striped">
         <thead>
@@ -23,10 +23,25 @@
             </tr>
         </thead>
         <tbody>
-    @foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
+        String SurveyTypeName = "";
+        switch (item.Type)
+        {
+            case SurveyType.CentralHeating:
+                SurveyTypeName = ((SurveyCentralHeating)item).RSEType.DisplayName() + "(C.O.)";
+                break;
+            case SurveyType.HotWater:
+                SurveyTypeName = ((SurveyHotWater)item).RSEType.DisplayName() + "(C.W.U.)";
+                break;
+            case SurveyType.Energy:
+                SurveyTypeName = ((SurveyEnergy)item).RSEType.DisplayName() + "(E.E.)";
+                break;
+            default: break;
+        }
             <tr>
                 <td>
-                    @item.Type.DisplayName()
+                    @SurveyTypeName
                 </td>
                 <td>
                     @item.Status.DisplayName()

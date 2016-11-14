@@ -102,10 +102,10 @@
             })
 
             $("#SGyes").change(function () {
-                $('#Sponsor').val('True')
+                $(this).parent().parent().siblings('input').val('True');
             })
             $("#SGno").change(function () {
-                $('#Sponsor').val('False')
+                $(this).parent().parent().siblings('input').val('False');
             })
 
         })
