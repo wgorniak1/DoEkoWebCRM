@@ -1,0 +1,52 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetWall
+@using DoEko.Models.DoEko
+
+<form id="SurveyWall"
+      asp-action="EditWallAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Elewacja</legend>
+
+        <input asp-for="SurveyId" type="hidden" />
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Azimuth" class="control-label"></label>
+                    <input asp-for="Azimuth" class="form-control" />
+                    <span asp-validation-for="Azimuth" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group-sm">
+                    <label asp-for="Height" class="control-label"></label>
+                    <input asp-for="Height" class="form-control" />
+                    <span asp-validation-for="Height" class="text-danger" />
+                </div>
+
+            </div>
+            <div class="col-sm-1">
+                <div class="form-group-sm">
+                    <label asp-for="Width" class="control-label"></label>
+                    <input asp-for="Width" class="form-control" />
+                    <span asp-validation-for="Width" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="UsableArea" class="control-label"></label>
+                    <input asp-for="UsableArea" class="form-control" disabled />
+                    <span asp-validation-for="UsableArea" class="text-danger" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+</form>

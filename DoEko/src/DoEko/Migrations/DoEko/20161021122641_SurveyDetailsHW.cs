@@ -38,7 +38,7 @@ namespace DoEko.Migrations.DoEko
                 name: "BuildingState",
                 table: "Survey",
                 nullable: false,
-                defaultValue: BuildingState.Completed);
+                defaultValue: BuildingStage.Completed);
 
             migrationBuilder.AddColumn<int>(
                 name: "BuildingType",
@@ -50,7 +50,7 @@ namespace DoEko.Migrations.DoEko
                 name: "BuildingType2",
                 table: "Survey",
                 nullable: false,
-                defaultValue: BuildingType.Type_1);
+                defaultValue: BuildingType.DetachedHouse);
 
             migrationBuilder.AddColumn<double>(
                 name: "BuildingUsableArea",

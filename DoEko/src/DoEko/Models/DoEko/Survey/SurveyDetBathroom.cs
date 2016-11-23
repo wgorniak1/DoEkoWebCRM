@@ -24,6 +24,6 @@ namespace DoEko.Models.DoEko.Survey
         //shower_exists
         [Display(Name = "Czy jest prysznic?")]
         public bool ShowerExists { get; set; }
-        public virtual Survey Surevy { get; set; }
+        public virtual Survey Survey { get; set; }
     }
 }

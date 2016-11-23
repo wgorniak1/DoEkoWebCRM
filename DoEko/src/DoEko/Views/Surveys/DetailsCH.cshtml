@@ -211,16 +211,16 @@ else
                             <span asp-validation-for="Owners[index].Person.FirstName" class="text-danger" />
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    @*<div class="col-sm-4">
                         <div class="form-group-sm">
                             <label asp-for="Owners[index].Person.Pesel" class="control-label"></label>
                             <input asp-for="Owners[index].Person.Pesel" class="form-control" />
                             <span asp-validation-for="Owners[index].Person.Pesel" class="text-danger" />
                         </div>
-                    </div>
+                    </div>*@
                 </div>
                 <div class="row">
-                    <div class="col-sm-4">
+                    @*<div class="col-sm-4">
                         <div class="form-group-sm">
                             <label asp-for="Owners[index].Person.TaxId" class="control-label"></label>
                             <input asp-for="Owners[index].Person.TaxId" class="form-control" />
@@ -233,7 +233,7 @@ else
                             <input asp-for="Owners[index].Person.IdNumber" class="form-control" />
                             <span asp-validation-for="Owners[index].Person.IdNumber" class="text-danger" />
                         </div>
-                    </div>
+                    </div>*@
                     <div class="col-sm-4">
                         <div class="form-group-sm">
                             <label asp-for="Owners[index].Person.Email" class="control-label"></label>
@@ -241,8 +241,6 @@ else
                             <span asp-validation-for="Owners[index].Person.Email" class="text-danger" />
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group-sm">
                             <label asp-for="Owners[index].Person.PhoneNumber" class="control-label"></label>
@@ -253,8 +251,9 @@ else
                     <div class="col-sm-4">
                         <div class="form-group-sm">
                             <label asp-for="Owners[index].Sponsor" class="control-label"></label>
+                            <span class="help-block"></span>
                             <input asp-for="Owners[index].Sponsor" type="hidden" />
-                            <div class="btn-group" data-toggle="buttons">
+                            <div class="btn-group-sm" data-toggle="buttons">
                                 <label class="btn btn-default active">
                                     <input type="radio" name="SponsorGroup" class="optionbutton-true" data-linked-checkbox="[@index]Owners.Sponsor"
                                            autocomplete="off"
@@ -269,11 +268,15 @@ else
                             </div>
                         </div>
                     </div>
+
+                </div>
+                <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group-sm">
                             <label asp-for="Owners[index].SameAddress" class="control-label"></label>
+                            @*<span class="help-block"></span>*@
                             <input type="hidden" asp-for="Owners[index].SameAddress" />
-                            <div class="btn-group" data-toggle="buttons">
+                            <div class="btn-group-sm" data-toggle="buttons">
                                 @if (Model.Owners[index].SameAddress)
 	                            {	
                                 <label class="btn btn-default active">
@@ -405,6 +408,15 @@ else
             <div class="row">
                 <div class="col-sm-4">
                     <div class="form-group-sm">
+                        <label asp-for="Survey.Building.TechnologyType" class="control-label"></label>
+                        <select asp-for="Survey.Building.TechnologyType" asp-items="Html.GetEnumSelectList(typeof(BuildTechnologyType))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Building.TechnologyType" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
                         <label asp-for="Survey.Building.Type" class="control-label"></label>
                         <select asp-for="Survey.Building.Type" asp-items="Html.GetEnumSelectList(typeof(BuildingType))" class="form-control">
 
@@ -501,7 +513,90 @@ else
             </div>
         </fieldset>
     </div>
+
     <div id="Step_22" class="tab-pane fade">
+        <fieldset>
+            <legend>Planowana instalacja</legend>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.InstallationLocalization" class="control-label"></label>
+                        <select asp-for="Survey.Building.InstallationLocalization" asp-items="Html.GetEnumSelectList(typeof(InstallationLocalization))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Building.InstallationLocalization" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.Purpose" class="control-label"></label>
+                        <select asp-for="Survey.Building.Purpose" asp-items="Html.GetEnumSelectList(typeof(BuildingPurpose))" class="form-control"></select>
+                        <span asp-validation-for="Survey.Building.Purpose" class="text-danger" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        <label asp-for="Survey.Building.OnWallPlacementAvailable" class="control-label"></label>
+                        <input asp-for="Survey.Building.OnWallPlacementAvailable" class="form-control" />
+                        <span asp-validation-for="Survey.Building.OnWallPlacementAvailable" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+                        @*<label asp-for="Survey" class="control-label"></label>
+                            <input asp-for="Survey" class="form-control" />
+                            <span asp-validation-for="Survey" class="text-danger" />*@
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group-sm">
+
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div id="Step_23" class="tab-pane fade">
         <fieldset>
             <legend>Kotłownia</legend>    
             <div class="row">
@@ -514,9 +609,9 @@ else
                 </div>
                 <div class="col-sm-4">
                     <div class="form-group-sm">
-                        <label asp-for="Survey.BoilerRoom.IsDoorSizeEnough" class="control-label"></label>
-                        <input asp-for="Survey.BoilerRoom.IsDoorSizeEnough" class="form-control" />
-                        <span asp-validation-for="Survey.BoilerRoom.IsDoorSizeEnough" class="text-danger" />
+                        <label asp-for="Survey.BoilerRoom.DoorHeight" class="control-label"></label>
+                        <input asp-for="Survey.BoilerRoom.DoorHeight" class="form-control" />
+                        <span asp-validation-for="Survey.BoilerRoom.DoorHeight" class="text-danger" />
                     </div>
                 </div>
                 <div class="col-sm-4">
@@ -594,7 +689,7 @@ else
             </div>
         </fieldset>
     </div>
-    <div id="Step_23" class="tab-pane fade">
+    <div id="Step_24" class="tab-pane fade">
         <fieldset>
             <legend>Łazienka</legend>
             <div class="row">
@@ -675,7 +770,7 @@ else
             </div>
         </fieldset>
     </div>
-    <div id="Step_24" class="tab-pane fade">
+    <div id="Step_25" class="tab-pane fade">
         <fieldset>
             <legend>Klimatyzacja</legend>
             <div class="row">
@@ -756,9 +851,9 @@ else
             </div>
         </fieldset>
     </div>
-    <div id="Step_25" class="tab-pane fade">
+    <div id="Step_26" class="tab-pane fade">
         <fieldset>
-            <legend>Dach</legend>
+            <legend>Dach i elewacja</legend>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group-sm">
@@ -904,87 +999,6 @@ else
         </fieldset>
     </div>
     
-    <div id="Step_26" class="tab-pane fade">
-        <fieldset>
-            <legend>Planowana instalacja</legend>
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-                        <label asp-for="Survey.Building.InstallationLocalization" class="control-label"></label>
-                        <select asp-for="Survey.Building.InstallationLocalization" asp-items="Html.GetEnumSelectList(typeof(InstallationLocalization))" class="form-control"></select>
-                        <span asp-validation-for="Survey.Building.InstallationLocalization" class="text-danger" />
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-                        <label asp-for="Survey.Building.Purpose" class="control-label"></label>
-                        <select asp-for="Survey.Building.Purpose" asp-items="Html.GetEnumSelectList(typeof(BuildingPurpose))" class="form-control"></select>
-                        <span asp-validation-for="Survey.Building.Purpose" class="text-danger" />
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-                        <label asp-for="Survey.OnWallPlacementAvailable" class="control-label"></label>
-                        <input asp-for="Survey.OnWallPlacementAvailable" class="form-control" />
-                        <span asp-validation-for="Survey.OnWallPlacementAvailable" class="text-danger" />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-                        @*<label asp-for="Survey" class="control-label"></label>
-                        <input asp-for="Survey" class="form-control" />
-                        <span asp-validation-for="Survey" class="text-danger" />*@
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group-sm">
-
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-    </div>
     <!--Działka-->
     <div id="Step_31" class="tab-pane fade">
         <fieldset>
@@ -1262,9 +1276,6 @@ else
                 </div>
                 <div class="col-sm-3">
                     <div class="form-group-sm">
-                        <label asp-for="Survey.Audit.FirePlaceWithWater" class="control-label"></label>
-                        <input asp-for="Survey.Audit.FirePlaceWithWater" class="form-control" />
-                        <span asp-validation-for="Survey.Audit.FirePlaceWithWater" class="text-danger" />
                     </div>
                 </div>
                 <div class="col-sm-3">

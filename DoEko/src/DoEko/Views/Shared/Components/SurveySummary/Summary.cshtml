@@ -1,0 +1,31 @@
+﻿@model DoEko.Models.DoEko.Survey.Survey
+@using DoEko.Models.DoEko
+
+<form id="SurveySummary"
+      asp-action="EditSummaryAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Dodatkowe Uwagi</legend>
+        <input asp-for="SurveyId" type="hidden" />
+        <input asp-for="Type" type="hidden" />
+        <div class="row">
+            <div class="col-sm-12">
+                <div class='form-group-sm'>
+                    <label asp-for="FreeCommments" class="control-label"></label>
+                    <textarea class="form-control" asp-for="FreeCommments" rows="4"></textarea>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="FreeCommments" class="text-danger" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    
+    <input type="submit" hidden/>
+
+</form>

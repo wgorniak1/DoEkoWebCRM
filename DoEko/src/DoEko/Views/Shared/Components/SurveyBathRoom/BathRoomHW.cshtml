@@ -1,0 +1,94 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetBathroom
+@using DoEko.Models.DoEko
+
+<form id="SurveyBathroom"
+      asp-action="EditBathroomAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update="OwnerData"
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostSuccess">
+    <fieldset>
+        <legend>Łazienka</legend>
+        <input asp-for="SurveyId" type="hidden" />
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="NumberOfBathrooms" class="control-label"></label>
+                    <input asp-for="NumberOfBathrooms" class="form-control" />
+                    <span asp-validation-for="NumberOfBathrooms" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="ShowerExists" class="control-label"></label>
+                    <input asp-for="ShowerExists" hidden />
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.ShowerExists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ShowerExists" class="optionbutton-true" data-linked-checkbox="ShowerExists" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="ShowerExists" class="optionbutton-false" data-linked-checkbox="ShowerExists">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="ShowerExists" class="optionbutton-true" data-linked-checkbox="ShowerExists">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ShowerExists" class="optionbutton-false" data-linked-checkbox="ShowerExists" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="BathExsists" class="control-label"></label>
+                    <input asp-for="BathExsists" hidden />
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.BathExsists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="BathExsists" class="optionbutton-true" data-linked-checkbox="BathExsists" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="BathExsists" class="optionbutton-false" data-linked-checkbox="BathExsists">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="BathExsists" class="optionbutton-true" data-linked-checkbox="BathExsists">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="BathExsists" class="optionbutton-false" data-linked-checkbox="BathExsists" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4" id="bath">
+                <div class="form-group-sm">
+                    <label asp-for="BathVolume" class="control-label"></label>
+                    <input asp-for="BathVolume" class="form-control" />
+                    <span asp-validation-for="BathVolume" class="text-danger" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>

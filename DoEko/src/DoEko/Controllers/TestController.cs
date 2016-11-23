@@ -11,18 +11,18 @@ using DoEko.Models.Identity;
 using DoEko.Models.DoEko.Addresses;
 using DoEko.Controllers.Helpers;
 using DoEko.Models.DoEko.Survey;
+using DoEko.ViewModels.SurveyViewModels;
 
 namespace DoEko.Controllers
 {
     public class TestController : Controller
     {
-        private DoEkoContext _context { get; set; }
-
+        private DoEkoContext _context;
+        private UserManager<ApplicationUser> _userManager;
         public TestController(DoEkoContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-
-            _context.CurrentUserId = User != null ? userManager.GetUserId(User) : "Not Set";
+            _userManager = userManager;
         }
         // GET: Test
         public ActionResult Index()
@@ -47,6 +47,7 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(IFormCollection collection)
         {
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
             try
             {
                 // TODO: Add insert logic here
@@ -74,6 +75,7 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
         {
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
             try
             {
                 // TODO: Add update logic here
@@ -97,6 +99,7 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
         {
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
             try
             {
                 // TODO: Add delete logic here
@@ -111,6 +114,7 @@ namespace DoEko.Controllers
 
         public ActionResult csvTest()
         {
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
             string line = "1; 98,40 z³ ; 80,00 z³ ;Kocio³ na Pellet;;;Lubelskie;Janowski;Chrzanów (Gmina W.);37-500; Tuczempy ;Mickiewicza;44;;Ryszard;Trelka;Podlaskie;Bia³ostocki;Choroszcz (Gmina M-W);37-500;Tuczempy;Mickiewicza;3A;1;266;30621;661 111 760;;;";
 
             InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context);
@@ -161,6 +165,18 @@ namespace DoEko.Controllers
             }
 
             return Json("ok");
+        }
+
+        public async Task<ActionResult> TestOwner()
+        {
+            SurveyCentralHeating survey = await _context.SurveysCH
+                .Include(s=>s.Investment).ThenInclude(i=>i.Address).ThenInclude(a=>a.Commune)
+                .Include(s=>s.Investment).ThenInclude(i=>i.InvestmentOwners).ThenInclude(io=>io.Owner).ThenInclude(o=>o.Address)
+                .FirstAsync();
+
+            DetailsCHViewModel model = new DetailsCHViewModel(survey);
+
+            return View(model);
         }
     }
 }

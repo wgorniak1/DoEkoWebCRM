@@ -491,6 +491,14 @@ namespace DoEko.Controllers
 
             return RedirectToAction("Details", "Contracts", new { Id = ContractId });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditGeneralInfoAjax( Investment investment)
+        {
+            Investment inv = await _context.Investments.SingleAsync(i => i.InvestmentId == investment.InvestmentId);
+            return Ok();
+        }
     
         private bool InvestmentExists(Guid id)
         {

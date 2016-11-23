@@ -1,0 +1,161 @@
+﻿@model DoEko.ViewComponents.ViewModels.SurveyAuditViewModel
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+
+<form id="SurveyAuditHW"
+      asp-action="EditAuditHWAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Ciepła woda użytkowa</legend>
+        <input type="hidden" asp-for="Investment.InvestmentId" />
+        <input type="hidden" asp-for="SurveyId" />
+        <input type="hidden" asp-for="Audit.SurveyId" />   
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.HotWaterType" class="control-label"></label>
+                    <select asp-for="Investment.HotWaterType" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(HotWaterType))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.HotWaterType" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.HotWaterFuel" class="control-label"></label>
+                    <select asp-for="Investment.HotWaterFuel" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(FuelType))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.HotWaterFuel" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.HWSourcePower" class="control-label"></label>
+                    <input asp-for="Audit.HWSourcePower" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.HWSourcePower" class="text-danger" />
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.BoilerProductionYear" class="control-label"></label>
+                    <input asp-for="Audit.BoilerProductionYear" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.BoilerProductionYear" class="text-danger" />
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.BoilerPlannedReplacement" class="control-label"></label>
+                    <input asp-for="Audit.BoilerPlannedReplacement" hidden />
+                    <span class="help-block"></span>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Audit.BoilerPlannedReplacement)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="BoilerPlannedReplacement" class="optionbutton-true" data-linked-checkbox="Audit.BoilerPlannedReplacement" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="BoilerPlannedReplacement" class="optionbutton-false" data-linked-checkbox="Audit.BoilerPlannedReplacement" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="BoilerPlannedReplacement" class="optionbutton-true" data-linked-checkbox="Audit.BoilerPlannedReplacement" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="BoilerPlannedReplacement" class="optionbutton-false" data-linked-checkbox="Audit.BoilerPlannedReplacement" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.BoilerNominalPower" class="control-label"></label>
+                    <input asp-for="Audit.BoilerNominalPower" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.BoilerNominalPower" class="text-danger" />
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.BoilerMaxTemp" class="control-label"></label>
+                    <input asp-for="Audit.BoilerMaxTemp" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.BoilerMaxTemp" class="text-danger" />
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.TankExists" class="control-label"></label>
+                    <input asp-for="Audit.TankExists" hidden />
+                    <span class="help-block"></span>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Audit.TankExists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="TankExists" class="optionbutton-true" data-linked-checkbox="Audit.TankExists" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="TankExists" class="optionbutton-false" data-linked-checkbox="Audit.TankExists" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="TankExists" class="optionbutton-true" data-linked-checkbox="Audit.TankExists" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="TankExists" class="optionbutton-false" data-linked-checkbox="Audit.TankExists" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.TankVolume" class="control-label"></label>
+                    <input asp-for="Audit.TankVolume" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.TankVolume" class="text-danger" />
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.TankCoilSize" class="control-label"></label>
+                    <input asp-for="Audit.TankCoilSize" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.TankCoilSize" class="text-danger" />
+                </div>
+
+            </div>
+        </div>
+    </fieldset>
+</form>

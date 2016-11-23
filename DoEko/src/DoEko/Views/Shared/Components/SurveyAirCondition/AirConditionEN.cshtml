@@ -1,0 +1,19 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetAirCond
+@using DoEko.Models.DoEko
+
+<form id="SurveyAirCondition"
+      asp-action="EditAirConditionAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+
+    <fieldset>
+        <legend>Klimatyzacja</legend>
+    </fieldset>
+
+    <input type="submit" />
+
+</form>

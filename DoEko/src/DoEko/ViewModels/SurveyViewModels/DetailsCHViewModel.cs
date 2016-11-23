@@ -63,20 +63,10 @@ namespace DoEko.ViewModels.SurveyViewModels
             {
                 survey.Ground = new SurveyDetGround();
             }
-            if (survey.Roof == null)
+            if (survey.RoofPlanes == null)
             {
-                survey.Roof = new SurveyDetRoof();
-            }
-            if (survey.Roof.Planes == null)
-            {
-                survey.Roof.Planes = new List<RoofPlane>();
-            }
-            if (survey.Roof.Planes.Count < 4)
-            {
-                survey.Roof.Planes.Add(new RoofPlane());
-                survey.Roof.Planes.Add(new RoofPlane());
-                survey.Roof.Planes.Add(new RoofPlane());
-                survey.Roof.Planes.Add(new RoofPlane());
+                survey.RoofPlanes = new List<SurveyDetRoof>();
+                survey.RoofPlanes.Add(new SurveyDetRoof() { SurveyId = survey.SurveyId });
             }
             
         }

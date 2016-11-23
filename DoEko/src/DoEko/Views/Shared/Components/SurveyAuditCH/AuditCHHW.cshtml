@@ -1,0 +1,44 @@
+﻿@model DoEko.ViewComponents.ViewModels.SurveyAuditViewModel
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+<form id="SurveyAuditCH"
+      asp-action="EditAuditCHAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Centralne Ogrzewanie</legend>
+        <input type="hidden" asp-for="Investment.InvestmentId" />
+        <input type="hidden" asp-for="SurveyId" />
+        <input type="hidden" asp-for="Audit.SurveyId" />
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.CentralHeatingType" class="control-label"></label>
+                    <select asp-for="Investment.CentralHeatingType" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(CentralHeatingType))"></select>
+                    <span asp-validation-for="Investment.CentralHeatingType" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm otherheatingtype">
+                    <label asp-for="Investment.CentralHeatingTypeOther" class="control-label"></label>
+                    <input asp-for="Investment.CentralHeatingTypeOther" class="form-control" />
+                    <span asp-validation-for="Investment.CentralHeatingTypeOther" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3 col-sm-offset-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.CentralHeatingFuel" class="control-label"></label>
+                    <select asp-for="Investment.CentralHeatingFuel" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(FuelType))"></select>
+                    <span asp-validation-for="Investment.CentralHeatingFuel" class="text-danger" />
+                </div>
+            </div>
+        </div>
+
+
+    </fieldset>
+</form>

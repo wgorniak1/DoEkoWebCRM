@@ -1,0 +1,175 @@
+﻿@model DoEko.ViewComponents.ViewModels.InvestmentOwnerPersonViewModel
+
+@using DoEko.Models.DoEko
+
+@{
+    string method = "";
+    if (string.IsNullOrEmpty(Model.Owner.BusinessPartnerId.ToString()))
+    {
+        method = "CreatePersonAjax";
+
+    } else
+    {
+        method = "EditPersonAjax";
+    }
+}
+
+<form id=@("InvestmentOwnerData_" + Model.OwnerNumber.ToString())
+      asp-action="@method"
+      asp-controller="InvestmentOwners"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostSuccess">
+    <fieldset>
+        <legend>
+            Własciciel @Model.OwnerNumber.ToString() z @Model.OwnerTotal.ToString()
+            @if (Model.OwnerTotal > 1)
+            {
+                <button type="button" class="btn btn-link remowner"><span class="glyphicon glyphicon-minus"></span></button>
+            }
+            <button type="button" class="btn btn-link addowner"><span class="glyphicon glyphicon-plus"></span></button>
+        </legend>
+
+        <input asp-for="InvestmentId" type="hidden" />
+        <input asp-for="Owner.BusinessPartnerId" type="hidden" />
+        <input asp-for="Owner.AddressId" type="hidden" />
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Owner.FirstName" class="control-label"></label>
+                    <input asp-for="Owner.FirstName" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Owner.FirstName" class="text-danger " />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Owner.LastName" class="control-label"></label>
+                    <input asp-for="Owner.LastName" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Owner.LastName" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Owner.Pesel" class="control-label"></label>
+                    <input asp-for="Owner.Pesel" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Owner.Pesel" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Owner.IdNumber" class="control-label"></label>
+                    <input asp-for="Owner.IdNumber" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Owner.IdNumber" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Owner.TaxId" class="control-label"></label>
+                    <input asp-for="Owner.TaxId" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Owner.TaxId" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Owner.Email" class="control-label"></label>
+                    <input asp-for="Owner.Email" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Owner.Email" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Owner.PhoneNumber" class="control-label"></label>
+                    <input asp-for="Owner.PhoneNumber" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Owner.PhoneNumber" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm has-feedback">
+                    <label asp-for="OwnershipType" class="control-label"></label>
+                    <select asp-for="OwnershipType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(OwnershipType))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="OwnershipType"></span>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Sponsor" class="control-label"></label>
+                    <input asp-for="Sponsor" type="hidden" />
+                    @* <span class="help-block"></span>*@
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Sponsor)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="SponsorGroup" class="optionbutton-true" data-linked-checkbox="Owner.Sponsor" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="SponsorGroup" class="optionbutton-false" data-linked-checkbox="Owner.Sponsor">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="SponsorGroup" class="optionbutton-true" data-linked-checkbox="Owner.Sponsor" >
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="SponsorGroup" class="optionbutton-false" data-linked-checkbox="Owner.Sponsor" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="SameAddress" class="control-label"></label>
+                    <input type="hidden" asp-for="SameAddress" />
+                    @* <span class="help-block"></span>*@
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.SameAddress)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="AddressGroup" class="optionbutton-true" data-linked-checkbox="Owner.SameAddress" data-linked-container="OwnerAddress" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="AddressGroup" class="optionbutton-false" data-linked-checkbox="Owner.SameAddress" data-linked-container="OwnerAddress">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="AddressGroup" class="optionbutton-true" data-linked-checkbox="Owner.SameAddress" data-linked-container="OwnerAddress">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="AddressGroup" class="optionbutton-false" data-linked-checkbox="Owner.SameAddress" data-linked-container="OwnerAddress" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>

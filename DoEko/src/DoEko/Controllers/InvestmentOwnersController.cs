@@ -9,6 +9,9 @@ using DoEko.Models.DoEko;
 using DoEko.ViewModels.InvestmentOwnerViewModels;
 using DoEko.Models.DoEko.Addresses;
 using Microsoft.AspNetCore.Authorization;
+using DoEko.ViewComponents.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using DoEko.Models.Identity;
 
 namespace DoEko.Controllers
 {
@@ -16,10 +19,12 @@ namespace DoEko.Controllers
     public class InvestmentOwnersController : Controller
     {
         private readonly DoEkoContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public InvestmentOwnersController(DoEkoContext context)
+        public InvestmentOwnersController(DoEkoContext context, UserManager<ApplicationUser> userManager)
         {
-            _context = context;    
+            _context = context;
+            _userManager = userManager;
         }
 
         // GET: InvestmentOwners
@@ -225,6 +230,96 @@ namespace DoEko.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult OwnerPersonSaveAjax(InvestmentOwnerPersonViewModel model)
+        {
+            string text = model.Owner.FirstName;
+            if (text == "Wojciech")
+            {
+                return Json(new { text = "uda³o siê" });
+            }
+            else
+            //    Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+            ////Log your exception
+            //return Json(new { Message = e.Message });
+                return NotFound();
+
+            //400 - BadRequest brak wymaganych parametrów 
+            //422 - parametry podane sa wszystkie ale w zlym formacie
+            //404 - NotFoundResult parametry s¹ podane i s¹ w prawid³owym formacie ale po prostu nie ma danych
+            //200 - przy odczycie, ok zwracam wynik
+            //201 - przy zapisie, ok zapisalem 
+
+        }
+
+        [HttpGet]
+        public ActionResult CreatePersonAjax(Guid investmentId)
+        {
+            return ViewComponent("InvestmentOwnerData", new { investmentId = investmentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePersonAjax(InvestmentOwnerPersonViewModel io)
+        {
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+            if (ModelState.IsValid)
+            {
+                // Owner Id
+                io.Owner.BusinessPartnerId = Guid.NewGuid();
+                // Owner Address
+                if (io.SameAddress)
+                {
+                    io.Owner.Address = _context.Investments.Include(i => i.Address).Single(i => i.InvestmentId == io.InvestmentId).Address;
+                    io.Owner.AddressId = io.Owner.Address.AddressId;
+                }
+                else
+                {
+                    io.Owner.Address.AddressId = 0;
+                    io.Owner.AddressId = 0;
+                    //Adres gmina i typ sklejone w jednym polu        
+                    io.Owner.Address.CommuneType = (CommuneType)Enum.ToObject(typeof(CommuneType), io.Owner.Address.CommuneId % 10);
+                    io.Owner.Address.CommuneId /= 10;
+                }
+
+                InvestmentOwner iowner = new InvestmentOwner()
+                {
+                    InvestmentId = io.InvestmentId,
+                    Owner = io.Owner,
+                    OwnerId = io.Owner.BusinessPartnerId,
+                    OwnershipType = io.OwnershipType,
+                    Sponsor = io.Sponsor
+                };
+
+                _context.BPPersons.Add(io.Owner);
+                _context.InvestmentOwners.Add(iowner);
+                int Result = await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditPersonAjax(InvestmentOwnerPersonViewModel io)
+        {
+            return Ok();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeletePersonAjax(Guid InvestmentId, Guid OwnerId)
+        {
+
+            return Ok();
+        }
+
 
         private bool InvestmentOwnerExists(Guid id)
         {

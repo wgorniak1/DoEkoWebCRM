@@ -1,0 +1,48 @@
+﻿@model DoEko.ViewComponents.ViewModels.SurveyAuditViewModel
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+
+<form id="SurveyAuditHW"
+      asp-action="EditAuditHWAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Ciepła woda użytkowa</legend>
+        <input type="hidden" asp-for="Investment.InvestmentId" />
+        <input type="hidden" asp-for="SurveyId" />
+        <input type="hidden" asp-for="Audit.SurveyId" />
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.HotWaterType" class="control-label"></label>
+                    <select asp-for="Investment.HotWaterType" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(HotWaterType))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.HotWaterType" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.HotWaterFuel" class="control-label"></label>
+                    <select asp-for="Investment.HotWaterFuel" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(FuelType))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.HotWaterFuel" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.HWSourcePower" class="control-label"></label>
+                    <input asp-for="Audit.HWSourcePower" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.HWSourcePower" class="text-danger" />
+                </div>
+
+            </div>
+        </div>
+    </fieldset>
+</form>

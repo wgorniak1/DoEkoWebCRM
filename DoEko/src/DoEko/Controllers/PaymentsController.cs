@@ -21,14 +21,14 @@ namespace DoEko.Controllers
     {
         private readonly DoEkoContext _context;
         private readonly IFileStorage _fileStorage;
+        private readonly UserManager<ApplicationUser> _userManager;
         //private readonly AzureStorage _azure;
 
         public PaymentsController(DoEkoContext context, IFileStorage fileStorage, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-            _context.CurrentUserId = User != null ? userManager.GetUserId(User) : "Not Set";
-
             _fileStorage = fileStorage;
+            _userManager = userManager;
             //_azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
         }
 
@@ -68,9 +68,9 @@ namespace DoEko.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
         public async Task<IActionResult> AssignInvestment(IList<Payment> Payments)
        {
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
             var ContractId = Payments.ElementAt(0).ContractId;
             bool error = true;
 
@@ -130,6 +130,7 @@ namespace DoEko.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadPaymentFile(FormCollection Form, int ContractId)
         {
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
             bool error = false;
             int index;
             IList<string> msg = new List<string>();

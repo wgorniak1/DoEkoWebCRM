@@ -211,7 +211,7 @@ namespace DoEko.Models.DoEko
 
                 try
                 {
-                    entry.Property("ChangedBy").CurrentValue = this.CurrentUserId;
+                    entry.Property("ChangedBy").CurrentValue = CurrentUserId;
                 }
                 catch (Exception)
                 {
@@ -221,7 +221,7 @@ namespace DoEko.Models.DoEko
             return base.SaveChangesAsync(cancellationToken);
         }
 
-        public string CurrentUserId { get; set; }
+        public Guid CurrentUserId { get; set; }
 
         
 

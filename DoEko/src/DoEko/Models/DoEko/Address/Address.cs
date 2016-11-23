@@ -69,10 +69,15 @@ namespace DoEko.Models.DoEko.Addresses
         [StringLength(50, ErrorMessage = "Proszę podać prawidłową nazwę miejscowości", MinimumLength = 3)]
         [Display(Description = "", Name = "Miejscowość", ShortName = "Miejscowość")]
         public string City { get; set; }
+        //[Required(ErrorMessage = "{0} jest polem obowiązkowym")]
+        [Column(Order = 9)]
+        [StringLength(50, ErrorMessage = "Proszę podać prawidłową nazwę poczty", MinimumLength = 3)]
+        [Display(Description = "", Name = "Poczta", ShortName = "Poczta")]
+        public string PostOfficeLocation { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [Column(Order = 9)]
+        [Column(Order = 10)]
         [StringLength(50, ErrorMessage = "Proszę podać prawidłową nazwę ulicy", MinimumLength = 1)]
         [Display(Description = "Ulica", Name = "Ulica", ShortName = "Ulica")]
         public string Street { get; set; }
@@ -80,14 +85,14 @@ namespace DoEko.Models.DoEko.Addresses
         /// 
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
-        [Column(Order = 10)]
+        [Column(Order = 11)]
         [StringLength(5, ErrorMessage = "Długość pola {0} nie może przekroczyć {1} znaków", MinimumLength = 1)]
         [Display(Description = "Opis", Name = "Nr Budynku", ShortName = "Nr Bud.")]
         public string BuildingNo { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [Column(Order = 11)]
+        [Column(Order = 12)]
         [StringLength(5, ErrorMessage = "Proszę", MinimumLength = 1)]
         [Display(Description = "", Name = "Nr Mieszkania", ShortName = "Nr Mieszk.")]
         public string ApartmentNo { get; set; }

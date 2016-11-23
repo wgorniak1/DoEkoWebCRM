@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -74,7 +75,9 @@ namespace DoEko.Models.DoEko.Survey
         [Display(Name = "Po inspekcji")]
         After,
         [Display(Name = "Instalacja niemożliwa")]
-        NotPossible
+        NotPossible,
+        [Display(Name = "Brak kontaktu z właścicielem")]
+        NoContact
     }
 
     
@@ -119,26 +122,40 @@ namespace DoEko.Models.DoEko.Survey
         [Display(Description = "Inwestycja", Name = "Inwestycja", ShortName = "Inwestycja")]
         public Investment Investment { get; set; }
 
-        //*************************************************
-        //*************************************************
-        //cancellation_type before_inspection / after_inspection / not possible
+        //**************************************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "", Name = "Powód anulowania", ShortName = "Powód anulowania")]
         public SurveyCancelType? CancelType { get; set; }
         //cancellation_comments
+        [Display(Description = "", Name = "Uwagi", ShortName = "Uwagi")]
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         public string CancelComments { get; set; }
 
-        //public double BuildingCurrentEnergyTotal { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public Guid CreatedBy { get; set; }
 
+        public DateTime ChangedAt { get; set; }
+        public Guid ChangedBy { get; set; }
+
+        public DateTime FirstEditAt { get; set; }
+        public Guid FirstEditBy { get; set; }
 
         //***********************************************
         //nr obrębu (jeśli nie ma w nr ks lub działki)
-        //tytuł prawny do nieruchomości własność / współwłasność / dzierżawa / użyczenie
 
-        public SurveyDetAirCond AirCondition { get; set; }
-        public SurveyDetBathroom BathRoom { get; set; }
-        public SurveyDetBoilerRoom BoilerRoom { get; set; }
         public SurveyDetBuilding Building { get; set; }
-        public SurveyDetEnergyAudit Audit { get; set; }
+        public SurveyDetPlannedInstall PlannedInstall { get; set; }
+        public SurveyDetBoilerRoom BoilerRoom { get; set; }
+        public SurveyDetBathroom BathRoom { get; set; }
+        public SurveyDetAirCond AirCondition { get; set; }
+        public List<SurveyDetRoof> RoofPlanes { get; set; }
+        public SurveyDetWall Wall { get; set; }
         public SurveyDetGround Ground { get; set; }
-        public SurveyDetRoof Roof { get; set; }
+        public SurveyDetEnergyAudit Audit { get; set; }
+
+        [Display(Description = "", Name = "Uwagi", ShortName = "Uwagi")]
+        public string FreeCommments { get; set; }
     }
 }

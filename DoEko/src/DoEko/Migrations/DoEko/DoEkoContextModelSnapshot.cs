@@ -40,6 +40,9 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<int>("DistrictId");
 
+                    b.Property<string>("PostOfficeLocation")
+                        .HasAnnotation("MaxLength", 50);
+
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasAnnotation("MaxLength", 6);
@@ -289,7 +292,23 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<int>("AddressId");
 
+                    b.Property<int>("BusinessActivity");
+
+                    b.Property<int>("CentralHeatingFuel");
+
+                    b.Property<int>("CentralHeatingType");
+
+                    b.Property<string>("CentralHeatingTypeOther");
+
+                    b.Property<short>("CompletionYear");
+
                     b.Property<int>("ContractId");
+
+                    b.Property<double>("HeatedArea");
+
+                    b.Property<int>("HotWaterFuel");
+
+                    b.Property<int>("HotWaterType");
 
                     b.Property<int>("InspectionStatus");
 
@@ -299,9 +318,23 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("LandRegisterNo");
 
+                    b.Property<short>("NumberOfOccupants");
+
+                    b.Property<string>("PlotAreaNumber");
+
                     b.Property<string>("PlotNumber");
 
+                    b.Property<long>("PriorityIndex");
+
+                    b.Property<int>("Stage");
+
                     b.Property<int>("Status");
+
+                    b.Property<double>("TotalArea");
+
+                    b.Property<int>("Type");
+
+                    b.Property<double>("UsableArea");
 
                     b.HasKey("InvestmentId");
 
@@ -434,53 +467,32 @@ namespace DoEko.Migrations.DoEko
                     b.ToTable("Project");
                 });
 
-            modelBuilder.Entity("DoEko.Models.DoEko.Survey.RoofPlane", b =>
-                {
-                    b.Property<Guid>("RoofPlaneId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<double>("BuildingHeight");
-
-                    b.Property<double>("EdgeLength");
-
-                    b.Property<double>("Length");
-
-                    b.Property<double>("OkapHeight");
-
-                    b.Property<double>("RidgeWeight");
-
-                    b.Property<double>("RoofLength");
-
-                    b.Property<int>("RoofMaterial");
-
-                    b.Property<double>("SlopeAngle");
-
-                    b.Property<double>("SurfaceArea");
-
-                    b.Property<double>("SurfaceAzimuth");
-
-                    b.Property<Guid>("SurveyId");
-
-                    b.Property<double>("Width");
-
-                    b.HasKey("RoofPlaneId");
-
-                    b.HasIndex("SurveyId");
-
-                    b.ToTable("SurveyDetRoofPlane");
-                });
-
             modelBuilder.Entity("DoEko.Models.DoEko.Survey.Survey", b =>
                 {
                     b.Property<Guid>("SurveyId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CancelComments");
+                    b.Property<string>("CancelComments")
+                        .IsRequired();
 
                     b.Property<int?>("CancelType");
 
+                    b.Property<DateTime>("ChangedAt");
+
+                    b.Property<Guid>("ChangedBy");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<Guid>("CreatedBy");
+
                     b.Property<string>("Discriminator")
                         .IsRequired();
+
+                    b.Property<DateTime>("FirstEditAt");
+
+                    b.Property<Guid>("FirstEditBy");
+
+                    b.Property<string>("FreeCommments");
 
                     b.Property<Guid>("InvestmentId");
 
@@ -545,19 +557,25 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<bool>("AirVentilationExists");
 
-                    b.Property<bool>("GroundedPowerSupply");
+                    b.Property<double>("DoorHeight");
+
+                    b.Property<bool>("HWCirculationInstalled");
+
+                    b.Property<bool>("HWInstalled");
+
+                    b.Property<bool>("HWPressureReductorExists");
 
                     b.Property<double>("Height");
 
                     b.Property<bool>("HighVoltagePowerSupply");
-
-                    b.Property<bool>("IsDoorSizeEnough");
 
                     b.Property<bool>("IsDryAndWarm");
 
                     b.Property<double>("Length");
 
                     b.Property<bool>("RoomExists");
+
+                    b.Property<bool>("ThreePowerSuppliesExists");
 
                     b.Property<double>("Volume");
 
@@ -575,27 +593,11 @@ namespace DoEko.Migrations.DoEko
                 {
                     b.Property<Guid>("SurveyId");
 
-                    b.Property<int>("BusinessActivity");
-
-                    b.Property<short>("CompletionYear");
-
-                    b.Property<int>("InstallationLocalization");
-
                     b.Property<double>("InsulationThickness");
 
                     b.Property<int>("InsulationType");
 
-                    b.Property<short>("NumberOfOccupants");
-
-                    b.Property<int>("Purpose");
-
-                    b.Property<int>("Status");
-
-                    b.Property<double>("TotalArea");
-
-                    b.Property<int>("Type");
-
-                    b.Property<double>("UsableArea");
+                    b.Property<int>("TechnologyType");
 
                     b.Property<double>("Volume");
 
@@ -633,37 +635,33 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<bool>("CHFRadiantFloorInstalled");
 
+                    b.Property<bool>("CHIsHPOnlySource");
+
+                    b.Property<int>("CHRadiantFloorAreaPerc");
+
                     b.Property<int>("CHRadiatorType");
 
                     b.Property<bool>("CHRadiatorsInstalled");
 
-                    b.Property<int>("CentralHeatingFuel");
+                    b.Property<bool>("ComplexAgreement");
 
-                    b.Property<int>("CentralHeatingType");
+                    b.Property<bool>("ENAdditionalConsMeter");
+
+                    b.Property<bool>("ENIsGround");
+
+                    b.Property<double>("ENPowerLevel");
 
                     b.Property<decimal>("ElectricityAvgMonthlyCost");
 
                     b.Property<double>("ElectricityPower");
 
-                    b.Property<bool>("FirePlaceWithWater");
-
-                    b.Property<bool>("HWCirculationInstalled");
-
-                    b.Property<bool>("HWInstalled");
-
-                    b.Property<bool>("HWPressureReductorExists");
-
                     b.Property<double>("HWSourcePower");
 
-                    b.Property<int>("HotWaterFuel");
-
-                    b.Property<int>("HotWaterType");
-
-                    b.Property<double>("PVPowerLevel");
+                    b.Property<int>("PhaseCount");
 
                     b.Property<double>("PowerAvgYearlyConsumption");
 
-                    b.Property<string>("PowerCompanyName");
+                    b.Property<int>("PowerCompanyName");
 
                     b.Property<int>("PowerConsMeterLocation");
 
@@ -693,6 +691,8 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<bool>("OtherInstallation");
 
+                    b.Property<string>("OtherInstallationType");
+
                     b.Property<bool>("Rocks");
 
                     b.Property<int>("SlopeTerrain");
@@ -707,28 +707,92 @@ namespace DoEko.Migrations.DoEko
                     b.ToTable("SurveyDetGround");
                 });
 
-            modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyDetRoof", b =>
+            modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyDetPlannedInstall", b =>
                 {
                     b.Property<Guid>("SurveyId");
 
-                    b.Property<bool>("Chimney");
+                    b.Property<int>("Configuration");
 
-                    b.Property<bool>("InstallationUnderPlane");
+                    b.Property<int>("Localization");
 
-                    b.Property<bool>("LightingProtection");
+                    b.Property<bool>("OnWallPlacementAvailable");
 
-                    b.Property<bool>("SkyLights");
-
-                    b.Property<int>("Type");
-
-                    b.Property<bool>("Windows");
+                    b.Property<int>("Purpose");
 
                     b.HasKey("SurveyId");
 
                     b.HasIndex("SurveyId")
                         .IsUnique();
 
+                    b.ToTable("SurveyDetPlannedInstall");
+                });
+
+            modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyDetRoof", b =>
+                {
+                    b.Property<Guid>("RoofPlaneId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("BuildingHeight");
+
+                    b.Property<bool>("Chimney");
+
+                    b.Property<double>("EdgeLength");
+
+                    b.Property<bool>("InstallationUnderPlane");
+
+                    b.Property<double>("Length");
+
+                    b.Property<bool>("LightingProtection");
+
+                    b.Property<double>("OkapHeight");
+
+                    b.Property<double>("RidgeWeight");
+
+                    b.Property<double>("RoofLength");
+
+                    b.Property<int>("RoofMaterial");
+
+                    b.Property<bool>("SkyLights");
+
+                    b.Property<double>("SlopeAngle");
+
+                    b.Property<double>("SurfaceArea");
+
+                    b.Property<double>("SurfaceAzimuth");
+
+                    b.Property<Guid>("SurveyId");
+
+                    b.Property<int>("Type");
+
+                    b.Property<double>("Width");
+
+                    b.Property<bool>("Windows");
+
+                    b.HasKey("RoofPlaneId");
+
+                    b.HasIndex("SurveyId");
+
                     b.ToTable("SurveyDetRoof");
+                });
+
+            modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyDetWall", b =>
+                {
+                    b.Property<Guid>("SurveyId");
+
+                    b.Property<double>("Azimuth");
+
+                    b.Property<double>("Height");
+
+                    b.Property<double>("UsableArea");
+
+                    b.Property<double>("Width");
+
+                    b.HasKey("SurveyId");
+
+                    b.HasIndex("SurveyId")
+                        .IsUnique();
+
+                    b.ToTable("SurveyDetWall");
                 });
 
             modelBuilder.Entity("DoEko.Models.DoEko.test", b =>
@@ -811,8 +875,6 @@ namespace DoEko.Migrations.DoEko
                 {
                     b.HasBaseType("DoEko.Models.DoEko.Survey.Survey");
 
-                    b.Property<bool>("OnWallPlacementAvailable");
-
                     b.Property<int>("RSEType");
 
                     b.ToTable("SurveyCentralHeating");
@@ -834,8 +896,6 @@ namespace DoEko.Migrations.DoEko
             modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyHotWater", b =>
                 {
                     b.HasBaseType("DoEko.Models.DoEko.Survey.Survey");
-
-                    b.Property<int>("Configuration");
 
                     b.Property<int>("RSEType");
 
@@ -959,14 +1019,6 @@ namespace DoEko.Migrations.DoEko
                         .HasForeignKey("ParentProjectId");
                 });
 
-            modelBuilder.Entity("DoEko.Models.DoEko.Survey.RoofPlane", b =>
-                {
-                    b.HasOne("DoEko.Models.DoEko.Survey.SurveyDetRoof", "Roof")
-                        .WithMany("Planes")
-                        .HasForeignKey("SurveyId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("DoEko.Models.DoEko.Survey.Survey", b =>
                 {
                     b.HasOne("DoEko.Models.DoEko.Investment", "Investment")
@@ -1023,11 +1075,27 @@ namespace DoEko.Migrations.DoEko
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyDetPlannedInstall", b =>
+                {
+                    b.HasOne("DoEko.Models.DoEko.Survey.Survey", "Survey")
+                        .WithOne("PlannedInstall")
+                        .HasForeignKey("DoEko.Models.DoEko.Survey.SurveyDetPlannedInstall", "SurveyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyDetRoof", b =>
                 {
                     b.HasOne("DoEko.Models.DoEko.Survey.Survey", "Survey")
-                        .WithOne("Roof")
-                        .HasForeignKey("DoEko.Models.DoEko.Survey.SurveyDetRoof", "SurveyId")
+                        .WithMany("RoofPlanes")
+                        .HasForeignKey("SurveyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyDetWall", b =>
+                {
+                    b.HasOne("DoEko.Models.DoEko.Survey.Survey", "Survey")
+                        .WithOne("Wall")
+                        .HasForeignKey("DoEko.Models.DoEko.Survey.SurveyDetWall", "SurveyId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }
