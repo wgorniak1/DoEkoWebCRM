@@ -1,0 +1,72 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetGround
+@using DoEko.Models.DoEko
+
+<form id="SurveyGround"
+      asp-action="EditGroundAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Działka</legend>
+        <input asp-for="SurveyId" type="hidden" />
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="WetLand" class="control-label"></label>
+                    <input asp-for="WetLand" class="form-control" />
+                    <span asp-validation-for="WetLand" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="OtherInstallation" class="control-label"></label>
+                    <input asp-for="OtherInstallation" class="form-control" />
+                    <span asp-validation-for="OtherInstallation" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="OtherInstallationType" class="control-label"></label>
+                    <input asp-for="OtherInstallationType" class="form-control" />
+                    <span asp-validation-for="OtherInstallationType" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Rocks" class="control-label"></label>
+                    <input asp-for="Rocks" class="form-control" />
+                    <span asp-validation-for="Rocks" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="FormerMilitary" class="control-label"></label>
+                    <input asp-for="FormerMilitary" class="form-control" />
+                    <span asp-validation-for="FormerMilitary" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="SlopeTerrain" class="control-label"></label>
+                    <input asp-for="SlopeTerrain" class="form-control" />
+                    <span asp-validation-for="SlopeTerrain" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Area" class="control-label"></label>
+                    <input asp-for="Area" class="form-control" />
+                    <span asp-validation-for="Area" class="text-danger" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+</form>

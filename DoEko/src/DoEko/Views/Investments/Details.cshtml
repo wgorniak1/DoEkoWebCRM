@@ -1,42 +1,121 @@
+﻿@using DoEko.Models.Identity
+
 @model DoEko.Models.DoEko.Investment
-
+ 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Szczegóły Inwestycji";
 }
+<!-- Navigation -->
+@if (User.IsInRole(Roles.Inspector))
+{
+    <ol class="breadcrumb">
+        <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+        <li><a asp-action="List" asp-controller="Investments">Moje inspekcje</a></li>
+        <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
+    </ol>
+}
+else
+{
+    <ol class="breadcrumb">
+        <li><a asp-action="Index" asp-controller="Home">Str. Domowa</a></li>
+        <li><a asp-action="Index" asp-controller="Projects">Lista Projektów</a></li>
+        <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.Contract.ProjectId">Projekt @Html.DisplayFor(model => model.Contract.Project.ShortDescription)</a></li>
+        <li><a asp-action="Details" asp-controller="Contracts" asp-route-Id="@Model.ContractId">Umowa @Html.DisplayFor(model => model.Contract.Number)</a></li>
+        <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
+    </ol>
+}
+<!--Title-->
+<h2><small>Inwestycja</small> @Model.Address.SingleLine</h2>
 
-<h2>Details</h2>
+<div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+        <div class="panel-heading wg-panel-heading clearfix" 
+             role="tab" 
+             id="heading-details" 
+             data-toggle="collapse"
+             data-target="#details"
+             data-parent="#panel-group" 
+             href="#details" 
+             aria-expanded="true" 
+             aria-controls="details">
+            
+            <h4 class="panel-title wg-panel-title pull-left">
+                Dane podstawowe
+            </h4>                
 
-<div>
-    <h4>Investment</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.InspectionStatus)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.InspectionStatus)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.LandRegisterNo)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.LandRegisterNo)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PlotNumber)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PlotNumber)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.InvestmentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            <a asp-action="Edit" asp-controller="Investments"
+               asp-route-Id="@Model.InvestmentId"
+               asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-details")"
+               class="btn btn-primary btn-sm pull-right wg-panel-header-button"
+               title="Edytuj">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            </a>                       
+        </div>
+        <div id="details" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-details">
+            <div class="panel-body">
+                @Html.Partial("_InvestmentDetailsPartial", Model)                
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading wg-panel-heading clearfix" 
+             role="tab" 
+             id="heading-owners"
+             data-toggle="collapse" 
+             data-target="#owners"
+             data-parent="#panel-group" 
+             href="#owners" 
+             aria-expanded="false" 
+             aria-controls="owners">
+
+            <h4 class="panel-title wg-panel-title pull-left"> 
+                Właściciele
+            </h4>
+
+            <div class="btn-group pull-right">
+                <a asp-action="Create"
+                   asp-controller="InvestmentOwners"
+                   asp-route-InvestmentId="@Model.InvestmentId"
+                   asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-owners")"
+                   class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </a>
+            </div>
+        </div>
+        <div id="owners" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-owners">
+            <div class="panel-body">
+                @Html.Partial("_InvestmentOwnerListPartial", Model.InvestmentOwners)
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading wg-panel-heading clearfix"
+             role="tab"
+             id="heading-surveys"
+             data-toggle="collapse"
+             data-target="#surveys"
+             data-parent="#panel-group"
+             href="#surveys"
+             aria-expanded="false"
+             aria-controls="surveys">
+
+            <h4 class="panel-title wg-panel-title pull-left" style="padding-top: 7.5px;">
+                Źródła (Ankiety)
+            </h4>
+            @*<div class="btn-group pull-right">
+                <a asp-action="Create"
+                   asp-controller="Surveys"
+                   asp-route-InvestmentId="@Model.InvestmentId"
+                   asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-surveys")"
+                   class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </a>
+            </div>*@
+        </div>
+        <div id="surveys" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-survey">
+            <div class="panel-body">
+                @Html.Partial("_SurveyListPartial", Model.Surveys)
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,0 +1,78 @@
+@using DoEko.Controllers.Extensions
+@using Microsoft.AspNetCore.Identity
+@using DoEko.Models.Identity
+
+@model DoEko.Models.DoEko.Investment
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="form-horizontal">
+    <div class="form-group">
+        <label asp-for="Contract" class="control-label col-md-2"></label>
+        <div class="col-md-10">
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.Contract.Number)
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Status" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <span class="form-control-static">
+                @Model.Status.DisplayName()
+            </span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="InspectionStatus" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <span class="form-control-static">
+                @Model.InspectionStatus.DisplayName()
+            </span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="InspectorId" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <span class="form-control-static">
+                @{
+                 ApplicationUser inspector = await UserManager.FindByIdAsync(Model.InspectorId.ToString());
+                 }
+                @if (inspector != null)
+                {
+                    <p>ddd</p>
+                    @Html.Display(inspector.UserName)
+                }    
+                else
+                {
+                    <spane>Nie przypisano</spane>                        
+                 }
+                  
+            </span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Address" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <p class="form-control-static">
+                @Model.Address.FirstLine
+                @Model.Address.SecondLine
+            </p>        
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="PlotNumber" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.PlotNumber)
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="LandRegisterNo" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <span class="form-control-static">
+                @Html.DisplayFor(model => model.LandRegisterNo)
+            </span>
+        </div>
+    </div>
+</div>

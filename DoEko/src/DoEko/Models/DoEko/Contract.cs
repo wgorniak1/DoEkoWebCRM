@@ -50,16 +50,18 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
-        [StringLength(20,MinimumLength = 5,ErrorMessage = "Pole {0} musi mieć przynajmniej {2} i nie więcej niż {1} znaków")]
-        //[RegularExpression("*")]
-        [Display(Description = "Opis", Name = "Numer", ShortName = "Numer")]
+        [StringLength(20,MinimumLength = 5,ErrorMessage = "Proszę wprowadzić {0} w formacie 12345/A/1/2016")]
+        [RegularExpression(@"^[0-9]{1,5}(/)[A-Z]{1}(/)[0-9]{1}(/)(2015|2016|2017|2018|2019|2020)$", 
+            ErrorMessage ="Proszę wprowadzić {0} w formacie 12345/A/1/2016")]
+        [Display(Description = "12345 - kolejny numer umowy w danym roku finansowym. A - rodzaj umowy, 1 - indeks spółki, 2016 - rok finansowy", 
+            Name = "Numer", ShortName = "Numer", Prompt ="12345/A/1/2016")]
         public string Number { get; set; }
         /// <summary>
         /// 
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true, HtmlEncode = true)]
         [Display(Description = "Opis", Name = "Data Podpisania", ShortName = "Data Podpisania")]
         public DateTime ContractDate { get; set; }
         /// <summary>
@@ -80,7 +82,7 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
-        [StringLength(maximumLength: 50, ErrorMessage = "Maksymalna długość opisu {0}", MinimumLength = 3)]
+        [StringLength(maximumLength: 50, ErrorMessage = "Pole {0} powinno mieć przynajmniej {2} i nie więcej niż {1} znaków", MinimumLength = 3)]
         [Display(Description = "Opis", Name = "Krótki Opis", ShortName = "Krótki Opis")]
         public string ShortDescription { get; set; }
         /// <summary>
@@ -95,6 +97,10 @@ namespace DoEko.Models.DoEko
         
         [Display(Description = "Opis", Name = "Projekt", ShortName = "Projekt")]
         public virtual Project Project { get; set; }
+
+        [Display(Description = "", Name = "Dostawca", ShortName = "Dostawca")]
+        public int CompanyId { get; set; }
+        public virtual Company Company { get; set; }
         /// <summary>
         /// 
         /// </summary>

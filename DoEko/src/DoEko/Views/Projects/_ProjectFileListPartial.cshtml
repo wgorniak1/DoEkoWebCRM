@@ -1,0 +1,88 @@
+﻿@model DoEko.Models.DoEko.Project
+
+<div class="modal fade" id="DeleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="DeleteConfirmationLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Usuwanie załącznika</h4>
+            </div>
+            <div class="modal-body">
+                Czy jesteś pewien, że chcesz usunąć ten załącznik?
+                <ul><li class="list-group-item-warning" id="DeleteConfirmationFileName"></li></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Nie</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="DeleteConfirmationSubmit">Tak, Usuń</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-condensed table-hover">
+        <caption id="FICaption" hidden>
+            <input id="FIObjectType" name="FIObjectType" type="hidden" value="@nameof(Model)" />
+            <input id="FIObjectId"   name="FIObjectId"   type="hidden" value="@Model.ProjectId" />
+            <input id="FIreturnUrl"  name="FIreturnUrl"  type="hidden" value="@Url.Action("Details","Projects", new { Id = Model.ProjectId }, null,null,"files")" />
+            <input id="FIFile"       name="FIFile[]"     type="file"   multiple class="file-loading">
+            <div id="FIResultError" style="margin-top:10px;display:none"></div>
+            <div id="FIResultSuccess" class="alert alert-success fade in" style="margin-top:10px;display:none"></div>
+        </caption>
+
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Attachments.FirstOrDefault().Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Attachments.FirstOrDefault().ChangedAt)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @if (Model.Attachments.Count > 0)
+    {
+        @foreach (var file in Model.Attachments)
+        {
+            <tr>
+                <td>
+                    <a href="@file.Url" title="@file.Name" class="wg-link-nounderline">
+                        <span class="glyphicon glyphicon-file"></span> @Html.DisplayFor(modelItem => file.Name)
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => file.ChangedAt)
+                </td>
+                <td>
+                
+                    <button class="btn btn-default btn-sm pull-right"
+                            title="@("Usuń " + file.Name)"
+                            data-bind="@file.Name"
+                            data-toggle="modal" 
+                            data-target="#DeleteConfirmationModal">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr><td colspan="3">Nie załączono jeszcze żadnych plików</td></tr>
+    }
+        </tbody>
+    </table>
+</div>
+<form id="FileDeleteForm" 
+      class="navbar-form"
+      hidden
+      asp-action="Delete" asp-controller="Files"
+
+      data-ajax="true" 
+      data-ajax-method="POST" 
+      data-ajax-mode="replace" 
+      data-ajax-failed="deleteFailed"
+      data-ajax-complete="deleteCompleted">
+    <input id="FileDeleteFormType"   name="Type" form="FileDeleteForm"            type="hidden" value="Project" />
+    <input id="FileDeleteFormId"     name="Id"   form="FileDeleteForm"            type="hidden" value="@Model.ProjectId" />
+    <input id="FileDeleteFormName"   name="Name" form="FileDeleteForm"            type="hidden" value="" />
+    <input id="FileDeleteFormSubmit" name="FileDeleteSubmit" form="FileDeleteForm" type="submit" hidden>
+</form>

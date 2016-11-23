@@ -1,0 +1,9 @@
+﻿<form method="post"
+      asp-controller="Files"
+      asp-action="Upload">
+    <input type="text" name="ObjectType" value="@ViewBag.Type" hidden />
+    <input type="text" name="ObjectId" value="@ViewBag.Id" hidden />
+
+    <input type="file" name="files" multiple />
+    <input type="submit" value="Zapisz" />
+</form>

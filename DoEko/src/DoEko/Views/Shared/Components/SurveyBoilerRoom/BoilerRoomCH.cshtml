@@ -1,0 +1,299 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetBoilerRoom
+@using DoEko.Models.DoEko
+
+
+<form id="SurveyBoilerRoom"
+      asp-action="EditBoilerRoomAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostSuccess">
+    <fieldset>
+        <legend>Kotłownia</legend>
+        <input type="hidden" asp-for="SurveyId" />
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="RoomExists" class="control-label"></label>
+                    <input asp-for="RoomExists" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.RoomExists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="RoomExists" class="optionbutton-true" data-linked-checkbox="RoomExists" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="RoomExists" class="optionbutton-false" data-linked-checkbox="RoomExists">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="RoomExists" class="optionbutton-true" data-linked-checkbox="RoomExists">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="RoomExists" class="optionbutton-false" data-linked-checkbox="RoomExists" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <div class="form-group-sm">
+                    <label class="control-label">wys.</label>
+                    <input asp-for="Width" class="form-control" />
+                    <span asp-validation-for="Height" class="text-danger" />
+                </div>
+            </div>        
+            <div class="col-sm-1">
+                <div class="form-group-sm">
+                    <label class="control-label">szer.</label>
+                    <input asp-for="Height" class="form-control" />
+                    <span asp-validation-for="Width" class="text-danger" />
+                </div>
+            </div>        
+            <div class="col-sm-1">
+                <div class="form-group-sm">
+                    <label class="control-label">dł.</label>
+                    <input asp-for="Length" class="form-control" />
+                    <span asp-validation-for="Length" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Volume" class="control-label"></label>
+                    <input asp-for="Volume" class="form-control" disabled />
+                    <span asp-validation-for="Volume" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-2 col-sm-offset-1">
+                <div class="form-group-sm">
+                    <label asp-for="DoorHeight" class="control-label"></label>
+                    <input asp-for="DoorHeight" class="form-control" />
+                    <span asp-validation-for="DoorHeight" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="HWInstalled" class="control-label"></label>
+                    <input asp-for="HWInstalled" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.HWInstalled)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="HWInstalled" class="optionbutton-true" data-linked-checkbox="HWInstalled" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="HWInstalled" class="optionbutton-false" data-linked-checkbox="HWInstalled">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="HWInstalled" class="optionbutton-true" data-linked-checkbox="HWInstalled">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="HWInstalled" class="optionbutton-false" data-linked-checkbox="HWInstalled" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="HWCirculationInstalled" class="control-label"></label>
+                    <input asp-for="HWCirculationInstalled" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.HWCirculationInstalled)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="HWCirculationInstalled" class="optionbutton-true" data-linked-checkbox="HWCirculationInstalled" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="HWCirculationInstalled" class="optionbutton-false" data-linked-checkbox="HWCirculationInstalled">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="HWCirculationInstalled" class="optionbutton-true" data-linked-checkbox="HWCirculationInstalled">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="HWCirculationInstalled" class="optionbutton-false" data-linked-checkbox="HWCirculationInstalled" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="HWPressureReductorExists" class="control-label"></label>
+                    <input asp-for="HWPressureReductorExists" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.HWPressureReductorExists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="HWPressureReductorExists" class="optionbutton-true" data-linked-checkbox="HWPressureReductorExists" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="HWPressureReductorExists" class="optionbutton-false" data-linked-checkbox="HWPressureReductorExists">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="HWPressureReductorExists" class="optionbutton-true" data-linked-checkbox="HWPressureReductorExists">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="HWPressureReductorExists" class="optionbutton-false" data-linked-checkbox="HWPressureReductorExists" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="AirVentilationExists" class="control-label"></label>
+                    <input asp-for="AirVentilationExists" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.AirVentilationExists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="AirVentilationExists" class="optionbutton-true" data-linked-checkbox="AirVentilationExists" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="AirVentilationExists" class="optionbutton-false" data-linked-checkbox="AirVentilationExists">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="AirVentilationExists" class="optionbutton-true" data-linked-checkbox="AirVentilationExists">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="AirVentilationExists" class="optionbutton-false" data-linked-checkbox="AirVentilationExists" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="IsDryAndWarm" class="control-label"></label>
+                    <input asp-for="IsDryAndWarm" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.IsDryAndWarm)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="IsDryAndWarm" class="optionbutton-true" data-linked-checkbox="IsDryAndWarm" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="IsDryAndWarm" class="optionbutton-false" data-linked-checkbox="IsDryAndWarm">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="IsDryAndWarm" class="optionbutton-true" data-linked-checkbox="IsDryAndWarm">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="IsDryAndWarm" class="optionbutton-false" data-linked-checkbox="IsDryAndWarm" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="ThreePowerSuppliesExists" class="control-label"></label>
+                    <input asp-for="ThreePowerSuppliesExists" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.ThreePowerSuppliesExists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ThreePowerSuppliesExists" class="optionbutton-true" data-linked-checkbox="ThreePowerSuppliesExists" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="ThreePowerSuppliesExists" class="optionbutton-false" data-linked-checkbox="ThreePowerSuppliesExists">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="ThreePowerSuppliesExists" class="optionbutton-true" data-linked-checkbox="ThreePowerSuppliesExists">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ThreePowerSuppliesExists" class="optionbutton-false" data-linked-checkbox="ThreePowerSuppliesExists" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="HighVoltagePowerSupply" class="control-label"></label>
+                    <input asp-for="HighVoltagePowerSupply" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.HighVoltagePowerSupply)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="HighVoltagePowerSupply" class="optionbutton-true" data-linked-checkbox="HighVoltagePowerSupply" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="HighVoltagePowerSupply" class="optionbutton-false" data-linked-checkbox="HighVoltagePowerSupply">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="HighVoltagePowerSupply" class="optionbutton-true" data-linked-checkbox="HighVoltagePowerSupply">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="HighVoltagePowerSupply" class="optionbutton-false" data-linked-checkbox="HighVoltagePowerSupply" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>

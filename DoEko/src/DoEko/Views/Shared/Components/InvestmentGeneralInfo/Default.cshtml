@@ -1,0 +1,98 @@
+﻿@model DoEko.Models.DoEko.Investment
+@using DoEko.Models.DoEko
+
+<form id="InvestmentGeneralInfo"
+      asp-action="EditGeneralInfoAjax"
+      asp-controller="Investments"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostSuccess">
+
+    <fieldset>
+        <legend>Adres Inwestycji</legend>
+        <input asp-for="InvestmentId" type="hidden" />
+        <input asp-for="AddressId" type="hidden" />
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class='form-group-sm'>
+                    <label asp-for="Address.Street" class="control-label"></label>
+                    <input asp-for="Address.Street" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Address.Street" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Address.BuildingNo" class="control-label"></label>
+                    <input asp-for="Address.BuildingNo" class="col-sm-1 form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Address.BuildingNo" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Address.ApartmentNo" class="control-label"></label>
+                    <input asp-for="Address.ApartmentNo" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Address.ApartmentNo" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Address.PostalCode"></label>
+                    <input asp-for="Address.PostalCode" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Address.PostalCode" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="form-group-sm">
+                    <label asp-for="Address.City" class="control-label"></label>
+                    <input asp-for="Address.City" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Address.City" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Address.StateId" class="control-label"></label>
+                    <select asp-for="Address.StateId" class="form-control address-state" data-address-key="InvAddr" asp-items="ViewBag.InvAddrStateId">
+                        <option value="">Wybierz</option>
+                    </select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Address.StateId" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Address.DistrictId" class="control-label"></label>
+                    <select asp-for="Address.DistrictId" class="form-control address-district" data-address-key="InvAddr" asp-items="ViewBag.InvAddrDistrictId">
+                        <option value="">Wybierz</option>
+                    </select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Address.DistrictId" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Address.CommuneId" class="control-label"></label>
+                    <select asp-for="Address.CommuneId" class="form-control address-commune" data-address-key="InvAddr" asp-items="ViewBag.InvAddrCommuneId">
+                        <option value="">Wybierz</option>
+                    </select>
+                    <span class="help-block-sm"></span>
+                    <span asp-validation-for="Address.CommuneId" class="text-danger" />
+                    <input asp-for="Address.CommuneType" class="form-control address-communetype" data-address-key="InvAddr" type="hidden" />
+                    <input asp-for="Address.CountryId" class="form-control" type="hidden" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>

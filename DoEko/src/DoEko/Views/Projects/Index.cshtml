@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations;
+﻿@using DoEko.Controllers.Extensions;
 @using System.Reflection;
 @using DoEko.ViewModels
 @model IEnumerable<DoEko.Models.DoEko.Project>
@@ -16,6 +16,29 @@
 <!--Title-->
 <h2>Lista Projektów</h2>
 <p class="text-success">@ViewData["StatusMessage"]</p>
+
+@if (ViewBag.ProjectDeleteFinished)
+{
+    if (ViewBag.ProjectDeleteResult == false)
+    {
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Usuwanie projektu</strong><br />
+            <ul>
+                <li>@ViewBag.ProjectDeleteMessage</li>
+            </ul>
+        </div>
+    }
+    else if (ViewBag.ProjectDeleteResult == true)
+    {
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Usuwanie projektu</strong><br />
+            @ViewBag.ProjectDeleteMessage
+        </div>
+    }
+
+}
 
 <p>
     <a asp-action="Create" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Utwórz Nowy</a>

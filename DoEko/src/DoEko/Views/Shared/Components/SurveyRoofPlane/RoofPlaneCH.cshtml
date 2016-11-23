@@ -1,0 +1,311 @@
+﻿@model DoEko.ViewComponents.ViewModels.SurveyRoofPlaneViewModel
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+@{ 
+    string method = "";
+
+    if (string.IsNullOrEmpty(Model.Plane.SurveyId.ToString()))
+    {
+        method = "CreateRoofPlaneAjax";
+    } else
+    {
+        method = "EditRoofPlaneAjax";
+    }
+}
+
+<form id=@("SurveyRoofPlane_" + Model.RoofNumber.ToString())
+      asp-action="@method"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>
+            Dach | Połać @Model.RoofNumber.ToString() z @Model.RoofTotal.ToString()
+            @if (Model.RoofTotal > 1)
+            {
+                <button class="btn btn-default remowner"><span class="glyphicon glyphicon-minus"></span></button>
+            }
+            <button class="btn btn-default addowner"><span class="glyphicon glyphicon-plus"></span></button>
+        </legend>
+
+        <input asp-for="SurveyId" type="hidden" />
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.Type" class="control-label"></label>
+                    <select asp-for="Plane.Type" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(RoofType))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.Type" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="img-thumbnail">
+                    <img src="#" alt="Rodzaj Dachu" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.BuildingHeight" class="control-label"></label>
+                    <input asp-for="Plane.BuildingHeight" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.BuildingHeight" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.OkapHeight" class="control-label"></label>
+                    <input asp-for="Plane.OkapHeight" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.OkapHeight" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.RoofLength" class="control-label"></label>
+                    <input asp-for="Plane.RoofLength" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.RoofLength" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.EdgeLength" class="control-label"></label>
+                    <input asp-for="Plane.EdgeLength" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.EdgeLength" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.RidgeWeight" class="control-label"></label>
+                    <input asp-for="Plane.RidgeWeight" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.RidgeWeight" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.Width" class="control-label"></label>
+                    <input asp-for="Plane.Width" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.Width" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.Length" class="control-label"></label>
+                    <input asp-for="Plane.Length" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.Length" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.SlopeAngle" class="control-label"></label>
+                    <input asp-for="Plane.SlopeAngle" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.SlopeAngle" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.RoofMaterial" class="control-label"></label>
+                    <select asp-for="Plane.RoofMaterial" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(RoofMaterial))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.RoofMaterial" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.SurfaceArea" class="control-label"></label>
+                    <input asp-for="Plane.SurfaceArea" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.SurfaceArea" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.SurfaceAzimuth" class="control-label"></label>
+                    <input asp-for="Plane.SurfaceAzimuth" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Plane.SurfaceAzimuth" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.LightingProtection" class="control-label"></label>
+                    <input asp-for="Plane.LightingProtection" hidden />
+                    <span class="help-block"></span>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Plane.LightingProtection)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="LightingProtection" class="optionbutton-true" data-linked-checkbox="Plane.LightingProtection" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="LightingProtection" class="optionbutton-false" data-linked-checkbox="Plane.LightingProtection" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="LightingProtection" class="optionbutton-true" data-linked-checkbox="Plane.LightingProtection" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="LightingProtection" class="optionbutton-false" data-linked-checkbox="Plane.LightingProtection" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.Chimney" class="control-label"></label>
+                    <input asp-for="Plane.Chimney" hidden />
+                    <span class="help-block"></span>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Plane.Chimney)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Chimney" class="optionbutton-true" data-linked-checkbox="Plane.Chimney" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="Chimney" class="optionbutton-false" data-linked-checkbox="Plane.Chimney" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="Chimney" class="optionbutton-true" data-linked-checkbox="Plane.Chimney" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Chimney" class="optionbutton-false" data-linked-checkbox="Plane.Chimney" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.Windows" class="control-label"></label>
+                    <input asp-for="Plane.Windows" hidden />
+                    <span class="help-block"></span>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Plane.Windows)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Windows" class="optionbutton-true" data-linked-checkbox="Plane.Windows" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="Windows" class="optionbutton-false" data-linked-checkbox="Plane.Windows" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="Windows" class="optionbutton-true" data-linked-checkbox="Plane.Windows" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Windows" class="optionbutton-false" data-linked-checkbox="Plane.Windows" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.SkyLights" class="control-label"></label>
+                    <input asp-for="Plane.SkyLights" hidden />
+                    <span class="help-block"></span>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Plane.SkyLights)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="SkyLights" class="optionbutton-true" data-linked-checkbox="Plane.SkyLights" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="SkyLights" class="optionbutton-false" data-linked-checkbox="Plane.SkyLights" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="SkyLights" class="optionbutton-true" data-linked-checkbox="Plane.SkyLights" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="SkyLights" class="optionbutton-false" data-linked-checkbox="Plane.SkyLights" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group-sm">
+                    <label asp-for="Plane.InstallationUnderPlane" class="control-label"></label>
+                    <input asp-for="Plane.InstallationUnderPlane" hidden />
+                    <span class="help-block"></span>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Plane.InstallationUnderPlane)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="InstallationUnderPlane" class="optionbutton-true" data-linked-checkbox="Plane.InstallationUnderPlane" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="InstallationUnderPlane" class="optionbutton-false" data-linked-checkbox="Plane.InstallationUnderPlane" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="InstallationUnderPlane" class="optionbutton-true" data-linked-checkbox="Plane.InstallationUnderPlane" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="InstallationUnderPlane" class="optionbutton-false" data-linked-checkbox="Plane.InstallationUnderPlane" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </fieldset>
+    
+    <input type="submit" />
+
+</form>

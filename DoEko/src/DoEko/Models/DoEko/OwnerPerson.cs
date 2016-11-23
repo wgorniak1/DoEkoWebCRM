@@ -23,7 +23,7 @@ namespace DoEko.Models.DoEko
         //[Display(Description = "", Name = "Data Urodz.", ShortName = "Data Ur.")]
         //public DateTime BirthDate { get; set; }
         //[Required]
-        [RegularExpression("")]
+        [RegularExpression("^[0-9]{11}$")]
         [Display(Description = "", Name = "Nr PESEL", ShortName = "PESEL")]
         public string Pesel { get; set; }
         [RegularExpression("")]

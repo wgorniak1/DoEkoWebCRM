@@ -1,0 +1,55 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetPlannedInstall
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+
+<form id="SurveyPlannedInstallation"
+      asp-action="EditPlannedInstallationAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostSuccess">
+    <fieldset>
+        <legend>Planowana instalacja</legend>
+
+        <input type="hidden" asp-for="SurveyId" />
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Localization" class="control-label"></label>
+                    <select asp-for="Localization" asp-items="Html.GetEnumSelectList(typeof(InstallationLocalization))" class="form-control"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Localization" class="text-danger" />
+                </div>
+            </div>
+            @if (Model.Localization == InstallationLocalization.Ground)
+            {
+                <div class="col-sm-4 plannedinstallationpurpose" style="display: none;">
+                    <div class="form-group-sm">
+                        <label asp-for="Purpose" class="control-label"></label>
+                        <select asp-for="Purpose" asp-items="Html.GetEnumSelectList(typeof(BuildingPurpose))" class="form-control"></select>
+                        <span class="help-block"></span>
+                        <span asp-validation-for="Purpose" class="text-danger" />
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-sm-4 plannedinstallationpurpose">
+                    <div class="form-group-sm">
+                        <label asp-for="Purpose" class="control-label"></label>
+                        <select asp-for="Purpose" asp-items="Html.GetEnumSelectList(typeof(BuildingPurpose))" class="form-control"></select>
+                        <span class="help-block"></span>
+                        <span asp-validation-for="Purpose" class="text-danger" />
+                    </div>
+                </div>
+            }
+        </div>
+
+    </fieldset>
+
+
+</form>

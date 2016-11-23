@@ -1,0 +1,68 @@
+﻿@model DoEko.ViewModels.SurveyViewModels.DetailsCHViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Main View</h2>
+
+    <div class="alert alert-danger alert-dismissable" role="alert" id="AjaxErrorDiv">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Uwaga!</strong><div id="AjaxErrorMsg"></div>
+    </div>
+
+    @for (int i = 0; i < Model.Owners.Count; i++)
+    {
+        @await Component.InvokeAsync("InvestmentOwnerData",
+            new { investmentId = Model.Owners[i].InvestmentId,
+                ownerId = Model.Owners[i].InvestmentOwnerId,
+                ownerNo = (i + 1), ownerTotal = Model.Owners.Count })
+    }
+    
+    
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<div id="OwnerData">
+    abc
+</div>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $(function () {
+            $('#OwnerMaintainForm').data('validator').settings.onfocusout = function (element) {
+                $(element).valid();
+            };
+        });
+    </script>
+    <script>
+        //hide alert box at the beginning
+        $(document).ready(function () {$("#AjaxErrorDiv").hide();});
+
+        function OwnerMaintainFormFailed(xhr, status, error) {
+            
+            //set error message
+            $("#AjaxErrorMsg").html(error);
+            
+            //display message box
+            //$("#AjaxErrorDiv").alert();
+
+            $("#AjaxErrorDiv").fadeToggle( function () {
+                $("#AjaxErrorDiv").fadeToggle(3000);
+                });
+         };
+
+        function OwnerMaintainFormCompleted() {
+
+            alert("form completed");
+
+        };
+    </script>
+
+    <script type="text/javascript">
+
+    </script>
+
+}

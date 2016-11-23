@@ -7,13 +7,27 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
+    public enum OwnershipType
+    {
+        [Display(Name = "Własność")]
+        Type_1,
+        [Display(Name = "Współwłasność")]
+        Type_2,
+        [Display(Name = "Dzierżawa")]
+        Type_3,
+        [Display(Name = "Użyczenie")]
+        Type_4
+    }
+
     [Table(nameof(InvestmentOwner))]
     public class InvestmentOwner
     {   
-        public int InvestmentId { get; set; }
+        public Guid InvestmentId { get; set; }
         public virtual Investment Investment { get; set; }
-        public int OwnerId { get; set; }
-        public virtual Owner Owner { get; set; }
+        public Guid OwnerId { get; set; }
+        public virtual BusinessPartner Owner { get; set; }
         public Boolean Sponsor { get; set; }
+
+        public OwnershipType OwnershipType { get; set; }
     }
 }

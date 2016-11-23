@@ -1,0 +1,58 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetPlannedInstall
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+
+<form id="SurveyPlannedInstallation"
+      asp-action="EditPlannedInstallationAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostSuccess">
+    <fieldset>
+        <legend>Planowana instalacja</legend>
+
+        <input type="hidden" asp-for="SurveyId" />
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="OnWallPlacementAvailable" class="control-label"></label>
+                    <input type="hidden" asp-for="OnWallPlacementAvailable" />
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        @if (Model.OnWallPlacementAvailable)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Group1" data-linked-checkbox="OnWallPlacementAvailable" class="optionbutton-true" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="Group1" data-linked-checkbox="OnWallPlacementAvailable" class="optionbutton-false" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="Group1" data-linked-checkbox="OnWallPlacementAvailable" class="optionbutton-true" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Group1" data-linked-checkbox="OnWallPlacementAvailable" class="optionbutton-false" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                    <span class="help-block"></span>
+                </div>
+            </div>
+
+
+
+        </div>
+
+    </fieldset>
+
+
+</form>

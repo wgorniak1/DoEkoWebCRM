@@ -7,8 +7,10 @@ namespace DoEko.Models.Identity
 {
     public static class Roles
     {
-        private static readonly string[] roles = { "Admin", "Inspector", "ContractManager", "Reader", "Writer" };
-        public static string Admin { get { return roles[0]; } }
+        private static readonly string[] roles = { "Administrator", "Użytkownik", "Inspektor" };
+        public const string Admin ="Administrator";
+        public const string User = "Użytkownik";
+        public const string Inspector = "Inspektor";
 
         public static IEnumerable<string> All { get { return roles; } }
     }

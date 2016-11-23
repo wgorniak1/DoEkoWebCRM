@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
+using DoEko.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers
 {
+    [Authorize(Roles = Roles.Admin)]
     public class SettingsController : Controller
     {
         private readonly DoEkoContext _context;

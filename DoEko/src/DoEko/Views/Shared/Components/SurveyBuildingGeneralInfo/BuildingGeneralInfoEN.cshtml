@@ -1,0 +1,94 @@
+﻿@model DoEko.Models.DoEko.Survey.Survey
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+<form id="SurveyBuildingGeneralInfo"
+      asp-action="EditBuildingGeneralInfoAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostSuccess">
+    <fieldset>
+        <legend>Ogólne</legend>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.Type" class="control-label"></label>
+                    <select asp-for="Investment.Type" asp-items="Html.GetEnumSelectList(typeof(BuildingType))" class="form-control"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.Type" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.BusinessActivity" class="control-label"></label>
+                    <select asp-for="Investment.BusinessActivity" asp-items="Html.GetEnumSelectList(typeof(BusinessActivity))" class="form-control"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.BusinessActivity" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.Stage" class="control-label"></label>
+                    <select asp-for="Investment.Stage" asp-items="Html.GetEnumSelectList(typeof(BuildingStage))" class="form-control"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.Stage" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.CompletionYear" class="control-label"></label>
+                    <input asp-for="Investment.CompletionYear" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.CompletionYear" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.TotalArea" class="control-label"></label>
+                    <input asp-for="Investment.TotalArea" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.TotalArea" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.UsableArea" class="control-label"></label>
+                    <input asp-for="Investment.UsableArea" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.UsableArea" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.HeatedArea" class="control-label"></label>
+                    <input asp-for="Investment.HeatedArea" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.HeatedArea" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.NumberOfOccupants" class="control-label"></label>
+                    <input asp-for="Investment.NumberOfOccupants" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.NumberOfOccupants" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">            
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.InternetAvailable" class="control-label"></label>
+                    <input asp-for="Investment.InternetAvailable" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.InternetAvailable" class="text-danger" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>

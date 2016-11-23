@@ -1,0 +1,17 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetWall
+@using DoEko.Models.DoEko
+
+<form id="SurveyWall"
+      asp-action="EditWallAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Elewacja</legend>
+        <input asp-for="SurveyId" type="hidden" />
+    </fieldset>
+</form>

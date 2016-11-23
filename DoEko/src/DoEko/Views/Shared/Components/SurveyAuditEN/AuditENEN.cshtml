@@ -1,0 +1,174 @@
+﻿@model DoEko.ViewComponents.ViewModels.SurveyAuditViewModel
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+<form id="SurveyAuditEN"
+      asp-action="EditAuditENAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailed"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Energia Elektryczna</legend>
+        <input type="hidden" asp-for="Investment.InvestmentId" />
+        <input type="hidden" asp-for="SurveyId" />
+        <input type="hidden" asp-for="Audit.SurveyId" />
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.PowerCompanyName" class="control-label"></label>
+                    <select asp-for="Audit.PowerCompanyName" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(PowerCompanyName))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.PowerCompanyName" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.ComplexAgreement" class="control-label"></label>
+                    <input asp-for="Audit.ComplexAgreement" hidden />
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Audit.ComplexAgreement)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ComplexAgreement" class="optionbutton-true" data-linked-checkbox="Audit.ComplexAgreement" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="ComplexAgreement" class="optionbutton-false" data-linked-checkbox="Audit.ComplexAgreement" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="ComplexAgreement" class="optionbutton-true" data-linked-checkbox="Audit.ComplexAgreement" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ComplexAgreement" class="optionbutton-false" data-linked-checkbox="Audit.ComplexAgreement" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.PowerSupplyType" class="control-label"></label>
+                    <select asp-for="Audit.PowerSupplyType" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(PowerSupplyType))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.PowerSupplyType" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.ElectricityPower" class="control-label"></label>
+                    <input asp-for="Audit.ElectricityPower" class="form-control" />
+                    <span asp-validation-for="Audit.ElectricityPower" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label asp-for="Audit.ENAdditionalConsMeter" class="control-label"></label>
+                <input asp-for="Audit.ENAdditionalConsMeter" hidden />
+                <div class="btn-group-sm" data-toggle="buttons">
+                    @if (Model.Audit.ENAdditionalConsMeter)
+                    {
+                        <label class="btn btn-default active">
+                            <input type="radio" name="ENAdditionalConsMeter" class="optionbutton-true" data-linked-checkbox="Audit.ENAdditionalConsMeter" autocomplete="off" checked />
+                            Tak
+                        </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="ENAdditionalConsMeter" class="optionbutton-false" data-linked-checkbox="Audit.ENAdditionalConsMeter" autocomplete="off" />
+                                Nie
+                            </label>
+                    }
+                    else
+                    {
+                        <label class="btn btn-default">
+                            <input type="radio" name="ENAdditionalConsMeter" class="optionbutton-true" data-linked-checkbox="Audit.ENAdditionalConsMeter" autocomplete="off" />
+                            Tak
+                        </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ENAdditionalConsMeter" class="optionbutton-false" data-linked-checkbox="Audit.ENAdditionalConsMeter" autocomplete="off" checked />
+                                Nie
+                            </label>
+                    }
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.PowerConsMeterLocation" class="control-label"></label>
+                    <select asp-for="Audit.PowerConsMeterLocation" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(PowerConsMeterLocation))"></select>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Audit.PowerConsMeterLocation" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.ENIsGround" class="control-label"></label>
+                    <input asp-for="Audit.ENIsGround" hidden />
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Audit.ENIsGround)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ENIsGround" class="optionbutton-true" data-linked-checkbox="Audit.ENIsGround" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="ENIsGround" class="optionbutton-false" data-linked-checkbox="Audit.ENIsGround" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="ENIsGround" class="optionbutton-true" data-linked-checkbox="Audit.ENIsGround" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="ENIsGround" class="optionbutton-false" data-linked-checkbox="Audit.ENIsGround" autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.PhaseCount" class="control-label"></label>
+                    <input asp-for="Audit.PhaseCount" class="form-control" />
+                    <span asp-validation-for="Audit.PhaseCount" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.ENPowerLevel" class="control-label"></label>
+                    <input asp-for="Audit.ENPowerLevel" class="form-control" />
+                    <span asp-validation-for="Audit.ENPowerLevel" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.ElectricityAvgMonthlyCost" class="control-label"></label>
+                    <input asp-for="Audit.ElectricityAvgMonthlyCost" class="form-control" />
+                    <span asp-validation-for="Audit.ElectricityAvgMonthlyCost" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.PowerAvgYearlyConsumption" class="control-label"></label>
+                    <input asp-for="Audit.PowerAvgYearlyConsumption" class="form-control" />
+                    <span asp-validation-for="Audit.PowerAvgYearlyConsumption" class="text-danger" />
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+</form>

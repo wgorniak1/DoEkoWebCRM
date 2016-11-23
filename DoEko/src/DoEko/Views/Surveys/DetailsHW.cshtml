@@ -1,0 +1,395 @@
+﻿@model DoEko.Models.DoEko.SurveyHotWater
+
+@{
+    ViewData["Title"] = "Solary";
+}
+
+<h2>Solary / Pompa Ciepła</h2>
+
+<form asp-action="DetailsHW">
+    <div class="form-horizontal">
+        <h4>Ciepła Woda Użytkowa</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="SurveyId" />
+        <input type="hidden" asp-for="Status" />
+        <input type="hidden" asp-for="Type" />
+        <input type="hidden" asp-for="InvestmentId" />
+        @*<div class="form-group">
+            <label asp-for="Status" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Status" class="form-control"></select>
+                <span asp-validation-for="Status" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Type" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Type" class="form-control"></select>
+                <span asp-validation-for="Type" class="text-danger" />
+            </div>
+        </div>*@
+
+
+        <div class="form-group">
+            <label asp-for="BuildingCompletionYear" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingCompletionYear" class="form-control" />
+                <span asp-validation-for="BuildingCompletionYear" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingCurrentEnergyTotal" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingCurrentEnergyTotal" class="form-control" />
+                <span asp-validation-for="BuildingCurrentEnergyTotal" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingNumberOfHosts" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingNumberOfHosts" class="form-control" />
+                <span asp-validation-for="BuildingNumberOfHosts" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingOverallArea" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingOverallArea" class="form-control" />
+                <span asp-validation-for="BuildingOverallArea" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingState" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="BuildingState" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.BuildingState))"></select>
+                <span asp-validation-for="BuildingState" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingType" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="BuildingType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.BuildingType))"></select>
+                <span asp-validation-for="BuildingType" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingType2" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="BuildingType2" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.BuildingType2))"></select>
+                <span asp-validation-for="BuildingType2" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingUsableArea" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingUsableArea" class="form-control" />
+                <span asp-validation-for="BuildingUsableArea" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BusinessActivity" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="BusinessActivity" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.BusinessActivity))"></select>
+                <span asp-validation-for="BusinessActivity" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CancelComments" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="CancelComments" class="form-control" />
+                <span asp-validation-for="CancelComments" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CancelType" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="CancelType" class="form-control" />
+                <span asp-validation-for="CancelType" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CentralHeatingFuel" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="CentralHeatingFuel" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.FuelType))"></select>
+                <span asp-validation-for="CentralHeatingFuel" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CentralHeatingType" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="CentralHeatingType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.CentralHeatingType))"></select>
+                <span asp-validation-for="CentralHeatingType" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="HotWaterFuel" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="HotWaterFuel" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.FuelType))"></select>
+                <span asp-validation-for="HotWaterFuel" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="HotWaterType" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="HotWaterType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.HotWaterType))"></select>
+                <span asp-validation-for="HotWaterType" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="InstallationLocalization" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="InstallationLocalization" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.InstallationLocalization))"></select>
+                <span asp-validation-for="InstallationLocalization" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="InternetConnectionAvailable" />
+                    <label asp-for="InternetConnectionAvailable"></label>
+                </div>
+            </div>
+        </div>
+        
+        @*<div class="form-group">
+            <label asp-for="Status" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Status" class="form-control"></select>
+                <span asp-validation-for="Status" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Type" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Type" class="form-control"></select>
+                <span asp-validation-for="Type" class="text-danger" />
+            </div>
+        </div>*@
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="AirVentilationExists" />
+                    <label asp-for="AirVentilationExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Azimuth" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Azimuth" class="form-control" />
+                <span asp-validation-for="Azimuth" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="BoilerStationExists" />
+                    <label asp-for="BoilerStationExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BoilerStationSizeX" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BoilerStationSizeX" class="form-control" />
+                <span asp-validation-for="BoilerStationSizeX" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BoilerStationSizeY" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BoilerStationSizeY" class="form-control" />
+                <span asp-validation-for="BoilerStationSizeY" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BoilerStationSizeZ" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BoilerStationSizeZ" class="form-control" />
+                <span asp-validation-for="BoilerStationSizeZ" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingSizeX" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingSizeX" class="form-control" />
+                <span asp-validation-for="BuildingSizeX" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingSizeY" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingSizeY" class="form-control" />
+                <span asp-validation-for="BuildingSizeY" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="BuildingSizeZ" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="BuildingSizeZ" class="form-control" />
+                <span asp-validation-for="BuildingSizeZ" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="ChimneysExists" />
+                    <label asp-for="ChimneysExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="CirculationExists" />
+                    <label asp-for="CirculationExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Current" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Current" class="form-control" />
+                <span asp-validation-for="Current" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="GroundedSocketsExists" />
+                    <label asp-for="GroundedSocketsExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="InstalationExists" />
+                    <label asp-for="InstalationExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="InstallationSpace" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="InstallationSpace" class="form-control" />
+                <span asp-validation-for="InstallationSpace" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="LightingRodExists" />
+                    <label asp-for="LightingRodExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="PresureRegulator" />
+                    <label asp-for="PresureRegulator"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RoofEdgeWeight" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RoofEdgeWeight" class="form-control" />
+                <span asp-validation-for="RoofEdgeWeight" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RoofHeight" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RoofHeight" class="form-control" />
+                <span asp-validation-for="RoofHeight" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RoofInclinationAngle" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RoofInclinationAngle" class="form-control" />
+                <span asp-validation-for="RoofInclinationAngle" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="RoofLightsExists" />
+                    <label asp-for="RoofLightsExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RoofMaterial" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="RoofMaterial" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.RoofMaterial))"></select>
+                <span asp-validation-for="RoofMaterial" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RoofRidgeWeight" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RoofRidgeWeight" class="form-control" />
+                <span asp-validation-for="RoofRidgeWeight" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RoofWidth" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RoofWidth" class="form-control" />
+                <span asp-validation-for="RoofWidth" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="RoofWindowsExists" />
+                    <label asp-for="RoofWindowsExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="TargetHotWaterType" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="TargetHotWaterType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.TargetHotWaterType))"></select>
+                <span asp-validation-for="TargetHotWaterType" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="UnderRoofInstallationExists" />
+                    <label asp-for="UnderRoofInstallationExists"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="isDoorSizeEnough" />
+                    <label asp-for="isDoorSizeEnough"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Zapisz (w.robocza)" class="btn btn-primary" />
+                @*@if (User.IsInRole("Inspector"))
+                {
+                    <a asp-action="MyList" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Anuluj</a>
+                }
+                else
+                {*@
+                    <a asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Anuluj</a>
+                           </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

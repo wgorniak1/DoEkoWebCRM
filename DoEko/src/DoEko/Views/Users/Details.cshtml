@@ -1,0 +1,86 @@
+﻿@model DoEko.ViewModels.UserViewModel.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "Szczegóły konta użytkownika";
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li><a asp-action="Index" asp-controller="Users">Lista użytkowników</a></li>
+    <li class="active">Użytkownik @Model.FirstName @Model.LastName</li>
+</ol>
+
+<!--Title-->
+<h2><small>Użytkownik</small> @Model.FirstName @Model.LastName</h2>
+
+<!-- Details Form-->
+<form asp-action="Details">
+    <div class="form-horizontal">
+        <h4>Informacje szczegółowe</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="UserID" type="hidden" />
+
+        <div class="form-group">
+            <label asp-for="FirstName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="UserName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger" />
+            </div>
+        </div>
+        @*<div class="form-group">
+            <label asp-for="Password" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger" />
+            </div>
+        </div>*@
+        <div class="form-group">
+            <label asp-for="RoleId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="RoleId" class="form-control" asp-items="ViewBag.RoleId">
+                </select>
+                <span asp-validation-for="RoleId" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Zapisz" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-default">Anuluj</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

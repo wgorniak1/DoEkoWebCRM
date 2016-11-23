@@ -1,56 +1,154 @@
-@model DoEko.Models.DoEko.Investment
-
+﻿@model DoEko.ViewModels.InvestmentViewModels.CreateViewModel
+@using DoEko.Models.DoEko.Survey
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nowa Inwestycja - Lokalizacja";
 }
 
-<h2>Create</h2>
+<h2>Nowa</h2>
 
-<form asp-action="Create">
+<form asp-action="Create" asp-route-ReturnUrl="@ViewBag.ReturnUrl">
     <div class="form-horizontal">
-        <h4>Investment</h4>
+        <h4>Inwestycja | Adres</h4>
         <hr />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        
+        @Html.Partial("../Shared/Address/_AddressFormPartial", Model)
+
+        @*<div class="form-group">
             <label asp-for="InspectionStatus" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <select asp-for="InspectionStatus" class="form-control"></select>
                 <span asp-validation-for="InspectionStatus" class="text-danger" />
             </div>
-        </div>
+        </div>*@
+        <input asp-for="ContractId" hidden/>
+
         <div class="form-group">
             <label asp-for="LandRegisterNo" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="LandRegisterNo" class="form-control" />
+                <input asp-for="LandRegisterNo" class="form-control" placeholder="AA1A/12345678/1"/>
                 <span asp-validation-for="LandRegisterNo" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="PlotNumber" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="PlotNumber" class="form-control" />
+                <input asp-for="PlotNumber" class="form-control" placeholder="112233_4.5678.123/1"/>
                 <span asp-validation-for="PlotNumber" class="text-danger" />
             </div>
         </div>
+
         <div class="form-group">
-            <label asp-for="Status" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="Status" class="form-control"></select>
-                <span asp-validation-for="Status" class="text-danger" />
+            <label asp-for="SurveyHW" class="col-md-2 control-label"></label>
+            
+            <div class="col-md-2">
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input asp-for="SurveyHW" type="radio" autocomplete="off" value="true" />
+                        Tak
+                    </label>
+                    <label class="btn btn-default active">
+                        <input asp-for="SurveyHW" type="radio" autocomplete="off" checked value="false" />
+                        Nie
+                    </label>
+                    <span asp-validation-for="SurveyHW" class="text-danger" />
+                </div>
+            </div>
+            <div id="RSETypeHW" class="col-md-8" hidden>
+                <select asp-for="RSETypeHW" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeHotWater))"></select>
+                <span asp-validation-for="RSETypeHW" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SurveyCH" class="col-md-2 control-label"></label>
+            <div class="col-md-2">
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input asp-for="SurveyCH" type="radio" autocomplete="off" value="true" />
+                        Tak
+                    </label>
+                    <label class="btn btn-default active">
+                        <input asp-for="SurveyCH" type="radio" autocomplete="off" checked value="false" />
+                        Nie
+                    </label>
+                </div>
+                <span asp-validation-for="SurveyCH" class="text-danger" />
+            </div>
+            <div id="RSETypeCH" class="col-md-8" hidden>
+                <select asp-for="RSETypeCH" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeCentralHeating))"></select>
+                <span asp-validation-for="RSETypeCH" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SurveyEE" class="col-md-2 control-label"></label>
+            <div class="col-md-2">
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input asp-for="SurveyEE" type="radio" autocomplete="off" value="true" />
+                        Tak
+                    </label>
+                    <label class="btn btn-default active">
+                        <input asp-for="SurveyEE" type="radio" autocomplete="off" checked value="false" />
+                        Nie
+                    </label>
+                </div>
+                <span asp-validation-for="SurveyEE" class="text-danger" />
+            </div>
+            <div id="RSETypeEE" class="col-md-8" hidden>
+                <select asp-for="RSETypeEE" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeEnergy))"></select>
+                <span asp-validation-for="RSETypeEE" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Dalej" class="btn btn-primary" />
+
+                @if (!String.IsNullOrEmpty(ViewBag.ReturnUrl))
+            {
+                    <a href="@ViewBag.ReturnUrl" class="btn btn-default" asp->Anuluj</a>
+                }
+                else
+                {
+                    <a asp-action="Index" class="btn btn-default" asp->Anuluj</a>
+                }
             </div>
         </div>
     </div>
 </form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
+    @{await Html.RenderPartialAsync("../Shared/Address/_AddressScriptPartial");}
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(SurveyHW).change(function () {
+            var value = $(this).attr('value').valueOf();
+            if (value == "true") {
+                $("#RSETypeHW").show();
+            }
+            else {
+                $("#RSETypeHW").hide();
+            }
+        })
+
+        $(SurveyEE).change(function () {
+            var value = $(this).attr('value').valueOf();
+            if (value == "true") {
+                $("#RSETypeEE").show();
+            }
+            else {
+                $("#RSETypeEE").hide();
+            }
+        })
+
+        $(SurveyCH).change(function () {
+            var value = $(this).attr('value').valueOf();
+            if (value == "true") {
+                $("#RSETypeCH").show();
+            }
+            else {
+                $("#RSETypeCH").hide();
+            }
+        })
+    </script>
 }

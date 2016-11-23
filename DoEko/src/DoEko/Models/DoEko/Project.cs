@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -127,5 +128,40 @@ namespace DoEko.Models.DoEko
         [Display(Description = "Lista umów dla projektu", Name = "Umowy", ShortName = "Umowy")]
         public virtual ICollection<Contract> Contracts { get; set; }
         //inwestycje bez umów
+
+        /// <summary>
+        ///
+        /// </summary>
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
+        [Display(Description = "Jednostka gospodarcza (spółka)", Name = "Jednostka Gospodarcza", ShortName = "Jedn.Gosp.")]
+        public int CompanyId { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Company Company { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "Załączniki", Name = "Załączniki", ShortName = "Załączniki")]
+        [NotMapped]
+        public IList<File> Attachments { get; set; }
+        //{
+        //    get
+        //    {
+        //        //var _array = Array.ConvertAll<String, String>(AttachmentsAsString.Split('|'), null);
+        //        //return _array.ToList();
+        //    }
+        //    set
+        //    {
+        //        var _data = value;
+        //        AttachmentsAsString = String.Join("|", _data.Select(p => p.ToString()).ToArray());
+        //    }
+        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        //[EditorBrowsable(EditorBrowsableState.Never)]
+        //public string AttachmentsAsString { get; set; }
+
     }
 }

@@ -1,0 +1,30 @@
+﻿@model DoEko.ViewComponents.ViewModels.SurveyAuditViewModel
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+<form id="SurveyAuditEN"
+      asp-action="EditAuditENAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update=""
+      data-ajax-failure="SectionPostFailed"
+      data-ajax-success="SectionPostCompleted">
+    <fieldset>
+        <legend>Energia Elektryczna</legend>
+        <input type="hidden" asp-for="Investment.InvestmentId" />
+        <input type="hidden" asp-for="SurveyId" />
+        <input type="hidden" asp-for="Audit.SurveyId" />
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Audit.ElectricityPower" class="control-label"></label>
+                    <input asp-for="Audit.ElectricityPower" class="form-control" />
+                    <span asp-validation-for="Audit.ElectricityPower" class="text-danger" />
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+</form>

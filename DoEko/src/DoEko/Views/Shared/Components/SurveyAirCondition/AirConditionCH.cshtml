@@ -1,0 +1,116 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetAirCond
+@using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
+<form id="SurveyAirCondition"
+      asp-action="EditAirConditionAjax"
+      asp-controller="Surveys"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-failure="SectionPostFailure"
+      data-ajax-success="SectionPostCompleted">
+
+    <fieldset>
+        <legend>Klimatyzacja</legend>
+        <input type="hidden" asp-for="SurveyId" />
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="MechVentilationExists" class="control-label"></label>
+                    <input asp-for="MechVentilationExists" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.MechVentilationExists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="MechVentilationExists" class="optionbutton-true" data-linked-checkbox="MechVentilationExists" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="MechVentilationExists" class="optionbutton-false" data-linked-checkbox="MechVentilationExists">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="MechVentilationExists" class="optionbutton-true" data-linked-checkbox="MechVentilationExists">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="MechVentilationExists" class="optionbutton-false" data-linked-checkbox="MechVentilationExists" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Exists" class="control-label"></label>
+                    <input asp-for="Exists" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Exists)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Exists" class="optionbutton-true" data-linked-checkbox="Exists" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="Exists" class="optionbutton-false" data-linked-checkbox="Exists" >
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="Exists" class="optionbutton-true" data-linked-checkbox="Exists" >
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Exists" class="optionbutton-false" data-linked-checkbox="Exists" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="isPlanned" class="control-label"></label>
+                    <input asp-for="isPlanned" hidden/>
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.isPlanned)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="isPlanned" class="optionbutton-true" data-linked-checkbox="isPlanned"  checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="isPlanned" class="optionbutton-false" data-linked-checkbox="isPlanned">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="isPlanned" class="optionbutton-true" data-linked-checkbox="isPlanned">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="isPlanned" class="optionbutton-false" data-linked-checkbox="isPlanned" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Type" class="control-label"></label>
+                    <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList(typeof(ACType))"></select>
+                    <span asp-validation-for="Type" class="text-danger" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>

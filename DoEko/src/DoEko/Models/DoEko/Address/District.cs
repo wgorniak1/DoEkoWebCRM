@@ -44,6 +44,7 @@ namespace DoEko.Models.DoEko.Addresses
         /// 
         /// </summary>
         [Display(Description = "", Name = "Gminy", ShortName = "Gminy")]
+        [ForeignKey("StateId, DistrictId")]
         public virtual ICollection<Commune> Communes { get; set; }
     }
 }

@@ -10,10 +10,19 @@
     {
         <ul class="nav navbar-nav">
             <li><a asp-area="" asp-controller="Projects" asp-action="Index">Projekty</a></li>
-            <li><a asp-area="" asp-controller="Contracts" asp-action="Index">Umowy</a></li>
-            <li><a asp-area="" asp-controller="User" asp-action="Index">Użytkownicy</a></li>
-            <li><a asp-area="" asp-controller="Settings" asp-action="Index">Ustawienia</a></li>
-        </ul>
+            <li><a asp-area="" asp-controller="Contracts" asp-action="Index">Umowy</a></li>            
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="">
+                    Ustawienia
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a asp-controller="Companies" asp-action="Index">Spółki</a></li>
+                    <li><a asp-controller="Settings"  asp-action="Index">Stałe do raportów</a></li>
+                    <li><a asp-controller="Users"      asp-action="Index">Użytkownicy</a></li>
+                </ul>
+            </li>
+</ul>
     }
     else if (User.IsInRole("contractManager"))
     {
@@ -25,11 +34,11 @@
             <li><a asp-area="" asp-controller="PriceList" asp-action="Index">Cenniki</a></li>
         </ul>
     }
-    else if (User.IsInRole("Inspector"))
+    else if (User.IsInRole(Roles.Inspector))
     {
         <ul class="nav navbar-nav">
-            <li><a asp-area="" asp-controller="Survey" asp-action="Index">Moje inspekcje</a></li>
-            <li><a asp-area="" asp-controller="Survey" asp-action="About">Inspekcje</a></li>
+            <li><a asp-area="" asp-controller="Investments" asp-action="List">Moje inspekcje</a></li>
+            <li><a asp-area="" asp-controller="Investments" asp-action="ListUnassigned">Inspekcje</a></li>
         </ul>
     }
 

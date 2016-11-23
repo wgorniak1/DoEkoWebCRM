@@ -1,0 +1,82 @@
+﻿@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko
+@using DoEko.Models.Identity
+@using DoEko.Models.DoEko.Survey
+@model IEnumerable<Survey>
+<div class="table-responsive">
+    <table class="table table-condensed table-hover table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Type)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsPaid)
+                </th>
+                <th>
+                    Wpłata (Należność)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model)
+    {
+        String SurveyTypeName = "";
+        switch (item.Type)
+        {
+            case SurveyType.CentralHeating:
+                SurveyTypeName = ((SurveyCentralHeating)item).RSEType.DisplayName() + "(C.O.)";
+                break;
+            case SurveyType.HotWater:
+                SurveyTypeName = ((SurveyHotWater)item).RSEType.DisplayName() + "(C.W.U.)";
+                break;
+            case SurveyType.Energy:
+                SurveyTypeName = ((SurveyEnergy)item).RSEType.DisplayName() + "(E.E.)";
+                break;
+            default: break;
+        }
+            <tr>
+                <td>
+                    @SurveyTypeName
+                </td>
+                <td>
+                    @item.Status.DisplayName()
+                </td>
+                <td>
+                    @if (item.IsPaid)
+                    {
+                        <span class="text-success">Tak</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">Nie</span>
+                    }
+                </td>
+                <td>
+                    ...
+                </td>
+                <td>
+                    <div class="pull-right">
+                        <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                           class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </a>
+                        @*<a asp-action="Edit"    asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                            class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-pencil"></span> 
+                        </a>*@
+                        <a asp-action="Cancel"  asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                            class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-ban-circle"></span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>

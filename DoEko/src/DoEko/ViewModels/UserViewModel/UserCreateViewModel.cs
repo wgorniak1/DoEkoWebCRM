@@ -8,6 +8,15 @@ namespace DoEko.ViewModels.UserViewModel
 {
     public class UserCreateViewModel
     {
+        [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
+        [StringLength(30)]
+        [Display(Description = "", Name = "Imię", ShortName = "Imię")]
+        public string FirstName { get; set; }
+        [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
+        [StringLength(30)]
+        [Display(Description = "", Name = "Nazwisko", ShortName = "Nazwisko")]
+        public string LastName { get; set; }
+
         [Required]
         [StringLength(30,ErrorMessage = "{0} musi mieć przynajmniej {2} i maksymalnie {1} znaków.", MinimumLength = 8)]
         [Display(Name = "Nazwa użytkownika")]

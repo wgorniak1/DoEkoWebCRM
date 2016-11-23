@@ -1,0 +1,27 @@
+@model DoEko.Models.DoEko.Addresses.IAddressRelated
+
+@*<div>*@
+    @*<h4>Address</h4>*@
+    @*<hr />*@
+    @*<dl class="dl-horizontal">*@
+        <dd>
+            @Model.Address.FirstLine
+            @*@if (!string.IsNullOrEmpty(Model.Address.ApartmentNo))
+            {
+                @(Model.Address.Street + ' ' + Model.Address.BuildingNo + '/' + Model.Address.ApartmentNo)
+            }
+            else
+            {
+                @(Model.Address.Street + ' ' + Model.Address.BuildingNo)
+            }*@
+        </dd>
+        <dd>
+            @Model.Address.SecondLine         
+@*            @Model.Address.PostalCode, @Model.Address.City*@
+        </dd>
+    @*</dl>*@
+@*</div>*@
+@*<div>
+    <a asp-action="Edit" asp-route-id="@Model.AddressId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>*@

@@ -17,13 +17,13 @@ namespace DoEko.ViewModels.UserViewModel
     {
         public List<UserItemViewModel> users { get; private set; }
 
-        public SelectList RoleList(string selectedRoleId)
+        public SelectList RoleList(string selectedRoleId = null)
         {
             IdentityRole selectedRole = new IdentityRole();
 
             if (!string.IsNullOrEmpty(selectedRoleId))
             {
-                selectedRole = _roleManager.Roles.Where(r => r.Id == selectedRoleId).First();
+                selectedRole = _roleManager.Roles.Where(r => r.Id == selectedRoleId).FirstOrDefault();
 
             }
 
@@ -87,6 +87,8 @@ namespace DoEko.ViewModels.UserViewModel
             users = allUsers.Select(userItem => new UserItemViewModel
             {
                 UserName = userItem.UserName,
+                FirstName = userItem.FirstName,
+                LastName = userItem.LastName,
                 Email = userItem.Email,
                 LockoutEnabled = userItem.LockoutEnabled,
                 LockoutEnd = userItem.LockoutEnd,
@@ -130,6 +132,8 @@ namespace DoEko.ViewModels.UserViewModel
             // 
             users = _userManager.Users.Select(userItem => new UserItemViewModel
             {
+                FirstName = userItem.FirstName,
+                LastName = userItem.LastName,
                 UserName = userItem.UserName,
                 Email = userItem.Email,
                 LockoutEnabled = userItem.LockoutEnabled,

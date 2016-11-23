@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,6 +12,11 @@ using DoEko.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using DoEko.Models.DoEko;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+using DoEko.Controllers.Settings;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNet.Builder;
 
 namespace DoEko
 {
@@ -41,18 +44,23 @@ namespace DoEko
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //
             services.AddAuthorization();
+            //
+            services.AddSingleton<IConfiguration>(Configuration);
 
+            //DB connections
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<DoEkoContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            //
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            //Authorization & authentication
             AuthorizationPolicy requireAuthenticatedUser = new 
                 AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
@@ -60,30 +68,63 @@ namespace DoEko
 
             services.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser)); });
 
+            //Session
+            services.AddMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
+                options.CookieName = ".DoEko";
+            });
+
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.AddTransient<IFileStorage, AzureStorage>();
+
+            //Options mapped to class
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<AppSettings> settings)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
-            {
+            //if (env.IsDevelopment())
+            //{
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+            
                 app.UseBrowserLink();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            //}
+            //else
+            //{
+            //app.UseExceptionHandler("/Home/Error");
+            //}
+            app.UseRequestLocalization( 
+                new RequestLocalizationOptions {
+                    DefaultRequestCulture = new RequestCulture("pl-PL","pl-PL"),
+                    SupportedUICultures = new List<CultureInfo> { new CultureInfo("pl-PL")},
+                    SupportedCultures = new List<CultureInfo> { new CultureInfo("pl-PL") }
+                });
+
 
             app.UseStaticFiles();
             app.UseIdentity();
+            app.UseSession();
+
+            //
+            //app.UseCookieAuthentication(new CookieAuthenticationOptions
+            //{
+            //    AuthenticationScheme = "Cookie",
+            //    LoginPath = new PathString("/Account/Login/"),
+            //    AccessDeniedPath = new PathString("/Account/Forbidden/"),
+            //    AutomaticAuthenticate = true,
+            //    AutomaticChallenge = true,
+            //    ExpireTimeSpan = TimeSpan.FromMinutes(2)
+            //});
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 
@@ -104,7 +145,7 @@ namespace DoEko
             }
 
             // Seed initial roles & admin
-            app.EnsureRolesCreated();
+            app.EnsureRolesCreated(settings);
 
         }
     }
