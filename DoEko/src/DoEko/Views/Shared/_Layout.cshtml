@@ -11,7 +11,7 @@
         @{ 
             var iconname = "~/images/" + AppSettings.Value.MailTemplatesOptions.Application.IconName;
         }
-        <link rel="SHORTCUT ICON" href="@iconname" />
+        <link rel="SHORTCUT ICON" href="@Url.Content(iconname)" />
         
         <environment names="Development">
             <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
