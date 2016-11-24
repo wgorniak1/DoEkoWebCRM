@@ -51,6 +51,7 @@ namespace DoEko.Controllers.Settings
 
     public class Application
     {
+        public string IconName { get; set; }
         public string Name { get; set; }
         public string URL { get; set; }
         public Image LogoSmall { get; set; }
