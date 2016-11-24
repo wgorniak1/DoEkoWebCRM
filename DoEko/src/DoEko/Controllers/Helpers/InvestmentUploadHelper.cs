@@ -251,13 +251,14 @@ namespace DoEko.Controllers.Helpers
                 // STATE
                 cellNumber = InvestmentUploadRecord.InvestmentState;
                 cellValue = _record[(int)cellNumber];
-                _addr.StateId = _context.States.Single(s => cellValue.ToUpper().Contains(s.Text.ToUpper())).StateId;
+                _addr.StateId = _context.States.Single(s => s.Text.ToUpper() == cellValue.ToUpper()).StateId;
+                //_addr.StateId = _context.States.Single(s => cellValue.ToUpper().Contains(s.Text.ToUpper())).StateId;
                 // DISTRICT
                 cellNumber = InvestmentUploadRecord.InvestmentDistrict;
                 cellValue = _record[(int)cellNumber];
                 _addr.DistrictId = _context.Districts.Single(d =>
                                     d.StateId == _addr.StateId &&
-                                    cellValue.ToUpper().Contains(d.Text.ToUpper())).DistrictId;
+                                    d.Text.ToUpper() == cellValue.ToUpper()).DistrictId;
                 // COMMUNE & COMMUNE TYPE
                 //cellNumber = InvestmentUploadRecord.InvestmentCommuneType;
                 //cellValue = _record[(int)cellNumber];
@@ -298,25 +299,38 @@ namespace DoEko.Controllers.Helpers
                 //APARTMENT
                 cellNumber = InvestmentUploadRecord.InvestmentApart;
                 cellValue = _record[(int)cellNumber];
+                if (cellValue.Length > 0)
+                {
                 _addr.ApartmentNo = cellValue.ToUpper().Substring(0, cellValue.Length > 11 ? 10 : cellValue.Length);
+                }
 
                 //Search for existing investment with the same address address
-                _tmpAddrId = _context.Addresses.Where(a => a.CountryId == _addr.CountryId &&
-                                                         a.StateId == _addr.StateId &&
-                                                         a.DistrictId == _addr.DistrictId &&
-                                                         a.CommuneType == _addr.CommuneType &&
-                                                         a.CommuneId == _addr.CommuneId &&
-                                                         a.City.ToUpper() == _addr.City.ToUpper() &&
-                                                         a.Street.ToUpper() == _addr.Street.ToUpper() &&
-                                                         a.BuildingNo.ToUpper() == _addr.BuildingNo.ToUpper() &&
-                                                         a.ApartmentNo.ToUpper() == _addr.ApartmentNo.ToUpper()).Select(a => a.AddressId).First();
-                if (_tmpAddrId != 0)
+                try
                 {
+                    _tmpAddrId = _context.Addresses.Where(a => a.SingleLine == _addr.SingleLine).Select(a=>a.AddressId).First();
+
                     if (_context.Investments.Where(i => i.AddressId == _tmpAddrId).First() != null)
                     {
                         throw new InvestmentUploadException("Istnieje już inwestycja o takim adresie. Rekord Pominięty.");
                     }
                 }
+                catch (Exception)
+                {
+                    
+                }
+                //_tmpAddrId = _context.Addresses.Where(a => a.CountryId == _addr.CountryId &&
+                //                                         a.StateId == _addr.StateId &&
+                //                                         a.DistrictId == _addr.DistrictId &&
+                //                                         a.CommuneType == _addr.CommuneType &&
+                //                                         a.CommuneId == _addr.CommuneId &&
+                //                                         a.City.ToUpper() == _addr.City.ToUpper() &&
+                //                                         a.Street.ToUpper() == _addr.Street.ToUpper() &&
+                //                                         a.BuildingNo.ToUpper() == _addr.BuildingNo.ToUpper() &&
+                //                                         a.ApartmentNo.ToUpper() == _addr.ApartmentNo.ToUpper()).Select(a => a.AddressId).First();
+                //if (_tmpAddrId != 0)
+                //{
+                    
+                //}
 
                 return _addr;
             }
@@ -324,7 +338,7 @@ namespace DoEko.Controllers.Helpers
             {
                 throw;
             }
-            catch (Exception)
+            catch (Exception exc)
             {
                 throw new InvestmentUploadException(cellNumber.DisplayName(), cellValue);
             }
@@ -344,13 +358,14 @@ namespace DoEko.Controllers.Helpers
                 // STATE
                 cellNumber = InvestmentUploadRecord.OwnerState;
                 cellValue = _record[(int)cellNumber];
-                _addr.StateId = _context.States.Single(s => cellValue.ToUpper().Contains(s.Text.ToUpper())).StateId;
+                _addr.StateId = _context.States.Single(s => s.Text.ToUpper() == cellValue.ToUpper()).StateId;
+                //_addr.StateId = _context.States.Single(s => cellValue.ToUpper().Contains(s.Text.ToUpper())).StateId;
                 // DISTRICT
                 cellNumber = InvestmentUploadRecord.OwnerDistrict;
                 cellValue = _record[(int)cellNumber];
                 _addr.DistrictId = _context.Districts.Single(d =>
                                     d.StateId == _addr.StateId &&
-                                    cellValue.ToUpper().Contains(d.Text.ToUpper())).DistrictId;
+                                    d.Text.ToUpper() == cellValue.ToUpper()).DistrictId;
                 // COMMUNE & COMMUNE TYPE
                 cellNumber = InvestmentUploadRecord.OwnerCommune;
                 cellValue = _record[(int)cellNumber];
@@ -362,6 +377,7 @@ namespace DoEko.Controllers.Helpers
 
                 //_addr.CommuneType = (CommuneType)Enum.Parse(typeof(CommuneType), 
                 //    cellValue.Substring(cellValue.IndexOf('(') + 1,cellValue.IndexOf(')') - cellValue.IndexOf('(') - 1));
+                cellValue = cellValue.Substring(0, cellValue.IndexOf('('));
 
                 _addr.CommuneId = _context.Communes.Single(c =>
                                         c.StateId == _addr.StateId &&
@@ -391,7 +407,10 @@ namespace DoEko.Controllers.Helpers
                 //APARTMENT
                 cellNumber = InvestmentUploadRecord.OwnerApart;
                 cellValue = _record[(int)cellNumber];
-                _addr.ApartmentNo = cellValue.ToUpper().Substring(0, cellValue.Length > 11 ? 10 : cellValue.Length);
+                if (cellValue.Length > 0)
+                {
+                    _addr.ApartmentNo = cellValue.ToUpper().Substring(0, cellValue.Length > 11 ? 10 : cellValue.Length);
+                }
             }
             catch (Exception)
             {
@@ -424,12 +443,10 @@ namespace DoEko.Controllers.Helpers
                 cellNumber = InvestmentUploadRecord.OwnerPhone;
                 cellValue = _record[(int)cellNumber];
                 int len = cellValue.GetNumbers().Length;
-                if (len > 0 && len != 9)
-                {
-                    throw new InvestmentUploadException(cellNumber.DisplayName(), cellValue);
-                }
-                _owner.PhoneNumber = cellValue.AsPhoneNumber();
-
+                if (len > 0)
+                    _owner.PhoneNumber = cellValue.AsPhoneNumber();
+                else
+                    _owner.PhoneNumber = "+00 000 000 000";
             }
             catch (Exception)
             {

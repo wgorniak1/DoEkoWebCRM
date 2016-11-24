@@ -127,7 +127,7 @@ namespace DoEko.Controllers
         public async Task<IActionResult> Create(CreateViewModel InvestmentVM, string ReturnUrl = null)
         {
             Investment investment = InvestmentVM.AsBase();
-
+            
             if (ModelState.IsValid)
             {
                 investment.InvestmentId = Guid.NewGuid();
@@ -458,7 +458,10 @@ namespace DoEko.Controllers
                     catch (Exception exc)
                     {
                         transaction.Rollback();
-                        errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
+                        if (exc.Message.Contains("See the inner exception for details"))
+                            errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.InnerException.Message.ToString());
+                        else
+                            errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
                     }
                 }
             }
