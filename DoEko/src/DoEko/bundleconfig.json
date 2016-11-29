@@ -38,5 +38,11 @@
     "inputFiles": [
       "wwwroot/js/CustomValidationWithDataAnnotation.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/Survey.min.js",
+    "inputFiles": [
+      "wwwroot/js/Survey.js"
+    ]
   }
 ]
