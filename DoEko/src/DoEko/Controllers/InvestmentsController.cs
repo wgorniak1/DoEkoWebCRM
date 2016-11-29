@@ -29,7 +29,6 @@ namespace DoEko.Controllers
     public class InvestmentsController : Controller
     {
         private readonly DoEkoContext _context;
-        //private readonly AzureStorage _azure;
         private readonly IFileStorage _fileStorage;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -37,7 +36,6 @@ namespace DoEko.Controllers
         {
             _context = context;
             _fileStorage = fileStorage;
-            //_azure = new AzureStorage(configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
             _userManager = userManager;    
         }
 
@@ -126,6 +124,8 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateViewModel InvestmentVM, string ReturnUrl = null)
         {
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
             Investment investment = InvestmentVM.AsBase();
             
             if (ModelState.IsValid)
@@ -369,9 +369,10 @@ namespace DoEko.Controllers
             //_azure.UploadAsync(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
             //_fileStorage.Upload(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
             //
-            StreamReader sr = new StreamReader(file.OpenReadStream());
-
-            //
+            StreamReader sr = new StreamReader(file.OpenReadStream(),true);
+            //Encoding.GetEncoding(1252)
+            // StreamReader(stream, Encoding.UTF8))  
+            //Encoding.Default
             InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context);
             uploadhelper.ContractId = ContractId;
             //
@@ -497,10 +498,44 @@ namespace DoEko.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditGeneralInfoAjax( Investment investment)
+        public IActionResult EditGeneralInfoAjax( Investment investment)
         {
-            Investment inv = await _context.Investments.SingleAsync(i => i.InvestmentId == investment.InvestmentId);
-            return Ok();
+            try
+            {   
+                //Set current UserId - it will be reflected in the database tables
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+                //
+                investment.Address.CommuneType = (CommuneType)Enum.ToObject(typeof(CommuneType), investment.Address.CommuneId % 10);
+                investment.Address.CommuneId /= 10;
+
+                Investment inv = _context.Investments
+                    .Include(i => i.Address)
+                    .Single(i => i.InvestmentId == investment.InvestmentId);
+
+                inv.Address.ApartmentNo = investment.Address.ApartmentNo;
+                inv.Address.BuildingNo = investment.Address.BuildingNo;
+                inv.Address.City = investment.Address.City;
+                inv.Address.CommuneId = investment.Address.CommuneId;
+                inv.Address.CommuneType = investment.Address.CommuneType;
+                inv.Address.CountryId = investment.Address.CountryId;
+                inv.Address.DistrictId = investment.Address.DistrictId;
+                inv.Address.PostalCode = investment.Address.PostalCode;
+                inv.Address.PostOfficeLocation = investment.Address.PostOfficeLocation;
+                inv.Address.StateId = investment.Address.StateId;
+                inv.Address.Street = investment.Address.Street;
+
+                _context.Update(inv.Address);
+                int Result = _context.SaveChanges();
+                return Ok(inv.Address.AddressId);
+            }
+            catch (Exception exc)
+            {
+                if (exc.Message.Contains("See the inner exception"))
+                {
+                    return BadRequest(exc.InnerException.Message);
+                }
+                else return BadRequest(exc.Message);
+            }
         }
     
         private bool InvestmentExists(Guid id)

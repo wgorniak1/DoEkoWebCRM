@@ -12,6 +12,7 @@ using DoEko.Models.DoEko.Addresses;
 using DoEko.Controllers.Helpers;
 using DoEko.Models.DoEko.Survey;
 using DoEko.ViewModels.SurveyViewModels;
+using DoEko.ViewModels.TestViewModels;
 
 namespace DoEko.Controllers
 {
@@ -177,6 +178,26 @@ namespace DoEko.Controllers
             DetailsCHViewModel model = new DetailsCHViewModel(survey);
 
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Test(int Id)
+        {
+            TestViewModel model = new TestViewModel();
+
+            if (Id==1)
+            {
+                model.checkbox = true;
+            }
+            
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Test(TestViewModel model)
+        {
+            return Ok(new { checkbox = model.checkbox, stringchk = model.checkbox.ToString() });
         }
     }
 }

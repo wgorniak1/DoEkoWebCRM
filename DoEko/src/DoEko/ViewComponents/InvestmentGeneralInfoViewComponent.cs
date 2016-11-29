@@ -30,6 +30,8 @@ namespace DoEko.ViewComponents
             ViewData["InvAddrDistrictId"] = AddressesController.GetDistricts(_context, model.Address.StateId, model.Address.DistrictId);
             ViewData["InvAddrCommuneId"] = AddressesController.GetCommunes(_context, model.Address.StateId, model.Address.DistrictId, model.Address.CommuneId, model.Address.CommuneType);
 
+            model.Address.CommuneId = model.Address.CommuneId * 10 + (int)model.Address.CommuneType;
+
             return View("Default", model);
         }
     }

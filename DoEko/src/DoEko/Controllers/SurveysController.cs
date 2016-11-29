@@ -75,7 +75,7 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MaintainNextStepAjax(string currentStep, Guid surveyId)
+        public IActionResult MaintainNextStepAjax(string currentStep, Guid surveyId)
         {
             Survey Srv;                //Survey being currently edited
             Enum RSEType;              //RSE Type used to calculate next step
@@ -90,11 +90,11 @@ namespace DoEko.Controllers
             //1. Get Survey Type / RSE Type
             try
             {
-                Srv = await _context.Surveys
+                Srv = _context.Surveys
                       .Include(s => s.Investment)
                       .ThenInclude(i => i.InvestmentOwners)
                       .Include(s=>s.RoofPlanes)
-                      .SingleAsync(s => s.SurveyId == surveyId);
+                      .Single(s => s.SurveyId == surveyId);
 
                 switch (Srv.Type)
                 {
@@ -205,7 +205,7 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MaintainPreviousStepAjax(string currentStep, Guid surveyId)
+        public IActionResult MaintainPreviousStepAjax(string currentStep, Guid surveyId)
         {
             Survey Srv;                //Survey being currently edited
             Enum RSEType;              //RSE Type used to calculate next step
@@ -220,11 +220,11 @@ namespace DoEko.Controllers
             //1. Get Survey Type / RSE Type
             try
             {
-                Srv = await _context.Surveys
+                Srv = _context.Surveys
                       .Include(s => s.Investment)
                       .ThenInclude(i => i.InvestmentOwners)
                       .Include(s => s.RoofPlanes)
-                      .SingleAsync(s => s.SurveyId == surveyId);
+                      .Single(s => s.SurveyId == surveyId);
 
                 switch (Srv.Type)
                 {
@@ -344,17 +344,17 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditBuildingGeneralInfoAjax(Survey survey)
+        public IActionResult EditBuildingGeneralInfoAjax(Survey survey)
         {
             try
             {
                 _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
                 survey.Building.SurveyId = survey.SurveyId;
 
-                Survey srv = await _context.Surveys
+                Survey srv = _context.Surveys
                     .Include(s=>s.Investment)
                     .Include(s=>s.Building)
-                    .SingleAsync(s => s.SurveyId == survey.SurveyId);
+                    .Single(s => s.SurveyId == survey.SurveyId);
 
                 if (srv.Building == null)
                 {
@@ -383,10 +383,8 @@ namespace DoEko.Controllers
 
                 _context.Update(srv.Investment);
 
-                int Result = await _context.SaveChangesAsync();
-
-
-
+                int Result = _context.SaveChanges();
+                
                 return Ok();
             }
             catch (Exception exc)
@@ -396,54 +394,47 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPlannedInstallationAjax(SurveyDetPlannedInstall plannedInstall)
-        {
-            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
-
-            if (ModelState.IsValid)
-            {
-                Survey srv = await _context.Surveys.SingleAsync(s => s.SurveyId == plannedInstall.SurveyId);
-                switch (srv.Type)
-                {
-                    case SurveyType.CentralHeating:
-                        SurveyCentralHeating srvCH = _context.SurveysCH.Single(s => s.SurveyId == plannedInstall.SurveyId);
-                        srvCH.PlannedInstall = plannedInstall;
-                        _context.Update(plannedInstall);
-                        break;
-                    case SurveyType.HotWater:
-                        SurveyHotWater srvHW = _context.SurveysHW.Single(s => s.SurveyId == plannedInstall.SurveyId);
-                        srvHW.PlannedInstall = plannedInstall;
-                        _context.Update(plannedInstall);
-                        break;
-                    case SurveyType.Energy:
-                        SurveyEnergy srvEN = _context.SurveysEN.Single(s => s.SurveyId == plannedInstall.SurveyId);
-                        //srvEN.PlannedInstall = plannedInstall;
-                        _context.Update(plannedInstall);
-                        break;
-                    default:
-                        break;
-                }
-
-                int result = await _context.SaveChangesAsync();
-
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
-
-        }
-        [HttpPost]
-        public async Task<IActionResult> EditBoilerRoomAjax(SurveyDetBoilerRoom boilerRoom)
+        public IActionResult EditPlannedInstallationAjax(SurveyDetPlannedInstall plannedInstall)
         {
             try
             {
                 _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
-                Survey srv = await _context.Surveys
+                Survey srv = _context.Surveys
+                    .Include(s => s.PlannedInstall)
+                    .Single(s => s.SurveyId == plannedInstall.SurveyId);
+
+                if (srv.PlannedInstall == null)
+                {
+                    _context.Add(plannedInstall);
+                }
+                else
+                {
+                    srv.PlannedInstall.Configuration = plannedInstall.Configuration;
+                    srv.PlannedInstall.Localization = plannedInstall.Localization;
+                    srv.PlannedInstall.OnWallPlacementAvailable = plannedInstall.OnWallPlacementAvailable;
+                    srv.PlannedInstall.Purpose = plannedInstall.Purpose;
+                    _context.Update(srv.PlannedInstall);
+                }
+
+                int Result = _context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
+        [HttpPost]
+        public IActionResult EditBoilerRoomAjax(SurveyDetBoilerRoom boilerRoom)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                Survey srv = _context.Surveys
                     .Include(s => s.BoilerRoom)
-                    .SingleAsync(s => s.SurveyId == boilerRoom.SurveyId);
+                    .Single(s => s.SurveyId == boilerRoom.SurveyId);
 
                 if (srv.BoilerRoom == null)
                 {
@@ -466,7 +457,7 @@ namespace DoEko.Controllers
                     _context.Update(srv.BoilerRoom);
                 }
 
-                int Result = await _context.SaveChangesAsync();
+                int Result = _context.SaveChanges();
                 return Ok();
             }
             catch (Exception exc)

@@ -100,296 +100,36 @@ else
     </div>
     <input type="hidden" id="MaintainedSurveyId" form="Null" value="@Model.SurveyId" />
 </div>    
-    <!--NAVIGATION BUTTONS-->
-    <div class="row">
-        <hr />        
-        @*<div class="col-xs-12 visible-xs">
-            <div class="form-group">
-                <a class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Anuluj</a>
-                <button type="button" id="stepPrev" class="btn btn-default" disabled>Wstecz</button>
-                <button type="button" id="stepNext" class="btn btn-success">Dalej</button>
-                <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
-            </div>
-        </div>*@
-        <div class="col-md-6 col-sm-6 col-xs-4">
-            <div class="form-group">
-                <a class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">
-                    Anuluj
-                </a>
-            </div>
+
+<!--NAVIGATION BUTTONS-->
+<div class="row">
+    <hr />        
+    @*<div class="col-xs-12 visible-xs">
+        <div class="form-group">
+            <a class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Anuluj</a>
+            <button type="button" id="stepPrev" class="btn btn-default" disabled>Wstecz</button>
+            <button type="button" id="stepNext" class="btn btn-success">Dalej</button>
+            <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
         </div>
-        <div class="col-md-6 col-sm-6 col-xs-8">
-            <div class="form-group pull-right">
-                <button type="button" id="stepPrev" class="btn btn-default" disabled>Wstecz</button>
-                <button type="button" id="stepNext" class="btn btn-success">Dalej</button>
-                <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
-            </div>
+    </div>*@
+    <div class="col-md-6 col-sm-6 col-xs-4">
+        <div class="form-group">
+            <a class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">
+                Anuluj
+            </a>
         </div>
     </div>
+    <div class="col-md-6 col-sm-6 col-xs-8">
+        <div class="form-group pull-right">
+            <button type="button" id="stepPrev" class="btn btn-default" disabled>Wstecz</button>
+            <button type="button" id="stepNext" class="btn btn-success">Dalej</button>
+            <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
+        </div>
+    </div>
+</div>
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-        @{await Html.RenderPartialAsync("../Shared/Address/_AddressScriptPartial");}
-        <script type="text/javascript" title="PlannedInstallation">
-        function plndInstallChanged(event) {
-
-            var value = $(this).val();
-            if (value == 1) {
-                $(".plannedinstallationpurpose").hide();
-            }
-            else {
-                $(".plannedinstallationpurpose").show();
-            }
-
-        };
-
-        $('body').on('change', '#Localization', plndInstallChanged);
-
-        </script>
-        <script type="text/javascript" title="SectionsAjaxPost">
-            function SectionPostFailure(xhr, status, error) {
-                //set error message
-                $("#AjaxErrorMsg").html(error);
-                //display message box
-                //$("#AjaxErrorDiv").alert();
-                $("#AjaxErrorDiv").fadeToggle(function () {
-                    $("#AjaxErrorDiv").fadeToggle(3000);
-                });
-                alert("a");
-            };
-
-            function SectionPostSuccess() {
-
-            };
-        </script>
-        <script type="text/javascript" title="on Div Dynamic Ajax refresh">
-            function onAjaxGetSuccess(data, status) {
-
-                $('#Dynamic').html(data);
-
-                var $form = $("#Dynamic form");
-                $form.removeData("validator");
-                $form.removeData("unobtrusiveValidation");
-                $.validator.unobtrusive.parse($form);
-
-                var section = $("#Dynamic form").attr('id');
-
-                if (section === 'InvestmentGeneralInfo') {
-                    $("#stepPrev").attr('disabled', 'disabled');
-                }
-                else {
-                    $("#stepPrev").removeAttr('disabled');
-                }
-
-                if (section === 'SurveyPhoto') {
-                    $("#stepNext").attr('disabled', 'disabled');
-                    $("#stepLast").removeClass('hidden');
-                }
-                else {
-                    $("#stepNext").removeAttr('disabled');
-                    $("#stepLast").addClass('hidden');
-                }
-
-            }
-
-            function onAjaxGetFailure(xhr, status, error) {
-                alert(error);
-            }
-        </script>
-        <script type="text/javascript" title="OwnerAddRemove">
-            function addOwner() {
-                // post current div
-                var $form = $("#Dynamic form");
-                $form.validate();
-
-                if ($form.valid()) {
-                    $("#Dynamic form").submit();
-
-                    // Get owner section again without id
-                    $.ajax({
-                        url: "/InvestmentOwners/CreatePersonAjax",
-                        data: { investmentId: $("#InvestmentId").val() },
-                        type: "GET",
-                        dataType: "html",
-                        success: function (data, status) {
-                            onAjaxGetSuccess(data, status);
-                        },
-                        error: function (xhr, status, error) {
-                            onAjaxGetFailure(xhr, status, error);
-                        }
-                    });
-                }
-            }
-            function removeOwner() {
-
-
-            }
-
-            $('body').on('click', '.addowner', addOwner);
-            $('body').on('click', '.remowner', removeOwner);
-
-
-            $(".remownerconfirmed").click(function () {
-                // current div no post
-                // ajax to delete current owner
-                // ajax to re read next / last owner
-            });
-        </script>
-        <script type="text/javascript" title="StepFormNavigation">
-            function NavigationPrev() {
-                var $form = $("#Dynamic form");
-
-                $form.validate();
-
-                if ($form.valid()) {
-
-                    $form.submit();
-
-                    // update div to next step
-                    $.ajax({
-                        url: "/Surveys/MaintainPreviousStepAjax",
-                        data: {
-                            currentStep: $('#Dynamic form').attr('id'),
-                            surveyId: $("#MaintainedSurveyId").val()
-                        },
-                        type: "GET",
-                        dataType: "html",
-                        success: function (data, status) {
-                            onAjaxGetSuccess(data, status);
-                        },
-                        error: function (xhr, status, error) {
-                            onAjaxGetFailure(xhr, status, error);
-                        }
-                    });
-
-                };
-            };
-
-            function NavigationNext() {
-                var $form = $("#Dynamic form");
-
-                $form.validate();
-                // post current div
-                if ($form.valid()) {
-
-                    $form.submit();
-
-                    // update div to next step
-                    $.ajax({
-                        url: "/Surveys/MaintainNextStepAjax",
-                        data: {
-                            currentStep: $('#Dynamic form').attr('id'),
-                            surveyId: $("#MaintainedSurveyId").val()
-                        },
-                        type: "GET",
-                        dataType: "html",
-                        success: function (data, status) {
-                            onAjaxGetSuccess(data, status);
-                        },
-                        error: function (xhr, status, error) {
-                            onAjaxGetFailure(xhr, status, error);
-                        }
-                    });
-
-                };
-
-
-            };
-            function NavigationLast() {
-                var $form = $("#Dynamic form");
-
-                $form.validate();
-                // post current div
-                if ($form.valid()) {
-
-                    $form.submit();
-                };
-
-            };
-            $('body').on('click', '#stepNext', NavigationNext);
-            $('body').on('click', '#stepPrev', NavigationPrev);
-            $('body').on('click', '#stepLast', NavigationLast);
-        </script>
-        <script>
-            //$(function () {
-            //    $("#stepLast").click(function () {
-            //        $("#mainForm").valid();
-            //        $("#mainForm").submit();
-
-            //    })
-            //    $("#stepNext").click(function () {
-            //        $("#mainForm").valid();
-            //        var StepList = new NavBarStepList("stepList", "stepPrev", "stepNext");
-            //        StepList.goNext();
-            //    });
-
-            //    $("#stepPrev").click(function () {
-            //        $("#mainForm").valid();
-
-            //        var StepList = new NavBarStepList("stepList", "stepPrev", "stepNext");
-            //        StepList.goPrev();
-            //    });
-
-            //    $("#stepList li a").click(function () {
-            //        var targetStep = parseInt($(this).parent("li").attr('data-step-from'), 10);
-
-            //        var stepList = new NavBarStepList("stepList", "stepPrev", "stepNext");
-
-            //        stepList.navBar.setCurrentStep(targetStep);
-            //        if (stepList.navBar.isFirstStep(targetStep)) {
-            //            stepList.navButtons.previous.disable();
-            //        }
-            //        else {
-            //            stepList.navButtons.previous.enable();
-            //        }
-
-
-            //        if (stepList.navBar.isLastStep(targetStep)) {
-            //            stepList.navButtons.next.disable();
-            //            $("#stepLast").removeClass("hidden");
-            //        }
-            //        else {
-            //            stepList.navButtons.next.enable();
-            //            $("#stepLast").addClass("hidden");
-            //        }
-
-            //    });
-            //});
-        </script>
-
-
-
-        <script type="text/javascript" title="Checkboxes driven by option buttons">
-            function optionBtnTrue() {
-                var checkboxName = $(this).attr('data-linked-checkbox');
-                $('input[name="' + checkboxName + '"]').val('True');
-                var containerId = $(this).attr('data-linked-container');
-                if (containerId != "") {
-                    $('#' + containerId).collapse('hide');
-                };
-            };
-            function optionBtnFalse() {
-                var checkboxName = $(this).attr('data-linked-checkbox');
-                $('input[name="' + checkboxName + '"]').val('False');
-                var containerId = $(this).attr('data-linked-container');
-                if (containerId != "") {
-                    $('#' + containerId).collapse('show');
-                };
-            };
-            $('body').on('change', '.optionbutton-true', optionBtnTrue);
-            $('body').on('change', '.optionbutton-false', optionBtnFalse);
-        </script>
-        <script type="text/javascript" title="Zdjecia">
-            $(document).on('change', ':file', function () {
-                var input = $(this),
-                    numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                    label = input.val().replace(/\\/g, '/').replace(/.*\//, ''),
-                    name = input.attr('name');
-                input.trigger('fileselect', [numFiles, label, name]);
-            });
-
-            $(document).on('fileselect', ':file',function (event, numFiles, label, name) {
-                    $('#' + name).val(label);
-                });
-        </script>
-    }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("../Shared/Address/_AddressScriptPartial");}
+    @{await Html.RenderPartialAsync("_SurveyScriptsPartial");}
+}

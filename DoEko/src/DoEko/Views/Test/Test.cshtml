@@ -1,0 +1,46 @@
+﻿@model DoEko.ViewModels.TestViewModels.TestViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Test cockpit</h2>
+
+<form asp-action="Test"
+      asp-controller="Test"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update="">
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group-sm">
+                <label>checkbox</label>
+
+                
+                <input type="hidden" asp-for="checkbox"/>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default wg-switch">
+                        
+                        <input type="radio" name="switch" id="switch1" autocomplete="off">
+                        Tak
+                    </label>
+                    <label class="btn btn-default">
+                        <input type="radio" name="switch" id="switch2" autocomplete="off">
+                        NIE
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="submit" value="aa"/>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script title ="test" type="text/javascript">
+
+    </script>
+}
