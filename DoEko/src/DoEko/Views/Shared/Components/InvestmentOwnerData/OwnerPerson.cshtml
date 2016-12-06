@@ -2,6 +2,26 @@
 @using DoEko.Models.DoEko
 @using DoEko.Models.Identity
 
+
+<div class="modal fade" id="DeleteOwnerModal" tabindex="-1" role="dialog" aria-labelledby="DeletePersonModalTitle">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="DeletePersonModalTitle">Usuwanie Właściciela</h4>
+            </div>
+            <div class="modal-body">
+                Jeśli usuniesz właściciela jego dane wraz z adresem zostaną trwale usuniętę z bazy danych.
+                Kontynuować?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Nie</button>
+                <button type="button" class="btn btn-primary deleteownersubmit" data-dismiss="modal">Tak, Usuń</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @{
     string method = "";
     if (Model.Owner.BusinessPartnerId == Guid.Empty)
@@ -14,7 +34,7 @@
     }
 }
 
-<form id=@("InvestmentOwnerData_" + Model.OwnerNumber.ToString())
+<form id=@("InvestmentOwnerData_" + Model.OwnerNumber.ToString() + '_' + Model.OwnerTotal.ToString())
       asp-action="@method"
       asp-controller="InvestmentOwners"
       data-ajax="true"
@@ -28,7 +48,12 @@
             Własciciel @Model.OwnerNumber.ToString() z @Model.OwnerTotal.ToString()
             @if (Model.OwnerTotal > 1)
             {
-                <button type="button" class="btn-sm btn-link remowner"><span class="glyphicon glyphicon-minus"></span></button>
+                <button type="button" 
+                        class="btn-sm btn-link"
+                        data-toggle="modal"
+                        data-target="#DeleteOwnerModal">
+                    <span class="glyphicon glyphicon-minus"></span>
+                </button>
             }
             <button type="button" class="btn-sm btn-link addowner"><span class="glyphicon glyphicon-plus"></span></button>
         </legend>

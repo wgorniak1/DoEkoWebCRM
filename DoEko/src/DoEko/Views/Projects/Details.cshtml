@@ -106,6 +106,10 @@
     </div>
 </div>
 
+<form id="__AjaxAntiForgeryForm">
+    @Html.AntiForgeryToken()
+</form>
+
 @section Scripts {
 
 <script>
@@ -175,4 +179,26 @@
             window.location.reload(true);
         }
     </script>
+
+    <script title="DeleteContract" type="text/javascript" src="~/js/ContractDelete.js"></script>
+}
+@section modals{
+    <div class="modal fade" id="DeleteContractModal" tabindex="-1" role="dialog" aria-labelledby="DeleteContractModalTitle">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close contract-delete-cancel" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="DeleteContractModalTitle">Usuwanie Umowy</h4>
+                </div>
+                <div class="modal-body">
+                    Jeśli usuniesz umowę, wszystkie jej elementy zostaną również usunięte (inwestycje, ankiety, adresy).
+                    Kontynuować?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default contract-delete-cancel" data-dismiss="modal">Nie</button>
+                    <button type="button" class="btn btn-primary contract-delete-submit" data-dismiss="modal">Tak, Usuń</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }

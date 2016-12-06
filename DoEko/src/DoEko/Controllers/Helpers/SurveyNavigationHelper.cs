@@ -34,6 +34,9 @@ namespace DoEko.Controllers.Helpers
 
         public static Dictionary<SurveyType, Dictionary<Enum, LinkedList<SurveyFormStep>>> Navigation;
 
+        public static Dictionary<SurveyType, Dictionary<Enum, LinkedList<SurveyFormStep>>> Steps;
+
+
         static SurveyFormHelper()
         {            
             Navigation = new Dictionary<SurveyType, Dictionary<Enum, LinkedList<SurveyFormStep>>>();
@@ -42,6 +45,11 @@ namespace DoEko.Controllers.Helpers
             Navigation.Add(SurveyType.HotWater, RSEHotWater);
             Navigation.Add(SurveyType.Energy, RSEEnergy);
 
+            Steps = new Dictionary<SurveyType, Dictionary<Enum, LinkedList<SurveyFormStep>>>();
+
+            Steps.Add(SurveyType.CentralHeating, StepsCH);
+            Steps.Add(SurveyType.HotWater, StepsHW);
+            Steps.Add(SurveyType.Energy, StepsEN);
         }
 
         private static Dictionary<Enum, LinkedList<SurveyFormStep>> RSEEnergy
@@ -80,6 +88,46 @@ namespace DoEko.Controllers.Helpers
             }
         }
 
+        //
+        private static Dictionary<Enum, LinkedList<SurveyFormStep>> StepsEN
+        {
+            get
+            {
+                var dict = new Dictionary<Enum, LinkedList<SurveyFormStep>>();
+
+                dict.Add(SurveyRSETypeEnergy.PhotoVoltaic, StepsPhotovoltaic);
+
+                return dict;
+            }
+        }
+        private static Dictionary<Enum, LinkedList<SurveyFormStep>> StepsHW
+        {
+            get
+            {
+                var dict = new Dictionary<Enum, LinkedList<SurveyFormStep>>();
+
+                dict.Add(SurveyRSETypeHotWater.HeatPump, StepsHeatPump);
+                dict.Add(SurveyRSETypeHotWater.Solar, StepsSolar);
+
+                return dict;
+            }
+        }
+        private static Dictionary<Enum, LinkedList<SurveyFormStep>> StepsCH
+        {
+            get
+            {
+                var dict = new Dictionary<Enum, LinkedList<SurveyFormStep>>();
+
+                dict.Add(SurveyRSETypeCentralHeating.HeatPump, StepsHeatPumpGround);
+                dict.Add(SurveyRSETypeCentralHeating.HeatPumpAir, StepsHeatPumpAir);
+                dict.Add(SurveyRSETypeCentralHeating.PelletBoiler, StepsPelletBoiler);
+
+                return dict;
+            }
+        }
+//
+
+
         private static LinkedList<SurveyFormStep> Photovoltaic
         {
             get {
@@ -94,8 +142,8 @@ namespace DoEko.Controllers.Helpers
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditHW);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditEN);
-                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 FormSteps.AddLast(SurveyFormStep.SurveySummary);
+                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 return FormSteps;
             }
         }
@@ -111,8 +159,8 @@ namespace DoEko.Controllers.Helpers
                 FormSteps.AddLast(SurveyFormStep.SurveyBathroom);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditHW);
-                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 FormSteps.AddLast(SurveyFormStep.SurveySummary);
+                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 return FormSteps;
             }
         }
@@ -132,8 +180,8 @@ namespace DoEko.Controllers.Helpers
                 FormSteps.AddLast(SurveyFormStep.SurveyRoofPlane);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditHW);
-                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 FormSteps.AddLast(SurveyFormStep.SurveySummary);
+                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 return FormSteps;
             }
         }
@@ -151,8 +199,8 @@ namespace DoEko.Controllers.Helpers
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditHW);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditEN);
-                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 FormSteps.AddLast(SurveyFormStep.SurveySummary);
+                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 return FormSteps;
             }
         }
@@ -171,8 +219,8 @@ namespace DoEko.Controllers.Helpers
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditHW);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditEN);
-                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 FormSteps.AddLast(SurveyFormStep.SurveySummary);
+                FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
                 return FormSteps;
             }
         }
@@ -189,10 +237,100 @@ namespace DoEko.Controllers.Helpers
                 FormSteps.AddLast(SurveyFormStep.SurveyAirCondition);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditHW);
+                FormSteps.AddLast(SurveyFormStep.SurveySummary);
                 FormSteps.AddLast(SurveyFormStep.SurveyPhoto);
+                return FormSteps;
+            }
+        }
+
+        //
+        private static LinkedList<SurveyFormStep> StepsPhotovoltaic
+        {
+            get
+            {
+                var FormSteps = new LinkedList<SurveyFormStep>();
+                FormSteps.AddLast(SurveyFormStep.InvestmentGeneralInfo);
+
+                FormSteps.AddLast(SurveyFormStep.SurveyBuildingGeneralInfo);
+
+                FormSteps.AddLast(SurveyFormStep.SurveyGround);//
+
+                FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
+
+                FormSteps.AddLast(SurveyFormStep.SurveySummary);
+
+                return FormSteps;
+            }
+        }
+        private static LinkedList<SurveyFormStep> StepsHeatPump
+        {
+            get
+            {
+                var FormSteps = new LinkedList<SurveyFormStep>();
+                FormSteps.AddLast(SurveyFormStep.InvestmentGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBuildingGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBathroom);
+                FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
+                FormSteps.AddLast(SurveyFormStep.SurveySummary);
+
+                return FormSteps;
+            }
+        }
+        private static LinkedList<SurveyFormStep> StepsSolar
+        {
+            get
+            {
+                var FormSteps = new LinkedList<SurveyFormStep>();
+                FormSteps.AddLast(SurveyFormStep.InvestmentGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBuildingGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBathroom);
+                FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
                 FormSteps.AddLast(SurveyFormStep.SurveySummary);
                 return FormSteps;
             }
         }
+        private static LinkedList<SurveyFormStep> StepsHeatPumpGround
+        {
+            get
+            {
+                var FormSteps = new LinkedList<SurveyFormStep>();
+                FormSteps.AddLast(SurveyFormStep.InvestmentGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBuildingGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBathroom);
+                FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
+                FormSteps.AddLast(SurveyFormStep.SurveySummary);
+                return FormSteps;
+            }
+        }
+        private static LinkedList<SurveyFormStep> StepsHeatPumpAir
+        {
+            get
+            {
+                var FormSteps = new LinkedList<SurveyFormStep>();
+                FormSteps.AddLast(SurveyFormStep.InvestmentGeneralInfo);
+
+                FormSteps.AddLast(SurveyFormStep.SurveyBuildingGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBathroom);
+
+                FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
+                FormSteps.AddLast(SurveyFormStep.SurveySummary);
+
+                return FormSteps;
+            }
+        }
+        private static LinkedList<SurveyFormStep> StepsPelletBoiler
+        {
+            get
+            {
+                var FormSteps = new LinkedList<SurveyFormStep>();
+                FormSteps.AddLast(SurveyFormStep.InvestmentGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBuildingGeneralInfo);
+                FormSteps.AddLast(SurveyFormStep.SurveyBathroom);
+                FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
+                FormSteps.AddLast(SurveyFormStep.SurveySummary);
+                return FormSteps;
+            }
+        }
+
     }
 }

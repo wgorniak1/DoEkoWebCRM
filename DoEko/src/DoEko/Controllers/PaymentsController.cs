@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using DoEko.Models.Identity;
 using DoEko.Services;
+using DoEko.Controllers.Attributes;
 
 namespace DoEko.Controllers
 {
@@ -49,12 +50,16 @@ namespace DoEko.Controllers
             {
                 return RedirectToAction("Details", "Contracts", new { Id = ContractId });
             }
-            var investments = _context.Contracts
-                .Where(c => c.ContractId == ContractId)
-                .Include(c => c.Investments)
-                .ThenInclude(i => i.Address)
-                .ThenInclude(a=>a.Commune)
-                .Single().Investments;
+            //var investments = _context.Contracts
+            //    .Where(c => c.ContractId == ContractId)
+            //    .Include(c => c.Investments)
+            //    .ThenInclude(i => i.Address)
+            //    .ThenInclude(a=>a.Commune)
+            //    .Single().Investments;
+            var investments = _context.Investments.Where(i => i.ContractId == ContractId)
+                .Include(i => i.Address).ThenInclude(a => a.Commune)
+                .OrderBy(i => i.Address.SingleLine)
+                .ToList();
             ViewData["DLInvestments"] = new SelectList(investments, "InvestmentId", "Address.SingleLine", null);
 
             var contract = _context.Contracts.Include(c=>c.Project).SingleOrDefault(c => c.ContractId == ContractId);
@@ -67,7 +72,8 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [RequestFormSizeLimitAttribute(5000, Order = 1)]
+        [ValidateAntiForgeryToken(Order = 2)]
         public async Task<IActionResult> AssignInvestment(IList<Payment> Payments)
        {
             _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));

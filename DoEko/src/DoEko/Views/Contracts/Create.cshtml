@@ -19,14 +19,14 @@
 
                 @if (ViewBag.ProjectId != null)
                 {
-                    <input hidden asp-for="ProjectId" value="@ViewBag.ProjectId" />
+                    <input hidden asp-for="ProjectId" />
 
                     <select disabled class="form-control"
-                            asp-for="ProjectId" asp-items="@ViewBag.ProjectIdDL"></select>
+                            asp-for="ProjectId" asp-items="@ViewBag.ProjectId"></select>
                 }
                 else
                 {
-                    <select class="form-control" asp-for="ProjectId" asp-items="@ViewBag.ProjectIdDL">
+                    <select class="form-control" asp-for="ProjectId" asp-items="@ViewBag.ProjectId">
                         <option value="">Wybierz projekt</option>
                     </select>
                 }
@@ -36,15 +36,14 @@
         <div class="form-group">
             <label asp-for="CompanyId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="CompanyId" class="form-control" asp-items="@ViewBag.CompanyId">
-                </select>
+                <select asp-for="CompanyId" class="form-control" asp-items="@ViewBag.CompanyId"></select>
                 <span asp-validation-for="CompanyId" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
             <label asp-for="Type" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList(typeof(ContractType))">
+                <select asp-for="Type" class="form-control contract-number-rel" asp-items="Html.GetEnumSelectList(typeof(ContractType))">
                     <option value="">Rodzaj umowy</option>
                 </select>
                 <span asp-validation-for="Type" class="text-danger" />
@@ -53,7 +52,7 @@
         <div class="form-group">
             <label asp-for="Number" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Number" class="form-control" />
+                <input asp-for="Number" class="form-control contract-number-fld" />
                 <span asp-validation-for="Number" class="text-danger" />
             </div>
         </div>
@@ -61,7 +60,7 @@
         <div class="form-group">
             <label asp-for="ContractDate" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="ContractDate" class="form-control" />
+                <input asp-for="ContractDate" class="form-control contract-number-rel" />
                 <span asp-validation-for="ContractDate" class="text-danger" />
             </div>
         </div>
@@ -94,36 +93,28 @@
         </div>
     </div>
 </form>
-@*@if (Model != null)
-{
-    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-        Dodaj inwestycję
-    </button>
-    <div class="collapse" id="collapseExample">
-    </div>
 
-    <div class="panel-group" id="investments" role="tablist" aria-multiselectable="true">
-        <div class="panel panel-default">
-            <div class="panel-heading" role="tab" id="add-investment">
-                <h4 class="panel-title">
-                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Collapsible Group Item #1
-                    </a>
-                </h4>
-            </div>
-            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                <div class="panel-body">
-                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                </div>
-            </div>
-        </div>
-    </div>
-    foreach (var investment in Model.Investments)
-    {
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    }
-}*@
-
-        @section Scripts {
-            @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script title="ContractNumber" type="text/javascript">
+        function UpdateNumber() {
+            //contract - number - rel
+            $.ajax({
+                type: "GET",
+                url: "/Contracts/CalculateNewNumberAjax",
+                data: {
+                    type: $('#Type').val(),
+                    contractDate: $("#ContractDate").val()
+                },
+                dataType: "json",
+                success: function (data, status) {
+                    $('#Number').val(data);        
+                }
+            });
         }
+        
+        $('body').on('change', '.contract-number-rel', UpdateNumber);
+    </script>
+
+}

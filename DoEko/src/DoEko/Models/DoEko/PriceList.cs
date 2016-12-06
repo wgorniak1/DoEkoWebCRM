@@ -12,6 +12,7 @@ namespace DoEko.Models.DoEko
     public class PriceList
     {
         public SurveyType SurveyType { get; set; }
+        public int RSEType { get; set; }
         public int StateId { get; set; }
         public int DistrictId { get; set; }
         public int CommuneId { get; set; }

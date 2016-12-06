@@ -74,6 +74,93 @@ namespace DoEko.Controllers
             }
         }
 
+
+        [HttpGet]
+        public IActionResult MaintainStepAjax(int stepNo, Guid surveyId)
+        {
+            SurveyFormStep NextStep;
+            Survey Srv;
+            Enum RSEType;
+
+            try
+            {
+                Srv = _context.Surveys
+                      .Include(s => s.Investment)
+                      .ThenInclude(i => i.InvestmentOwners)
+                      .Include(s => s.RoofPlanes)
+                      .Include(s => s.PlannedInstall)
+                      .Single(s => s.SurveyId == surveyId);
+
+                switch (Srv.Type)
+                {
+                    case SurveyType.CentralHeating:
+                        RSEType = _context.SurveysCH.Single(s => s.SurveyId == surveyId).RSEType;
+                        break;
+                    case SurveyType.HotWater:
+                        RSEType = _context.SurveysHW.Single(s => s.SurveyId == surveyId).RSEType;
+                        break;
+                    case SurveyType.Energy:
+                        RSEType = _context.SurveysEN.Single(s => s.SurveyId == surveyId).RSEType;
+                        break;
+                    default:
+                        return BadRequest();
+                }
+
+                ////
+                NextStep = SurveyFormHelper.Steps[Srv.Type][RSEType].ElementAt(stepNo - 1);
+                ////
+
+                //Special logic for Ground/Wall/Roof - next section depends on value of Localization
+                if (NextStep == SurveyFormStep.SurveyGround)
+                {
+                    switch (Srv.PlannedInstall.Localization)
+                    {
+                        case InstallationLocalization.Roof:
+                            NextStep = SurveyFormStep.SurveyRoofPlane;
+                            break;
+                        case InstallationLocalization.Ground:
+                            NextStep = SurveyFormStep.SurveyGround;
+                            break;
+                        case InstallationLocalization.Wall:
+                            NextStep = SurveyFormStep.SurveyWall;
+                            break;
+                        default:
+                            NextStep = SurveyFormStep.SurveyGround;
+                            break;
+                    }
+                }
+
+                //3. Set Attributes passed to viewcomponent controller
+                object ViewComponentAttributes;
+
+                switch (NextStep)
+                {
+                    case SurveyFormStep.InvestmentGeneralInfo:
+                        ViewComponentAttributes = new { investmentId = Srv.InvestmentId, mode = "Edit" };
+                        break;
+                    case SurveyFormStep.InvestmentOwnerData:
+                        ViewComponentAttributes = new { investmentId = Srv.InvestmentId, ownerId = Srv.Investment.InvestmentOwners.ElementAt(1).OwnerId };
+                        break;
+                    case SurveyFormStep.SurveyRoofPlane:
+                        ViewComponentAttributes = new { surveyId = surveyId, roofId = Srv.RoofPlanes.ElementAt(1).RoofPlaneId };
+                        break;
+                    default:
+                        ViewComponentAttributes = new { surveyId = surveyId };
+                        break;
+                }
+
+                return ViewComponent(NextStep.ToString(), ViewComponentAttributes);
+
+            }
+            catch(Exception exc)
+            {
+                if (exc.InnerException != null)
+                    return BadRequest(exc.InnerException.Message);
+                else
+                    return BadRequest(exc.Message);
+            }
+        }
+
         [HttpGet]
         public IActionResult MaintainNextStepAjax(string currentStep, Guid surveyId)
         {
@@ -94,6 +181,7 @@ namespace DoEko.Controllers
                       .Include(s => s.Investment)
                       .ThenInclude(i => i.InvestmentOwners)
                       .Include(s=>s.RoofPlanes)
+                      .Include(s=>s.PlannedInstall)
                       .Single(s => s.SurveyId == surveyId);
 
                 switch (Srv.Type)
@@ -153,7 +241,7 @@ namespace DoEko.Controllers
                         NextStep = SurveyFormStep.SurveyAuditCH;
                     }
                     break;
-                case SurveyFormStep.SurveySummary:
+                case SurveyFormStep.SurveyPhoto:
                     //No next step
                     return BadRequest();
                 default:
@@ -193,7 +281,15 @@ namespace DoEko.Controllers
                     ViewComponentAttributes = new { investmentId = Srv.InvestmentId, ownerId = Srv.Investment.InvestmentOwners.ElementAt(NextStepNo - 1).OwnerId };
                     break;
                 case SurveyFormStep.SurveyRoofPlane:
-                    ViewComponentAttributes = new { surveyId = surveyId, roofId = Srv.RoofPlanes.ElementAt(NextStepNo - 1).RoofPlaneId };
+                    Guid roofId;
+                    if (Srv.RoofPlanes.Count != 0)
+                    {
+                        roofId = Srv.RoofPlanes.ElementAt(NextStepNo - 1).RoofPlaneId;
+                    }
+                    else
+                        roofId = Guid.Empty;
+
+                    ViewComponentAttributes = new { surveyId = surveyId, roofPlaneId = roofId };
                     break;
                 default:
                     ViewComponentAttributes = new { surveyId = surveyId };
@@ -224,6 +320,7 @@ namespace DoEko.Controllers
                       .Include(s => s.Investment)
                       .ThenInclude(i => i.InvestmentOwners)
                       .Include(s => s.RoofPlanes)
+                      .Include(s => s.PlannedInstall)
                       .Single(s => s.SurveyId == surveyId);
 
                 switch (Srv.Type)
@@ -241,7 +338,7 @@ namespace DoEko.Controllers
                         return BadRequest();
                 }
             }
-            catch (Exception)
+            catch (Exception exc)
             {
                 return BadRequest();
             }
@@ -332,7 +429,15 @@ namespace DoEko.Controllers
                     ViewComponentAttributes = new { investmentId = Srv.InvestmentId, ownerId = Srv.Investment.InvestmentOwners.ElementAt(PreviousStepNo - 1).OwnerId };
                     break;
                 case SurveyFormStep.SurveyRoofPlane:
-                    ViewComponentAttributes = new { surveyId = surveyId, roofId = Srv.RoofPlanes.ElementAt(PreviousStepNo - 1).RoofPlaneId };
+                    Guid roofId;
+                    if (Srv.RoofPlanes.Count != 0)
+                    {
+                        roofId = Srv.RoofPlanes.ElementAt(PreviousStepNo - 1).RoofPlaneId;
+                    }
+                    else
+                        roofId = Guid.Empty;
+
+                    ViewComponentAttributes = new { surveyId = surveyId, roofPlaneId = roofId };
                     break;
                 default:
                     ViewComponentAttributes = new { surveyId = surveyId };
@@ -452,8 +557,8 @@ namespace DoEko.Controllers
                     srv.BoilerRoom.IsDryAndWarm = boilerRoom.IsDryAndWarm;
                     srv.BoilerRoom.Length = boilerRoom.Length;
                     srv.BoilerRoom.RoomExists = boilerRoom.RoomExists;
-                    srv.BoilerRoom.Volume = boilerRoom.Volume;
                     srv.BoilerRoom.Width = boilerRoom.Width;
+                    srv.BoilerRoom.Volume = boilerRoom.Width * boilerRoom.Height * boilerRoom.Length;
                     _context.Update(srv.BoilerRoom);
                 }
 
@@ -602,6 +707,56 @@ namespace DoEko.Controllers
                 return BadRequest(exc);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRoofPlaneAjax(SurveyRoofPlaneViewModel model)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                Survey srv = await _context.Surveys
+                    .Include(s => s.RoofPlanes)
+                    .SingleAsync(s => s.SurveyId == model.SurveyId);
+
+                if (model.Plane.RoofPlaneId == Guid.Empty)
+                {
+                    model.Plane.RoofPlaneId = Guid.NewGuid();
+                    model.Plane.SurveyId = model.SurveyId;
+                    _context.Add(model.Plane);
+                }
+                else
+                {
+                    SurveyDetRoof plane = srv.RoofPlanes.Single(r => r.RoofPlaneId == model.Plane.RoofPlaneId);
+
+                    plane.BuildingHeight = model.Plane.BuildingHeight;
+                    plane.Chimney = model.Plane.Chimney;
+                    plane.EdgeLength = model.Plane.EdgeLength;
+                    plane.InstallationUnderPlane = model.Plane.InstallationUnderPlane;
+                    plane.Length = model.Plane.Length;
+                    plane.LightingProtection = model.Plane.LightingProtection;
+                    plane.OkapHeight = model.Plane.OkapHeight;
+                    plane.RidgeWeight = model.Plane.RidgeWeight;
+                    plane.RoofLength = model.Plane.RoofLength;
+                    plane.RoofMaterial = model.Plane.RoofMaterial;
+                    plane.SkyLights = model.Plane.SkyLights;
+                    plane.SlopeAngle = model.Plane.SlopeAngle;
+                    plane.SurfaceArea = model.Plane.SurfaceArea;
+                    plane.SurfaceAzimuth = model.Plane.SurfaceAzimuth;
+                    plane.Type = model.Plane.Type;
+                    plane.Width = model.Plane.Width;
+                    plane.Windows = model.Plane.Windows;
+
+                    _context.Update(plane);
+                }
+                int Result = await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> EditRoofPlaneAjax(SurveyRoofPlaneViewModel model)
         {
@@ -613,7 +768,7 @@ namespace DoEko.Controllers
                     .Include(s => s.RoofPlanes)
                     .SingleAsync(s => s.SurveyId == model.SurveyId);
 
-                if (model.Plane.RoofPlaneId == null)
+                if (model.Plane.RoofPlaneId == Guid.Empty)
                 {
                     model.Plane.RoofPlaneId = Guid.NewGuid();
                     model.Plane.SurveyId = model.SurveyId;
@@ -843,30 +998,44 @@ namespace DoEko.Controllers
         [HttpPost]
         public IActionResult EditPhotoAjax(FormCollection Form, Guid SurveyId)
         {
-            if (SurveyId == null)
+            try
             {
-                return BadRequest();
-            }
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+                if (SurveyId == null) return BadRequest();
 
-            string Key = SurveyId.ToString();
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
-            foreach (var file in Request.Form.Files)
-            {
-                Stream stream = file.OpenReadStream();
-                if (file.Length == 0)
-                    continue;
+                CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
 
-                if (file.Length > 0)
+                string Key = SurveyId.ToString();
+
+                foreach (var file in Request.Form.Files)
                 {
-                    string name = Key + '/' + file.FileName;
-                    CloudBlockBlob blob = Container.GetBlockBlobReference(name);
-                    blob.UploadFromStream(file.OpenReadStream());
-                }
-            }
-            Guid invid = _context.Surveys.Single(s => s.SurveyId == SurveyId).InvestmentId;
+                    Stream stream = file.OpenReadStream();
+                    if (file.Length == 0)
+                        continue;
 
-            return RedirectToAction("Details", "Investments", new { Id = invid });
+                    if (file.Length > 0)
+                    {
+                        string name = Key + '/' + file.Name + '/' + file.FileName;
+                        CloudBlockBlob blob = Container.GetBlockBlobReference(name);
+                        blob.UploadFromStream(file.OpenReadStream());
+                    }
+                }
+
+                this.SetDraftStatus(SurveyId, true);
+
+                Guid invId = _context.Surveys.Single(s => s.SurveyId == SurveyId).InvestmentId;
+
+                return RedirectToAction("Details", "Investments", new { Id = invId });
+
+            }
+            catch (Exception exc)
+            {
+                if (exc.InnerException != null)
+                    return BadRequest(exc.InnerException.Message);
+                else
+                    return BadRequest(exc.Message);
+            }
         }
 
 
@@ -982,6 +1151,49 @@ namespace DoEko.Controllers
             //    return RedirectToAction("List");
             //}
              return RedirectToAction("Details", "Investments", new { Id = model.InvestmentId });
+        }
+
+        private int SetDraftStatus (Guid surveyId, bool commit = false)
+        {
+            try
+            {
+                switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).First())
+                {
+                    case SurveyType.CentralHeating:
+                        SurveyCentralHeating srvCH = _context.SurveysCH.Single(s => s.SurveyId == surveyId);
+                        if (srvCH.Status == SurveyStatus.New || srvCH.Status == SurveyStatus.Rejected)
+                            srvCH.Status = SurveyStatus.Draft;
+                        _context.Update(srvCH);
+                        break;
+                    case SurveyType.HotWater:
+                        SurveyHotWater srvHW = _context.SurveysHW.Single(s => s.SurveyId == surveyId);
+                        if (srvHW.Status == SurveyStatus.New || srvHW.Status == SurveyStatus.Rejected)
+                            srvHW.Status = SurveyStatus.Draft;
+                        _context.Update(srvHW);
+                        break;
+                    case SurveyType.Energy:
+                        SurveyEnergy srvEN = _context.SurveysEN.Single(s => s.SurveyId == surveyId);
+                        if (srvEN.Status == SurveyStatus.New || srvEN.Status == SurveyStatus.Rejected)
+                            srvEN.Status = SurveyStatus.Draft;
+                        _context.Update(srvEN);
+                        break;
+                    default:
+                        return 0;
+                }
+                if (commit)
+                {
+                    return _context.SaveChanges();
+                }
+                else
+                    return 1;
+            }
+            catch (Exception)
+            {
+                //0 records have been updated
+                return 0;
+            }
+            //
+
         }
 
     }

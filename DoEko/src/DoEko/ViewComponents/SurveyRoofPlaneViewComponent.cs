@@ -29,7 +29,7 @@ namespace DoEko.ViewComponents
                 .SingleAsync(s => s.SurveyId == surveyId);
             SurveyRoofPlaneViewModel model = new SurveyRoofPlaneViewModel();
 
-            if (string.IsNullOrEmpty(roofPlaneId.ToString()))
+            if (roofPlaneId == Guid.Empty)
             {
                 model.Plane = new SurveyDetRoof() { SurveyId = srv.SurveyId };
                 model.RoofNumber = srv.RoofPlanes.Count + 1;

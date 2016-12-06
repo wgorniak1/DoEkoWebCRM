@@ -1,0 +1,46 @@
+﻿@using DoEko.Models.DoEko.Survey
+
+@if (Model.Status == SurveyStatus.New)
+{
+    <nav>
+        <ul id="stepList" class="nav nav-tabs nav-justified">
+            <li class="active" data-step-number="1" >
+                <a href="#" data-step-number="1" data-toggle="tab">Inwestycja<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+            </li>
+            <li data-step-number="2" >
+                <a href="#" data-step-number="2" class="navigation-disabled">Budynek<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+            </li>
+            <li data-step-number="3" >
+                <a href="#" data-step-number="3" class="navigation-disabled">Budynek c.d.<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+            </li>
+            <li data-step-number="4" >
+                <a href="#" class="navigation-disabled">Audyt Energetyczny<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+            </li>
+            <li data-step-number="5" >
+                <a href="#" data-step-number="5" class="navigation-disabled">Zdjęcia</a>
+            </li>
+        </ul>
+    </nav>
+}
+else
+{
+    <nav>
+        <ul id="stepList" class="nav nav-tabs nav-justified">
+            <li class="active navigation-bar-link" data-step-number="1" >
+                <a href="#" data-step-number="1" data-toggle="tab">Inwestycja<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+            </li>
+            <li class="navigation-bar-link" data-step-number="2">
+                <a href="#" data-step-number="2" data-toggle="tab">Budynek<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+            </li>
+            <li class="navigation-bar-link" data-step-number="3">
+                <a href="#" data-step-number="3" data-toggle="tab">Budynek c.d.<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+            </li>
+            <li class="navigation-bar-link" data-step-number="4">
+                <a href="#" data-step-number="4" data-toggle="tab">Audyt Energetyczny<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
+            </li>
+            <li class="navigation-bar-link" data-step-number="5">
+                <a href="#" data-step-number="5" data-toggle="tab">Zdjęcia</a>
+            </li>
+        </ul>
+    </nav>
+}

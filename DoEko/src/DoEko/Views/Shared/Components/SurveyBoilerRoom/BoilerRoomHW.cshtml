@@ -47,22 +47,23 @@
             </div>
             <div class="col-sm-1">
                 <div class="form-group-sm">
-                    <label class="control-label">wys.</label>
-                    <input asp-for="Width" class="form-control" />
+                    <label class="control-label">wys.[m]</label>
+                    <input asp-for="Height" class="form-control boilerroomvolume data-val-ignore" 
+                           type="number" step="0.01"/>
                     <span asp-validation-for="Height" class="text-danger" />
                 </div>
             </div>
             <div class="col-sm-1">
                 <div class="form-group-sm">
-                    <label class="control-label">szer.</label>
-                    <input asp-for="Height" class="form-control" />
+                    <label class="control-label">szer.[m]</label>
+                    <input asp-for="Width" class="form-control boilerroomvolume" />
                     <span asp-validation-for="Width" class="text-danger" />
                 </div>
             </div>
             <div class="col-sm-1">
                 <div class="form-group-sm">
-                    <label class="control-label">dł.</label>
-                    <input asp-for="Length" class="form-control" />
+                    <label class="control-label">dł.[m]</label>
+                    <input asp-for="Length" class="form-control boilerroomvolume" />
                     <span asp-validation-for="Length" class="text-danger" />
                 </div>
             </div>

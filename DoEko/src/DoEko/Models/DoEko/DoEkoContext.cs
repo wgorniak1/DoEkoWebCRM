@@ -6,6 +6,7 @@ using DoEko.Models.DoEko;
 using System.Threading;
 using System.Threading.Tasks;
 using DoEko.Models.DoEko.Survey;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DoEko.Models.DoEko
 {
@@ -69,24 +70,34 @@ namespace DoEko.Models.DoEko
                             .HasForeignKey(io => io.InvestmentId)
                             .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
 
-            // Projekt Parent - Child relation
-            modelBuilder.Entity<Project>()
-                .HasOne(p => p.ParentProject)
-                .WithMany(p => p.ChildProjects)
-                .HasForeignKey(p => p.ParentProjectId);
 
             // Adres - kaskadowe usuwanie zabronione
             modelBuilder.Entity<Address>().HasOne(a => a.Country).WithMany().HasForeignKey(c => c.CountryId).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
             modelBuilder.Entity<Address>().HasOne(a => a.State).WithMany().HasForeignKey(a => a.StateId).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
             modelBuilder.Entity<Address>().HasOne(a => a.District).WithMany().HasForeignKey(d => new { d.StateId, d.DistrictId }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
             modelBuilder.Entity<Address>().HasOne(a => a.Commune).WithMany().HasForeignKey(c => new { c.StateId, c.DistrictId, c.CommuneId, c.CommuneType }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+            
+            // Inwestycja - relacja z adresem, bez usuwania
+            modelBuilder.Entity<Investment>().HasOne(i => i.Address).WithMany().HasForeignKey(a => a.AddressId).OnDelete(DeleteBehavior.Restrict);
 
-            // Inwestycja - kaskadowe usuwanie zabrionione
-            //modelBuilder.Entity<Investment>().HasOne(i => i.Address).WithMany().HasForeignKey(a => a.AddressId).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+            //Kaskadowe usuwanie wszystkiego po kolei:
+            //1. Projekt: Relacja Parent-Child + usuwanie podprojektów
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.ParentProject)
+                .WithMany(p => p.ChildProjects)
+                .HasForeignKey(p => p.ParentProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+            //2. Contract: usuwanie Projektu wymusza usuwanie contractów
+            //modelBuilder.Entity<Contract>().HasOne(c => c.Project).WithMany().HasForeignKey(p => p.ProjectId).OnDelete(DeleteBehavior.Cascade);
+            //3. Inwestycja: usuwanie umowy wymusza usuwanie inwestycji
+            //modelBuilder.Entity<Investment>().HasOne(i => i.Contract).WithMany().HasForeignKey(c => c.ContractId).OnDelete(DeleteBehavior.Cascade);
+            //4. Ankieta: usuwanie inwestycji wymusza usuwanie ankiet
+            //modelBuilder.Entity<Survey.Survey>().HasOne(s => s.Investment).WithMany().HasForeignKey(i => i.InvestmentId).OnDelete(DeleteBehavior.Cascade);
+
             //Cennnik, klucz kompozytowy: gmina, okres, typ ankiety
-            modelBuilder.Entity<PriceList>().HasKey(pl => new { pl.StateId, pl.DistrictId, pl.CommuneId, pl.CommuneType, pl.ValidFrom, pl.ValidTo, pl.SurveyType });
+            modelBuilder.Entity<PriceList>().HasKey(pl => new { pl.StateId, pl.DistrictId, pl.CommuneId, pl.CommuneType, pl.ValidFrom, pl.ValidTo, pl.SurveyType, pl.RSEType });
             //Cennik, klucz obcy: gmina
-            modelBuilder.Entity<PriceList>().HasOne(pl => pl.Commune).WithMany().HasForeignKey(c => new { c.StateId, c.DistrictId, c.CommuneId, c.CommuneType }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+            modelBuilder.Entity<PriceList>().HasOne(pl => pl.Commune).WithMany().HasForeignKey(c => new { c.StateId, c.DistrictId, c.CommuneId, c.CommuneType }).OnDelete(DeleteBehavior.Restrict);
 
             //modelBuilder.Entity<Payment>().Property(p => p.CreatedAt).ValueGeneratedOnAdd();
             //modelBuilder.Entity<Payment>().Property(p => p.ChangedAt).ValueGeneratedOnAddOrUpdate();

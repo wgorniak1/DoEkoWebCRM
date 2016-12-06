@@ -85,6 +85,13 @@ namespace DoEko.Controllers
         public IActionResult Create(int? ProjectId, string ReturnUrl = null)
         {
 
+            Contract model = new Contract
+            {
+                ContractDate = DateTime.Today,
+                Status = ContractStatus.Draft,
+                Type = ContractType.WithCommune
+            };
+
             if (ProjectId.HasValue)
             {
                 if (!ProjectExists(ProjectId.Value))
@@ -92,23 +99,26 @@ namespace DoEko.Controllers
                     return RedirectToAction("Index", new { StatusMessage = 1 });
                     //return NotFound();
                 }
-                ViewData["ProjectId"] = ProjectId;
-                Project project = _context.Projects.SingleOrDefault(p => p.ProjectId == ProjectId);
+                model.Project = _context.Projects.Include(p=>p.Company).SingleOrDefault(p => p.ProjectId == ProjectId);
+                model.ProjectId = model.Project.ProjectId;
+                model.Company = model.Project.Company;
+                model.CompanyId = model.Project.CompanyId;
 
-                ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", project.CompanyId);
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p=> p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription", model.Project);
+                ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", model.Company);
+                ViewData["ReturnUrl"] = ReturnUrl;
+
             }
             else
             {
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription");
                 ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name");
+                ViewData["ReturnUrl"] = ReturnUrl;
             }
-
-            ViewData["ReturnUrl"] = ReturnUrl;
-            ViewData["ProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription");
+            model.Number = CalculateNewNumber(model.Type, model.ContractDate);
             
-
-            return View();
+            return View(model);
         }
-
         // POST: Contracts/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -120,7 +130,7 @@ namespace DoEko.Controllers
             {
                 contract.Status = ContractStatus.Draft;
                 _context.Add(contract);
-                await _context.SaveChangesAsync();
+                int result = await _context.SaveChangesAsync();
 
                 //if (ReturnUrl != null)
                 //{
@@ -132,8 +142,25 @@ namespace DoEko.Controllers
                 //}
                 //contract = await _context.Contracts.Include(c => c.Investments).SingleOrDefaultAsync(c => c.ContractId == contract.ContractId);
             }
+
+            if (contract.ProjectId != 0)
+            {
+                contract.Project = _context.Projects.Include(p => p.Company).SingleOrDefault(p => p.ProjectId == contract.ProjectId);
+                contract.Company = contract.Project.Company;
+                contract.CompanyId = contract.Project.CompanyId;
+
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription", contract.Project);
+                ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.Company);
+                ViewData["ReturnUrl"] = ReturnUrl;
+            }
+            else
+            { 
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription");
+                ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name");
+            }
+
             ViewData["ReturnUrl"]   = ReturnUrl;
-            ViewData["ProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", contract.ProjectId);
+
             return View(contract);
         }
 
@@ -228,10 +255,65 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var contract = await _context.Contracts.SingleOrDefaultAsync(m => m.ContractId == id);
-            _context.Contracts.Remove(contract);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                var contract = await _context.Contracts
+                    .Include(c=>c.Investments).ThenInclude(i=>i.Payments)
+                    .Include(c=>c.Investments).ThenInclude(i=>i.Surveys)
+                    .Include(c=>c.Investments).ThenInclude(i=>i.InvestmentOwners)
+                    .Include(c=>c.Investments).ThenInclude(i=>i.Address)
+                    .SingleAsync(m => m.ContractId == id);
+
+                _context.Contracts.Remove(contract);
+
+                int result = await _context.SaveChangesAsync();
+
+                return Ok(result);
+
+            }
+            catch (Exception exc)
+            {
+                if (exc.Message.Contains("See the inner exception"))
+                {
+                    return BadRequest(exc.InnerException.Message);
+                }
+                else return BadRequest(exc.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CalculateNewNumberAjax(ContractType type, DateTime contractDate)
+        {
+            return Json(CalculateNewNumber(type, contractDate));
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="contractDate"></param>
+        /// <returns></returns>
+        private string CalculateNewNumber(ContractType type, DateTime contractDate)
+        {
+            string category = "X";
+
+            switch (type)
+            {
+                case ContractType.WithCommune:
+                    category = "G";
+                    break;
+                case ContractType.WithPerson:
+                    category = "O";
+                    break;
+                case ContractType.Other:
+                    category = "I";
+                    break;
+                default:
+                    category = "X";
+                    break;
+            }
+            string number = (_context.Contracts.OrderByDescending(c=>c.ContractId).Select(c=>c.ContractId).First() + 1).ToString();
+
+            return number + "/" + category + "/" + contractDate.Month.ToString() + "/" + contractDate.Year.ToString();
         }
 
         private bool ContractExists(int id)

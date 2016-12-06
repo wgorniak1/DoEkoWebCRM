@@ -4,7 +4,7 @@
 @{ 
     string method = "";
 
-    if (string.IsNullOrEmpty(Model.Plane.SurveyId.ToString()))
+    if (Model.Plane.RoofPlaneId == Guid.Empty)
     {
         method = "CreateRoofPlaneAjax";
     } else
@@ -21,18 +21,19 @@
       data-ajax-mode="UPDATE"
       data-ajax-update=""
       data-ajax-failure="SectionPostFailure"
-      data-ajax-success="SectionPostCompleted">
+      data-ajax-success="SectionPostSuccess">
     <fieldset>
         <legend>
             Dach | Połać @Model.RoofNumber.ToString() z @Model.RoofTotal.ToString()
             @if (Model.RoofTotal > 1)
             {
-                <button class="btn btn-default remowner"><span class="glyphicon glyphicon-minus"></span></button>
+                <button class="btn-sm btn-default remowner"><span class="glyphicon glyphicon-minus"></span></button>
             }
-            <button class="btn btn-default addowner"><span class="glyphicon glyphicon-plus"></span></button>
+            <button class="btn-sm btn-default addowner"><span class="glyphicon glyphicon-plus"></span></button>
         </legend>
 
         <input asp-for="SurveyId" type="hidden" />
+        <input asp-for="Plane.RoofPlaneId" type="hidden" />
 
         <div class="row">
             <div class="col-sm-3">
@@ -44,8 +45,28 @@
                 </div>
             </div>
             <div class="col-sm-9">
-                <div class="img-thumbnail">
-                    <img src="#" alt="Rodzaj Dachu" />
+                <div class="img-thumbnail roof-thumbnail">
+                    @{
+                        string source = "";
+                        switch (Model.Plane.Type)
+                        {
+                            case RoofType.Flat:
+                                source = "roof_0p.jpg";
+                                break;
+                            case RoofType.Pitched_1:
+                                source = "roof_1p.png";
+                                break;
+                            case RoofType.Pitched_2:
+                                source = "roof_2p.png";
+                                break;
+                            case RoofType.Pitched_4:
+                                source = "roof_4p.png";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    <img src="~/images/@source" alt="Rodzaj Dachu" />
                 </div>
             </div>
         </div>
@@ -306,6 +327,4 @@
 
     </fieldset>
     
-    <input type="submit" />
-
 </form>

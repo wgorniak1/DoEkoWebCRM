@@ -33,11 +33,6 @@ else
         <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
     </ol>*@
 }
-<!--Popup Message with errors-->
-<div class="alert alert-danger alert-dismissable hidden" role="alert" id="AjaxErrorDiv">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <strong>Uwaga!</strong><div id="AjaxErrorMsg"></div>
-</div>
 <!--Static Survey Header-->
 <div class="row">
     <div class="col-sm-4">
@@ -72,27 +67,8 @@ else
     </div>
 </div>
 <hr />
-<nav>
-    <ul id="stepList" data-step-current="11" class="nav nav-tabs nav-justified">
-        @{ int ownerCount = Model.Investment.InvestmentOwners.Count + 11;}
-        <li class="active" data-step-from="11" data-step-to="@ownerCount">
-            <a href="#Step_11" data-toggle="tab">Inwestycja<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
-        </li>
-        <li data-step-from="21" data-step-to="26">
-            <a href="#Step_21" data-toggle="tab">Opis Budynku (wewn.)<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
-        </li>
-        <li data-step-from="31" data-step-to="31">
-            <a href="#Step_31" data-toggle="tab">Opis Działki (zewn.)<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
-        </li>
-        <li data-step-from="41" data-step-to="42">
-            <a href="#Step_41" data-toggle="tab">Audyt Energetyczny<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
-        </li>
-        <li data-step-from="51" data-step-to="51">
-            <a href="#Step_51" data-toggle="tab">Zdjęcia</a>
-        </li>
-    </ul>
-</nav>
-
+@*STEP WIZARD*@
+@await Html.PartialAsync("_NavigationBarPartial", Model)
 <!--BODY-->
 <div class="tab-content container-fluid">
     <div id="Dynamic" class="tab-pane fade in active">

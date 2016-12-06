@@ -402,7 +402,9 @@ namespace DoEko.Controllers
                         //set line to parse
                         uploadhelper.Record = CsvRecord;
 
+                        //Parse Investment Address - also check if address has already been registered in the db
                         InvestmentAddress = uploadhelper.ParseInvestmentAddress();
+
                         Investment = uploadhelper.ParseInvestment();
                         Investment.Address = InvestmentAddress;
 
@@ -433,12 +435,14 @@ namespace DoEko.Controllers
                             Survey.Investment = Investment;
                             Survey.InvestmentId = Investment.InvestmentId;
                         };
-
-                        _context.Add(InvestmentAddress);
+                        if (InvestmentAddress.AddressId == 0)
+                        {
+                            _context.Add(InvestmentAddress);
+                        }
                         //int x = _context.SaveChanges();
                         _context.Add(Investment);
                         //x = _context.SaveChanges();
-                        if (OwnerAddress != null)
+                        if (OwnerAddress != null && OwnerAddress.AddressId == 0)
                         {
                             _context.Add(OwnerAddress);
                             //x = _context.SaveChanges();

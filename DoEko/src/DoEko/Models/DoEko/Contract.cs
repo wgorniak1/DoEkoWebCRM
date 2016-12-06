@@ -51,10 +51,10 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [StringLength(20,MinimumLength = 5,ErrorMessage = "Proszę wprowadzić {0} w formacie 12345/A/1/2016")]
-        [RegularExpression(@"^[0-9]{1,5}(/)[A-Z]{1}(/)[0-9]{1}(/)(2015|2016|2017|2018|2019|2020)$", 
-            ErrorMessage ="Proszę wprowadzić {0} w formacie 12345/A/1/2016")]
-        [Display(Description = "12345 - kolejny numer umowy w danym roku finansowym. A - rodzaj umowy, 1 - indeks spółki, 2016 - rok finansowy", 
-            Name = "Numer", ShortName = "Numer", Prompt ="12345/A/1/2016")]
+        [RegularExpression(@"^[0-9]{1,5}(/)[A-Z]{1}(/)(1|2|3|4|5|6|7|8|9|10|11|12)(/)(2015|2016|2017|2018|2019|2020)$", 
+            ErrorMessage = "Proszę wprowadzić {0} w formacie 12345/X/M/RRRR. Gdzie X - typ umowy, M/RRRR data podpisania umowy")]
+        [Display(Description = "12345 - kolejny numer umowy. X - rodzaj umowy, M/RRRR - miesiąć/rok podpisania umowy", 
+            Name = "Numer", ShortName = "Numer", Prompt ="12345/G/1/2016")]
         public string Number { get; set; }
         /// <summary>
         /// 
