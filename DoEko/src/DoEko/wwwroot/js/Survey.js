@@ -1,19 +1,86 @@
-﻿//<script type="text/javascript" title="PlannedInstallation">
+﻿//on Central Heating source change
+function onCHTypeChange() {
+    var type = $(".centralheating-type").val();
+    if (type === '0') {
+        $(".centralheating-other").hide();
+        $(".centralheating-fuel").hide();
+    }
+    else if (type === '7'){
+        $(".centralheating-other").show();
+        $(".centralheating-fuel").show();
+    }
+    else {
+        $(".centralheating-other").hide();
+        $(".centralheating-fuel").show();
+    }
+}
+$('body').on('change', '.centralheating-type', onCHTypeChange);
+
+//Navigation steps
+var stepNo;
+
+function ajaxGetSectionNo() {
+    var getSect = $.ajax({
+        type: "GET",
+        url: "/Surveys/MaintainStepAjax",
+        data: {
+            stepNo: stepNo,
+            surveyId: $("#MaintainedSurveyId").val()
+        },
+        dataType: "html"
+    });
+    getSect.done(function (data, success) {
+        onAjaxGetSuccess(data, success);
+    });
+    getSect.error(function (xhr, status, error) {
+        onAjaxGetFailure(xhr, status, error);
+    });
+}
+function onNavigationBarClick() {
+    stepNo = $(this).attr('data-step-number');
+
+    ajaxPostCurrentSection(onAjaxPostError, ajaxGetSectionNo);
+}
+$('body').on('click', '.navigation-bar-link', onNavigationBarClick);
+//Wall area
+function onWallSizeChange() {
+    var form = $("#Dynamic form");
+    var width = parseFloat($("#Width", form).val());
+    var height = parseFloat($("#Height", form).val());
+
+    var area = width * height;
+
+    $("#UsableArea").val(area.toFixed(2));
+
+}
+$('body').on('change', '.wallarea', onWallSizeChange);
+//Boiler room volume
+function onBoilerRoomSizeChange() {
+    var form = $("#Dynamic form");
+    var width = parseFloat($("#Width", form).val());
+    var height = parseFloat($("#Height", form).val());
+    var length = parseFloat($("#Length", form).val());
+    
+    var volume =  width * height * length;
+
+    $("#Volume").val(volume.toFixed(2));
+}
+$('body').on('change', '.boilerroomvolume', onBoilerRoomSizeChange);
+
+//<script type="text/javascript" title="PlannedInstallation">
 function plndInstallChanged(event) {
 
     var value = $(this).val();
-    if (value == 1) {
+    if (value === 1) {
         $(".plannedinstallationpurpose").hide();
     }
     else {
         $(".plannedinstallationpurpose").show();
     }
 
-};
+}
 
 $('body').on('change', '#Localization', plndInstallChanged);
-
-
 
 //<script type="text/javascript" title="SectionsAjaxPost">
 function SectionPostFailure(xhr, status, error) {
@@ -25,21 +92,25 @@ function SectionPostFailure(xhr, status, error) {
         $("#AjaxErrorDiv").fadeToggle(3000);
     });
     alert("error");
-};
+}
 
 function SectionPostSuccess() {
 
-};
-
-//<script type="text/javascript" title="on Div Dynamic Ajax refresh">
+}
+//*******************************************************************
+//Updates Section DIV with new form that is returned from server
+//Function is called whenever AJAX GET NEXT / PREV section is called
 function onAjaxGetSuccess(data, status) {
 
     $('#Dynamic').html(data);
 
     var $form = $("#Dynamic form");
+
     $form.removeData("validator");
     $form.removeData("unobtrusiveValidation");
     $.validator.unobtrusive.parse($form);
+
+    $form.data("validator").settings.ignore = ".data-val-ignore, :hidden, :disabled";
 
     var section = $("#Dynamic form").attr('id');
 
@@ -58,74 +129,89 @@ function onAjaxGetSuccess(data, status) {
         $("#stepNext").removeAttr('disabled');
         $("#stepLast").addClass('hidden');
     }
-
 }
 
 function onAjaxGetFailure(xhr, status, error) {
     alert(error);
 }
-
-//<script type="text/javascript" title="OwnerAddRemove">
-function addOwner() {
-    // post current div
-    var form = $("#Dynamic form");
-    form.validate();
-
-    if (form.valid()) {
-
-        var url = form.attr("action"),
-                  method = form.attr('data-ajax-method'),
-                  ajaxTrue = form.attr('data-ajax');
-
-        //1st
-        var postCurrent =
-        $.ajax({
-            type: method || "POST",
-            url: url,
-            data: form.serialize()
-        });
-
-        //chain call     
-        $.when(postCurrent).done(function () {
-            // Get owner section again without id
-            var getNew =
-            $.ajax({
-                url: "/InvestmentOwners/CreatePersonAjax",
-                data: { investmentId: $("#InvestmentId").val() },
-                type: "GET",
-                dataType: "html"
-            });
-
-            getNew.done(function (data, success) {
-                onAjaxGetSuccess(data, success)
-            });
-
-            getNew.error(function (xhr, status, error) {
-                onAjaxGetFailure(xhr, status, error)
-            });
-        });
-    }
+//Executes AJAX GET PREV section
+function ajaxGetPrevSection() {
+    var getPrev = $.ajax({
+        type: "GET",
+        url: "/Surveys/MaintainPreviousStepAjax",
+        data: {
+            currentStep: $('#Dynamic form').attr('id'),
+            surveyId: $("#MaintainedSurveyId").val()
+        },
+        dataType: "html"
+    });
+    getPrev.done(function (data, success) {
+        onAjaxGetSuccess(data, success);
+    });
+    getPrev.error(function (xhr, status, error) {
+        onAjaxGetFailure(xhr, status, error);
+    });
 }
-function removeOwner() {
-
-
+// Executes AJAX GET NEXT section
+function ajaxGetNextSection() {
+    var getNext = $.ajax({
+        type: "GET",
+        url: "/Surveys/MaintainNextStepAjax",
+        data: {
+            currentStep: $('#Dynamic form').attr('id'),
+            surveyId: $("#MaintainedSurveyId").val()
+        },
+        dataType: "html"
+    });
+    getNext.done(function (data, success) {
+        onAjaxGetSuccess(data, success);
+    });
+    getNext.error(function (xhr, status, error) {
+        onAjaxGetFailure(xhr, status, error);
+    });
 }
+//*******************************************************************
+//Updates Errors on form when AJAX POST returns errors
+function onAjaxPostError(xhr, status, error){
+    //Prepare fields and error messages
+    var keys = Object.keys(xhr.responseJSON);
+    var values = keys.map(function (k) { return xhr.responseJSON[k]; });
+    var i = 0;
+    var context = $("form", $("#Dynamic"));
 
-$('body').on('click', '.addowner', addOwner);
-$('body').on('click', '.remowner', removeOwner);
+    //update form to display error messages
+    keys.forEach(function (key) {
+        var inputField = $('input[name="' + key + '"], select[name="' + key + '"]', context);
 
+        inputField.removeClass('valid');
+        inputField.addClass('input-validation-error');
+        inputField.attr('aria-invalid', true);
 
-$(".remownerconfirmed").click(function () {
-    // current div no post
-    // ajax to delete current owner
-    // ajax to re read next / last owner
-});
+        var msgContainer = $('span[data-valmsg-for="' + key + '"]', context);
+                
+        var element = document.createElement("span");
+        element.setAttribute('id', key.replace('.', '_') + '-error');
+        element.setAttribute('class', '');
+        
+        var errorText = document.createTextNode(values[i]);
 
-//<script type="text/javascript" title="StepFormNavigation">
-function NavigationPrev() {
+        element.appendChild(errorText);
+
+        msgContainer.addClass('field-validation-error');
+        msgContainer.removeClass ('field-validation-valid');
+        msgContainer.html(element);
+
+        i++;
+    });
+}
+//Execute AJAX POST CURRENT SECTION
+function ajaxPostCurrentSection(onError, onSuccess) {
+
     var form = $("#Dynamic form");
 
-    form.validate();
+    form.validate({
+        lang: 'pl'
+    });
 
     if (form.valid()) {
 
@@ -134,94 +220,187 @@ function NavigationPrev() {
             ajaxTrue = form.attr('data-ajax');
 
         //1st
-        var postCurrent = 
-        $.ajax({
+        var postCurrent = $.ajax({
             type: method || "POST",
             url: url,
             data: form.serialize()
         });
 
-        //chain call                        
-        $.when(postCurrent).done(function () {
-            var getPrev = 
-            $.ajax({
-                type: "GET",
-                url: "/Surveys/MaintainPreviousStepAjax",
-                data: {
-                    currentStep: $('#Dynamic form').attr('id'),
-                    surveyId: $("#MaintainedSurveyId").val()
-                },
-                dataType: "html"
-            });
+        postCurrent.error(onError);
+        postCurrent.success(onSuccess);
 
-            getPrev.done(function (data, success) {
-                onAjaxGetSuccess(data, success)
-            });
+        //$.when(postCurrent);
+    }
+}
+//*******************************************************************
 
-            getPrev.error(function (xhr, status, error) {
-                onAjaxGetFailure(xhr, status, error)
-            });
-
+//*******************************************************************
+//Button handlers: Investment Owner | Add New Owner
+function btnAddOwner() {
+    //1. Post current section and then if success, create new owner
+    ajaxPostCurrentSection(onAjaxPostError, function () {
+        var getNew = $.ajax({
+            url: "/InvestmentOwners/CreatePersonAjax",
+            data: { investmentId: $("#InvestmentId").val() },
+            type: "GET",
+            dataType: "html"
         });
-    };
-};
+        getNew.done(function (data, success) {
+            onAjaxGetSuccess(data, success);
+        });
+
+        getNew.error(function (xhr, status, error) {
+            onAjaxGetFailure(xhr, status, error);
+        });
+    });
+
+    ////1. Post current div
+    //var form = $("#Dynamic form");
+    //form.validate();
+    //if (form.valid()) {
+    //    var url = form.attr("action"),
+    //        method = form.attr('data-ajax-method'),
+    //        ajaxTrue = form.attr('data-ajax');
+    //    //1st
+    //    var postCurrent =
+    //    $.ajax({
+    //        type: method || "POST",
+    //        url: url,
+    //        data: form.serialize()
+    //    });
+    //    //chain call     
+    //    $.when(postCurrent).done(function () {
+    //        // Get owner section again without id
+    //        var getNew =
+    //        $.ajax({
+    //            url: "/InvestmentOwners/CreatePersonAjax",
+    //            data: { investmentId: $("#InvestmentId").val() },
+    //            type: "GET",
+    //            dataType: "html"
+    //        });
+    //        getNew.done(function (data, success) {
+    //            onAjaxGetSuccess(data, success)
+    //        });
+    //        getNew.error(function (xhr, status, error) {
+    //            onAjaxGetFailure(xhr, status, error)
+    //        });
+    //    });
+}
+
+function removeOwner() {
+    // ajax to delete current owner
+    // ajax to re read next / last owner
+    //1. Post current div
+    //var form = $("#Dynamic form");
+    var investmentId = $("#InvestmentId").val(),
+    ownerId = $("#Owner_BusinessPartnerId").val(),
+    // id=@("InvestmentOwnerData_" + Model.OwnerNumber.ToString() + '_' + Model.OwnerTotal.ToString())
+    formId = $("#Dynamic form").attr("id").split("_");
+    var OwnerNo = formId[1];
+    var OwnerTotal = formId[2];
+
+    //1st
+    var deleteCurrent = $.ajax({
+        type: "POST",
+        url: "/InvestmentOwners/DeletePersonAjax",
+        data: { investmentId: investmentId, ownerId: ownerId } 
+    });
+
+    //chain call     
+    deleteCurrent.done(ajaxGetPrevSection);
+
+}
+
+$('body').on('click', '.addowner', btnAddOwner);
+$('body').on('click', '.deleteownersubmit', removeOwner);
+
+//<script type="text/javascript" title="StepFormNavigation">
+function NavigationPrev() {
+    ajaxPostCurrentSection(onAjaxPostError, ajaxGetPrevSection);
+    //var form = $("#Dynamic form");
+
+    //form.validate();
+
+    //if (form.valid()) {
+
+    //    var url = form.attr("action"),
+    //        method = form.attr('data-ajax-method'),
+    //        ajaxTrue = form.attr('data-ajax');
+
+    //    //1st
+    //    var postCurrent = 
+    //    $.ajax({
+    //        type: method || "POST",
+    //        url: url,
+    //        data: form.serialize()
+    //    });
+        
+    //    postCurrent.error(onAjaxPostErrors);
+    //    postCurrent.success();
+    //    //chain call                        
+    //    $.when(postCurrent).success();
+    //    done(function () {
+    //        var getPrev = 
+    //        $.ajax({
+    //            type: "GET",
+    //            url: "/Surveys/MaintainPreviousStepAjax",
+    //            data: {
+    //                currentStep: $('#Dynamic form').attr('id'),
+    //                surveyId: $("#MaintainedSurveyId").val()
+    //            },
+    //            dataType: "html"
+    //        });
+
+    //        getPrev.done(function (data, success) {
+    //            onAjaxGetSuccess(data, success);
+    //        });
+
+    //        getPrev.error(function (xhr, status, error) {
+    //            onAjaxGetFailure(xhr, status, error);
+    //        });
+
+    //    });
+    //}
+}
 
 function NavigationNext() {
-    var form = $("#Dynamic form");
 
-    form.validate();
+    ajaxPostCurrentSection(onAjaxPostError, ajaxGetNextSection);
+    //var form = $("#Dynamic form");
 
-    if (form.valid()) {
+    //form.validate();
 
-        //$form.submit();
+    //if (form.valid()) {
 
-        var url = form.attr("action"),
-                   method = form.attr('data-ajax-method'),
-                   ajaxTrue = form.attr('data-ajax');
+    //    //$form.submit();
 
-        //1st
-        var postCurrent =
-        $.ajax({
-            type: method || "POST",
-            url: url,
-            data: form.serialize()
-        });
+    //    var url = form.attr("action"),
+    //               method = form.attr('data-ajax-method'),
+    //               ajaxTrue = form.attr('data-ajax');
 
-        //chain call     
-        $.when(postCurrent).done(function () {
-            var getNext =
-            $.ajax({
-                type: "GET",
-                url: "/Surveys/MaintainNextStepAjax",
-                data: {
-                    currentStep: $('#Dynamic form').attr('id'),
-                    surveyId: $("#MaintainedSurveyId").val()
-                },
-                dataType: "html"
-            });
-            
-            getNext.done(function (data, success) {
-                onAjaxGetSuccess(data, success)
-            });
+    //    //1st
+    //    var postCurrent =
+    //    $.ajax({
+    //        type: method || "POST",
+    //        url: url,
+    //        data: form.serialize()
+    //    });
 
-            getNext.error(function (xhr, status, error) {
-                onAjaxGetFailure(xhr, status, error)
-            });
-
-        });
-
-
-    };
-};
+    //    //chain call     
+    //    $.when(postCurrent).success(ajaxGetPrevSection);
+    //}
+}
 
 function NavigationLast() {
     var $form = $("#Dynamic form");
-    $form.validate();
+    $form.validate({
+        lang: 'pl'
+    });
     if ($form.valid()) {
         $form.submit();
-    };
+    }
 
-};
+}
 
 $('body').on('click', '#stepNext', NavigationNext);
 $('body').on('click', '#stepPrev', NavigationPrev);
@@ -235,9 +414,9 @@ function optionBtnTrue() {
     var elementToShowId = $(this).attr('data-link-show-element');
     var elementToHideId = $(this).attr('data-link-hide-element');
                 
-    if (elementToShowId != "") $(elementToShowId).collapse('show');
-    if (elementToHideId != "") $(elementToHideId).collapse('hide');
-};
+    if (elementToShowId !== "") $(elementToShowId).collapse('show');
+    if (elementToHideId !== "") $(elementToHideId).collapse('hide');
+}
 
 function optionBtnFalse() {
     var checkboxName = $(this).attr('data-linked-checkbox');
@@ -246,9 +425,10 @@ function optionBtnFalse() {
     var elementToShowId = $(this).attr('data-link-show-element');
     var elementToHideId = $(this).attr('data-link-hide-element');
 
-    if (elementToShowId != "") $(elementToShowId).collapse('show');
-    if (elementToHideId != "") $(elementToHideId).collapse('hide');
-};
+    if (elementToShowId !== "") $(elementToShowId).collapse('show');
+    if (elementToHideId !== "") $(elementToHideId).collapse('hide');
+}
+
 $('body').on('change', '.optionbutton-true', optionBtnTrue);
 $('body').on('change', '.optionbutton-false', optionBtnFalse);
 

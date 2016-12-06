@@ -421,9 +421,11 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<int>("SurveyType");
 
+                    b.Property<int>("RSEType");
+
                     b.Property<decimal>("Price");
 
-                    b.HasKey("StateId", "DistrictId", "CommuneId", "CommuneType", "ValidFrom", "ValidTo", "SurveyType");
+                    b.HasKey("StateId", "DistrictId", "CommuneId", "CommuneType", "ValidFrom", "ValidTo", "SurveyType", "RSEType");
 
                     b.HasIndex("StateId", "DistrictId", "CommuneId", "CommuneType");
 
@@ -972,8 +974,7 @@ namespace DoEko.Migrations.DoEko
                 {
                     b.HasOne("DoEko.Models.DoEko.Addresses.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("AddressId");
 
                     b.HasOne("DoEko.Models.DoEko.Contract", "Contract")
                         .WithMany("Investments")
@@ -1037,7 +1038,7 @@ namespace DoEko.Migrations.DoEko
 
             modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyDetBathroom", b =>
                 {
-                    b.HasOne("DoEko.Models.DoEko.Survey.Survey", "Surevy")
+                    b.HasOne("DoEko.Models.DoEko.Survey.Survey", "Survey")
                         .WithOne("BathRoom")
                         .HasForeignKey("DoEko.Models.DoEko.Survey.SurveyDetBathroom", "SurveyId")
                         .OnDelete(DeleteBehavior.Cascade);

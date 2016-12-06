@@ -134,9 +134,9 @@
 </script>
 
 }
-}
-else
-{
+        }
+        else
+        {
 <div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
         <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-details" data-toggle="collapse" data-parent="#panel-group" data-target="#details">
@@ -147,7 +147,7 @@ else
                 <a asp-action="Edit"
                     asp-controller="Contracts"
                     asp-route-Id="@Model.ContractId"
-                    asp-route-ReturnUrl="@Url.Action("Details","Contracts", new { Id = Model.ContractId }, null,null,"details")"
+                    asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "details")"
                    title="Edytuj podstawowe informacje o umowie" 
                    class="btn btn-primary btn-sm wg-panel-header-button">
                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
@@ -286,4 +286,4 @@ else
 </script>
 
 }
-}
+        }

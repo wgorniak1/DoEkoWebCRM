@@ -1,15 +1,10 @@
-﻿@model DoEko.Models.DoEko.Survey.Survey
+﻿@model DoEko.Models.DoEko.Survey.SurveyHotWater
 @using DoEko.Models.DoEko
 
 <form id="SurveyPhoto"
       asp-action="EditPhotoAjax"
       asp-controller="Surveys"
-      data-ajax="true"
-      data-ajax-method="POST"
-      data-ajax-mode="UPDATE"
-      data-ajax-update=""
-      data-ajax-failure="SectionPostFailure"
-      data-ajax-success="SectionPostCompleted">
+      enctype="multipart/form-data">
     <fieldset>
         <legend>Zdjęcia</legend>
 

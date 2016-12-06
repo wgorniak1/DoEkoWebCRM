@@ -244,7 +244,7 @@ namespace DoEko.Models.DoEko
         /// Określa kolejność zgłoszenia oraz ustala priorytet w przypadku 
         /// ograniczenia liczby inwestycji, które mogą być zrealizowane w danym projekcie.
         /// </summary>
-        [Display(Description = "", Name = "Priorytet", ShortName = "Priorytet")]
+        [Display(Description = "", Name = "Typ głównego źr. C.O.", ShortName = "Typ C.O.")]
         public CentralHeatingType CentralHeatingType { get; set; }
         [Display(Name = "Paliwo gł. źródła C.O.")]
         public FuelType CentralHeatingFuel { get; set; }
@@ -254,8 +254,11 @@ namespace DoEko.Models.DoEko
         public FuelType HotWaterFuel { get; set; }
         [Display(Name = "Inne źródło")]
         public string CentralHeatingTypeOther { get; set; }
-        [Display(Name = "Operator systemu dystrybucyjnego")]
-
+        /// <summary>
+        /// Określa kolejność zgłoszenia oraz ustala priorytet w przypadku 
+        /// ograniczenia liczby inwestycji, które mogą być zrealizowane w danym projekcie.
+        /// </summary>
+        [Display(Description = "", Name = "Priorytet", ShortName = "Priorytet")]
         public long PriorityIndex { get; set; }
     }
 }

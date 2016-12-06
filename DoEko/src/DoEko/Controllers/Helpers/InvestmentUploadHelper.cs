@@ -15,6 +15,8 @@ namespace DoEko.Controllers.Helpers
 {
     public enum InvestmentUploadRecord
     {
+        [Display(Name ="Nr priorytetowy")]
+        PriorityNo = 0,
         [Display(Name = "OZE - C.O.")]
         SurveyCHType = 3,
         [Display(Name = "OZE - C.W.U.")]
@@ -157,7 +159,13 @@ namespace DoEko.Controllers.Helpers
             string cellValue = "";
 
             try
-            {   
+            {
+                //PRIORITY NUMBER
+                cellNumber = InvestmentUploadRecord.PriorityNo;
+                cellValue = _record[(int)cellNumber];
+
+                _inv.PriorityIndex = Int32.Parse(cellValue);
+
                 //PLOT NUMBER
                 cellNumber = InvestmentUploadRecord.InvestmentPlotNumber;
                 cellValue = _record[(int)cellNumber];
@@ -240,7 +248,7 @@ namespace DoEko.Controllers.Helpers
         public Address ParseInvestmentAddress()
         {
             Address _addr = new Address();
-            int _tmpAddrId;
+            Address _existingAddress;
             InvestmentUploadRecord cellNumber = InvestmentUploadRecord.InvestmentAddress;
             string cellValue = "";
 
@@ -304,33 +312,21 @@ namespace DoEko.Controllers.Helpers
                 _addr.ApartmentNo = cellValue.ToUpper().Substring(0, cellValue.Length > 11 ? 10 : cellValue.Length);
                 }
 
-                //Search for existing investment with the same address address
                 try
                 {
-                    _tmpAddrId = _context.Addresses.Where(a => a.SingleLine == _addr.SingleLine).Select(a=>a.AddressId).First();
+                    //Find Address in DB
+                    _existingAddress = _context.Addresses.Where(a => a.SingleLine == _addr.SingleLine).First();
 
-                    if (_context.Investments.Where(i => i.AddressId == _tmpAddrId).First() != null)
+                    if (_context.Investments.Where(inv => inv.AddressId == _existingAddress.AddressId).Select(inv=>inv.InvestmentId).First() != null)
                     {
                         throw new InvestmentUploadException("Istnieje już inwestycja o takim adresie. Rekord Pominięty.");
                     }
+
+                    //address found and is not yet assigned to investment let's use it
+                    _addr = _existingAddress;
                 }
-                catch (Exception)
-                {
-                    
-                }
-                //_tmpAddrId = _context.Addresses.Where(a => a.CountryId == _addr.CountryId &&
-                //                                         a.StateId == _addr.StateId &&
-                //                                         a.DistrictId == _addr.DistrictId &&
-                //                                         a.CommuneType == _addr.CommuneType &&
-                //                                         a.CommuneId == _addr.CommuneId &&
-                //                                         a.City.ToUpper() == _addr.City.ToUpper() &&
-                //                                         a.Street.ToUpper() == _addr.Street.ToUpper() &&
-                //                                         a.BuildingNo.ToUpper() == _addr.BuildingNo.ToUpper() &&
-                //                                         a.ApartmentNo.ToUpper() == _addr.ApartmentNo.ToUpper()).Select(a => a.AddressId).First();
-                //if (_tmpAddrId != 0)
-                //{
-                    
-                //}
+                catch (ArgumentNullException) { }
+                catch (InvalidOperationException) { }
 
                 return _addr;
             }
@@ -348,6 +344,7 @@ namespace DoEko.Controllers.Helpers
         public Address ParseOwnerAddress()
         {
             Address _addr = new Address();
+            Address _existingAddress;
             string cellValue = "";
             InvestmentUploadRecord cellNumber = InvestmentUploadRecord.OwnerAddress;
 
@@ -411,6 +408,20 @@ namespace DoEko.Controllers.Helpers
                 {
                     _addr.ApartmentNo = cellValue.ToUpper().Substring(0, cellValue.Length > 11 ? 10 : cellValue.Length);
                 }
+
+                //Lookup db for the same address
+                try
+                {
+                    //Find Address in DB
+                    _existingAddress = _context.Addresses.Where(a => a.SingleLine == _addr.SingleLine).First();
+                    if (_existingAddress != null)
+                    {
+                        //address found let's use it
+                        _addr = _existingAddress;
+                    }
+                }
+                catch (ArgumentNullException) { }
+                catch (InvalidOperationException) { }
             }
             catch (Exception)
             {

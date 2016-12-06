@@ -108,7 +108,13 @@ wg-panel-header-button{
 
 }
 
-
+wg-alert{
+    position: fixed;
+    top: 0;
+    width: auto;
+    max-width: 600px;
+    z-index: 999999;
+}
 /*--Navigation Tabs as Form step wizard*/
 .nav-tabs.nav-justified .active a, 
 .nav-tabs.nav-justified .active a:hover,
@@ -117,6 +123,7 @@ wg-panel-header-button{
     border-radius:unset;
     border-bottom: 5px solid grey;
 }
+
 .nav-tabs.nav-justified li a:hover,
 .nav-tabs.nav-justified li a:focus{
     border: unset;
@@ -124,6 +131,13 @@ wg-panel-header-button{
     border-bottom: 5px solid rgb(51,122,183);
     background-color: white;
 }
+
+.nav-tabs.nav-justified li a.navigation-disabled
+{
+    pointer-events: none;
+    cursor: default;
+}
+
 .nav-tabs.nav-justified li a{
     border: unset;
     border-radius:unset;

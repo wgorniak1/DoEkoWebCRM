@@ -61,10 +61,10 @@
                         <td style="vertical-align:middle">
                             <input asp-for="@Model[i].PaymentId" type="hidden">
                             <input asp-for="@Model[i].ContractId" type="hidden">
-                            <input asp-for="@Model[i].Amount" type="hidden">
-                            <input asp-for="@Model[i].PaymentDate" type="hidden">
-                            <input asp-for="@Model[i].SourceRow" type="hidden">
-                            <input asp-for="@Model[i].PostingDate" type="hidden">
+                            @*<input asp-for="@Model[i].Amount" type="hidden">*@
+                            @*<input asp-for="@Model[i].PaymentDate" type="hidden">*@
+                            @*<input asp-for="@Model[i].SourceRow" type="hidden">*@
+                            @*<input asp-for="@Model[i].PostingDate" type="hidden">*@
 
                             <select asp-for="@Model[i].InvestmentId" asp-items="@ViewBag.DLInvestments" 
                                     class="form-control text-center">

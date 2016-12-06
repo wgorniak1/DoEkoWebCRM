@@ -306,13 +306,21 @@ namespace DoEko.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(ModelState);
                 }
             }
             catch (Exception exc)
             {
                 return BadRequest(exc);
             }
+        }
+
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult EditPersonAjax(Guid investmentId, Guid ownerId)
+        {
+            return ViewComponent("InvestmentOwnerData", new { investmentId = investmentId, ownerId = ownerId });
         }
 
         [HttpPost]
@@ -322,115 +330,125 @@ namespace DoEko.Controllers
         {
             try
             {
-                int Result = 0;
-                //
-                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
-                //
-                model.Owner.Address.CommuneType = (CommuneType)Enum.ToObject(typeof(CommuneType), model.Owner.Address.CommuneId % 10);
-                model.Owner.Address.CommuneId /= 10;
-
-
-                //Owner Data
-                BusinessPartnerPerson owner = _context.BPPersons.Where(p => p.BusinessPartnerId == model.Owner.BusinessPartnerId).Single();
-
-                int OldAddressId = owner.AddressId;
-
-                owner.FirstName = model.Owner.FirstName;
-                owner.Email = model.Owner.Email;
-                owner.LastName = model.Owner.LastName;
-                owner.PhoneNumber = model.Owner.PhoneNumber;
-                if (User.IsInRole(Roles.Admin))
+                if (ModelState.IsValid)
                 {
-                    //These fields are visible only for administrators
-                    owner.IdNumber = model.Owner.IdNumber;
-                    owner.Pesel = model.Owner.Pesel;
-                    owner.TaxId = model.Owner.TaxId;
-                }
 
-                //Owner Address
-                if (model.SameAddress)
-                {
-                    //Update owner address = Set address Id to investment address
-                    owner.AddressId = _context.Investments.Where(i => i.InvestmentId == model.InvestmentId).Select(i => i.AddressId).Single();
+                    int Result = 0;
+                    //
+                    _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+                    //
+                    model.Owner.Address.CommuneType = (CommuneType)Enum.ToObject(typeof(CommuneType), model.Owner.Address.CommuneId % 10);
+                    model.Owner.Address.CommuneId /= 10;
 
-                    _context.BPPersons.Update(owner);
-                    Result = _context.SaveChanges();
 
-                    //Delete old address if set
-                    if (owner.AddressId != OldAddressId)
-                        try
-                        {
-                            Address DeleteAddress = _context.Addresses.Where(a => a.AddressId == OldAddressId).Single();
-                            _context.Addresses.Remove(DeleteAddress);
-                            //
-                            Result = _context.SaveChanges();
-                        }
-                        catch (Exception exc) { }
-                }
-                else
-                {
-                    //Owner address different than investment
-                    if (model.Owner.AddressId != 0)
+                    //Owner Data
+                    BusinessPartnerPerson owner = _context.BPPersons.Where(p => p.BusinessPartnerId == model.Owner.BusinessPartnerId).Single();
+
+                    int OldAddressId = owner.AddressId;
+
+                    owner.FirstName = model.Owner.FirstName;
+                    owner.Email = model.Owner.Email;
+                    owner.LastName = model.Owner.LastName;
+                    owner.PhoneNumber = model.Owner.PhoneNumber;
+                    if (User.IsInRole(Roles.Admin))
                     {
-                        //Existing address to update
-                        Address ownerAddress = _context.Addresses.Where(a => a.AddressId == model.Owner.AddressId).Single();
+                        //These fields are visible only for administrators
+                        owner.IdNumber = model.Owner.IdNumber;
+                        owner.Pesel = model.Owner.Pesel;
+                        owner.TaxId = model.Owner.TaxId;
+                    }
 
-                        ownerAddress.ApartmentNo = model.Owner.Address.ApartmentNo;
-                        ownerAddress.BuildingNo = model.Owner.Address.BuildingNo;
-                        ownerAddress.City = model.Owner.Address.City;
-                        ownerAddress.CommuneId = model.Owner.Address.CommuneId;
-                        ownerAddress.CommuneType = model.Owner.Address.CommuneType;
-                        ownerAddress.CountryId = model.Owner.Address.CountryId;
-                        ownerAddress.DistrictId = model.Owner.Address.DistrictId;
-                        ownerAddress.PostalCode = model.Owner.Address.PostalCode;
-                        ownerAddress.PostOfficeLocation = model.Owner.Address.PostOfficeLocation;
-                        ownerAddress.StateId = model.Owner.Address.StateId;
-                        ownerAddress.Street = model.Owner.Address.Street;
-
-                        owner.AddressId = model.Owner.AddressId;
+                    //Owner Address
+                    if (model.SameAddress)
+                    {
+                        //Update owner address = Set address Id to investment address
+                        owner.AddressId = _context.Investments.Where(i => i.InvestmentId == model.InvestmentId).Select(i => i.AddressId).Single();
 
                         _context.BPPersons.Update(owner);
-                        _context.Addresses.Update(ownerAddress);
                         Result = _context.SaveChanges();
 
+                        //Delete old address if set
+                        if (owner.AddressId != OldAddressId)
+                            try
+                            {
+                                Address DeleteAddress = _context.Addresses.Where(a => a.AddressId == OldAddressId).Single();
+                                _context.Addresses.Remove(DeleteAddress);
+                                //
+                                Result = _context.SaveChanges();
+                            }
+                            catch (Exception exc) { }
                     }
                     else
                     {
-                        //new address to create
-                        owner.Address = new Address
+                        //Owner address different than investment
+                        if (model.Owner.AddressId != 0)
                         {
-                            ApartmentNo = model.Owner.Address.ApartmentNo,
-                            BuildingNo = model.Owner.Address.BuildingNo,
-                            City = model.Owner.Address.City,
-                            CommuneId = model.Owner.Address.CommuneId,
-                            CommuneType = model.Owner.Address.CommuneType,
-                            CountryId = model.Owner.Address.CountryId,
-                            DistrictId = model.Owner.Address.DistrictId,
-                            PostalCode = model.Owner.Address.PostalCode,
-                            PostOfficeLocation = model.Owner.Address.PostOfficeLocation,
-                            StateId = model.Owner.Address.StateId,
-                            Street = model.Owner.Address.Street
-                        };
+                            //Existing address to update
+                            Address ownerAddress = _context.Addresses.Where(a => a.AddressId == model.Owner.AddressId).Single();
 
-                        _context.Addresses.Add(owner.Address);
-                        _context.BPPersons.Update(owner);
+                            ownerAddress.ApartmentNo = model.Owner.Address.ApartmentNo;
+                            ownerAddress.BuildingNo = model.Owner.Address.BuildingNo;
+                            ownerAddress.City = model.Owner.Address.City;
+                            ownerAddress.CommuneId = model.Owner.Address.CommuneId;
+                            ownerAddress.CommuneType = model.Owner.Address.CommuneType;
+                            ownerAddress.CountryId = model.Owner.Address.CountryId;
+                            ownerAddress.DistrictId = model.Owner.Address.DistrictId;
+                            ownerAddress.PostalCode = model.Owner.Address.PostalCode;
+                            ownerAddress.PostOfficeLocation = model.Owner.Address.PostOfficeLocation;
+                            ownerAddress.StateId = model.Owner.Address.StateId;
+                            ownerAddress.Street = model.Owner.Address.Street;
 
-                        Result = _context.SaveChanges();
+                            owner.AddressId = model.Owner.AddressId;
+
+                            _context.BPPersons.Update(owner);
+                            _context.Addresses.Update(ownerAddress);
+                            Result = _context.SaveChanges();
+
+                        }
+                        else
+                        {
+                            //new address to create
+                            owner.Address = new Address
+                            {
+                                ApartmentNo = model.Owner.Address.ApartmentNo,
+                                BuildingNo = model.Owner.Address.BuildingNo,
+                                City = model.Owner.Address.City,
+                                CommuneId = model.Owner.Address.CommuneId,
+                                CommuneType = model.Owner.Address.CommuneType,
+                                CountryId = model.Owner.Address.CountryId,
+                                DistrictId = model.Owner.Address.DistrictId,
+                                PostalCode = model.Owner.Address.PostalCode,
+                                PostOfficeLocation = model.Owner.Address.PostOfficeLocation,
+                                StateId = model.Owner.Address.StateId,
+                                Street = model.Owner.Address.Street
+                            };
+
+                            _context.Addresses.Add(owner.Address);
+                            _context.BPPersons.Update(owner);
+
+                            Result = _context.SaveChanges();
                         
+                        }
                     }
+
+                    //Update Investment Owner
+                    InvestmentOwner io = _context.InvestmentOwners
+                        .Single(i => i.InvestmentId == model.InvestmentId && i.OwnerId == model.Owner.BusinessPartnerId);
+
+                    io.OwnershipType = model.OwnershipType;
+                    io.Sponsor = model.Sponsor;
+
+                    _context.InvestmentOwners.Update(io);
+                    Result = _context.SaveChanges();
+
+                    return Ok();
+
+                }
+                else
+                {
+                    return BadRequest(ModelState);
                 }
 
-                //Update Investment Owner
-                InvestmentOwner io = _context.InvestmentOwners
-                    .Single(i => i.InvestmentId == model.InvestmentId && i.OwnerId == model.Owner.BusinessPartnerId);
-
-                io.OwnershipType = model.OwnershipType;
-                io.Sponsor = model.Sponsor;
-
-                _context.InvestmentOwners.Update(io);
-                Result = _context.SaveChanges();
-
-                return Ok();
             }
             catch (Exception exc)
             {
@@ -439,25 +457,30 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult DeletePersonAjax(Guid InvestmentId, Guid OwnerId)
         {
             try
             {
-                InvestmentOwner io = _context.InvestmentOwners.Where(i => i.InvestmentId == InvestmentId && i.OwnerId == OwnerId).Single();
+                InvestmentOwner io = _context.InvestmentOwners
+                    .Where(i => i.InvestmentId == InvestmentId && i.OwnerId == OwnerId).Single();
                 _context.InvestmentOwners.Remove(io);
                 int Result = _context.SaveChanges();
 
-                BusinessPartnerPerson owner = _context.BPPersons.Where(p => p.BusinessPartnerId == OwnerId).Single();
-                Address ownerAddress = _context.Addresses.Where(a => a.AddressId == owner.AddressId).Single();
-
-                _context.BPPersons.Remove(owner);
-                Result = _context.SaveChanges();
-
                 try
                 {
-                    _context.Addresses.Remove(ownerAddress);
+                    int AddrId = _context.Investments.Where(i => i.InvestmentId == InvestmentId).Select(i => i.AddressId).Single();
+                    BusinessPartnerPerson owner = _context.BPPersons.Where(p => p.BusinessPartnerId == OwnerId).Single();
+
+                    if (AddrId != owner.AddressId)
+                    {
+                        Address ownerAddress = _context.Addresses.Where(a => a.AddressId == owner.AddressId).Single();
+                        _context.Addresses.Remove(ownerAddress);
+                        Result = _context.SaveChanges();
+                    }
+
+                    _context.BPPersons.Remove(owner);
                     Result = _context.SaveChanges();
+
                 }
                 catch (Exception exc) { //if address is the same  
                                       };
