@@ -1,5 +1,6 @@
 ﻿/// <autosync enabled="true" />
 /// <reference path="js/addressdropdown.min.js" />
+/// <reference path="js/ContractDelete.min.js" />
 /// <reference path="js/customvalidationwithdataannotation.js" />
 /// <reference path="js/site.js" />
 /// <reference path="js/survey.min.js" />
