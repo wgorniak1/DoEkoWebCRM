@@ -268,8 +268,6 @@ namespace DoEko.Controllers
             {
                 _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
-                if (ModelState.IsValid)
-                {
                     // Owner Id
                     io.Owner.BusinessPartnerId = Guid.NewGuid();
                     // Owner Address
@@ -303,11 +301,6 @@ namespace DoEko.Controllers
                     int Result = await _context.SaveChangesAsync();
 
                     return Ok();
-                }
-                else
-                {
-                    return BadRequest(ModelState);
-                }
             }
             catch (Exception exc)
             {
@@ -330,8 +323,6 @@ namespace DoEko.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
 
                     int Result = 0;
                     //
@@ -442,12 +433,6 @@ namespace DoEko.Controllers
                     Result = _context.SaveChanges();
 
                     return Ok();
-
-                }
-                else
-                {
-                    return BadRequest(ModelState);
-                }
 
             }
             catch (Exception exc)
