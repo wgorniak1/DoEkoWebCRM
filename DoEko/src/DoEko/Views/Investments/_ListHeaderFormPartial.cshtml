@@ -1,0 +1,40 @@
+@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko;
+@model DoEko.ViewModels.InvestmentViewModels.InvestmentListFilter
+
+<form id="DataTableFilterForm" class="data-table-filter-form">
+    <fieldset>
+        <input asp-for="UserId" type="hidden" />
+        <input asp-for="FilterByInspector" type="hidden" />
+        <div class="row">
+            <div class="col-sm-2">
+                <label asp-for="CommuneId" class="control-label"></label>
+                <select asp-for="CommuneId" class="form-control input-sm" asp-items="@ViewBag.CommuneList">
+                    <option selected value=""></option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label asp-for="City" class="control-label"></label>
+                <select asp-for="City" class="form-control input-sm" asp-items="@ViewBag.CityList">
+                    <option selected value=""></option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label asp-for="FreeText" class="control-label"></label>
+                <input asp-for="FreeText" class="form-control input-sm"/>
+            </div>
+            <div class="col-sm-2">
+                <label asp-for="Status"  class="control-label"></label>
+                <select asp-for="Status" class="form-control input-sm" asp-items="Html.GetEnumSelectList(typeof(InspectionStatus))">
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <label class="control-label" style="color: #f5f5f5;">Zastosuj filtrowanie</label>
+                <a class="btn btn-sm btn-default data-table-filter-submit"><span class="glyphicon glyphicon-search"></span></a>
+                <a class="btn btn-sm btn-default data-table-filter-reset"><span class="glyphicon glyphicon-remove"></span></a>
+                <input type="reset" hidden />
+            </div>
+        </div>
+    </fieldset>
+</form>
+

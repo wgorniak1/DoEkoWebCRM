@@ -170,7 +170,21 @@ wg-alert{
     content: counter(navigation-counter) '. ';
 }
 
+.wg-image-placeholder{
+    background-color: #fafafa;
+    background-image: url("../images/placeholder.png");
+    background-repeat:no-repeat;
+    background-position:center center;
+    text-align:center;
+    text-decoration: none;
+}
 
+.wg-loader{
+    background-color: #ffffff;
+    background-image: url("../images/ajax-loader.gif");
+    background-repeat:no-repeat;
+    background-position:center center;
+}
 
 
 /*.f1-steps { overflow: hidden; position: relative; margin-top: 20px; }

@@ -13,6 +13,8 @@ using DoEko.Controllers.Helpers;
 using DoEko.Models.DoEko.Survey;
 using DoEko.ViewModels.SurveyViewModels;
 using DoEko.ViewModels.TestViewModels;
+using DoEko.Services;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace DoEko.Controllers
 {
@@ -20,11 +22,15 @@ namespace DoEko.Controllers
     {
         private DoEkoContext _context;
         private UserManager<ApplicationUser> _userManager;
-        public TestController(DoEkoContext context, UserManager<ApplicationUser> userManager)
+        public TestController(DoEkoContext context, UserManager<ApplicationUser> userManager, IFileStorage fileStorage)
         {
             _context = context;
             _userManager = userManager;
+            _fileStorage = fileStorage;
         }
+
+        private IFileStorage _fileStorage;
+
         // GET: Test
         public ActionResult Index()
         {
@@ -41,6 +47,38 @@ namespace DoEko.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+        [HttpGet]
+        public async Task<ActionResult> PhotosAdjust()
+        {
+            CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+            var SurveyBlockBlobs = ContainerSrv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+            foreach (var BlockBlob in SurveyBlockBlobs)
+            {
+                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
+
+                if (partNames[1].Equals("Picture0") || partNames[1].Equals("Picture5"))
+                {
+                    //calculate investment
+                    Guid srvid = Guid.Parse(partNames[2]);
+                    Guid invid = await _context.Surveys.Where(s => s.SurveyId == srvid).Select(s => s.InvestmentId).SingleAsync();
+                    partNames[2] = invid.ToString();
+
+                    string targetName = partNames[2] + '/' + partNames[1] + '/' + partNames[0];
+
+                    CloudBlockBlob targetBlob = ContainerInv.GetBlockBlobReference(targetName);
+                    targetBlob.StartCopy(BlockBlob);
+                    while (targetBlob.CopyState.Status != CopyStatus.Success)
+                    {
+                        //
+                    }
+                    BlockBlob.Delete();
+                }
+            };
+
+            return Json("ok");
         }
 
         // POST: Test/Create
@@ -198,6 +236,20 @@ namespace DoEko.Controllers
         public IActionResult Test(TestViewModel model)
         {
             return Ok(new { checkbox = model.checkbox, stringchk = model.checkbox.ToString() });
+        }
+
+        public IActionResult TestDouble()
+        {
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
+            Survey srv = _context.Surveys
+                .Include(s=>s.BoilerRoom)
+                .Single(s => s.SurveyId == Guid.Parse("386c6b9a-fb0c-4aa1-a7b7-00e751deb8b6"));
+
+            return View(srv.BoilerRoom);
         }
     }
 }

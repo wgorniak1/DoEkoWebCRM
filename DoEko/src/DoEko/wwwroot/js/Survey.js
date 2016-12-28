@@ -1,11 +1,46 @@
-﻿//on Central Heating source change
+﻿//
+//$(document).ready
+//   (
+//       function () {
+//           $('input[type="number"]').each
+//           (
+//               function (index) {
+//                   var value = $(this).val();
+//                   $(this).val(value.replace(',','.'));
+//               });
+//       });
+//$(document).change
+//   (
+//       function () {
+//           $('input[type="number"]').each
+//           (
+//               function (index) {
+//                   var value = $(this).val();
+//                   $(this).val(value.replace(',', '.'));
+//               });
+//       });
+
+//on Building General info - Insulation Type change to other
+function onCHInsTypeChange() {
+    var type = $(".insulationtype").val();
+    if (type === '3') {
+        $(".insulationtype-other").show();
+    }
+    else {
+        $(".insulationtype-other").hide();
+    }
+}
+
+$('body').on('change', '.insulationtype', onCHInsTypeChange);
+
+//on Central Heating source change
 function onCHTypeChange() {
     var type = $(".centralheating-type").val();
-    if (type === '0') {
+    if (type === '1') {
         $(".centralheating-other").hide();
         $(".centralheating-fuel").hide();
     }
-    else if (type === '7'){
+    else if (type === '8'){
         $(".centralheating-other").show();
         $(".centralheating-fuel").show();
     }
@@ -288,6 +323,9 @@ function btnAddOwner() {
 }
 
 function removeOwner() {
+    $("#DeleteOwnerModal").modal('hide');
+    $("div.modal-backdrop").remove();
+    
     // ajax to delete current owner
     // ajax to re read next / last owner
     //1. Post current div
@@ -298,17 +336,20 @@ function removeOwner() {
     formId = $("#Dynamic form").attr("id").split("_");
     var OwnerNo = formId[1];
     var OwnerTotal = formId[2];
+    if (ownerId !== "00000000-0000-0000-0000-000000000000") {
+        //1st
+        var deleteCurrent = $.ajax({
+            type: "POST",
+            url: "/InvestmentOwners/DeletePersonAjax",
+            data: { investmentId: investmentId, ownerId: ownerId } 
+        });
 
-    //1st
-    var deleteCurrent = $.ajax({
-        type: "POST",
-        url: "/InvestmentOwners/DeletePersonAjax",
-        data: { investmentId: investmentId, ownerId: ownerId } 
-    });
-
-    //chain call     
-    deleteCurrent.done(ajaxGetPrevSection);
-
+        //chain call     
+        deleteCurrent.done(ajaxGetPrevSection);
+    }
+    else {
+        ajaxGetPrevSection();
+    }
 }
 
 $('body').on('click', '.addowner', btnAddOwner);
@@ -316,7 +357,16 @@ $('body').on('click', '.deleteownersubmit', removeOwner);
 
 //<script type="text/javascript" title="StepFormNavigation">
 function NavigationPrev() {
-    ajaxPostCurrentSection(onAjaxPostError, ajaxGetPrevSection);
+    var section = $("#Dynamic form").attr('id');
+
+    if (section === 'SurveyPhoto') {
+        ajaxGetPrevSection();
+    } else {
+        ajaxPostCurrentSection(onAjaxPostError, ajaxGetPrevSection);
+    }
+
+
+
     //var form = $("#Dynamic form");
 
     //form.validate();
@@ -392,7 +442,7 @@ function NavigationNext() {
 }
 
 function NavigationLast() {
-    var $form = $("#Dynamic form");
+    var $form = $("#Dynamic form").first();
     $form.validate({
         lang: 'pl'
     });
@@ -434,17 +484,17 @@ $('body').on('change', '.optionbutton-false', optionBtnFalse);
 
 ///////////////////////////////////////////////////////////////////////////////
 //<script type="text/javascript" title="Zdjecia">
-$(document).on('change', ':file', function () {
-    var input = $(this),
-        numFiles = input.get(0).files ? input.get(0).files.length : 1,
-        label = input.val().replace(/\\/g, '/').replace(/.*\//, ''),
-        name = input.attr('name');
-    input.trigger('fileselect', [numFiles, label, name]);
-});
+//$(document).on('change', ':file', function () {
+//    var input = $(this),
+//        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+//        label = input.val().replace(/\\/g, '/').replace(/.*\//, ''),
+//        name = input.attr('name');
+//    input.trigger('fileselect', [numFiles, label, name]);
+//});
 
-$(document).on('fileselect', ':file',function (event, numFiles, label, name) {
-    $('#' + name).val(label);
-});
+//$(document).on('fileselect', ':file',function (event, numFiles, label, name) {
+//    $('#' + name).val(label);
+//});
 ///////////////////////////////////////////////////////////////////////////////
 //<script>
 //$(function () {
@@ -491,3 +541,166 @@ $(document).on('fileselect', ':file',function (event, numFiles, label, name) {
 
 //    });
 //});
+///////////////////////////////////////////////////////////////////////////////
+// SECTION PHOTO
+//
+// all pictures are numbered from 0 to 9:
+// Picture0 and Picture5 are stored on investment level, the rest is stored on survey level
+//
+$('body').on('change', '.photo-input', onPhotoInputChanged);
+$('body').on('click', '.photo-link', onPhotoLinkClick);
+$('body').on('click', '.photo-delete', onPhotoDeleteClick);
+
+//---------------------------------------------------------------------------//
+function onPhotoLinkClick(event) {
+    var link = $(this);
+    // <a><img/></a><form><input></form>
+    if (!link.attr('href')) {
+        //
+        event.stopPropagation();
+        link.siblings('form').children('input[type="file"]').first().click();
+    }
+}
+//---------------------------------------------------------------------------//
+function onPhotoInputChanged() {
+    const investmentlevel = ( "Picture0", "Picture5" );
+    var input = $(this);
+    var type = "";
+    var guid = "";
+    if (input.val() !== undefined) {
+        //1. get file name 
+        if (input.attr('name') === "Picture0" || 
+            input.attr('name') === "Picture5") {
+            type = "Investment";
+            guid = $("#Dynamic form input[name='InvestmentId']").val();
+        }
+        else {
+            type = "Survey";
+            guid = $("#Dynamic form input[name='SurveyId']").val();
+        }
+
+        //upload
+        UploadPhoto(type, guid, input.attr('name'), input[0].files[0]);
+    }
+}
+//---------------------------------------------------------------------------//
+function onPhotoDeleteClick() {
+    var imageUrl = $(this).siblings('a').first().children('img').first().attr('src');
+    var urlParts = imageUrl.split('/');
+    //
+    urlParts.reverse();
+
+    if (urlParts.length >= 4) {
+        var filename = urlParts[0];
+        var name = urlParts[1];
+        var guid = urlParts[2];
+        var type = urlParts[3];
+        DeletePhoto(type, guid, name, filename);
+    }
+}
+//---------------------------------------------------------------------------//
+function UploadPhoto(type, guid, imageName, image) {
+
+    var form = new FormData();
+
+    form.append("type", type);
+    form.append("guid", guid);
+    form.append(imageName, image);
+    
+    var call = $.ajax({
+        url: "/Files/UploadPhoto",
+        type: "POST",
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form,
+        beforeSend: function () { turnPhotoLoader(imageName, true);}
+    });
+
+
+    call.done(function (data, success) {
+        onUploadPhotoCompleted(data, success, imageName);
+        turnPhotoLoader(imageName, false);
+    });
+    call.error(function (xhr, status, error) {
+        onUploadPhotoFailed(xhr, status, error);
+    });
+
+}
+function turnPhotoLoader(imageName, turnOn) {
+    var a = $('a[name="' + imageName + '"]');
+    // image
+    var img = a.children('img').first();
+
+    if (turnOn) {
+        img.removeClass('wg-image-placeholder');
+        img.addClass('wg-loader');
+    }
+    else {
+        img.removeClass('wg-loader');
+        img.addClass('wg-image-placeholder');
+    }
+
+}
+
+function onUploadPhotoCompleted(data, status, imageName) {
+    var targetUrl = data;
+    var a = $('a[name="' + imageName + '"]');
+    // image link
+    a.attr('href', targetUrl);
+    a.attr('target', '_blank');
+    // image
+    a.children('img').first().attr('src', targetUrl);
+    // image delete button
+    a.siblings('button.photo-delete').first().removeAttr('hidden');
+    a.siblings('button.photo-delete').first().show();
+}
+function onUploadPhotoFailed(xhr, status, error) {
+    alert(error);
+}
+
+//---------------------------------------------------------------------------//
+function DeletePhoto(type, guid, name, filename) {
+    var form = new FormData();
+
+    form.append("type", type);
+    form.append("guid", guid);
+    form.append("pictureId", name);
+    form.append("fileName", filename);
+
+    var call = $.ajax({
+        url: "/Files/DeletePhoto",
+        type: "POST",
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form
+    });
+
+    call.done(function (data, success) {
+        onDeletePhotoCompleted(data, success, name);
+    });
+    call.error(function (xhr, status, error) {
+        onDeletePhotoFailed(xhr, status, error);
+    });
+}
+
+function onDeletePhotoCompleted(data, status, name) {
+    var a = $('a[name="' + name + '"]');
+    // image link
+    a.removeAttr('href');
+    a.removeAttr('target');
+    // image
+    a.children('img').first().attr('src', '');
+    a.children('img').first().attr('alt', 'Dodaj zdjęcie');
+    // image delete button
+    a.siblings('button.photo-delete').first().hide();
+    a.siblings('form').first().children('input[type="file"]').first().val('');
+}
+function onDeletePhotoFailed(xhr, status, error) {
+alert(error)
+}
+
+//---------------------------------------------------------------------------//
+
+///////////////////////////////////////////////////////////////////////////////

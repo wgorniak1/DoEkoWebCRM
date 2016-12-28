@@ -44,35 +44,175 @@ namespace DoEko.Controllers
         {
             return View(await _context.Investments.ToListAsync());
         }
+        [HttpGet]
+        public IActionResult ListAjax(
+            //InvestmentListFilter filter, 
+            //InvestmentListPaging paging,
+            //InvestmentListSorting sorting 
+            //)
+            int?  page,
+            int?  pageSize,
+            Guid? userId,
+            //int?  stateId,
+            //int?  districtId,
+            //int?  communeType,
+            //InvestmentStatus status,
+            int?  status,
+            int? projectId,
+            int? contractId,
+            bool filterByInspector,
+            string communeId = null,
+            string city = null,
+            string freeSearch = null,
+            string sortBy = null)
+        {
 
+            var model = new InvestmentListViewModel
+            {
+                Filtering = new InvestmentListFilter
+                {
+                    City = city,
+                    CommuneId = communeId,
+                    ContractId = contractId.HasValue ? contractId.Value : 0,
+                    FreeText = freeSearch,
+                    ProjectId = projectId.HasValue ? projectId.Value : 0,
+                    Status = status.HasValue ? (InspectionStatus)status.Value : 0,
+                    UserId = userId.HasValue ? userId.Value : Guid.Empty,
+                    FilterByInspector = filterByInspector
+                },
+                Paging = new InvestmentListPaging
+                {
+                    CurrentNumber = page.HasValue ? page.Value : 1,
+                    PageSize = pageSize.HasValue ? (PageSize)pageSize.Value : PageSize.ps_25
+                },
+                Sorting = new InvestmentListSorting
+                {
+                    sortBy = string.IsNullOrEmpty(sortBy) ? nameof(Address) + InvestmentListSorting.postfixUp : sortBy
+                }
+            };
+
+            return ViewComponent("InvestmentList",new { model = model });
+        }
         // GET: My Investments
         [HttpGet]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> List(
+            int? page,
+            int? pageSize,
+            //Guid? userId,
+            //int? contractId,
+            int? communeId,
+            InvestmentStatus? status,
+            string searchPhrase = null,
+            string sortBy = null
+            )
         {
-            Guid UserId;
-            Guid.TryParse( _userManager.GetUserId(User), out UserId);
-
-            var model = await _context.Investments
-                .Where(i => i.InspectorId == UserId)
-                .Include(i => i.Address)
-                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+            InvestmentListViewModel model = new InvestmentListViewModel();
+            //
+            model.Filtering.FilterByInspector = true;
+            model.Filtering.UserId = Guid.Parse(_userManager.GetUserId(User));
+            model.Paging.CurrentNumber = 1;
+            model.Paging.PageSize = PageSize.ps_25;
+            model.Sorting.sortBy = nameof(Investment.Address) + InvestmentListSorting.postfixUp;
+            
+            //needed to initiate table display, see view implementation
+            model.List = await _context.InvestmentOwners
+                .Where(i => i.Investment.InspectorId == model.Filtering.UserId)
+                .Select(i => new InvestmentOwner { InvestmentId = i.InvestmentId })
+                .Take(1)
                 .ToListAsync();
+            //needed to build filtering dropdowns
+            List <Address> list = await _context.Investments
+                .Where(i => i.InspectorId == model.Filtering.UserId)
+                .Include(i => i.Address).ThenInclude(a=>a.Commune)
+                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .Select(l => new Address {
+                    Commune = l.Address.Commune,
+                    City = l.Address.City,
+                    CommuneId = l.Address.CommuneId,
+                    CommuneType = l.Address.CommuneType,
+                    DistrictId = l.Address.DistrictId,
+                    StateId = l.Address.StateId })    
+                .Distinct()
+                .ToListAsync();
+            //filtering drop downs
+            ViewData["CommuneList"] = new SelectList(
+                list.Select(l => new {
+                    Key = l.StateId.ToString() + "_" + 
+                          l.DistrictId.ToString() + "_" +
+                          l.CommuneId.ToString() + "_" + l.CommuneType.ToString(),
+                    Value = l.Commune.FullName })
+                    .Distinct().ToList(), "Key", "Value");
+
+            ViewData["CityList"] = new SelectList(
+                list.Select(l => new {
+                    Key = l.City,
+                    Value = l.City })
+                    .Distinct().ToList(), "Key", "Value");
+
+            List<SelectListItem> statusList = new List<SelectListItem>();
+            //foreach (var enumItem in Enum.GetValues(typeof(InspectionStatus)).Cast<InspectionStatus>())
+            //    statusList.Add(new SelectListItem() { Value = ((int)enumItem).ToString(), Text = enumItem.DisplayName() });
+            //ViewData["StatusList"] = new SelectList(statusList,"Value","Text",null);
 
             return View(model);
         }
         // GET: Unassigned Investments
         [HttpGet]
-        public async Task<IActionResult> ListUnassigned()
+        public async Task<IActionResult> ListUnassigned(
+                                             int? page,
+                                             int? pageSize,
+                                             int? communeId,
+                                             InvestmentStatus? status,
+                                             string searchPhrase = null,
+                                             string sortBy = null)
         {
-            //Guid UserId;
-            //Guid.TryParse(_userManager.GetUserId(User), out UserId);
-            ViewData["UserId"] = _userManager.GetUserId(User);
 
-            var model = await _context.Investments.Where(i => i.InspectorId == null)
-                .Include(i=>i.Address)
-                .Include(i=>i.InvestmentOwners).ThenInclude(io=>io.Owner)
+            InvestmentListViewModel model = new InvestmentListViewModel();
+            model.Filtering.FilterByInspector = true;
+            model.Filtering.UserId = Guid.Empty;
+            //this is the only flag indicating whether assigned or not investments are displayed
+            model.Paging.CurrentNumber = 1;
+            model.Paging.PageSize = PageSize.ps_25;
+            model.Sorting.sortBy = nameof(Investment.Address) + InvestmentListSorting.postfixUp;
+
+            //needed to initiate table display, see view implementation
+            model.List = await _context.InvestmentOwners
+                .Where(i => i.Investment.InspectorId == null)
+                .Select(i => new InvestmentOwner { InvestmentId = i.InvestmentId })
+                .Take(1)
                 .ToListAsync();
+            //needed to build filtering dropdowns
+            List<Address> list = await _context.Investments
+                .Where(i => i.InspectorId == null)
+                .Include(i => i.Address).ThenInclude(a => a.Commune)
+                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .Select(l => new Address
+                {
+                    Commune = l.Address.Commune,
+                    City = l.Address.City,
+                    CommuneId = l.Address.CommuneId,
+                    CommuneType = l.Address.CommuneType,
+                    DistrictId = l.Address.DistrictId,
+                    StateId = l.Address.StateId
+                })
+                .Distinct()
+                .ToListAsync();
+            //filtering drop downs
+            ViewData["CommuneList"] = new SelectList(
+                list.Select(l => new {
+                    Key = l.StateId.ToString() + "_" +
+                          l.DistrictId.ToString() + "_" +
+                          l.CommuneId.ToString() + "_" + l.CommuneType.ToString(),
+                    Value = l.Commune.FullName
+                })
+                    .Distinct().ToList(), "Key", "Value");
 
+            ViewData["CityList"] = new SelectList(
+                list.Select(l => new {
+                    Key = l.City,
+                    Value = l.City
+                })
+                    .Distinct().ToList(), "Key", "Value");
 
             return View(model);
         }
@@ -127,7 +267,13 @@ namespace DoEko.Controllers
             _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
             Investment investment = InvestmentVM.AsBase();
-            
+
+            //These fields are required, but filled only On survey
+            ModelState.Remove("CompletionYear");
+            ModelState.Remove("HeatedArea");
+            ModelState.Remove("UsableArea");
+            ModelState.Remove("TotalArea");
+
             if (ModelState.IsValid)
             {
                 investment.InvestmentId = Guid.NewGuid();
@@ -233,6 +379,12 @@ namespace DoEko.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove("CompletionYear");
+            ModelState.Remove("HeatedArea");
+            ModelState.Remove("UsableArea");
+            ModelState.Remove("TotalArea");
+
             if (ModelState.IsValid)
             {
                 try
@@ -268,53 +420,71 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AssignInspector(Guid InspectorId, Guid[] InvestmentId, string ReturnUrl)
+        public async Task<IActionResult> AssignInspector(Guid? InspectorId, Guid[] InvestmentId, string ReturnUrl = null)
         {
-            IDictionary<string,string> result = new Dictionary<string, string>();
-            
+            //IDictionary<string,string> result = new Dictionary<string, string>();
+
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
             //update
-            foreach (Guid item in InvestmentId)
-            {
-                Investment singleInvestment = await _context.Investments.SingleOrDefaultAsync(m => m.InvestmentId == item);
-                if (singleInvestment != null)
-                {
-                    if (singleInvestment.InspectorId == null)
-                    {
-                        singleInvestment.InspectorId = InspectorId;
-                        _context.Update(singleInvestment);
-                    }
-                    else
-                        result.Add("InvestmentAlreadyAssigned", singleInvestment.InvestmentId.ToString());
-                }
-            }
+            var investmentsToAssign = _context.Investments.Where(i => InvestmentId.Any(inv => inv == i.InvestmentId)==true && i.InspectorId == null);
+
+            await investmentsToAssign.LoadAsync();
+            await investmentsToAssign.ForEachAsync(i => i.InspectorId = _context.CurrentUserId);
+
+            //foreach (Guid item in InvestmentId)
+            //{
+            //    Investment singleInvestment = await _context.Investments.SingleAsync(m => m.InvestmentId == item);
+            //    if (singleInvestment != null)
+            //    {
+            //        if (singleInvestment.InspectorId == null)
+            //        {
+            //            singleInvestment.InspectorId = InspectorId;
+            //            _context.Update(singleInvestment);
+            //        }
+            //        else
+            //            result.Add("InvestmentAlreadyAssigned", singleInvestment.InvestmentId.ToString());
+            //    }
+            //}
             //Save changes
             try
             {
+                _context.Investments.UpdateRange(investmentsToAssign);
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (Request.IsAjaxRequest())
-                    throw;
-                else
-                    return View();
-            }
 
-            if (Request.IsAjaxRequest())
-            {
-                if (result.Count != 0)
-                {
-                    return Json("Error");
-                }
-                return Json("ok");
-            }
-            else
-            {
-                if (ReturnUrl != null)
+                if (!string.IsNullOrEmpty(ReturnUrl))
                     return Redirect(ReturnUrl);
                 else
-                    return RedirectToAction("Index");
+                    return Ok();
             }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+
+            //catch (DbUpdateException)
+            //{
+            //    if (Request.IsAjaxRequest())
+            //        throw;
+            //    else
+            //        return View();
+            //}
+
+            //if (Request.IsAjaxRequest())
+            //{
+            //    if (result.Count != 0)
+            //    {
+            //        return Json("Error");
+            //    }
+            //    return Json("ok");
+            //}
+            //else
+            //{
+            //    if (ReturnUrl != null)
+            //        return Redirect(ReturnUrl);
+            //    else
+            //        return RedirectToAction("Index");
+            //}
         }
 
         // GET: Investments/Delete/5

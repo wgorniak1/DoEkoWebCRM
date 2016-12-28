@@ -996,38 +996,47 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditPhotoAjax(FormCollection Form, Guid SurveyId)
+        public IActionResult EditPhotoAjax(Guid SurveyId, Guid InvestmentId)//FormCollection Form, Guid SurveyId)
         {
-            try
-            {
-                if (SurveyId == null) return BadRequest();
+            //try
+            //{
+            //    if (model.SurveyID == null) return BadRequest();
 
-                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+            //    _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+            //    if (Request.Form.Files.Any(f => string.IsNullOrEmpty(f.FileName) == false))
+            //    {
+            //        CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
 
-                CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+            //        string Key = model.SurveyID.ToString();
 
-                string Key = SurveyId.ToString();
+            //        foreach (var file in Request.Form.Files)
+            //        {
+            //            Stream stream = file.OpenReadStream();
+            //            if (file.Length == 0)
+            //                continue;
 
-                foreach (var file in Request.Form.Files)
-                {
-                    Stream stream = file.OpenReadStream();
-                    if (file.Length == 0)
-                        continue;
-
-                    if (file.Length > 0)
-                    {
-                        string name = Key + '/' + file.Name + '/' + file.FileName;
-                        CloudBlockBlob blob = Container.GetBlockBlobReference(name);
-                        blob.UploadFromStream(file.OpenReadStream());
-                    }
-                }
-
+            //            if (file.Length > 0)
+            //            {
+            //                string name = Key + '/' + file.Name + '/' + file.FileName;
+            //                CloudBlockBlob blob = Container.GetBlockBlobReference(name);
+            //                blob.UploadFromStream(file.OpenReadStream());
+            //            }
+            //        }
+            //    }
+            try { 
                 this.SetDraftStatus(SurveyId, true);
+                Investment inv = _context.Investments.Single(i => i.InvestmentId == InvestmentId);
+                if (inv.InspectionStatus == InspectionStatus.Submitted)
+                {
+                    //what to do 
+                }
+                inv.Status = InvestmentStatus.Initial;
+                inv.InspectionStatus = InspectionStatus.Draft;
+                _context.Investments.Update(inv);
+                _context.SaveChanges();
 
-                Guid invId = _context.Surveys.Single(s => s.SurveyId == SurveyId).InvestmentId;
-
-                return RedirectToAction("Details", "Investments", new { Id = invId });
-
+                //update status
+                return RedirectToAction("Details", "Investments", new { Id = inv.InvestmentId });
             }
             catch (Exception exc)
             {
@@ -1038,6 +1047,241 @@ namespace DoEko.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CancelAjax(SurveyCancelViewModel model)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                Survey srv = await _context.Surveys
+                    .Include(s=>s.Investment)
+                    .SingleAsync(s => s.SurveyId == model.SurveyId);
+
+                srv.CancelType = model.CancelType;
+                srv.CancelComments = model.CancelComments;
+                srv.Status = SurveyStatus.Cancelled;
+                _context.Update(srv);
+
+                if (model.ReplaceWithType != null)
+                {
+                    switch (model.ReplaceWithType)
+                    {
+                        case SurveyType.CentralHeating:
+                            SurveyCentralHeating srvCH = new SurveyCentralHeating() {
+                                InvestmentId = srv.InvestmentId,
+                                Status = SurveyStatus.New,
+                                RSEType = model.ReplaceWithRSECH.Value,
+                                Type = model.ReplaceWithType.Value
+                            };
+
+                            _context.Add(srvCH);
+                            break;
+                        case SurveyType.Energy:
+                            SurveyEnergy srvEN = new SurveyEnergy() {
+                                InvestmentId = srv.InvestmentId,
+                                Status = SurveyStatus.New,
+                                RSEType = model.ReplaceWithRSEEN.Value,
+                                Type = model.ReplaceWithType.Value
+                            };
+                            _context.Add(srvEN);
+                            break;
+                        case SurveyType.HotWater:
+                            SurveyHotWater srvHW = new SurveyHotWater() {
+                                InvestmentId = srv.InvestmentId,
+                                Status = SurveyStatus.New,
+                                RSEType = model.ReplaceWithRSEHW.Value,
+                                Type = model.ReplaceWithType.Value
+                            };
+                            _context.Add(srvHW);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                int Result = await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SubmitAjax(Guid surveyId, bool submitInvestment = false)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                int Result = this.SetApprovalStatus(surveyId, true);
+
+                if (Result == 0)
+                {
+                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    return BadRequest(ModelState);
+                }
+
+                if (submitInvestment)
+                {
+                    Survey srv = await _context.Surveys
+                        .Include(s => s.Investment).ThenInclude(i => i.Surveys)
+                        .SingleAsync(s => s.SurveyId == surveyId);
+
+                    if (srv.Investment.Surveys.Any(s=>s.Status == SurveyStatus.Draft || 
+                                                      s.Status == SurveyStatus.New || 
+                                                      s.Status == SurveyStatus.Rejected))
+                    {
+                        //co zwróciæ ?
+                        
+                    }
+                    else
+                    {
+                        srv.Investment.InspectionStatus = InspectionStatus.Submitted;
+                        srv.Investment.Status = InvestmentStatus.Initial;
+                        _context.Investments.Update(srv.Investment);
+                        Result = await _context.SaveChangesAsync();
+                    }
+                }
+                
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveAjax(Guid surveyId)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                int Result = this.SetApprovedStatus(surveyId, true);
+
+                if (Result == 0)
+                {
+                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    return BadRequest(ModelState);
+                }
+
+                Survey srv = await _context.Surveys
+                    .Include(s => s.Investment).ThenInclude(i => i.Surveys)
+                    .SingleAsync(s => s.SurveyId == surveyId);
+
+                if (srv.Investment.Surveys.All(s => s.Status == SurveyStatus.Approved ||
+                                                    s.Status == SurveyStatus.Cancelled ))
+                {
+                    srv.Investment.InspectionStatus = InspectionStatus.Approved;
+                    srv.Investment.Status = InvestmentStatus.Completed;
+                    _context.Investments.Update(srv.Investment);
+                    Result = await _context.SaveChangesAsync();
+                }
+
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RejectAjax(Guid surveyId)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                int Result = this.SetRejectedStatus(surveyId, true);
+
+                if (Result == 0)
+                {
+                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    return BadRequest(ModelState);
+                }
+
+                Survey srv = await _context.Surveys
+                    .Include(s => s.Investment).ThenInclude(i => i.Surveys)
+                    .SingleAsync(s => s.SurveyId == surveyId);
+
+                //if (srv.Investment.Surveys.Any(s => s.Status == SurveyStatus.Rejected ))
+                //{
+                srv.Investment.InspectionStatus = InspectionStatus.Rejected;
+                srv.Investment.Status = InvestmentStatus.Initial;
+
+                _context.Investments.Update(srv.Investment);
+                Result = await _context.SaveChangesAsync();
+                //}
+
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
+
+        public async Task<IActionResult> CreateAjax(SurveyCreateViewModel model)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                switch (model.SurveyType)
+                {
+                    case SurveyType.CentralHeating:
+                        SurveyCentralHeating srvCH = new SurveyCentralHeating()
+                        {
+                            InvestmentId = model.InvestmentId,
+                            Status = SurveyStatus.New,
+                            RSEType = model.RSETypeCH.Value,
+                            Type = model.SurveyType
+                        };
+
+                        _context.Add(srvCH);
+                        break;
+                    case SurveyType.Energy:
+                        SurveyEnergy srvEN = new SurveyEnergy()
+                        {
+                            InvestmentId = model.InvestmentId,
+                            Status = SurveyStatus.New,
+                            RSEType = model.RSETypeEN.Value,
+                            Type = model.SurveyType
+                        };
+                        _context.Add(srvEN);
+                        break;
+                    case SurveyType.HotWater:
+                        SurveyHotWater srvHW = new SurveyHotWater()
+                        {
+                            InvestmentId = model.InvestmentId,
+                            Status = SurveyStatus.New,
+                            RSEType = model.RSETypeHW.Value,
+                            Type = model.SurveyType
+                        };
+                        _context.Add(srvHW);
+                        break;
+                    default:
+                        break;
+                }
+
+
+                int Result = await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> Details(Guid Id, string ReturnUrl = null)
@@ -1195,6 +1439,209 @@ namespace DoEko.Controllers
             //
 
         }
+        /// <summary>
+        /// Sets Survey status to "Approval"
+        /// </summary>
+        /// <param name="surveyId">Survey to upate the status</param>
+        /// <param name="commit">commits changes on DB</param>
+        /// <returns>number of updated records</returns>
+        private int SetApprovalStatus(Guid surveyId, bool commit = false)
+        {
+            try
+            {
+                switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).First())
+                {
+                    case SurveyType.CentralHeating:
+                        SurveyCentralHeating srvCH = _context.SurveysCH.Single(s => s.SurveyId == surveyId);
+                        if (srvCH.Status != SurveyStatus.Draft)
+                            return 0;
+                        else
+                        {
+                            srvCH.Status = SurveyStatus.Approval;
+                            _context.Update(srvCH);
+                        }
+                        break;
+                    case SurveyType.HotWater:
+                        SurveyHotWater srvHW = _context.SurveysHW.Single(s => s.SurveyId == surveyId);
+                        if (srvHW.Status != SurveyStatus.Draft)
+                            return 0;
+                        else
+                        {
+                            srvHW.Status = SurveyStatus.Approval;
+                            _context.Update(srvHW);
+                        }
+                        break;
+                    case SurveyType.Energy:
+                        SurveyEnergy srvEN = _context.SurveysEN.Single(s => s.SurveyId == surveyId);
+                        if (srvEN.Status != SurveyStatus.Draft)
+                            return 0;
+                        else
+                        {
+                            srvEN.Status = SurveyStatus.Approval;
+                            _context.Update(srvEN);
+                        }
+                        break;
+                    default:
+                        return 0;
+                }
+                if (commit)
+                {
+                    return _context.SaveChanges();
+                }
+                else
+                    return 1;
+            }
+            catch (Exception)
+            {
+                //0 records have been updated
+                return 0;
+            }
+            //
 
+        }
+        /// <summary>
+        /// Sets Survey status to "Approved"
+        /// </summary>
+        /// <param name="surveyId">Survey to upate the status</param>
+        /// <param name="commit">commits changes on DB</param>
+        /// <returns>number of updated records</returns>
+        private int SetApprovedStatus(Guid surveyId, bool commit = false)
+        {
+            try
+            {
+                switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).First())
+                {
+                    case SurveyType.CentralHeating:
+                        SurveyCentralHeating srvCH = _context.SurveysCH.Single(s => s.SurveyId == surveyId);
+                        if (srvCH.Status != SurveyStatus.Approval)
+                            return 0;
+                        else
+                        {
+                            srvCH.Status = SurveyStatus.Approved;
+                            _context.Update(srvCH);
+                        }
+                        break;
+                    case SurveyType.HotWater:
+                        SurveyHotWater srvHW = _context.SurveysHW.Single(s => s.SurveyId == surveyId);
+                        if (srvHW.Status != SurveyStatus.Approval)
+                            return 0;
+                        else
+                        {
+                            srvHW.Status = SurveyStatus.Approved;
+                            _context.Update(srvHW);
+                        }
+                        break;
+                    case SurveyType.Energy:
+                        SurveyEnergy srvEN = _context.SurveysEN.Single(s => s.SurveyId == surveyId);
+                        if (srvEN.Status != SurveyStatus.Approval)
+                            return 0;
+                        else
+                        {
+                            srvEN.Status = SurveyStatus.Approved;
+                            _context.Update(srvEN);
+                        }
+                        break;
+                    default:
+                        return 0;
+                }
+                if (commit)
+                {
+                    return _context.SaveChanges();
+                }
+                else
+                    return 1;
+            }
+            catch (Exception)
+            {
+                //0 records have been updated
+                return 0;
+            }
+            //
+
+        }
+
+        /// <summary>
+        /// Sets Survey status to "Approved"
+        /// </summary>
+        /// <param name="surveyId">Survey to upate the status</param>
+        /// <param name="commit">commits changes on DB</param>
+        /// <returns>number of updated records</returns>
+        private int SetRejectedStatus(Guid surveyId, bool commit = false)
+        {
+            try
+            {
+                switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).First())
+                {
+                    case SurveyType.CentralHeating:
+                        SurveyCentralHeating srvCH = _context.SurveysCH.Single(s => s.SurveyId == surveyId);
+                        if (srvCH.Status != SurveyStatus.Approval)
+                            return 0;
+                        else
+                        {
+                            srvCH.Status = SurveyStatus.Rejected;
+                            _context.Update(srvCH);
+                        }
+                        break;
+                    case SurveyType.HotWater:
+                        SurveyHotWater srvHW = _context.SurveysHW.Single(s => s.SurveyId == surveyId);
+                        if (srvHW.Status != SurveyStatus.Approval)
+                            return 0;
+                        else
+                        {
+                            srvHW.Status = SurveyStatus.Rejected;
+                            _context.Update(srvHW);
+                        }
+                        break;
+                    case SurveyType.Energy:
+                        SurveyEnergy srvEN = _context.SurveysEN.Single(s => s.SurveyId == surveyId);
+                        if (srvEN.Status != SurveyStatus.Approval)
+                            return 0;
+                        else
+                        {
+                            srvEN.Status = SurveyStatus.Rejected;
+                            _context.Update(srvEN);
+                        }
+                        break;
+                    default:
+                        return 0;
+                }
+                if (commit)
+                {
+                    return _context.SaveChanges();
+                }
+                else
+                    return 1;
+            }
+            catch (Exception)
+            {
+                //0 records have been updated
+                return 0;
+            }
+            //
+
+        }
+
+
+        public bool isSurveyType( int type, Guid surveyId)
+        {
+            int RSEType;
+            switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s=>s.Type).SingleOrDefault())
+            {
+                case SurveyType.CentralHeating:
+                    RSEType = (int)_context.SurveysCH.Where(s=>s.SurveyId == surveyId).Select(s=>s.RSEType).SingleOrDefault();
+                    break;
+                case SurveyType.Energy:
+                    RSEType = (int)_context.SurveysEN.Where(s => s.SurveyId == surveyId).Select(s => s.RSEType).SingleOrDefault();
+                    break;
+                case SurveyType.HotWater:
+                    RSEType = (int)_context.SurveysHW.Where(s => s.SurveyId == surveyId).Select(s => s.RSEType).SingleOrDefault();
+                    break;
+                default:
+                    RSEType = -4;
+                    break;
+            }
+
+            return type == RSEType;
+        }
     }
 }

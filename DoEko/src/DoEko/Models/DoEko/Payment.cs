@@ -26,7 +26,6 @@ namespace DoEko.Models.DoEko
         [DataType(DataType.Currency)]
         [Column(TypeName = "money")]
         [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
-        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         [Display(Description = "", Name = "Kwota wpłaty", ShortName = "Kwota")]
         public decimal Amount { get; set; }
         /// <summary>

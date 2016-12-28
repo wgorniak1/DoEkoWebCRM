@@ -19,19 +19,29 @@
             <div class="col-sm-3">
                 <div class="form-group-sm">
                     <label asp-for="Investment.CentralHeatingType" class="control-label"></label>
-                    <select asp-for="Investment.CentralHeatingType" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(CentralHeatingType))"></select>
+                    <select asp-for="Investment.CentralHeatingType" class="form-control centralheating-type" asp-items="@Html.GetEnumSelectList(typeof(CentralHeatingType))"></select>
                     <span asp-validation-for="Investment.CentralHeatingType" class="text-danger" />
                 </div>
             </div>
             <div class="col-sm-3">
-                <div class="form-group-sm otherheatingtype">
+                @{string othertypestyle = "";}
+                @if (Model.Investment.CentralHeatingType != CentralHeatingType.Other)
+                {
+                    othertypestyle = "display: none;";
+                }
+                <div class="form-group-sm centralheating-other" style="@othertypestyle">
                     <label asp-for="Investment.CentralHeatingTypeOther" class="control-label"></label>
                     <input asp-for="Investment.CentralHeatingTypeOther" class="form-control" />
                     <span asp-validation-for="Investment.CentralHeatingTypeOther" class="text-danger" />
                 </div>
             </div>
             <div class="col-sm-3 col-sm-offset-3">
-                <div class="form-group-sm">
+                @{string fueltypestyle = "";}
+                @if (Model.Investment.CentralHeatingType == CentralHeatingType.None)
+                {
+                    fueltypestyle = "display: none;";
+                }
+                <div class="form-group-sm centralheating-fuel" style="@fueltypestyle">
                     <label asp-for="Investment.CentralHeatingFuel" class="control-label"></label>
                     <select asp-for="Investment.CentralHeatingFuel" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(FuelType))"></select>
                     <span asp-validation-for="Investment.CentralHeatingFuel" class="text-danger" />
@@ -123,12 +133,44 @@
             <div class="col-sm-3">
                 <div class="form-group-sm">
                     <label asp-for="Audit.AdditionalHeatSource" class="control-label"></label>
-                    <input asp-for="Audit.AdditionalHeatSource" class="form-control" />
+                    <input asp-for="Audit.AdditionalHeatSource" hidden />
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Audit.AdditionalHeatSource)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="CHAddHeatSource" class="optionbutton-true" 
+                                       data-link-show-element=".additionalheatsrc-param"
+                                       data-linked-checkbox="Audit.AdditionalHeatSource" autocomplete="off" checked />
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="CHAddHeatSource" class="optionbutton-false" 
+                                       data-link-hide-element=".additionalheatsrc-param"
+                                       data-linked-checkbox="Audit.AdditionalHeatSource" autocomplete="off" />
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="CHAddHeatSource" class="optionbutton-true" 
+                                       data-link-show-element=".additionalheatsrc-param"
+                                       data-linked-checkbox="Audit.AdditionalHeatSource" autocomplete="off" />
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="CHAddHeatSource" class="optionbutton-false" data-linked-checkbox="Audit.AdditionalHeatSource" 
+                                       data-link-hide-element=".additionalheatsrc-param"
+                                       autocomplete="off" checked />
+                                Nie
+                            </label>
+                        }
+                    </div>                    
                     <span asp-validation-for="Audit.AdditionalHeatSource" class="text-danger" />
                 </div>
             </div>
             <div class="col-sm-4">
-                <div class="form-group-sm">
+                <div class="form-group-sm additionalheatsrc-param">
                     <label asp-for="Audit.AdditionalHeatParams" class="control-label"></label>
                     <input asp-for="Audit.AdditionalHeatParams" class="form-control" />
                     <span asp-validation-for="Audit.AdditionalHeatParams" class="text-danger" />

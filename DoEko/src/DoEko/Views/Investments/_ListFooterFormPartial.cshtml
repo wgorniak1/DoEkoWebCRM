@@ -1,0 +1,115 @@
+@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko;
+@using DoEko.ViewModels.InvestmentViewModels;
+@model InvestmentListPaging
+
+<div class="row data-table-paging">
+    <div class="col-lg-1 col-md-2 col-sm-4 col-xs-4">
+        <select asp-for="PageSize"
+                asp-items="@Html.GetEnumSelectList(typeof(PageSize))"
+                data-table-paging-size="PageSize"
+                class="form-control data-table-paging-size"
+                title="Liczba wierszy na stronie">
+        </select>
+    </div>
+    <div class="col-lg-11 col-md-10 col-sm-8 col-xs-8">
+        <nav aria-label="Przewijanie listy">
+            <ul class="pagination"style="margin-top:unset; margin-bottom:unset;">
+                @if (Model.CurrentNumber == 1)
+                {
+                    <li class="disabled"><a href="#" aria-label="Pierwsza"><span aria-hidden="true"><<</span></a></li>
+                    <li class="disabled"><a href="#" aria-label="Poprzednia"><span aria-hidden="true"><</span></a></li>
+                }
+                else
+                {
+                    <li><a href="#" class="data-table-paging-page" data-table-paging-target="1" aria-label="Pierwsza"><span aria-hidden="true"><<</span></a></li>
+                    <li><a href="#" class="data-table-paging-page" data-table-paging-target="@(Model.CurrentNumber - 1)" aria-label="Poprzednia"><span aria-hidden="true"><</span></a></li>
+                }
+
+                @if (Model.TotalPages <= 5)
+                {
+                    for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        if (i == Model.CurrentNumber)
+                        {
+                            <li class="active"><a href="#" data-table-paging-target="@i">@i.ToString()</a></li>
+
+                        }
+                        else
+                        {
+                            <li><a href="#" class="data-table-paging-page" data-table-paging-target="@i">@i.ToString()</a></li>
+                        }
+                    }
+                }
+                else
+                {
+                    //min = 1; max = 5 
+                    int first = 0;
+                    if (Model.CurrentNumber > (Model.TotalPages - 2)) { first = Model.TotalPages - 4; }
+                    else if (Model.CurrentNumber > 3) { first = Model.CurrentNumber - 2; }
+                    else { first = 1; }
+
+                    int last = first + 4;
+
+                    while (first <= last)
+                    {
+                        if (first == Model.CurrentNumber)
+                        {
+                            <li class="active"><a href="#" data-table-paging-target="@first">@first.ToString()</a></li>
+                        }
+                        else
+                        {
+                            <li><a href="#" class="data-table-paging-page" data-table-paging-target="@first">@first.ToString()</a></li>
+                        }
+                        first++;
+                    }
+
+                }
+
+                @if (Model.CurrentNumber == Model.TotalPages)
+                {
+                    <li class="disabled"><a href="#" aria-label="Nastêpna"><span aria-hidden="true">></span></a></li>
+                    <li class="disabled"><a href="#" aria-label="Ostatnia"><span aria-hidden="true">>></span></a></li>
+                }
+                else
+                {
+                    <li><a href="#" class="data-table-paging-page" data-table-paging-target="@(Model.CurrentNumber + 1)" aria-label="Nastêpna"><span aria-hidden="true">></span></a></li>
+                    <li><a href="#" class="data-table-paging-page" data-table-paging-target="@Model.TotalPages" aria-label="Ostatnia"><span aria-hidden="true">>></span></a></li>
+                }
+            </ul>
+        </nav>
+    </div>
+        @*<div class="col-lg-11 col-md-10 col-sm-8 col-xs-8">
+            <nav aria-label="Przewijanie listy">
+                <ul class="pagination" style="margin-top:unset; margin-bottom:unset;">
+                    @if (Model.CurrentNumber == 1)
+                    {
+                        <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                    }
+                    else
+                    {
+                        <li><a href="#" class="data-table-paging-page" data-table-paging-target="@(Model.CurrentNumber - 1)" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                    }
+
+                    <li class="active"><a href="#" data-table-paging-target="@Model.CurrentNumber">@Model.CurrentNumber.ToString()</a></li>
+
+                    @{ int pageNo = Model.CurrentNumber; }
+                    @while (pageNo < Model.TotalPages && pageNo <= (Model.CurrentNumber + 4))
+                    {
+                        pageNo++;
+                        <li><a href="#" class="data-table-paging-page" data-table-paging-target="@pageNo">@pageNo.ToString()</a></li>
+                    }
+
+                    @if (Model.CurrentNumber == Model.TotalPages)
+                    {
+                        <li class="disabled"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                    }
+                    else
+                    {
+                        <li><a href="#" class="data-table-paging-page" data-table-paging-target="@(Model.CurrentNumber + 1)" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                    }
+                </ul>
+            </nav>
+        </div>*@
+
+    </div>

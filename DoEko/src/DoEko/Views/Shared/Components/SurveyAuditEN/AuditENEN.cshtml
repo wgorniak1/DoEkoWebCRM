@@ -75,6 +75,7 @@
             <div class="col-sm-3">
                 <label asp-for="Audit.ENAdditionalConsMeter" class="control-label"></label>
                 <input asp-for="Audit.ENAdditionalConsMeter" hidden />
+                <span class="help-block">Jeśli prowadzona jest działalność gospodarcza</span>
                 <div class="btn-group-sm" data-toggle="buttons">
                     @if (Model.Audit.ENAdditionalConsMeter)
                     {
@@ -141,7 +142,7 @@
             <div class="col-sm-3">
                 <div class="form-group-sm">
                     <label asp-for="Audit.PhaseCount" class="control-label"></label>
-                    <input asp-for="Audit.PhaseCount" class="form-control" />
+                    <select asp-for="Audit.PhaseCount" class="form-control" asp-items="Html.GetEnumSelectList(typeof(PhaseCount))">></select>
                     <span asp-validation-for="Audit.PhaseCount" class="text-danger" />
                 </div>
             </div>

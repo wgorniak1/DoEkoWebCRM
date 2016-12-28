@@ -1,0 +1,31 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyDetBoilerRoom
+
+
+<h2>Main View</h2>
+@{ 
+    var aa = this.Output.FormatProvider.GetFormat(typeof(double));
+}
+<form id="testdouble"
+      asp-action="TestDouble"
+      asp-controller="Test"
+        method="post">
+
+    @Html.LabelFor(Model => Model.Height);
+
+    <input type="number" step="any" asp-for="Height" class="form-control"/>
+    <span asp-validation-for="Height"></span>
+</form>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<div id="OwnerData">
+    abc
+</div>
+
+
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+}

@@ -13,11 +13,25 @@ namespace DoEko.Models.DoEko
         [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
         [StringLength(30)]
         [Display(Description = "", Name = "Imię", ShortName = "Imię")]
-        public string FirstName { get; set; }
+        public string FirstName 
+        {
+            get { return PartnerName1; }
+            set
+            {
+                PartnerName1 = value;
+            }
+        }
         [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
         [StringLength(30)]
         [Display(Description = "", Name = "Nazwisko", ShortName = "Nazwisko")]
-        public string LastName { get; set; }
+        public string LastName 
+        {
+            get { return PartnerName2; }
+            set
+            {
+                PartnerName2 = value;
+            }
+        }
         /// <summary>
         /// Birth date is calculated from PESEL
         /// </summary>

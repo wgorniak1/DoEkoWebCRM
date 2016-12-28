@@ -66,7 +66,11 @@ namespace DoEko
                     .RequireAuthenticatedUser()
                     .Build();
 
-            services.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser)); });
+            services.AddMvc(options => {
+                options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));
+                //options.ModelBinderProviders.Insert(0,new Models.DoubleModelBinderProvider());
+                //options.OutputFormatters.Insert(0, new Models.DoubleFormatProvider());
+            });
 
             //Session
             services.AddMemoryCache();
@@ -103,14 +107,17 @@ namespace DoEko
             //{
             //app.UseExceptionHandler("/Home/Error");
             //}
-            app.UseRequestLocalization( 
-                new RequestLocalizationOptions {
-                    DefaultRequestCulture = new RequestCulture("pl-PL","pl-PL"),
-                    SupportedUICultures = new List<CultureInfo> { new CultureInfo("pl-PL")},
-                    SupportedCultures = new List<CultureInfo> { new CultureInfo("pl-PL") }
-                });
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
 
+                DefaultRequestCulture = new RequestCulture("en-GB"),
+                // Formatting numbers, dates, etc.
+                SupportedCultures = new List<CultureInfo>() { new CultureInfo("en-GB") },
+                // UI strings that we have localized.
+                SupportedUICultures = new List<CultureInfo>() { new CultureInfo("en-GB"), new CultureInfo("pl-PL") },
+            });
 
+            ////
             app.UseStaticFiles();
             app.UseIdentity();
             app.UseSession();
