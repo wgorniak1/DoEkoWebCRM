@@ -52,7 +52,7 @@
                             <table>
                                 <tbody>
                                     <tr><td>@Html.DisplayFor(model => Model[i].PaymentDate)</td></tr>
-                                    <tr><td>@Html.DisplayFor(model => Model[i].Amount)                    </td></tr>
+                                    <tr><td>@Model[i].Amount.ToString("C", System.Globalization.CultureInfo.CurrentUICulture)</td></tr>
                                     <tr><td>@Model[i].SourceRow.Split(';')[7].Replace("Nazwa nadawcy:", "").ToString()</td></tr>
                                     <tr><td>@Model[i].SourceRow.Split(';')[8].Replace("Tytuł:", "").ToString()</td></tr>
                                 </tbody>

@@ -1,0 +1,164 @@
+﻿@model DoEko.ViewModels.InvestmentViewModels.InvestmentListViewModel
+@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko
+@using DoEko.ViewModels.InvestmentViewModels;
+
+@if (Model.List.Count == 0)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="text-info">Brak inspekcji spełaniających wybrane kryteria.</h4>
+        </div>
+    </div>
+}
+else
+{
+
+    <table class="table table-condensed table-hover">
+        <thead data-table-sortby-current="@Model.Sorting.sortBy">
+            <tr>
+                <th>
+                    @if (Model.Sorting.sortBy.Equals(nameof(Investment.Address) + InvestmentListSorting.postfixUp))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment.Address) + InvestmentListSorting.postfixDn)">
+                            @Html.DisplayNameFor(model => model.List[0].Investment.Address)
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-alphabet"></span>
+                    }
+                    else if (Model.Sorting.sortBy.Equals(nameof(Investment.Address) + InvestmentListSorting.postfixDn))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment.Address) + InvestmentListSorting.postfixUp)">
+                            @Html.DisplayNameFor(model => model.List[0].Investment.Address)
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+                    }
+                    else
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment.Address) + InvestmentListSorting.postfixUp)">@Html.DisplayNameFor(model => model.List[0].Investment.Address)</a>
+                    }
+                </th>
+                <th>
+                    @if (Model.Sorting.sortBy.Equals(nameof(Investment.InvestmentOwners) + InvestmentListSorting.postfixUp))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment.InvestmentOwners) + InvestmentListSorting.postfixDn)">
+                            Właściciel
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-alphabet"></span>
+                    }
+                    else if (Model.Sorting.sortBy.Equals(nameof(Investment.InvestmentOwners) + InvestmentListSorting.postfixDn))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment.InvestmentOwners) + InvestmentListSorting.postfixUp)">
+                            Właściciel
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+                    }
+                    else
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment.InvestmentOwners) + InvestmentListSorting.postfixUp)">Właściciel</a>
+                    }
+                </th>
+                <th>
+                    @if (Model.Sorting.sortBy.Equals(nameof(Investment) + '.' + nameof(Investment.Status) + InvestmentListSorting.postfixUp))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.Status) + InvestmentListSorting.postfixDn)">
+                            @Html.DisplayNameFor(model => model.List[0].Investment.Status)
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                    }
+                    else if (Model.Sorting.sortBy.Equals(nameof(Investment) + '.' + nameof(Investment.Status) + InvestmentListSorting.postfixDn))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.Status) + InvestmentListSorting.postfixUp)">
+                            @Html.DisplayNameFor(model => model.List[0].Investment.Status)
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                    }
+                    else
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.Status) + InvestmentListSorting.postfixUp)">
+                            @Html.DisplayNameFor(model => model.List[0].Investment.Status)</a>
+                    }
+                </th>
+                <th>
+                    @if (Model.Sorting.sortBy.Equals(nameof(Investment) + '.' + nameof(Investment.InspectionStatus) + InvestmentListSorting.postfixUp))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.InspectionStatus) + InvestmentListSorting.postfixDn)">
+                            @Html.DisplayNameFor(model => model.List[0].Investment.InspectionStatus)
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                    }
+                    else if (Model.Sorting.sortBy.Equals(nameof(Investment) + '.' + nameof(Investment.InspectionStatus) + InvestmentListSorting.postfixDn))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.InspectionStatus) + InvestmentListSorting.postfixUp)">
+                            @Html.DisplayNameFor(model => model.List[0].Investment.InspectionStatus)
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                    }
+                    else
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.InspectionStatus) + InvestmentListSorting.postfixUp)">
+                            @Html.DisplayNameFor(model => model.List[0].Investment.InspectionStatus)
+                        </a>
+                    }
+                </th>
+                <th>
+                    @if (Model.Sorting.sortBy.Equals(nameof(Investment) + '.' + nameof(Investment.Surveys) + InvestmentListSorting.postfixUp))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.Surveys) + InvestmentListSorting.postfixDn)">
+                            Liczba ankiet
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                    }
+                    else if (Model.Sorting.sortBy.Equals(nameof(Investment) + '.' + nameof(Investment.Surveys) + InvestmentListSorting.postfixDn))
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.Surveys) + InvestmentListSorting.postfixUp)">
+                            Liczba ankiet
+                        </a>
+                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                    }
+                    else
+                    {
+                        <a href="#" class="data-table-sort" data-table-sortby="@(nameof(Investment) + '.' + nameof(Investment.Surveys) + InvestmentListSorting.postfixUp)">
+                            Liczba ankiet
+                        </a>
+                    }
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.List)
+            {
+                <tr class="investmentrow wg-table-row-clickable" data-bind="@item.InvestmentId">
+                    <td>
+                        @item.Investment.Address.FirstLine <br />
+                        @item.Investment.Address.SecondLine
+                    </td>
+                    <td>
+                        @(item.Owner.PartnerName1 + ' ' + item.Owner.PartnerName2)
+                    </td>
+                    <td>
+                        @item.Investment.Status.DisplayName()
+                    </td>
+                    <td>
+                        @item.Investment.InspectionStatus.DisplayName()
+                    </td>
+                    <td>
+                        @item.Investment.Surveys.Count
+                    </td>
+                    <td id="InvestmentRowCol">
+                        <div class="pull-right">
+                            <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                               class="btn btn-default btn-sm"
+                               title="Szczegóły">
+                                <span class="glyphicon glyphicon-eye-open text-primary"></span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @await Html.PartialAsync("../Investments/_ListFooterFormPartial", Model.Paging)
+
+}

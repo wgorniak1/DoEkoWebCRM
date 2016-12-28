@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using DoEko.Models.DoEko.Survey;
+using System.ComponentModel.DataAnnotations;
 
 namespace DoEko.Models.DoEko
 {
@@ -19,6 +20,7 @@ namespace DoEko.Models.DoEko
         public CommuneType CommuneType { get; set; }
         public DateTime ValidFrom { get; set; }
         public DateTime ValidTo { get; set; }
+        [DataType(DataType.Currency)]
         public decimal Price { get; set; }
         public virtual Commune Commune { get; set; }
     }

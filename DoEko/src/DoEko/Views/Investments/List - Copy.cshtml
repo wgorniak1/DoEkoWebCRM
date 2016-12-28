@@ -1,0 +1,107 @@
+@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko
+@using DoEko.Models.Identity
+
+@model IEnumerable<DoEko.Models.DoEko.Investment>
+
+@{
+    ViewData["Title"] = "Moje inspekcje";
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">Moje Inspekcje</li>
+</ol>
+
+<h2>Moje inspekcje</h2>
+<hr />
+@if (Model.ToList().Count != 0)
+{
+
+<div class="table-responsive">
+    <table class="table table-condensed table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Address)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.InvestmentOwners)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.InspectionStatus)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="InvestmentRow wg-table-row-clickable" data-bind="@item.InvestmentId">
+                    <td>
+                        @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
+                    </td>
+                    <td>
+                        <table>
+                            <tbody>
+                                @foreach (var io in item.InvestmentOwners)
+                                {
+                                    BusinessPartnerPerson bp = (BusinessPartnerPerson)io.Owner;
+                                    <tr>
+                                        <td>
+                                            @(bp.LastName + ' ' + bp.FirstName)
+                                        </td>
+                                        <td>@('(' + bp.Pesel + ')')</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        @item.Status.DisplayName()
+                    </td>
+                    <td>
+                        @item.InspectionStatus.DisplayName()
+                    </td>
+                    <td id="InvestmentRowCol">
+                        <div class="pull-right">
+                            @*<a asp-action="Edit" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                               class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-pencil text-primary"></span>
+                            </a>*@
+                            <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                               class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-eye-open text-primary"></span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                            }
+        </tbody>
+    </table>
+</div>
+
+@section scripts{
+    <script>
+        $(".InvestmentRow").one('click', function () {
+            var alink =
+            $(this).children("td#InvestmentRowCol").children('div').children('a');
+            window.location.href = alink.attr('href');
+        });
+    </script>
+
+}
+
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="text-info">Aktualnie nie posiadasz przypisanych, aktywnych inspekcji.</h4>
+        </div>
+    </div>
+}

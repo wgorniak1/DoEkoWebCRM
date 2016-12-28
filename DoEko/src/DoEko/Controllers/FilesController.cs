@@ -88,6 +88,59 @@ namespace DoEko.Controllers
             return Json("OK");
         }
 
+        [HttpPost]
+        public IActionResult UploadPhoto(enuAzureStorageContainerType type, Guid guid)
+        {
+            string TargetUrl = "";
+
+            if (guid == Guid.Empty)
+            {
+                ModelState.AddModelError("guid", "Nr Ankiety nie mo¿e byæ pusty");
+                return BadRequest(ModelState);
+            }
+            if (Request.Form.Files.Count == 0)
+                return Ok(TargetUrl);
+            
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(type);
+            var file = Request.Form.Files.First();
+            //foreach (var file in Request.Form.Files)
+            //{
+            Stream stream = file.OpenReadStream();
+            if (file.Length > 0)
+            {
+                // surveyId / Picture0 / filename
+                string name = guid.ToString() + '/' + file.Name + '/' + file.FileName;
+                CloudBlockBlob blob = Container.GetBlockBlobReference(name);
+                blob.UploadFromStream(file.OpenReadStream());
+
+                TargetUrl = blob.Uri.ToString();
+            }
+            //}
+            return Ok(TargetUrl);
+        }
+
+        [HttpPost]
+        public IActionResult DeletePhoto(enuAzureStorageContainerType type, Guid guid, string pictureId, string fileName)
+        {
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(type);
+            string RootKey = guid.ToString();
+
+            string fullname = RootKey + '/' + pictureId + '/' + fileName;
+            try
+            {
+                CloudBlockBlob blob = Container.GetBlockBlobReference(fullname);
+
+                blob.Delete();
+
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+
+        }
+
         public JsonResult Delete(enuAzureStorageContainerType Type, int? Id, Guid? Guid,
                                          string Name, string ReturnUrl = null)
         {

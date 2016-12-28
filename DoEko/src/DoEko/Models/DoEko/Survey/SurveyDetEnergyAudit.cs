@@ -61,9 +61,13 @@ namespace DoEko.Models.DoEko.Survey
     public enum PhaseCount
     {
         [Display(Name = "1")]
-        One,
+        One = 1,
         [Display(Name = "2")]
-        Two
+        Two = 2,
+        [Display(Name = "3")]
+        Three = 3,
+        [Display(Name = "4")]
+        Four = 4,
     }
 
 
@@ -74,16 +78,16 @@ namespace DoEko.Models.DoEko.Survey
         public Guid SurveyId { get; set; }
         [Display(Name = "Moc przyłącza [kW]")]
         public double ElectricityPower { get; set; }        
-        [Display(Name = "Rodzaj gł. źródła C.O.")]
+        [Display(Name = "Operator sieci dystrybucyjnej")]
         public PowerCompanyName PowerCompanyName { get; set; }
         [Display(Name = "Rodzaj przyłącza do sieci el.")]
         public PowerSupplyType PowerSupplyType { get; set; }
         [Display(Name = "Umiejscowienie licznika en. el.")]
         public PowerConsMeterLocation PowerConsMeterLocation { get; set; }
-        [Display(Name = "Istnieje dodatkowy licznik energii")]
+        [Display(Name = "Czy istnieje dodatkowy licznik energii?")]
         public bool ENAdditionalConsMeter { get; set; }
         [Display(Name = "Mies. rachunek za prąd [PLN]")]
-        [DisplayFormat(ApplyFormatInEditMode = true,ConvertEmptyStringToNull = true,DataFormatString = "{0:C}",HtmlEncode = true)]
+        [DataType(DataType.Currency)]
         public decimal ElectricityAvgMonthlyCost { get; set; }
         [Display(Name = "Roczne zużycie prądu [kW]")]
         public double PowerAvgYearlyConsumption { get; set; }
@@ -110,6 +114,7 @@ namespace DoEko.Models.DoEko.Survey
         [Display(Name = "Roczne zużycie paliwa (C.O. i C.W.U.)")]
         public double AverageYearlyFuelConsumption { get; set; }
         [Display(Name = "Koszty roczne (C.O. i C.W.U.)")]
+        [DataType(DataType.Currency)]
         public decimal AverageYearlyHeatingCosts { get; set; }
         [Display(Name = "Moc kotła C.O. [kW]")]
         public double BoilerNominalPower { get; set; }

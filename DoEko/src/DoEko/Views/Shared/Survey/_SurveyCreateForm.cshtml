@@ -1,0 +1,28 @@
+﻿@using DoEko.Models.DoEko.Survey
+@model DoEko.ViewModels.SurveyViewModels.SurveyCreateViewModel
+
+<form id="SurveyCreateModalForm" class="form-horizontal">
+    <fieldset>
+        <input asp-for="InvestmentId" type="hidden" />
+        <div class="form-group">
+            <label asp-for="SurveyType" class="control-label col-sm-4"></label>
+            <div class="col-sm-8">
+                <select asp-for="SurveyType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyType))">
+                </select>
+                <span asp-validation-for="SurveyType" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group collapse" id="SurveyCreateModalFormRSEType">
+            <label asp-for="RSETypeEN" class="control-label col-sm-4"></label>
+            <div class="col-sm-8">
+                <select asp-for="RSETypeEN" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeEnergy))"></select>
+                <span asp-validation-for="RSETypeEN" class="text-danger"></span>
+                <select asp-for="RSETypeHW" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeHotWater))"></select>
+                <span asp-validation-for="RSETypeHW" class="text-danger"></span>
+                <select asp-for="RSETypeCH" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeCentralHeating))"></select>
+                <span asp-validation-for="RSETypeCH" class="text-danger"></span>
+            </div>
+        </div>
+        <input type="reset" hidden />
+    </fieldset>
+</form>

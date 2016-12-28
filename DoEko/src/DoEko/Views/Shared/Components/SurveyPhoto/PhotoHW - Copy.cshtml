@@ -1,0 +1,115 @@
+﻿@model DoEko.Models.DoEko.Survey.SurveyHotWater
+@using DoEko.Models.DoEko
+
+<form id="SurveyPhoto"
+      asp-action="EditPhotoAjax"
+      asp-controller="Surveys"
+      enctype="multipart/form-data">
+    <fieldset>
+        <legend>Zdjęcia</legend>
+
+        <input asp-for="SurveyId" type="hidden" />
+
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="control-label" for="Picture0">
+                    Ortofotomapa
+                </label>
+            </div>
+            <div class="col-sm-9">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="input-group-btn ">
+                            <span class="btn btn-primary">
+                                Wybierz&hellip; <input type="file" style="display: none;" name="Picture0">
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" id="Picture0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="control-label" for="Picture1">
+                    Zdjęcie działki (miejsce proponowane pod odwierty pionowe)
+                </label>
+            </div>
+            <div class="col-sm-9">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="input-group-btn ">
+                            <span class="btn btn-primary">
+                                Wybierz&hellip; <input type="file" style="display: none;" name="Picture1">
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" id="Picture1" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="control-label" for="Picture2">
+                    Zdjęcie kotłowni
+                </label>
+            </div>
+            <div class="col-sm-9">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="input-group-btn ">
+                            <span class="btn btn-primary">
+                                Wybierz&hellip; <input type="file" style="display: none;" name="Picture2">
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" id="Picture2" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="control-label" for="Picture3">
+                    Zdjęcie wjazdu na działkę
+                </label>
+            </div>
+            <div class="col-sm-9">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="input-group-btn ">
+                            <span class="btn btn-primary">
+                                Wybierz&hellip; <input type="file" style="display: none;" name="Picture3">
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" id="Picture3" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="control-label" for="Picture4">
+                    Zdjęcie ściany na montaż parownika(tylko dla pompy powietrze / woda)
+                </label>
+            </div>
+            <div class="col-sm-9">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="input-group-btn ">
+                            <span class="btn btn-primary">
+                                Wybierz&hellip; <input type="file" style="display: none;" name="Picture4">
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" id="Picture4" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+
+</form>

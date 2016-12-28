@@ -5,6 +5,168 @@
 @{
     ViewData["Title"] = "Szczegóły Inwestycji";
 }
+
+<!-- MODAL -->
+@{ 
+//modal main div    #SrvCancelModal
+//modal title       #SrvCancelModalTitle
+//modal form inside #SrvCancelModalForm
+//modal form btns   .srvcancelmodal-btn-submit
+//                  .srvcancelmodal-btn-cancel
+}
+<div class="modal fade" id="SrvCancelModal" tabindex="-1" role="dialog" aria-labelledby="SrvCancelModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close srvcancelmodal-btn-cancel" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="SrvCancelModalTitle">Anulowanie ankiety</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("Survey/_SurveyCancelForm", new DoEko.ViewModels.SurveyViewModels.SurveyCancelViewModel())
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger srvcancelmodal-btn-cancel" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-success srvcancelmodal-btn-submit">Potwierdź</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal 2-->
+@{ 
+//modal main div    #SrvCreateModal
+//modal title       #SrvCreateModalTitle
+//modal form inside #SrvCreateModalForm
+//modal form btns   .SrvCreateModal-btn-submit
+//                  .SrvCreateModal-btn-cancel
+}
+<div class="modal fade" id="SrvCreateModal" tabindex="-2" role="dialog" aria-labelledby="SrvCreateModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close srvcreatemodal-btn-cancel" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="SrvCreateModalTitle">Nowe źródło</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("Survey/_SurveyCreateForm", new DoEko.ViewModels.SurveyViewModels.SurveyCreateViewModel() { InvestmentId = Model.InvestmentId })
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger srvcreatemodal-btn-cancel" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-success srvcreatemodal-btn-submit">Dodaj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal 3-->
+@{
+//modal main div    #SrvSubmitModal
+//modal form btns   .SrvCreateModal-btn-submit
+//                  .SrvCreateModal-btn-cancel
+}
+<div class="modal fade" id="SrvSubmitModal" tabindex="-2" role="dialog" aria-labelledby="SrvSubmitModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close srvsubmitmodal-btn-cancel" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="SrvSubmitModalTitle">Koniec wprowadzania</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Koniec wprowadzania oznacza, że nie będzie można wprowadzać więcej zmian w tej ankiecie. Następnie zostanie ona wysłana do weryfikacji. W przypadku błędów lub brakujących informacji, ankieta zostanie "odrzucona" i trafi ponownie do edycji w statusie "Do poprawy".
+                    W momencie gdy wszystkie ankiety tej inwestycji otrzymają status "Do weryfikacji" lub "Anulowana", cała inwestycja zmieni status inspekcji na "Do zatwierdzenia".
+                </p>
+                <form id="SurveySubmitModalForm" hidden>
+                    <fieldset>
+                        <input Id="SurveyId" type="hidden" />
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger srvsubmitmodal-btn-cancel" data-dismiss="modal">Nie</button>
+                <button type="button" class="btn btn-success srvsubmitmodal-btn-submit">Tak, Zakończ</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal 4-->
+@{
+//modal main div    #SrvApprovalModal
+//modal form btns   .SrvApprovalModal-btn-submit
+//                  .SrvApprovalModal-btn-cancel
+}
+<div class="modal fade" id="SrvApprovalModal" tabindex="-2" role="dialog" aria-labelledby="SrvApprovalModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close srvapprovalmodal-btn-cancel" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="SrvApprovalModalTitle">Akceptacja / Odrzucenie ankiety</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Akceptując ankietę kończysz etap wprowadzania / poprawy danych dla tej inwestycji. 
+                    Informujesz tym samym inspektora, że jego praca dla tej inwestycji została zakończona.
+                </p>
+                <form id="SurveyApprovalModalForm" hidden>
+                    <fieldset>
+                        <input Id="SurveyId" type="hidden" />                        
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger srvapprovalmodal-btn-cancel" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-success srvapprovalmodal-btn-submit">Zatwierdź</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal 5-->
+@{
+//modal main div    #SrvRejectModal
+//modal form btns   .SrvRejectModal-btn-submit
+//                  .SrvRejectModal-btn-cancel
+}
+<div class="modal fade" id="SrvRejectModal" tabindex="-2" role="dialog" aria-labelledby="SrvRejectModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close srvrejectmodal-btn-cancel" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="SrvRejectModalTitle">Odrzucenie ankiety</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Odrzucając ankietę informujesz inspektora, że w ankiecie znajdują się błędy lub brakujące informacje.
+                </p>
+                <form id="SurveyRejectModalForm">
+                    <fieldset>
+                        <input Id="SurveyId" type="hidden" />
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">Uwagi</label>
+                            <div class="col-sm-8">
+                                <textarea class="form-control" rows="4" id="RejectComments" name="RejectComments"
+                                          data-val="true" data-val-required="Pole Uwagi jest obowiązkowe"></textarea>
+                                <span class="text-danger field-validation-valid" data-valmsg-for="RejectComments" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger  srvrejectmodal-btn-cancel" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-success srvrejectmodal-btn-submit" title="Potwierdź odrzucenie ankiety">Potwierdź</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Navigation -->
 @if (User.IsInRole(Roles.Inspector))
 {
@@ -26,6 +188,7 @@ else
 }
 <!--Title-->
 <h2><small>Inwestycja</small> @Model.Address.SingleLine</h2>
+
 
 <div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
@@ -102,15 +265,28 @@ else
             <h4 class="panel-title wg-panel-title pull-left" style="padding-top: 7.5px;">
                 Źródła (Ankiety)
             </h4>
-            @*<div class="btn-group pull-right">
-                <a asp-action="Create"
-                   asp-controller="Surveys"
-                   asp-route-InvestmentId="@Model.InvestmentId"
-                   asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-surveys")"
-                   class="btn btn-primary btn-sm wg-panel-header-button">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </a>
-            </div>*@
+            <div class="btn-group pull-right">
+                @if (Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted ||
+                 Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Completed)
+                {
+                    <button class="btn btn-primary btn-sm disabled"
+                            type="button"
+                            disabled
+                            title="Nie można dodawać nowych ankiet 
+dla zakończonej inwestycji lub inwestycji w akceptacji">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-primary btn-sm"
+                            data-toggle="modal"
+                            data-target="#SrvCreateModal"
+                            type="button">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    </button>
+                }
+            </div>
         </div>
         <div id="surveys" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-survey">
             <div class="panel-body">
@@ -119,3 +295,7 @@ else
         </div>
     </div>
 </div>
+@section scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_InvestmentDetailsScriptsPartial");}
+}

@@ -9,8 +9,10 @@ namespace DoEko.Models.DoEko
 {
     public enum InvestmentStatus
     {
+        [Display(Name = "")]
+        ValueToDelete = 0,
         [Display(Name = "Inicjalny")]
-        Initial,
+        Initial = 1,
         [Display(Name = "Zakończona")]
         Completed,
         [Display(Name = "Zamknięta")]
@@ -20,12 +22,14 @@ namespace DoEko.Models.DoEko
     }
     public enum InspectionStatus
     {
+        [Display(Name = "")]
+        ValueToDelete = 0,
         [Display(Name = "Nie utworzono")]
-        NotExists,
-        [Display(Name = "Wersja robocza")]
+        NotExists = 1,
+        [Display(Name = "W trakcie realizacji")]
         Draft,
         [Display(Name = "Do korekty")]
-        InCorrection,
+        Rejected,
         [Display(Name = "Do zatwierdzenia")]
         Submitted,
         [Display(Name = "Zweryfikowana")]
@@ -37,7 +41,7 @@ namespace DoEko.Models.DoEko
     public enum BusinessActivity
     {
         [Display(Name = "Żadna")]
-        None,
+        None = 0,
         [Display(Name = "Gospodarcza")]
         Office,
         [Display(Name = "Rolnicza")]
@@ -58,15 +62,15 @@ namespace DoEko.Models.DoEko
     public enum BuildingStage
     {
         [Display(Name = "Isniejący")]
-        Completed,
+        Completed = 1,
         [Display(Name = "W budowie")]
-        InProgress
+        InProgress = 2
     }
 
     public enum CentralHeatingType
     {
         [Display(Name = "Brak C.O.")]
-        None,
+        None = 1,
         [Display(Name = "Piec na paliwo gazowe")]
         GasFuelHeater,
         [Display(Name = "Grzejniki elektryczne")]
@@ -85,7 +89,7 @@ namespace DoEko.Models.DoEko
     public enum HotWaterType
     {
         [Display(Name = "Brak")]
-        None,
+        None = 1,
         [Display(Name = "Piec na paliwo stałe")]
         SolidFuelHeater,
         [Display(Name = "Piec na paliwo ciekłe")]
@@ -96,11 +100,14 @@ namespace DoEko.Models.DoEko
         ElectricHeater,
         [Display(Name = "Pompa ciepła")]
         HeatPump,
+        [Display(Name = "Kolektory słoneczne")]
+        Solary,
+
     }
     public enum FuelType
     {
         [Display(Name = "Nie dotyczy")]
-        NotApplicable,
+        NotApplicable = 1,
         [Display(Name = "Węgiel kamienny")]
         Coal,
         [Display(Name = "Drewno")]

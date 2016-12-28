@@ -156,8 +156,11 @@ namespace DoEko.Migrations.DoEko
                     b.Property<string>("Discriminator")
                         .IsRequired();
 
-                    b.Property<string>("Email")
-                        .IsRequired();
+                    b.Property<string>("Email");
+
+                    b.Property<string>("PartnerName1");
+
+                    b.Property<string>("PartnerName2");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired();
@@ -500,6 +503,8 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<bool>("IsPaid");
 
+                    b.Property<string>("RejectComments");
+
                     b.Property<int>("Status");
 
                     b.Property<int>("Type");
@@ -599,11 +604,15 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<int>("InsulationType");
 
+                    b.Property<string>("InsulationTypeOther");
+
                     b.Property<int>("TechnologyType");
 
                     b.Property<double>("Volume");
 
                     b.Property<int>("WallMaterial");
+
+                    b.Property<string>("WallMaterialOther");
 
                     b.Property<double>("WallThickness");
 

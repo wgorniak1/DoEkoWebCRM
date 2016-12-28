@@ -1,0 +1,68 @@
+﻿@using DoEko.Models.DoEko.Survey
+@model DoEko.ViewModels.SurveyViewModels.SurveyCancelViewModel
+
+<form id="SurveyCancelModalForm" class="form-horizontal">
+    <fieldset>
+        <input asp-for="SurveyId" type="hidden" />
+        <div class="form-group">
+                <label class="control-label col-sm-4">Powód</label>
+            <div class="col-sm-8">
+                <select asp-for="CancelType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyCancelType))"></select>
+                <span asp-validation-for="CancelType" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+                <label class="control-label col-sm-4">Uwagi</label>
+            <div class="col-sm-8">
+                <textarea asp-for="CancelComments" class="form-control"></textarea>
+                <span asp-validation-for="CancelComments" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+                <label class="control-label col-sm-4">Czy utworzyć ankietę dla innego źródła?</label>
+            <div class="col-sm-8">
+
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input type="radio" name="SurveyTypeGroup" class="optionbutton-true"
+                               value="true" 
+                               data-linked-element-show="#SurveyCancelModalFormSrvType"/>
+                        Tak
+                    </label>
+                    <label class="btn btn-default active">
+                        <input type="radio" name="SurveyTypeGroup" class="optionbutton-false" 
+                               value="false"
+                               data-linked-element-hide="#SurveyCancelModalFormSrvType" checked/>
+                        Nie
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div id="SurveyCancelModalFormSrvType" class="collapse">
+            <div class="form-group">
+                <label asp-for="ReplaceWithType" class="control-label col-sm-4"></label>
+                <div class="col-sm-8">
+                    <select asp-for="ReplaceWithType" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyType))">
+                        <option value=""></option>
+                    </select>
+                    <span asp-validation-for="ReplaceWithType" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group collapse" id="SurveyCancelModalFormRSEType">
+                <label asp-for="ReplaceWithRSEEN" class="control-label col-sm-4"></label>
+                <div class="col-sm-8">
+                    <select asp-for="ReplaceWithRSEEN" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeEnergy))">
+                    </select>
+                    <span asp-validation-for="ReplaceWithRSEEN" class="text-danger"></span>
+                    <select asp-for="ReplaceWithRSEHW" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeHotWater))">
+                    </select>
+                    <span asp-validation-for="ReplaceWithRSEHW" class="text-danger"></span>
+                    <select asp-for="ReplaceWithRSECH" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeCentralHeating))">
+                    </select>
+                    <span asp-validation-for="ReplaceWithRSECH" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <input type="reset" hidden />
+    </fieldset>
+</form>

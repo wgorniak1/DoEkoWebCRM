@@ -1,0 +1,127 @@
+@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko
+@using DoEko.Models.Identity
+
+@model IEnumerable<DoEko.Models.DoEko.Investment>
+
+@{
+    ViewData["Title"] = "Inspekcje nieprzypisane";
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">Lista inspekcji</li>
+</ol>
+
+<h2>Inspekcje nieprzypisane</h2>
+<hr />
+@if (Model.ToList().Count != 0)
+{
+    <div class="table-responsive">
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Address)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.InvestmentOwners)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.InspectionStatus)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
+                        </td>
+                        <td>
+                            <table>
+                                <tbody>
+                                    @foreach (var io in item.InvestmentOwners)
+                                    {
+                                        BusinessPartnerPerson bp = (BusinessPartnerPerson)io.Owner;
+                                        <tr>
+                                            <td>
+                                                @(bp.LastName + ' ' + bp.FirstName)
+                                            </td>
+                                            <td>@('(' + bp.Pesel + ')')</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            @item.Status.DisplayName()
+                        </td>
+                        <td>
+                            @item.InspectionStatus.DisplayName()
+                        </td>
+                        <td id="@("Replace_" + item.InvestmentId)">
+                            <div class="pull-right">
+                                <button id="Assign" class="btn btn-default btn-sm text-primary" data-bind="@item.InvestmentId" title="Pobierz" type="submit" >
+                                    <span class="glyphicon glyphicon-hand-left  text-primary"></span> Pobierz
+                                </button>
+                                <a href="#" id="Assigned" class="btn btn-default btn-sm disabled" title="Pobrano" style="display:none;">
+                                    <span class="glyphicon glyphicon-hand-down text-primary"></span> Pobrano
+                                </a>
+                            </div>                        
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <form id="AssignForm"
+          hidden
+          class="navbar-form"
+          asp-action="AssignInspector"
+          asp-controller="Investments"
+          data-ajax="true"
+          data-ajax-method="POST"
+          data-ajax-mode="replace"
+          data-ajax-failed="AssignFailed"
+          data-ajax-complete="AssignCompleted">
+        <input id="InspectorId" name="InspectorId" form="AssignForm" type="hidden" value="@ViewBag.UserId" />
+        <input id="AssignFormInvestmentId" name="InvestmentId" form="AssignForm" type="hidden" value="" />
+    </form>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <script>
+            $("button[data-bind]").one('click', function () {
+                var investmentId = $(this).attr("data-bind");
+                $("#AssignFormInvestmentId").attr('value', investmentId);
+                $("#AssignForm").submit();
+            })
+
+            function AssignFailed() {
+                alert("Wyst¹pi³ problem z przypisaniem inspektora. Proszê odœwie¿yæ stronê i powtórzyæ dzia³anie jeœli to nie pomo¿e, proszê skontaktowac siê z administratorem.");
+            }
+
+            function AssignCompleted(){
+                var investmentId = $("#AssignFormInvestmentId").attr('value');
+                var id = "#Replace_" + investmentId.toString();
+                $(id).children('div').children('#Assign').hide();
+                $(id).children('div').children('#Assigned').show();
+            }
+        </script>
+    }
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="text-info">Aktualnie nie ma aktywnych, nieprzypisanych inspekcji.</h4>
+        </div>
+    </div>
+}

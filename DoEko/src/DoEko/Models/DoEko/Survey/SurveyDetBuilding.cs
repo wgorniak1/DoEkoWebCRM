@@ -35,15 +35,17 @@ namespace DoEko.Models.DoEko.Survey
     }
     public enum InsulationType
     {
-        [Display(Name = "Materiał 1")]
-        Ins_1,
-        [Display(Name = "Materiał 2")]
-        Ins_2
+        [Display(Name = "Styropian")]
+        Ins_1 = 1,
+        [Display(Name = "Wełna")]
+        Ins_2,
+        [Display(Name = "Inne")]
+        Ins_3,
     }
     public enum BuildTechnologyType
     {
         [Display(Name = "Nowe budownictwo - pasywny")]
-        Type_1,
+        Type_1 = 1,
         [Display(Name = "Nowe budownictwo - energooszczędny")]
         Type_2,
         [Display(Name = "Nowe budownictwo - standardowa izolacja")]
@@ -70,15 +72,21 @@ namespace DoEko.Models.DoEko.Survey
         //building_wall_material
         [Display(Name = "Materiał ścian budynku")]
         public WallMaterial WallMaterial { get; set; }
+        //
+        [Display(Name = "Materiał ścian budynku")]
+        public String WallMaterialOther { get; set; }
         //building_wall_thickness
         [Display(Name = "Grubość ścian [cm]")]
         public double WallThickness { get; set; }
         //building_insulation_type
         [Display(Name = "Rodzaj docieplenia")]
         public InsulationType InsulationType { get; set; }
+        [Display(Name = "Inny")]
+        public string InsulationTypeOther { get; set; }
         //building_insulation_thickness
         [Display(Name = "Grubość docieplenia [cm]")]
         public double InsulationThickness { get; set; }
+        [Display(Name = "Technologia wykonania")]
         //build_technology
         public BuildTechnologyType TechnologyType { get; set;        }
 

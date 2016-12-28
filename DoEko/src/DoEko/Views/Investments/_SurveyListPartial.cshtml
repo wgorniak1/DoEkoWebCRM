@@ -13,6 +13,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Status)
                 </th>
+                <th>Ostatnia zmiana</th>
                 <th>
                     @Html.DisplayNameFor(model => model.IsPaid)
                 </th>
@@ -46,6 +47,7 @@
                 <td>
                     @item.Status.DisplayName()
                 </td>
+                <td>@Html.DisplayFor(modelitem => item.ChangedAt)</td>
                 <td>
                     @if (item.IsPaid)
                     {
@@ -61,18 +63,97 @@
                 </td>
                 <td>
                     <div class="pull-right">
-                        <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
-                           class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-eye-open"></span>
-                        </a>
                         @*<a asp-action="Edit"    asp-controller="Surveys" asp-route-id="@item.SurveyId"
                             class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-pencil"></span> 
                         </a>*@
-                        <a asp-action="Cancel"  asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                        @*<a asp-action="Cancel"  asp-controller="Surveys" asp-route-id="@item.SurveyId"
                             class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-ban-circle"></span>
-                        </a>
+                        </a>*@
+                        @switch (item.Status)
+                        {
+                            case SurveyStatus.New:
+                                <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                                   class="btn btn-default btn-sm">
+                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                </a>
+                                <button class="btn btn-default btn-sm"
+                                        data-toggle="modal"
+                                        data-target="#SrvCancelModal"
+                                        data-survey-id="@item.SurveyId"
+                                        type="button">
+                                    <span class="glyphicon glyphicon-ban-circle"></span>
+                                </button>
+                                break;
+                            case SurveyStatus.Draft:
+                                <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                                   class="btn btn-default btn-sm" title="Edytuj ankietę">
+                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                </a>
+                                <button class="btn btn-default btn-sm"
+                                        data-toggle="modal"
+                                        data-target="#SrvCancelModal"
+                                        data-survey-id="@item.SurveyId"
+                                        type="button"
+                                        title="Anuluj Ankietę">
+                                    <span class="glyphicon glyphicon-ban-circle"></span>
+                                </button>
+                                <button class="btn btn-default btn-sm"
+                                        data-toggle="modal"
+                                        data-target="#SrvSubmitModal"
+                                        data-survey-id="@item.SurveyId"
+                                        type="button"
+                                        title="Zakończ wprowadzanie
+(Wyślij do akceptacji)">
+                                    <span class="glyphicon glyphicon-send"></span>
+                                </button>
+                                break;
+                            case SurveyStatus.Approval:
+                                if (User.IsInRole(Roles.Admin))
+                                {
+                                    <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                                       class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                    </a>
+                                    <button class="btn btn-default btn-sm"
+                                            data-toggle="modal"
+                                            data-target="#SrvApprovalModal"
+                                            data-survey-id="@item.SurveyId"
+                                            type="button"
+                                            title="Zatwierdź ankietę">
+                                        <span class="glyphicon glyphicon-ok-circle"></span>
+                                    </button>
+                                    <button class="btn btn-default btn-sm"
+                                            data-toggle="modal"
+                                            data-target="#SrvRejectModal"
+                                            data-survey-id="@item.SurveyId"
+                                            type="button"
+                                            title="Odrzuć ankietę">
+                                        <span class="glyphicon glyphicon-remove-circle"></span>
+                                    </button>
+
+                                }
+                                break;
+                            case SurveyStatus.Rejected:
+                                <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                                   class="btn btn-default btn-sm">
+                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                </a>
+                                break;
+                            case SurveyStatus.Approved:
+                                break;
+                            case SurveyStatus.Cancelled:
+                                if (User.IsInRole(Roles.Admin))
+                                {
+                                    <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
+                                       class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                    </a>
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     </div>
                 </td>
             </tr>

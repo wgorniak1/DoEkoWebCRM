@@ -53,18 +53,18 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="form-group-sm">
-                    <label asp-for="Investment.TotalArea" class="control-label"></label>
-                    <input asp-for="Investment.TotalArea" class="form-control" />
-                    <span class="help-block"></span>
-                    <span asp-validation-for="Investment.TotalArea" class="text-danger" />
-                </div>
-            </div>
-            <div class="col-sm-3">
-                <div class="form-group-sm">
                     <label asp-for="Investment.UsableArea" class="control-label"></label>
                     <input asp-for="Investment.UsableArea" class="form-control" />
                     <span class="help-block"></span>
                     <span asp-validation-for="Investment.UsableArea" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.TotalArea" class="control-label"></label>
+                    <input asp-for="Investment.TotalArea" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.TotalArea" class="text-danger" />
                 </div>
             </div>
             <div class="col-sm-3">
@@ -86,15 +86,15 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <div class="form-group-sm">
-                    <label asp-for="Building.WallMaterial" class="control-label"></label>
-                    <select asp-for="Building.WallMaterial" asp-items="Html.GetEnumSelectList(typeof(WallMaterial))" class="form-control"></select>
+                    <label asp-for="Building.WallMaterialOther" class="control-label"></label>
+                    <input asp-for="Building.WallMaterialOther" class="form-control" />
                     <span class="help-block"></span>
-                    <span asp-validation-for="Building.WallMaterial" class="text-danger" />
+                    <span asp-validation-for="Building.WallMaterialOther" class="text-danger" />
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <div class="form-group-sm">
                     <label asp-for="Building.WallThickness" class="control-label"></label>
                     <input asp-for="Building.WallThickness" class="form-control" />
@@ -102,13 +102,33 @@
                     <span asp-validation-for="Building.WallThickness" class="text-danger" />
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <div class="form-group-sm">
                     <label asp-for="Building.InsulationType" class="control-label"></label>
-                    <select asp-for="Building.InsulationType" asp-items="Html.GetEnumSelectList(typeof(InsulationType))" class="form-control"></select>
+                    <select asp-for="Building.InsulationType" asp-items="Html.GetEnumSelectList(typeof(InsulationType))" class="form-control insulationtype"></select>
                     <span class="help-block"></span>
                     <span asp-validation-for="Building.InsulationType" class="text-danger" />
                 </div>
+            </div>
+            <div class="col-sm-2">
+            @if (Model.Building != null && Model.Building.InsulationType == InsulationType.Ins_3)
+            {
+                <div class="form-group-sm insulationtype-other" >
+                    <label asp-for="Building.InsulationTypeOther" class="control-label"></label>
+                    <input asp-for="Building.InsulationTypeOther" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Building.InsulationTypeOther" class="text-danger" />
+                </div>
+            }
+            else
+            {
+                <div class="form-group-sm insulationtype-other" style="display:none;">
+                    <label asp-for="Building.InsulationTypeOther" class="control-label"></label>
+                    <input asp-for="Building.InsulationTypeOther" class="form-control"/>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Building.InsulationTypeOther" class="text-danger" />
+                </div>
+            }
             </div>
             <div class="col-sm-3">
                 <div class="form-group-sm">
@@ -139,7 +159,31 @@
             <div class="col-sm-3">
                 <div class="form-group-sm">
                     <label asp-for="Investment.InternetAvailable" class="control-label"></label>
-                    <input asp-for="Investment.InternetAvailable" class="form-control" />
+                    <input asp-for="Investment.InternetAvailable" hidden />
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Investment != null && Model.Investment.InternetAvailable)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="InternetAvail" class="optionbutton-true" data-linked-checkbox="Investment.InternetAvailable" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="InternetAvail" class="optionbutton-false" data-linked-checkbox="Investment.InternetAvailable">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="InternetAvail" class="optionbutton-true" data-linked-checkbox="Investment.InternetAvailable">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="InternetAvail" class="optionbutton-false" data-linked-checkbox="Investment.InternetAvailable" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>                    
                     <span class="help-block"></span>
                     <span asp-validation-for="Investment.InternetAvailable" class="text-danger" />
                 </div>

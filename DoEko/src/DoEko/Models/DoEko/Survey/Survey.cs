@@ -71,16 +71,18 @@ namespace DoEko.Models.DoEko.Survey
     public enum SurveyCancelType
     {
         [Display(Name = "Przed inspekcją")]
-        Before,
+        Before = 1,
         [Display(Name = "Po inspekcji")]
         After,
         [Display(Name = "Instalacja niemożliwa")]
         NotPossible,
         [Display(Name = "Brak kontaktu z właścicielem")]
-        NoContact
+        NoContact,
+        [Display(Name = "Błąd - niezamawiane źródło")]
+        TechnicalIssue
     }
 
-    
+
 
 
     [Table(nameof(Survey))]
@@ -105,6 +107,9 @@ namespace DoEko.Models.DoEko.Survey
         [EnumDataType(typeof(SurveyStatus), ErrorMessage = "Błąd model")]
         [Display(Description = "Status inspekcji", Name = "Status inspekcji", ShortName = "Status ins.")]
         public SurveyStatus Status { get; set; }
+        [Display(Description = "Pole może służyć do przekazania dodatkowych informacji przy odrzucaniu ankiety", Name = "Uwagi", ShortName = "Uwagi")]
+        public string RejectComments { get; set; }
+
         /// <summary>
         /// 
         /// </summary>

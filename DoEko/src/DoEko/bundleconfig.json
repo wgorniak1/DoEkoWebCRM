@@ -44,5 +44,17 @@
     "inputFiles": [
       "wwwroot/js/Survey.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/InvestmentList.min.js",
+    "inputFiles": [
+      "wwwroot/js/InvestmentList.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/InvestmentDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/InvestmentDetails.js"
+    ]
   }
 ]

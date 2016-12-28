@@ -52,18 +52,18 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="form-group-sm">
-                    <label asp-for="Investment.TotalArea" class="control-label"></label>
-                    <input asp-for="Investment.TotalArea" class="form-control" />
-                    <span class="help-block"></span>
-                    <span asp-validation-for="Investment.TotalArea" class="text-danger" />
-                </div>
-            </div>
-            <div class="col-sm-3">
-                <div class="form-group-sm">
                     <label asp-for="Investment.UsableArea" class="control-label"></label>
                     <input asp-for="Investment.UsableArea" class="form-control" />
                     <span class="help-block"></span>
                     <span asp-validation-for="Investment.UsableArea" class="text-danger" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group-sm">
+                    <label asp-for="Investment.TotalArea" class="control-label"></label>
+                    <input asp-for="Investment.TotalArea" class="form-control" />
+                    <span class="help-block"></span>
+                    <span asp-validation-for="Investment.TotalArea" class="text-danger" />
                 </div>
             </div>
             <div class="col-sm-3">
@@ -87,7 +87,31 @@
             <div class="col-sm-3">
                 <div class="form-group-sm">
                     <label asp-for="Investment.InternetAvailable" class="control-label"></label>
-                    <input asp-for="Investment.InternetAvailable" class="form-control" />
+                    <input asp-for="Investment.InternetAvailable" hidden />
+                    <div class="btn-group-sm" data-toggle="buttons">
+                        @if (Model.Investment != null && Model.Investment.InternetAvailable)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="InternetAvail" class="optionbutton-true" data-linked-checkbox="Investment.InternetAvailable" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="InternetAvail" class="optionbutton-false" data-linked-checkbox="Investment.InternetAvailable">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="InternetAvail" class="optionbutton-true" data-linked-checkbox="Investment.InternetAvailable">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="InternetAvail" class="optionbutton-false" data-linked-checkbox="Investment.InternetAvailable" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
                     <span class="help-block"></span>
                     <span asp-validation-for="Investment.InternetAvailable" class="text-danger" />
                 </div>

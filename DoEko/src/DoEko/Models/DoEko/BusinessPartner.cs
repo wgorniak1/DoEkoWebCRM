@@ -34,7 +34,7 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
-        [Required(ErrorMessage = "{0} jest polem obowiązkowym")]
+        //[Required(ErrorMessage = "{0} jest polem obowiązkowym")]
         [DataType(DataType.EmailAddress)]
         [EmailAddress(ErrorMessage = "Proszę podać prawidłowy adres e-mail")]
         [Display(Description = "", Name = "Adres e-mail", ShortName = "E-mail")]
@@ -56,5 +56,8 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Display(Description = "", Name = "Właściciel", ShortName = "Właściciel")]
         public virtual ICollection<InvestmentOwner> InvestmentOwners { get; set; }
+
+        public string PartnerName1 { get; set; }
+        public string PartnerName2 { get; set; }
     }
 }

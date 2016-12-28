@@ -384,16 +384,18 @@ namespace DoEko.Controllers
             CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Project);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
             var ContainerBlockBlobs = Container.ListBlobs(prefix: id.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
-            List<File> FileList = new List<File>();
+            List<File> FileList = new List<File>(10); //each row represent different picture type
 
             foreach (var BlockBlob in ContainerBlockBlobs)
             {
-                FileList.Add(new File
-                {
-                    Name = WebUtility.UrlDecode(BlockBlob.Uri.Segments.Last()),
-                    ChangedAt = BlockBlob.Properties.LastModified.Value.LocalDateTime,
-                    Url = BlockBlob.Uri.ToString()
-                });
+                var name = BlockBlob.Name;
+                //FileList.Add(new File
+                //{
+                //    Name = WebUtility.UrlDecode(BlockBlob.Uri.Segments.Last()),
+                //    ChangedAt = BlockBlob.Properties.LastModified.Value.LocalDateTime,
+                //    Url = BlockBlob.Uri.ToString(),
+                    
+                //});
             };
             return FileList;
 
