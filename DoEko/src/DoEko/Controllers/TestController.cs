@@ -72,6 +72,10 @@ namespace DoEko.Controllers
                     continue;
                 }
                 var srvId = Guid.Parse(partNames[2]);
+                if (srvId == Guid.Empty)
+                {
+                    continue;
+                }
                 //2= guid / 1 = pictureid / 0 = filename
                 try
                 {
@@ -108,6 +112,10 @@ namespace DoEko.Controllers
                 var srvIds = _context.Surveys.Where(s => s.InvestmentId == invId).Select(s=>s.SurveyId).ToArray();
                 foreach (var srvId in srvIds)
                 {
+                    if (srvId == Guid.Empty)
+                    {
+                        continue;
+                    }
                     try
                     {
                         modelItem = model.Single(m => m.Survey.SurveyId == srvId);
@@ -342,6 +350,7 @@ namespace DoEko.Controllers
 
         private Survey GetSurvey(Guid id)
         {
+
             SurveyType type = _context.Surveys.Where(s => s.SurveyId == id).Select(s => s.Type).First();
 
             switch (type)
