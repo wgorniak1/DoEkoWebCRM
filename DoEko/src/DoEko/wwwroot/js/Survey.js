@@ -40,7 +40,7 @@ function onCHTypeChange() {
         $(".centralheating-other").hide();
         $(".centralheating-fuel").hide();
     }
-    else if (type === '8'){
+    else if (type === '9'){
         $(".centralheating-other").show();
         $(".centralheating-fuel").show();
     }

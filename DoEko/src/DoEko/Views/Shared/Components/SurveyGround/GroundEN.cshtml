@@ -1,5 +1,6 @@
 ﻿@model DoEko.Models.DoEko.Survey.SurveyDetGround
 @using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
 
 <form id="SurveyGround"
       asp-action="EditGroundAjax"
@@ -18,51 +19,167 @@
             <div class="col-sm-4">
                 <div class="form-group-sm">
                     <label asp-for="WetLand" class="control-label"></label>
-                    <input asp-for="WetLand" class="form-control" />
+                    <input asp-for="WetLand" class="form-control" type="hidden" />
+                    <span class="help-block"></span>
+                    <div class="btn-group" data-toggle="buttons">
+                        @if (Model.WetLand)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="WetLand" class="optionbutton-true" data-linked-checkbox="WetLand" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="WetLand" class="optionbutton-false" data-linked-checkbox="WetLand">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="WetLand" class="optionbutton-true" data-linked-checkbox="WetLand">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="WetLand" class="optionbutton-false" data-linked-checkbox="WetLand" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
                     <span asp-validation-for="WetLand" class="text-danger" />
                 </div>
             </div>
+
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="Rocks" class="control-label"></label>
+                    <input asp-for="Rocks" class="form-control" type="hidden" />
+                    <span class="help-block"></span>
+                    <div class="btn-group" data-toggle="buttons">
+
+                        @if (Model.Rocks)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Rocks" class="optionbutton-true" data-linked-checkbox="Rocks" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="Rocks" class="optionbutton-false" data-linked-checkbox="Rocks">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="Rocks" class="optionbutton-true" data-linked-checkbox="Rocks">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="Rocks" class="optionbutton-false" data-linked-checkbox="Rocks" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                    <span asp-validation-for="Rocks" class="text-danger" />
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group-sm">
+                    <label asp-for="FormerMilitary" class="control-label"></label>
+                    <input asp-for="FormerMilitary" class="form-control" type="hidden" />
+                    <span class="help-block"></span>
+                    <div class="btn-group" data-toggle="buttons">
+
+                        @if (Model.FormerMilitary)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="FormerMilitary" class="optionbutton-true" data-linked-checkbox="FormerMilitary" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="FormerMilitary" class="optionbutton-false" data-linked-checkbox="FormerMilitary">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="FormerMilitary" class="optionbutton-true" data-linked-checkbox="FormerMilitary">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="FormerMilitary" class="optionbutton-false" data-linked-checkbox="FormerMilitary" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
+                    <span asp-validation-for="FormerMilitary" class="text-danger" />
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
             <div class="col-sm-4">
                 <div class="form-group-sm">
                     <label asp-for="OtherInstallation" class="control-label"></label>
-                    <input asp-for="OtherInstallation" class="form-control" />
+                    <input asp-for="OtherInstallation" class="form-control" type="hidden" />
+                    <span class="help-block"></span>
+                    <div class="btn-group" data-toggle="buttons">
+
+                        @if (Model.OtherInstallation)
+                        {
+                            <label class="btn btn-default active">
+                                <input type="radio" name="OtherInstallation" class="optionbutton-true" data-linked-checkbox="OtherInstallation" data-link-show-element="#otherinstallationtype" checked>
+                                Tak
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="OtherInstallation" class="optionbutton-false" data-linked-checkbox="OtherInstallation" data-link-hide-element="#otherinstallationtype">
+                                Nie
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="btn btn-default">
+                                <input type="radio" name="OtherInstallation" class="optionbutton-true" data-linked-checkbox="OtherInstallation" data-link-show-element="#otherinstallationtype">
+                                Tak
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="radio" name="OtherInstallation" class="optionbutton-false" data-linked-checkbox="OtherInstallation" data-link-hide-element="#otherinstallationtype" checked>
+                                Nie
+                            </label>
+                        }
+                    </div>
                     <span asp-validation-for="OtherInstallation" class="text-danger" />
                 </div>
             </div>
-            <div class="col-sm-4">
+            @{
+                string css = "col-sm-4 collapse";
+                if (Model.OtherInstallation)
+                {
+                    css = css + " in";
+                }
+            }
+            <div id="otherinstallationtype" class="@css">
                 <div class="form-group-sm">
                     <label asp-for="OtherInstallationType" class="control-label"></label>
                     <input asp-for="OtherInstallationType" class="form-control" />
                     <span asp-validation-for="OtherInstallationType" class="text-danger" />
                 </div>
             </div>
-            <div class="col-sm-4">
-                <div class="form-group-sm">
-                    <label asp-for="Rocks" class="control-label"></label>
-                    <input asp-for="Rocks" class="form-control" />
-                    <span asp-validation-for="Rocks" class="text-danger" />
-                </div>
-            </div>
         </div>
         <div class="row">
             <div class="col-sm-4">
                 <div class="form-group-sm">
-                    <label asp-for="FormerMilitary" class="control-label"></label>
-                    <input asp-for="FormerMilitary" class="form-control" />
-                    <span asp-validation-for="FormerMilitary" class="text-danger" />
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="form-group-sm">
                     <label asp-for="SlopeTerrain" class="control-label"></label>
-                    <input asp-for="SlopeTerrain" class="form-control" />
+                    <select asp-for="SlopeTerrain" asp-items="Html.GetEnumSelectList(typeof(SlopeTerrain))" class="form-control"></select>
                     <span asp-validation-for="SlopeTerrain" class="text-danger" />
                 </div>
             </div>
             <div class="col-sm-4">
                 <div class="form-group-sm">
                     <label asp-for="Area" class="control-label"></label>
-                    <input asp-for="Area" class="form-control" />
+                    <input asp-for="Area" class="form-control" type="number" />
                     <span asp-validation-for="Area" class="text-danger" />
                 </div>
             </div>

@@ -83,6 +83,8 @@ namespace DoEko.Models.DoEko
         FirePlace2,
         [Display(Name = "Pompa ciepła")]
         HeatPump,
+        [Display(Name = "Piec na paliwo stałe")]
+        CoalFuealHeater,
         [Display(Name = "Inne")]
         Other
     }

@@ -64,17 +64,20 @@ namespace DoEko.Controllers
                     //calculate investment
                     Guid srvid = Guid.Parse(partNames[2]);
                     Guid invid = await _context.Surveys.Where(s => s.SurveyId == srvid).Select(s => s.InvestmentId).SingleAsync();
-                    partNames[2] = invid.ToString();
-
-                    string targetName = partNames[2] + '/' + partNames[1] + '/' + partNames[0];
-
-                    CloudBlockBlob targetBlob = ContainerInv.GetBlockBlobReference(targetName);
-                    targetBlob.StartCopy(BlockBlob);
-                    while (targetBlob.CopyState.Status != CopyStatus.Success)
+                    if (invid != Guid.Empty)
                     {
-                        //
+                        partNames[2] = invid.ToString();
+
+                        string targetName = partNames[2] + '/' + partNames[1] + '/' + partNames[0];
+
+                        CloudBlockBlob targetBlob = ContainerInv.GetBlockBlobReference(targetName);
+                        targetBlob.StartCopy(BlockBlob);
+                        while (targetBlob.CopyState.Status != CopyStatus.Success)
+                        {
+                            //
+                        }
+                        BlockBlob.Delete();
                     }
-                    BlockBlob.Delete();
                 }
             };
 
