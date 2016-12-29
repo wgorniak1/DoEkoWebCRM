@@ -1,0 +1,75 @@
+﻿@model IList<DoEko.ViewModels.TestViewModels.ListPhotosViewModel>
+@using DoEko.Models.DoEko.Survey
+@using DoEko.Controllers.Extensions
+@{
+    ViewData["Title"] = "Lista Zdjęć w ankietach";
+}
+
+<h2>Lista Zdjęć</h2>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="row"><div class="col-sm-12">Umowa</div></div>
+        <div class="row"><div class="col-sm-12">Inwestycja</div></div>
+        <div class="row"><div class="col-sm-12">Ankieta</div></div>
+    </div>
+    <div class="col-sm-6">Zdjęcia</div>
+</div>
+@foreach (var item in Model)
+{
+    int i = 1;
+    string background = "";
+    @if (( i % 2 ) == 0)
+    { background = "background-color: #eaeaea;"; }
+    else { background = "background-color: #ffffff;"; }
+    <div class="row thumbnail" style="@background">
+        <div class="col-sm-4">
+            <div class="row">
+                <div class="col-sm-4"><label class="control-label">Umowa:</label></div>
+                <div class="col-sm-8"><p class="form-control-static">@item.Survey.Investment.Contract.ShortDescription</p></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><label class="control-label">Inwestycja:</label></div>
+                <div class="col-sm-8"><p class="form-control-static">@item.Survey.Investment.Address.SingleLine</p></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><label class="control-label">Inwestycja:</label></div>
+                <div class="col-sm-8">
+                    <p class="form-control-static">
+                        @item.Survey.Type.DisplayName() |
+                        @switch (item.Survey.Type)
+                        {
+                            case DoEko.Models.DoEko.Survey.SurveyType.CentralHeating:
+                                @(((SurveyCentralHeating)item.Survey).RSEType.DisplayName())
+                                break;
+                            case DoEko.Models.DoEko.Survey.SurveyType.HotWater:
+                                @(((SurveyHotWater)item.Survey).RSEType.DisplayName())
+                                break;
+                            case DoEko.Models.DoEko.Survey.SurveyType.Energy:
+                                @(((SurveyEnergy)item.Survey).RSEType.DisplayName())
+                                break;
+                            default:
+                                break;
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            @foreach (var att in item.Attachments)
+            {
+                <div class="row">
+                    <div class="col-sm-4">@att.Value.PictureId</div>
+                    <div class="col-sm-4">@att.Value.FileName</div>
+                    <div class="col-sm-4">
+                        <a href="@att.Value.Url" target="_blank" style="cursor:pointer">
+                            <img src="" data-image-src="@att.Value.Url" 
+                                 style="width:auto; max-height:50px;" 
+                                 class="img-thumbnail wg-image-placeholder image-lazy-loading" />
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

@@ -49,6 +49,91 @@ namespace DoEko.Controllers
             return View();
         }
         [HttpGet]
+        public async Task<IActionResult> ListPhotos()
+        {
+            //disable change tracking
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            IList<ListPhotosViewModel> model = new List<ListPhotosViewModel>();
+            ListPhotosViewModel modelItem;
+
+            //read photos from azurestorage
+            CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+            var SurveyBlockBlobs = ContainerSrv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
+            var InvestBlockBlobs = ContainerInv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+            //collect additional information
+            foreach (var BlockBlob in SurveyBlockBlobs)
+            {
+                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
+                if (partNames.Length < 3)
+                {
+                    continue;
+                }
+                var srvId = Guid.Parse(partNames[2]);
+                //2= guid / 1 = pictureid / 0 = filename
+                try
+                {
+                    modelItem = model.Single(m => m.Survey.SurveyId == srvId);
+                }
+                catch (Exception)
+                {
+                    modelItem = new ListPhotosViewModel(GetSurvey(srvId));
+                    model.Add(modelItem);
+                }
+
+                modelItem.Attachments.Add(partNames[1], new SurveyAttachment()
+                {
+                    FileName = partNames[0],
+                    PictureId = partNames[1],
+                    Url = BlockBlob.Uri.ToString()
+                });
+            };
+
+            SurveyBlockBlobs = null;
+            SurveyBlockBlobs = null;
+            ContainerSrv = null;
+
+            foreach (var BlockBlob in InvestBlockBlobs)
+            {
+                //2= guid / 1 = pictureid / 0 = filename
+                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
+                if (partNames.Length < 3)
+                {
+                    continue;
+                }
+
+                var invId = Guid.Parse(partNames[2]);
+                var srvIds = _context.Surveys.Where(s => s.InvestmentId == invId).Select(s=>s.SurveyId).ToArray();
+                foreach (var srvId in srvIds)
+                {
+                    try
+                    {
+                        modelItem = model.Single(m => m.Survey.SurveyId == srvId);
+                    }
+                    catch (Exception)
+                    {
+                        modelItem = new ListPhotosViewModel(GetSurvey(srvId));
+                        model.Add(modelItem);
+                    }
+                    modelItem.Attachments.Add(partNames[1],new SurveyAttachment()
+                    {
+                        FileName = partNames[0],
+                        PictureId = partNames[1],
+                        Url = BlockBlob.Uri.ToString()
+                    });
+                }
+            };
+            //return view
+            model
+                .OrderBy(m => m.Survey.Investment.Contract.ShortDescription)
+                .ThenBy(m => m.Survey.Investment.Address.SingleLine)
+                .ThenBy(m => m.Survey.Type);
+            TempData["model"] = model;
+            return View(model);
+        }
+        [HttpGet]
         public async Task<ActionResult> PhotosAdjust()
         {
             CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
@@ -253,6 +338,64 @@ namespace DoEko.Controllers
                 .Single(s => s.SurveyId == Guid.Parse("386c6b9a-fb0c-4aa1-a7b7-00e751deb8b6"));
 
             return View(srv.BoilerRoom);
+        }
+
+        private Survey GetSurvey(Guid id)
+        {
+            SurveyType type = _context.Surveys.Where(s => s.SurveyId == id).Select(s => s.Type).First();
+
+            switch (type)
+            {
+                case SurveyType.CentralHeating:
+                    return _context.SurveysCH
+                        .Select(s => new SurveyCentralHeating {
+                            SurveyId = s.SurveyId,
+                            Type = s.Type,
+                            RSEType = s.RSEType,
+                            Investment = new Investment {
+                                Address = s.Investment.Address,
+                                Contract = new Contract {
+                                    ShortDescription = s.Investment.Contract.ShortDescription
+                                }
+                            }
+                        })
+                        .Single(s => s.SurveyId == id);
+                case SurveyType.HotWater:
+                    return _context.SurveysHW
+                        .Select(s => new SurveyHotWater
+                        {
+                            SurveyId = s.SurveyId,
+                            Type = s.Type,
+                            RSEType = s.RSEType,
+                            Investment = new Investment
+                            {
+                                Address = s.Investment.Address,
+                                Contract = new Contract
+                                {
+                                    ShortDescription = s.Investment.Contract.ShortDescription
+                                }
+                            }
+                        }).Single(s => s.SurveyId == id);
+                case SurveyType.Energy:
+                    return _context.SurveysEN
+                        .Select(s => new SurveyEnergy
+                        {
+                            SurveyId = s.SurveyId,
+                            Type = s.Type,
+                            RSEType = s.RSEType,
+                            Investment = new Investment
+                            {
+                                Address = s.Investment.Address,
+                                Contract = new Contract
+                                {
+                                    ShortDescription = s.Investment.Contract.ShortDescription
+                                }
+                            }
+                        })
+                        .Single(s => s.SurveyId == id);
+                default:
+                    return null;
+            }
         }
     }
 }
