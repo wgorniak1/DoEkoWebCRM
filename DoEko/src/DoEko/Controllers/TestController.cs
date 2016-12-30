@@ -87,12 +87,19 @@ namespace DoEko.Controllers
                     model.Add(modelItem);
                 }
 
-                modelItem.Attachments.Add(partNames[1], new SurveyAttachment()
+                try
                 {
-                    FileName = partNames[0],
-                    PictureId = partNames[1],
-                    Url = BlockBlob.Uri.ToString()
-                });
+                    modelItem.Attachments.Add(partNames[1], new SurveyAttachment()
+                    {
+                        FileName = partNames[0],
+                        PictureId = partNames[1],
+                        Url = BlockBlob.Uri.ToString()
+                    });
+                }
+                catch (Exception)
+                {
+                    
+                }
             };
 
             SurveyBlockBlobs = null;
@@ -125,12 +132,19 @@ namespace DoEko.Controllers
                         modelItem = new ListPhotosViewModel(GetSurvey(srvId));
                         model.Add(modelItem);
                     }
-                    modelItem.Attachments.Add(partNames[1],new SurveyAttachment()
+                    try
                     {
-                        FileName = partNames[0],
-                        PictureId = partNames[1],
-                        Url = BlockBlob.Uri.ToString()
-                    });
+                        modelItem.Attachments.Add(partNames[1],new SurveyAttachment()
+                        {
+                            FileName = partNames[0],
+                            PictureId = partNames[1],
+                            Url = BlockBlob.Uri.ToString()
+                        });
+
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
             };
             //return view

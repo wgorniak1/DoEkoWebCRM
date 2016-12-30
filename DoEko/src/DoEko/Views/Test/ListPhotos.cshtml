@@ -26,16 +26,16 @@
         <div class="col-sm-4">
             <div class="row">
                 <div class="col-sm-4"><label class="control-label">Umowa:</label></div>
-                <div class="col-sm-8"><p class="form-control-static">@item.Survey.Investment.Contract.ShortDescription</p></div>
+                <div class="col-sm-8">@item.Survey.Investment.Contract.ShortDescription</div>
             </div>
             <div class="row">
                 <div class="col-sm-4"><label class="control-label">Inwestycja:</label></div>
-                <div class="col-sm-8"><p class="form-control-static">@item.Survey.Investment.Address.SingleLine</p></div>
+                <div class="col-sm-8">@item.Survey.Investment.Address.SingleLine</div>
             </div>
             <div class="row">
-                <div class="col-sm-4"><label class="control-label">Inwestycja:</label></div>
+                <div class="col-sm-4"><label class="control-label">Źródło:</label></div>
                 <div class="col-sm-8">
-                    <p class="form-control-static">
+                    
                         @item.Survey.Type.DisplayName() |
                         @switch (item.Survey.Type)
                         {
@@ -51,7 +51,6 @@
                             default:
                                 break;
                         }
-                    </p>
                 </div>
             </div>
         </div>
@@ -63,9 +62,10 @@
                     <div class="col-sm-4">@att.Value.FileName</div>
                     <div class="col-sm-4">
                         <a href="@att.Value.Url" target="_blank" style="cursor:pointer">
-                            <img src="" data-image-src="@att.Value.Url" 
+                            @att.Value.FileName
+                            @*<img src="" data-image-src="@att.Value.Url" 
                                  style="width:auto; max-height:50px;" 
-                                 class="img-thumbnail wg-image-placeholder image-lazy-loading" />
+                                 class="img-thumbnail wg-image-placeholder image-lazy-loading" />*@
                         </a>
                     </div>
                 </div>
