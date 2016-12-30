@@ -5,7 +5,13 @@
 @{
     BusinessPartnerPerson PersonOwner;
 }
-
+@{ 
+    string LinkClasses = "btn btn-sm btn-default";
+    if (ViewBag.ViewMode == true)
+    {
+        LinkClasses = LinkClasses + " disabled";
+    }
+}
 <div class="table-responsive">
     <table class="table table-condensed table-hover">
         <thead>
@@ -39,24 +45,38 @@
                 <td>@PersonOwner.Email</td>
                 <td>@PersonOwner.PhoneNumber</td>
                 <td>
-                    @Html.Partial("../Shared/Address/_AddressDetailPartial", PersonOwner)
+                    @PersonOwner.Address.FirstLine 
+                    <br/>
+                    @PersonOwner.Address.SecondLine
                 </td>
                 <td>
-                    <a asp-action="Edit"    asp-controller="InvestmentOwners" 
-                       asp-route-Investmentid="@item.InvestmentId"
-                       asp-route-Ownerid="@item.OwnerId">
-                        <span class="glyphicon glyphicon-pencil"></span> 
-                    </a>|
-                    <a asp-action="Details" asp-controller="InvestmentOwners" 
-                       asp-route-Investmentid="@item.InvestmentId"
-                       asp-route-Ownerid="@item.OwnerId">
-                        <span class="glyphicon glyphicon-eye-open"></span>
-                    </a>|
-                    <a asp-action="Delete"  asp-controller="InvestmentOwners" 
-                       asp-route-Investmentid="@item.InvestmentId"
-                       asp-route-Ownerid="@item.OwnerId">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </a>
+                    <div class="btn-toolbar pull-right">
+                        <a class="@LinkClasses"
+                           title="Edytuj dane właściciela"
+                           asp-action="Edit"    
+                           asp-controller="InvestmentOwners" 
+                           asp-route-Investmentid="@item.InvestmentId"
+                           asp-route-Ownerid="@item.OwnerId">
+                            <span class="glyphicon glyphicon-pencil"></span> 
+                        </a>
+                        <a class="@LinkClasses"
+                           title="Podgląd szczegółów właściciela"
+                           asp-action="Details" asp-controller="InvestmentOwners" 
+                           asp-route-Investmentid="@item.InvestmentId"
+                           asp-route-Ownerid="@item.OwnerId">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </a>
+                        @if (Model.Count() != 1)
+	                    {
+                            <a class="@LinkClasses"
+                               title="Usuń właściciela"
+                               asp-action="Delete"  asp-controller="InvestmentOwners" 
+                               asp-route-Investmentid="@item.InvestmentId"
+                               asp-route-Ownerid="@item.OwnerId">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+	                    }
+                    </div>
                 </td>
             </tr>
     }

@@ -46,15 +46,36 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/js/InvestmentList.min.js",
     "inputFiles": [
       "wwwroot/js/InvestmentList.js"
-    ]
+    ],
+    "outputFileName": "wwwroot/js/InvestmentList.min.js"
   },
   {
     "outputFileName": "wwwroot/js/InvestmentDetails.min.js",
     "inputFiles": [
       "wwwroot/js/InvestmentDetails.js"
     ]
+  },
+  {
+    "inputFiles": [
+      "wwwroot/js/InvestmentListUnassigned.js"
+    ],
+    "outputFileName": "wwwroot/js/InvestmentListUnassigned.min.js"
+  },
+  {
+    "inputFiles": [
+      "wwwroot/js/ValidationFixes.js"
+    ],
+    "outputFileName": "wwwroot/js/ValidationFixes.min.js"
+  },
+  {
+    "inputFiles": [
+      "wwwroot/js/ContractDelete.js"
+    ],
+    "outputFileName": "wwwroot/js/ContractDelete.min.js"
   }
+
+
+
 ]

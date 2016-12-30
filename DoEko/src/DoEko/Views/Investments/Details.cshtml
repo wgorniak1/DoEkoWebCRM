@@ -188,8 +188,6 @@ else
 }
 <!--Title-->
 <h2><small>Inwestycja</small> @Model.Address.SingleLine</h2>
-
-
 <div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
         <div class="panel-heading wg-panel-heading clearfix" 
@@ -204,12 +202,21 @@ else
             
             <h4 class="panel-title wg-panel-title pull-left">
                 Dane podstawowe
-            </h4>                
-
+            </h4>       
+            @{ 
+                string LinkClasses = "btn btn-primary btn-sm pull-right wg-panel-header-button";
+                if (Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Approved ||
+                    Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Completed ||
+                    Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted)
+                {
+                    LinkClasses = LinkClasses + " disabled";
+                    ViewBag.ViewMode = true;
+                }
+            }     
             <a asp-action="Edit" asp-controller="Investments"
                asp-route-Id="@Model.InvestmentId"
                asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-details")"
-               class="btn btn-primary btn-sm pull-right wg-panel-header-button"
+               class="@LinkClasses"
                title="Edytuj">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             </a>                       
@@ -240,7 +247,7 @@ else
                    asp-controller="InvestmentOwners"
                    asp-route-InvestmentId="@Model.InvestmentId"
                    asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-owners")"
-                   class="btn btn-primary btn-sm wg-panel-header-button">
+                   class="@LinkClasses">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </a>
             </div>
@@ -267,7 +274,7 @@ else
             </h4>
             <div class="btn-group pull-right">
                 @if (Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted ||
-                 Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Completed)
+                     Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Completed)
                 {
                     <button class="btn btn-primary btn-sm disabled"
                             type="button"
