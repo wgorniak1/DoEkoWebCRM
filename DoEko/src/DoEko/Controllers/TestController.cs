@@ -350,60 +350,95 @@ namespace DoEko.Controllers
 
         private Survey GetSurvey(Guid id)
         {
-
-            SurveyType type = _context.Surveys.Where(s => s.SurveyId == id).Select(s => s.Type).First();
-
-            switch (type)
+            
+            try
             {
-                case SurveyType.CentralHeating:
-                    return _context.SurveysCH
-                        .Select(s => new SurveyCentralHeating {
-                            SurveyId = s.SurveyId,
-                            Type = s.Type,
-                            RSEType = s.RSEType,
-                            Investment = new Investment {
-                                Address = s.Investment.Address,
-                                Contract = new Contract {
-                                    ShortDescription = s.Investment.Contract.ShortDescription
+                SurveyType type = _context.Surveys.Where(s => s.SurveyId == id).Select(s => s.Type).First();
+
+                switch (type)
+                {
+                    case SurveyType.CentralHeating:
+                        return _context.SurveysCH
+                            .Select(s => new SurveyCentralHeating {
+                                SurveyId = s.SurveyId,
+                                Type = s.Type,
+                                RSEType = s.RSEType,
+                                Investment = new Investment {
+                                    Address = s.Investment.Address,
+                                    Contract = new Contract {
+                                        ShortDescription = s.Investment.Contract.ShortDescription
+                                    }
                                 }
-                            }
-                        })
-                        .Single(s => s.SurveyId == id);
-                case SurveyType.HotWater:
-                    return _context.SurveysHW
-                        .Select(s => new SurveyHotWater
-                        {
-                            SurveyId = s.SurveyId,
-                            Type = s.Type,
-                            RSEType = s.RSEType,
-                            Investment = new Investment
+                            })
+                            .Single(s => s.SurveyId == id);
+                    case SurveyType.HotWater:
+                        return _context.SurveysHW
+                            .Select(s => new SurveyHotWater
                             {
-                                Address = s.Investment.Address,
-                                Contract = new Contract
+                                SurveyId = s.SurveyId,
+                                Type = s.Type,
+                                RSEType = s.RSEType,
+                                Investment = new Investment
                                 {
-                                    ShortDescription = s.Investment.Contract.ShortDescription
+                                    Address = s.Investment.Address,
+                                    Contract = new Contract
+                                    {
+                                        ShortDescription = s.Investment.Contract.ShortDescription
+                                    }
                                 }
-                            }
-                        }).Single(s => s.SurveyId == id);
-                case SurveyType.Energy:
-                    return _context.SurveysEN
-                        .Select(s => new SurveyEnergy
-                        {
-                            SurveyId = s.SurveyId,
-                            Type = s.Type,
-                            RSEType = s.RSEType,
-                            Investment = new Investment
+                            }).Single(s => s.SurveyId == id);
+                    case SurveyType.Energy:
+                        return _context.SurveysEN
+                            .Select(s => new SurveyEnergy
                             {
-                                Address = s.Investment.Address,
-                                Contract = new Contract
+                                SurveyId = s.SurveyId,
+                                Type = s.Type,
+                                RSEType = s.RSEType,
+                                Investment = new Investment
                                 {
-                                    ShortDescription = s.Investment.Contract.ShortDescription
+                                    Address = s.Investment.Address,
+                                    Contract = new Contract
+                                    {
+                                        ShortDescription = s.Investment.Contract.ShortDescription
+                                    }
                                 }
-                            }
-                        })
-                        .Single(s => s.SurveyId == id);
-                default:
-                    return null;
+                            })
+                            .Single(s => s.SurveyId == id);
+                    default:
+                        return null;
+                }
+            }
+            catch (Exception)
+            {
+                return new SurveyEnergy()
+                {
+                    SurveyId = id,
+                    Type = SurveyType.Energy,
+                    RSEType = SurveyRSETypeEnergy.PhotoVoltaic,
+                    Investment = new Investment()
+                    {
+                        Address = new Address()
+                        {
+                            BuildingNo = "0",
+                            City = "Brak",
+                            CommuneType = CommuneType.CityValley,
+                            CommuneId = 4,
+                            DistrictId = 1,
+                            StateId = 2,
+                            Commune = _context.Communes.Single(s => s.StateId == 2 && s.DistrictId == 1 && s.CommuneId == 4 && s.Type == CommuneType.CityValley),
+                            District = _context.Districts.Single(s => s.StateId == 2 && s.DistrictId == 1),
+                            State = _context.States.Single(s => s.StateId == 2),
+                            CountryId = 11,
+                            Country = _context.Countries.Single(c => c.CountryId == 11),
+                            PostalCode = "00-000",
+                            Street = "Brak"
+                        },
+                        Contract = new Contract()
+                        {
+                            ShortDescription = "Brak"
+                        }
+                    }
+                };
             }
         }
     }
