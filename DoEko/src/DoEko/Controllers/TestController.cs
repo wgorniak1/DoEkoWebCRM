@@ -213,7 +213,7 @@ namespace DoEko.Controllers
                         {
                             case SurveyRSETypeCentralHeating.HeatPump:
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -226,7 +226,7 @@ namespace DoEko.Controllers
                                 }
 
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -239,7 +239,7 @@ namespace DoEko.Controllers
                                 }
 
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -252,7 +252,7 @@ namespace DoEko.Controllers
                                 }
 
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -267,7 +267,7 @@ namespace DoEko.Controllers
                                 break;
                             case SurveyRSETypeCentralHeating.PelletBoiler:
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -280,7 +280,7 @@ namespace DoEko.Controllers
                                 }
 
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -295,7 +295,7 @@ namespace DoEko.Controllers
                                 break;
                             case SurveyRSETypeCentralHeating.HeatPumpAir:
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -307,7 +307,7 @@ namespace DoEko.Controllers
                                     myExport["LinkZdj"] = photo.Url;
                                 }
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -319,7 +319,7 @@ namespace DoEko.Controllers
                                     myExport["LinkZdj"] = photo.Url;
                                 }
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -340,7 +340,7 @@ namespace DoEko.Controllers
                         {
                             case SurveyRSETypeHotWater.Solar:
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -352,7 +352,7 @@ namespace DoEko.Controllers
                                     myExport["LinkZdj"] = photo.Url;
                                 }
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -364,7 +364,7 @@ namespace DoEko.Controllers
                                     myExport["LinkZdj"] = photo.Url;
                                 }
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -379,7 +379,7 @@ namespace DoEko.Controllers
                                 break;
                             case SurveyRSETypeHotWater.HeatPump:
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -391,7 +391,7 @@ namespace DoEko.Controllers
                                     myExport["LinkZdj"] = photo.Url;
                                 }
                                 myExport.AddRow();
-                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                                 myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                                 myExport["Zrodlo"] = source;
                                 myExport["Inspektor"] = inspector;
@@ -409,7 +409,7 @@ namespace DoEko.Controllers
                         break;
                     case DoEko.Models.DoEko.Survey.SurveyType.Energy:
                         myExport.AddRow();
-                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                         myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                         myExport["Zrodlo"] = source;
                         myExport["Inspektor"] = inspector;
@@ -421,7 +421,7 @@ namespace DoEko.Controllers
                             myExport["LinkZdj"] = photo.Url;
                         }
                         myExport.AddRow();
-                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                         myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                         myExport["Zrodlo"] = source;
                         myExport["Inspektor"] = inspector;
@@ -433,7 +433,7 @@ namespace DoEko.Controllers
                             myExport["LinkZdj"] = photo.Url;
                         }
                         myExport.AddRow();
-                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                         myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                         myExport["Zrodlo"] = source;
                         myExport["Inspektor"] = inspector;
@@ -445,7 +445,7 @@ namespace DoEko.Controllers
                             myExport["LinkZdj"] = photo.Url;
                         }
                         myExport.AddRow();
-                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                         myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                         myExport["Zrodlo"] = source;
                         myExport["Inspektor"] = inspector;
@@ -457,7 +457,7 @@ namespace DoEko.Controllers
                             myExport["LinkZdj"] = photo.Url;
                         }
                         myExport.AddRow();
-                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
                         myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
                         myExport["Zrodlo"] = source;
                         myExport["Inspektor"] = inspector;
