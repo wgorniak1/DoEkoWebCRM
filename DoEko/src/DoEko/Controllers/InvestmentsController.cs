@@ -427,7 +427,7 @@ namespace DoEko.Controllers
             _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
             //update
-            var investmentsToAssign = _context.Investments.Where(i => InvestmentId.Any(inv => inv == i.InvestmentId)==true && i.InspectorId == null);
+            var investmentsToAssign = _context.Investments.Where(i => InvestmentId.Any(inv => inv == i.InvestmentId)==true);
 
             await investmentsToAssign.LoadAsync();
             await investmentsToAssign.ForEachAsync(i => i.InspectorId = _context.CurrentUserId);

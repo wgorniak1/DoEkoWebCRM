@@ -24,5 +24,6 @@ namespace DoEko.ViewModels.TestViewModels
         public string PictureId { get; set; }
         public string FileName { get; set; }
         public string Url { get; set; }
+        public decimal Size { get; set; }
     }
 }

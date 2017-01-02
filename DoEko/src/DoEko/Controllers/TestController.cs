@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +15,7 @@ using DoEko.ViewModels.SurveyViewModels;
 using DoEko.ViewModels.TestViewModels;
 using DoEko.Services;
 using Microsoft.WindowsAzure.Storage.Blob;
+using DoEko.Controllers.Extensions;
 
 namespace DoEko.Controllers
 {
@@ -49,7 +50,7 @@ namespace DoEko.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> ListPhotos()
+        public async Task<IActionResult> ListPhotos(bool exportToCsv = false)
         {
             //disable change tracking
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
@@ -68,14 +69,10 @@ namespace DoEko.Controllers
             {
                 var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
                 if (partNames.Length < 3)
-                {
                     continue;
-                }
                 var srvId = Guid.Parse(partNames[2]);
                 if (srvId == Guid.Empty)
-                {
                     continue;
-                }
                 //2= guid / 1 = pictureid / 0 = filename
                 try
                 {
@@ -93,13 +90,11 @@ namespace DoEko.Controllers
                     {
                         FileName = partNames[0],
                         PictureId = partNames[1],
-                        Url = BlockBlob.Uri.ToString()
+                        Url = BlockBlob.Uri.ToString(),
+                        Size = (decimal)Math.Round((double)BlockBlob.Properties.Length / 1024, 2)
                     });
                 }
-                catch (Exception)
-                {
-                    
-                }
+                catch (Exception) { }
             };
 
             SurveyBlockBlobs = null;
@@ -108,21 +103,18 @@ namespace DoEko.Controllers
 
             foreach (var BlockBlob in InvestBlockBlobs)
             {
-                //2= guid / 1 = pictureid / 0 = filename
+                // 2 = guid / 1 = pictureid / 0 = filename
                 var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
                 if (partNames.Length < 3)
-                {
                     continue;
-                }
 
                 var invId = Guid.Parse(partNames[2]);
                 var srvIds = _context.Surveys.Where(s => s.InvestmentId == invId).Select(s=>s.SurveyId).ToArray();
                 foreach (var srvId in srvIds)
                 {
                     if (srvId == Guid.Empty)
-                    {
                         continue;
-                    }
+                    
                     try
                     {
                         modelItem = model.Single(m => m.Survey.SurveyId == srvId);
@@ -138,15 +130,15 @@ namespace DoEko.Controllers
                         {
                             FileName = partNames[0],
                             PictureId = partNames[1],
-                            Url = BlockBlob.Uri.ToString()
+                            Url = BlockBlob.Uri.ToString(),
+                            Size = (decimal)Math.Round((double)BlockBlob.Properties.Length / 1024, 2)
                         });
 
                     }
-                    catch (Exception)
-                    {
-                    }
+                    catch (Exception) { }
                 }
             };
+
             //return view
             try
             {
@@ -155,15 +147,335 @@ namespace DoEko.Controllers
                     .ThenBy(m => m.Survey.Investment.Address.SingleLine)
                     .ThenBy(m => m.Survey.Type)
                     .ToList();
+            } catch (Exception) { }
 
-            }
-            catch (Exception)
+            if (exportToCsv)
             {
+                CsvExport list = await ListPhotosAsCSV(model);
+                return File(list.ExportToBytes(), "text/csv", "ListaZdjec.csv");
             }
-            
-            //TempData["model"] = model;
-            return View(model);
+
+            else
+                return View(model);
         }
+        private async Task<CsvExport> ListPhotosAsCSV(IList<ListPhotosViewModel> model)
+        {
+            var myExport = new CsvExport(columnSeparator: ";");
+
+            foreach (var item in model)
+            {
+                string source = "";
+                switch (item.Survey.Type)
+                {
+                    case DoEko.Models.DoEko.Survey.SurveyType.CentralHeating:
+                        source = item.Survey.Type.DisplayName() + '|' +
+                                (((SurveyCentralHeating)item.Survey).RSEType.DisplayName());
+                        break;
+                    case DoEko.Models.DoEko.Survey.SurveyType.HotWater:
+                        source = item.Survey.Type.DisplayName() + '|' +
+                                (((SurveyHotWater)item.Survey).RSEType.DisplayName());
+                        break;
+                    case DoEko.Models.DoEko.Survey.SurveyType.Energy:
+                        source = item.Survey.Type.DisplayName() + '|' +
+                                (((SurveyEnergy)item.Survey).RSEType.DisplayName());
+                        break;
+                    default:
+                        source = item.Survey.Type.DisplayName() + '|';
+                        break;
+                }
+
+                string inspector = "";
+                var uid = await _userManager.FindByIdAsync(item.Survey.Investment.InspectorId.ToString());
+
+                if (uid != null)
+                {
+                    inspector = uid.LastName + " " + uid.FirstName;
+                }
+
+                myExport.AddRow();
+                myExport["Umowa"] = item.Survey.Investment.Contract.ShortDescription;
+                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                myExport["Zrodlo"] = source;
+                myExport["Inspektor"] = inspector;
+                myExport["TypZdj"] = "Picture0";
+                if (item.Attachments.Keys.Any(k => k == "Picture0"))
+                {
+                    var photo = item.Attachments["Picture0"];
+                    myExport["NazwaZdj"] = photo.FileName;
+                    myExport["LinkZdj"] = photo.Url;
+                }
+
+                switch (item.Survey.Type)
+                {
+                    case DoEko.Models.DoEko.Survey.SurveyType.CentralHeating:
+
+                        switch (((SurveyCentralHeating)item.Survey).RSEType)
+                        {
+                            case SurveyRSETypeCentralHeating.HeatPump:
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture1";
+                                if (item.Attachments.Keys.Any(k => k == "Picture1"))
+                                {
+                                    var photo = item.Attachments["Picture1"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture2";
+                                if (item.Attachments.Keys.Any(k => k == "Picture2"))
+                                {
+                                    var photo = item.Attachments["Picture2"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture3";
+                                if (item.Attachments.Keys.Any(k => k == "Picture3"))
+                                {
+                                    var photo = item.Attachments["Picture3"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture5";
+                                if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                {
+                                    var photo = item.Attachments["Picture5"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+
+                                break;
+                            case SurveyRSETypeCentralHeating.PelletBoiler:
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture2";
+                                if (item.Attachments.Keys.Any(k => k == "Picture2"))
+                                {
+                                    var photo = item.Attachments["Picture2"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture5";
+                                if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                {
+                                    var photo = item.Attachments["Picture5"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+
+                                break;
+                            case SurveyRSETypeCentralHeating.HeatPumpAir:
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture2";
+                                if (item.Attachments.Keys.Any(k => k == "Picture2"))
+                                {
+                                    var photo = item.Attachments["Picture2"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture4";
+                                if (item.Attachments.Keys.Any(k => k == "Picture4"))
+                                {
+                                    var photo = item.Attachments["Picture4"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture5";
+                                if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                {
+                                    var photo = item.Attachments["Picture5"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case DoEko.Models.DoEko.Survey.SurveyType.HotWater:
+                        switch (((SurveyHotWater)item.Survey).RSEType)
+                        {
+                            case SurveyRSETypeHotWater.Solar:
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture5";
+                                if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                {
+                                    var photo = item.Attachments["Picture5"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture6";
+                                if (item.Attachments.Keys.Any(k => k == "Picture6"))
+                                {
+                                    var photo = item.Attachments["Picture6"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture7";
+                                if (item.Attachments.Keys.Any(k => k == "Picture7"))
+                                {
+                                    var photo = item.Attachments["Picture7"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+
+                                break;
+                            case SurveyRSETypeHotWater.HeatPump:
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture2";
+                                if (item.Attachments.Keys.Any(k => k == "Picture2"))
+                                {
+                                    var photo = item.Attachments["Picture2"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+                                myExport.AddRow();
+                                myExport["Umowa"] = item.Survey.Investment.Contract;
+                                myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                                myExport["Zrodlo"] = source;
+                                myExport["Inspektor"] = inspector;
+                                myExport["TypZdj"] = "Picture5";
+                                if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                {
+                                    var photo = item.Attachments["Picture5"];
+                                    myExport["NazwaZdj"] = photo.FileName;
+                                    myExport["LinkZdj"] = photo.Url;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case DoEko.Models.DoEko.Survey.SurveyType.Energy:
+                        myExport.AddRow();
+                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                        myExport["Zrodlo"] = source;
+                        myExport["Inspektor"] = inspector;
+                        myExport["TypZdj"] = "Picture5";
+                        if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                        {
+                            var photo = item.Attachments["Picture5"];
+                            myExport["NazwaZdj"] = photo.FileName;
+                            myExport["LinkZdj"] = photo.Url;
+                        }
+                        myExport.AddRow();
+                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                        myExport["Zrodlo"] = source;
+                        myExport["Inspektor"] = inspector;
+                        myExport["TypZdj"] = "Picture6";
+                        if (item.Attachments.Keys.Any(k => k == "Picture6"))
+                        {
+                            var photo = item.Attachments["Picture6"];
+                            myExport["NazwaZdj"] = photo.FileName;
+                            myExport["LinkZdj"] = photo.Url;
+                        }
+                        myExport.AddRow();
+                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                        myExport["Zrodlo"] = source;
+                        myExport["Inspektor"] = inspector;
+                        myExport["TypZdj"] = "Picture7";
+                        if (item.Attachments.Keys.Any(k => k == "Picture7"))
+                        {
+                            var photo = item.Attachments["Picture7"];
+                            myExport["NazwaZdj"] = photo.FileName;
+                            myExport["LinkZdj"] = photo.Url;
+                        }
+                        myExport.AddRow();
+                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                        myExport["Zrodlo"] = source;
+                        myExport["Inspektor"] = inspector;
+                        myExport["TypZdj"] = "Picture8";
+                        if (item.Attachments.Keys.Any(k => k == "Picture8"))
+                        {
+                            var photo = item.Attachments["Picture8"];
+                            myExport["NazwaZdj"] = photo.FileName;
+                            myExport["LinkZdj"] = photo.Url;
+                        }
+                        myExport.AddRow();
+                        myExport["Umowa"] = item.Survey.Investment.Contract;
+                        myExport["Inwestycja"] = item.Survey.Investment.Address.SingleLine;
+                        myExport["Zrodlo"] = source;
+                        myExport["Inspektor"] = inspector;
+                        myExport["TypZdj"] = "Picture9";
+                        if (item.Attachments.Keys.Any(k => k == "Picture9"))
+                        {
+                            var photo = item.Attachments["Picture9"];
+                            myExport["NazwaZdj"] = photo.FileName;
+                            myExport["LinkZdj"] = photo.Url;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return myExport;
+        }
+
         [HttpGet]
         public async Task<ActionResult> PhotosAdjust()
         {
@@ -273,7 +585,7 @@ namespace DoEko.Controllers
         public ActionResult csvTest()
         {
             _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
-            string line = "1; 98,40 z≥ ; 80,00 z≥ ;Kocio≥ na Pellet;;;Lubelskie;Janowski;ChrzanÛw (Gmina W.);37-500; Tuczempy ;Mickiewicza;44;;Ryszard;Trelka;Podlaskie;Bia≥ostocki;Choroszcz (Gmina M-W);37-500;Tuczempy;Mickiewicza;3A;1;266;30621;661 111 760;;;";
+            string line = "1; 98,40 z≈Ç ; 80,00 z≈Ç ;Kocio≈Ç na Pellet;;;Lubelskie;Janowski;Chrzan√≥w (Gmina W.);37-500; Tuczempy ;Mickiewicza;44;;Ryszard;Trelka;Podlaskie;Bia≈Çostocki;Choroszcz (Gmina M-W);37-500;Tuczempy;Mickiewicza;3A;1;266;30621;661 111 760;;;";
 
             InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context);
             uploadhelper.ContractId = _context.Contracts.First().ContractId;
