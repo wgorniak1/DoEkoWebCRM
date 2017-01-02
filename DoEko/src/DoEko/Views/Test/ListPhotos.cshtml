@@ -65,11 +65,16 @@
                 <div class="col-sm-10">
                     @if (item.Survey.Investment.InspectorId != Guid.Empty)
                     {
-                        var uid = UserManager.Users.Where(u => u.Id == item.Survey.Investment.InspectorId.ToString()).FirstOrDefault(); 
-                          
-                        @(uid.LastName + " " + uid.FirstName)
+                        string inspector = "";
+                        var uid = await UserManager.FindByIdAsync(item.Survey.Investment.InspectorId.ToString());
+
+                        if (uid != null)
+                        {
+                            inspector = uid.LastName + " " + uid.FirstName;
+                        }
+
+                        <span>@inspector</span>
                     }
-                    
                 </div>
             </div>
         </div>
