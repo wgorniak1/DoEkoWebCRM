@@ -148,11 +148,20 @@ namespace DoEko.Controllers
                 }
             };
             //return view
-            model
-                .OrderBy(m => m.Survey.Investment.Contract.ShortDescription)
-                .ThenBy(m => m.Survey.Investment.Address.SingleLine)
-                .ThenBy(m => m.Survey.Type);
-            TempData["model"] = model;
+            try
+            {
+                model = model
+                    .OrderBy(m => m.Survey.Investment.Contract.ShortDescription)
+                    .ThenBy(m => m.Survey.Investment.Address.SingleLine)
+                    .ThenBy(m => m.Survey.Type)
+                    .ToList();
+
+            }
+            catch (Exception)
+            {
+            }
+            
+            //TempData["model"] = model;
             return View(model);
         }
         [HttpGet]

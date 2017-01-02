@@ -1,14 +1,31 @@
 @{
     DoEko.ViewModels.TestViewModels.ListPhotosViewModel item = ViewBag.Item;
-//    SortedList<string, DoEko.ViewModels.TestViewModels.SurveyAttachment> att = ViewBag.Item;
+    //    SortedList<string, DoEko.ViewModels.TestViewModels.SurveyAttachment> att = ViewBag.Item;
+    string key = (string)ViewData["Id"];
+    string label = "";
+    switch (key)
+    {
+        case "Picture0": label = "Ortofotomapa"; break;
+        case "Picture1": label = "Zdjêcie dzia³ki (miejsce proponowane pod odwierty pionowe)"; break;
+        case "Picture2": label = "Zdjêcie kot³owni"; break;
+        case "Picture3": label = "Zdjêcie wjazdu na dzia³kê"; break;
+        case "Picture4": label = "Zdjêcie œciany na monta¿ parownika(tylko dla pompy powietrze / woda)"; break;
+        case "Picture5": label = "Zdjêcie budynku"; break;
+        case "Picture6": label = "zdjêcie budynku wraz z dachem od strony po³udniowej"; break;
+        case "Picture7": label = "po³aæ 1"; break;
+        case "Picture8": label = "po³aæ 2"; break;
+        case "Picture9": label = "po³aæ 3";  break;
+        default: label = key; break;
+    }
 } 
+
 <div class="row">
-    <div class="col-sm-2" title="">@ViewData["Id"]</div>
+    <div class="col-sm-2" title="@label">@key</div>
     <div class="col-sm-10">
-        @if (item.Attachments.Keys.Any(k => k == (string)ViewData["Id"]))
+        @if (item.Attachments.Keys.Any(k => k == key))
         {
-            <a href="@item.Attachments[(string)ViewData["Id"]].Url" target="_blank" style="cursor:pointer">
-                @item.Attachments[(string)ViewData["Id"]].FileName
+            <a href="@item.Attachments[key].Url" target="_blank" style="cursor:pointer">
+                @item.Attachments[key].FileName
             </a>
         }
         else
