@@ -1,4 +1,5 @@
-﻿@model IList<DoEko.ViewModels.TestViewModels.ListPhotosViewModel>
+﻿
+@model IList<DoEko.ViewModels.TestViewModels.ListPhotosViewModel>
 @using DoEko.Models.DoEko.Survey
 @using DoEko.Controllers.Extensions
 @{
@@ -7,18 +8,21 @@
 
 <h2>Lista Zdjęć</h2>
 
-<div class="row">
-    <div class="col-sm-6">
+<div class="row bg-info thumbnail">
+    <div class="col-sm-6 bg-success">
         <div class="row"><div class="col-sm-12">Umowa</div></div>
         <div class="row"><div class="col-sm-12">Inwestycja</div></div>
         <div class="row"><div class="col-sm-12">Ankieta</div></div>
     </div>
-    <div class="col-sm-6">Zdjęcia</div>
+    <div class="col-sm-6 bg-primary">Zdjęcia</div>
 </div>
+@{  int i = 0;
+    string background = ""; }
+
 @foreach (var item in Model)
 {
-    int i = 1;
-    string background = "";
+    i++;
+    
     @if (( i % 2 ) == 0)
     { background = "background-color: #eaeaea;"; }
     else { background = "background-color: #ffffff;"; }
@@ -54,21 +58,349 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-8">
-            @foreach (var att in item.Attachments)
+        <div class="col-sm-2">
+            
+            @switch (item.Survey.Type)
             {
-                <div class="row">
-                    <div class="col-sm-4">@att.Value.PictureId</div>
-                    <div class="col-sm-4">@att.Value.FileName</div>
-                    <div class="col-sm-4">
-                        <a href="@att.Value.Url" target="_blank" style="cursor:pointer">
-                            @att.Value.FileName
-                            @*<img src="" data-image-src="@att.Value.Url" 
-                                 style="width:auto; max-height:50px;" 
-                                 class="img-thumbnail wg-image-placeholder image-lazy-loading" />*@
-                        </a>
-                    </div>
-                </div>
+                case DoEko.Models.DoEko.Survey.SurveyType.CentralHeating:
+
+                    switch (((SurveyCentralHeating)item.Survey).RSEType)
+                    {
+                        case SurveyRSETypeCentralHeating.HeatPump:
+                            <div class="row"><div class="col-sm-12">Picture0</div></div>
+                            <div class="row"><div class="col-sm-12">Picture1</div></div>
+                            <div class="row"><div class="col-sm-12">Picture2</div></div>
+                            <div class="row"><div class="col-sm-12">Picture3</div></div>
+                            <div class="row"><div class="col-sm-12">Picture5</div></div>
+                            break;
+                        case SurveyRSETypeCentralHeating.PelletBoiler:
+                            <div class="row"><div class="col-sm-12">Picture0</div></div>
+                            <div class="row"><div class="col-sm-12">Picture2</div></div>
+                            <div class="row"><div class="col-sm-12">Picture5</div></div>
+                            break;
+                        case SurveyRSETypeCentralHeating.HeatPumpAir:
+                            <div class="row"><div class="col-sm-12">Picture0</div></div>
+                            <div class="row"><div class="col-sm-12">Picture2</div></div>
+                            <div class="row"><div class="col-sm-12">Picture4</div></div>
+                            <div class="row"><div class="col-sm-12">Picture5</div></div>
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case DoEko.Models.DoEko.Survey.SurveyType.HotWater:
+                    switch (((SurveyHotWater)item.Survey).RSEType)
+                    {
+                        case SurveyRSETypeHotWater.Solar:
+                            <div class="row"><div class="col-sm-12">Picture0</div></div>
+                            <div class="row"><div class="col-sm-12">Picture5</div></div>
+                            <div class="row"><div class="col-sm-12">Picture6</div></div>
+                            <div class="row"><div class="col-sm-12">Picture7</div></div>
+                            break;
+                        case SurveyRSETypeHotWater.HeatPump:
+                            <div class="row"><div class="col-sm-12">Picture0</div></div>
+                            <div class="row"><div class="col-sm-12">Picture2</div></div>
+                            <div class="row"><div class="col-sm-12">Picture5</div></div>
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case DoEko.Models.DoEko.Survey.SurveyType.Energy:
+                            <div class="row"><div class="col-sm-12">Picture0</div></div>
+                            <div class="row"><div class="col-sm-12">Picture5</div></div>
+                            <div class="row"><div class="col-sm-12">Picture6</div></div>
+                            <div class="row"><div class="col-sm-12">Picture7</div></div>
+                            <div class="row"><div class="col-sm-12">Picture8</div></div>
+                            <div class="row"><div class="col-sm-12">Picture9</div></div>
+                            break;
+                default:
+                    break;
+            }
+        </div>
+        <div class="col-sm-4">
+            @switch (item.Survey.Type)
+            {
+                case DoEko.Models.DoEko.Survey.SurveyType.CentralHeating:
+
+                    switch (((SurveyCentralHeating)item.Survey).RSEType)
+                    {
+                        case SurveyRSETypeCentralHeating.HeatPump:
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    @if (item.Attachments.Keys.Any(k => k == "Picture0"))
+                                    {
+                                        <a href="@item.Attachments["Picture0"].Url" target="_blank" style="cursor:pointer">
+                                            @item.Attachments["Picture0"].FileName
+                                        </a>
+                                    }
+                                    else { <p class="bg-danger">brak</p> }
+                                </div>
+                            </div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture1"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture1"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture1"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture2"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture2"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture2"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture3"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture3"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture3"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture5"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture5"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            break;
+                        case SurveyRSETypeCentralHeating.PelletBoiler:
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture0"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture0"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture0"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture2"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture2"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture2"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture5"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture5"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            break;
+                        case SurveyRSETypeCentralHeating.HeatPumpAir:
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture0"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture0"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture0"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture2"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture2"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture2"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture4"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture4"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture4"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture5"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture5"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case DoEko.Models.DoEko.Survey.SurveyType.HotWater:
+                    switch (((SurveyHotWater)item.Survey).RSEType)
+                    {
+                        case SurveyRSETypeHotWater.Solar:
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture0"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture0"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture0"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture5"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture5"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture6"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture6"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture6"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture7"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture7"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture7"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            break;
+                        case SurveyRSETypeHotWater.HeatPump:
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture0"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture0"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture0"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture2"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture2"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture2"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture5"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture5"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }
+                                </div></div>
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case DoEko.Models.DoEko.Survey.SurveyType.Energy:
+                    <div class="row"><div class="col-sm-12">
+                                         @if (item.Attachments.Keys.Any(k => k == "Picture0"))
+                                         {
+                                             <a href="@item.Attachments["Picture0"].Url" target="_blank" style="cursor:pointer">
+                                                 @item.Attachments["Picture0"].FileName
+                                             </a>
+                                         }
+                                         else
+                                         { <p class="bg-danger">brak</p> }                        
+                        </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture5"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture5"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture5"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture6"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture6"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture6"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture7"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture7"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture7"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture8"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture8"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture8"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }                                
+                                </div></div>
+                            <div class="row"><div class="col-sm-12">
+                                                 @if (item.Attachments.Keys.Any(k => k == "Picture9"))
+                                                 {
+                                                     <a href="@item.Attachments["Picture9"].Url" target="_blank" style="cursor:pointer">
+                                                         @item.Attachments["Picture9"].FileName
+                                                     </a>
+                                                 }
+                                                 else
+                                                 { <p class="bg-danger">brak</p> }
+                                </div></div>
+                    break;
+                default:
+                    break;
             }
         </div>
     </div>
