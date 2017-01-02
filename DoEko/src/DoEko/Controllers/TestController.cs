@@ -387,6 +387,7 @@ namespace DoEko.Controllers
                                 Type = s.Type,
                                 RSEType = s.RSEType,
                                 Investment = new Investment {
+                                    InspectorId = s.Investment.InspectorId,
                                     Address = s.Investment.Address,
                                     Contract = new Contract {
                                         ShortDescription = s.Investment.Contract.ShortDescription
@@ -403,6 +404,7 @@ namespace DoEko.Controllers
                                 RSEType = s.RSEType,
                                 Investment = new Investment
                                 {
+                                    InspectorId = s.Investment.InspectorId,
                                     Address = s.Investment.Address,
                                     Contract = new Contract
                                     {
@@ -419,6 +421,7 @@ namespace DoEko.Controllers
                                 RSEType = s.RSEType,
                                 Investment = new Investment
                                 {
+                                    InspectorId = s.Investment.InspectorId,
                                     Address = s.Investment.Address,
                                     Contract = new Contract
                                     {
@@ -440,6 +443,7 @@ namespace DoEko.Controllers
                     RSEType = SurveyRSETypeEnergy.PhotoVoltaic,
                     Investment = new Investment()
                     {
+                        InspectorId = Guid.Empty,
                         Address = new Address()
                         {
                             BuildingNo = "0",
