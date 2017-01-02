@@ -1,18 +1,21 @@
-﻿
-@model IList<DoEko.ViewModels.TestViewModels.ListPhotosViewModel>
-@using DoEko.Models.DoEko.Survey
+﻿@using DoEko.Models.DoEko.Survey
 @using DoEko.Controllers.Extensions
+@using Microsoft.AspNetCore.Identity
+@using DoEko.Models.Identity
+@model IList<DoEko.ViewModels.TestViewModels.ListPhotosViewModel>
+@inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "Lista Zdjęć w ankietach";
 }
 
-<h2>Lista Zdjęć</h2>
+<h2>Lista Zdjęć w ankietach</h2>
 
 <div class="row thumbnail" style="background-color: #eaeaea;">
     <div class="col-sm-6">
         <div class="row"><div class="col-sm-12">Umowa</div></div>
         <div class="row"><div class="col-sm-12">Inwestycja</div></div>
         <div class="row"><div class="col-sm-12">Ankieta</div></div>
+        <div class="row"><div class="col-sm-12">Inspektor</div></div>
     </div>
     <div class="col-sm-6">Zdjęcia</div>
 </div>
@@ -22,8 +25,8 @@
 @foreach (var item in Model)
 {
     i++;
-    
-    @if (( i % 2 ) == 0)
+
+    @if ((i % 2) == 0)
     { background = "background-color: #eaeaea;"; }
     else { background = "background-color: #ffffff;"; }
     <div class="row thumbnail" style="@background">
@@ -55,6 +58,18 @@
                             default:
                                 break;
                         }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2"><label class="control-label">Inspektor:</label></div>
+                <div class="col-sm-10">
+                    @if (item.Survey.Investment.InspectorId != Guid.Empty)
+                    {
+                        var uid = UserManager.Users.Where(u => u.Id == item.Survey.Investment.InspectorId.ToString()).FirstOrDefault(); 
+                          
+                        @(uid.LastName + " " + uid.FirstName)
+                    }
+                    
                 </div>
             </div>
         </div>
