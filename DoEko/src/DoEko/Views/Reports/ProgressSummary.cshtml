@@ -5,12 +5,20 @@
 @model DoEko.ViewModels.ReportsViewModels.ProgressSummaryViewModel
 @inject UserManager<ApplicationUser> UserManager
 @{
-    ViewData["Title"] = "Statystyki dla ankiet";
+    ViewData["Title"] = "Statystyki dla źródeł";
 }
 
-<h2>Statystyki dla ankiet</h2>
-<div class="container" style="border:groove,thin;"></div>
-<div class="row" style="background-color: #eaeaea; border-bottom-style: groove; border-bottom-width: thin;">
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li>Raporty</li>
+    <li class="active">Statystyki dla źródeł</li>
+</ol>
+
+<!--Title-->
+<h2>Statystyki dla źródeł</h2>
+<div class="container" style="border-collapse:collapse; border-style: groove; border-width: thin;">
+<div class="row" style="background-color: #f6f6f6; border-bottom-style: groove; border-bottom-width: thin;">
     <div class="col-sm-3">
         <div class="row"><div class="col-sm-12"><label class="control-label">Typ umowy</label></div></div>
         <div class="row"><div class="col-sm-12"><label class="control-label">Projekt</label></div></div>
@@ -34,9 +42,9 @@
 {
     i++;
     // Background
-    string background = ((i % 2) == 0) ? "background-color: #fafafa;" : "background-color: #ffffff;";
+    string background = ((i % 2) == 0) ? "background-color: #f6f6f6;" : "background-color: #ffffff;";
     string collapsedDivId = "DetailsForRow" + i.ToString();
-<div class="row" style='@(background + " border-bottom-style: groove; border-bottom-width: thin;")'>
+<div class="row" style='@(background)'>
     <div class="col-sm-12">
         <div class="row accordion-toggle" data-toggle="collapse" data-target="#@collapsedDivId" style="cursor:pointer;">
             <div class="col-sm-3">
@@ -64,14 +72,21 @@
                     //header
                 }
                 <div class="row">
+                    <div class="col-sm-1"></div>
                     <div class="col-sm-3"><label class="control-label">Źródło</label></div>
                     <div class="col-sm-1 text-right"><label class="control-label">Ogólnie</label></div>
-                    <div class="col-sm-2 text-right"><label class="control-label">Nie rozp.(Nie przypisanych)</label></div>
+                    <div class="col-sm-1 text-right"><label class="control-label" title="Nie rozpoczęto pracy
+(inwestycja nie przypisana do inspektora)">Nowych(Nie przyp.)</label></div>
                     <div class="col-sm-1 text-right"><label class="control-label">Anulowanych</label></div>
-                    <div class="col-sm-1 text-right"><label class="control-label">W trakcie</label></div>
-                    <div class="col-sm-1 text-right"><label class="control-label">Do poprawy</label></div>
-                    <div class="col-sm-1 text-right"><label class="control-label">W akcept.</label></div>
+                    <div class="col-sm-1 text-right"><label class="control-label" title="Rozpoczęto wprowadzanie danych do ankiety
+ale nie wysłano do akceptacji
+lub ankieta jest poprawiana po odrzuceniu.">W trakcie</label></div>
+                    <div class="col-sm-1 text-right"><label class="control-label" title="Ankieta została odrzucona
+ale nie wprowadzono jeszcze żadnych poprawek.">Do poprawy</label></div>
+                    <div class="col-sm-1 text-right"><label class="control-label" title="Inspektor wysłał ankietę do akceptacji
+i czeka ona na weryfikację przez administratora">W akcept.</label></div>
                     <div class="col-sm-1 text-right"><label class="control-label">Gotowych</label></div>
+                    <div class="col-sm-1"></div>
                 </div>
                 @{ //body
                 }
@@ -95,28 +110,32 @@
                     string notStarted = ss.NotStarted.ToString() + '(' + ss.NotStartedNotassigned.ToString() + ')';
                     
                     <div class="row">
+                        <div class="col-sm-1"></div>
                         <div class="col-sm-3">@(ss.Type.DisplayName() + '|' + rseType)</div>
                         <div class="col-sm-1 text-right">@ss.Total</div>
-                        <div class="col-sm-2 text-right">@notStarted</div>
+                        <div class="col-sm-1 text-right">@notStarted</div>
                         <div class="col-sm-1 text-right">@ss.Cancelled</div>
                         <div class="col-sm-1 text-right">@ss.Draft</div>
                         <div class="col-sm-1 text-right">@ss.Rejected</div>
                         <div class="col-sm-1 text-right">@ss.InApproval</div>
                         <div class="col-sm-1 text-right">@ss.Completed</div>
+                        <div class="col-sm-1"></div>
                     </div>
                 }
                 @{ 
                     string notStartedSum = item.Surveys.Sum(s => s.NotStarted).ToString() + '(' + item.Surveys.Sum(s => s.NotStartedNotassigned).ToString() + ')';
                 }
-                <div class="row" style="border-top-style: groove; font-weight: bold;">
+                <div class="row" style="font-weight: bold;">
+                    <div class="col-sm-1"></div>
                     <div class="col-sm-3"></div>
-                    <div class="col-sm-1 text-right">@item.Surveys.Sum(s=>s.Total)</div>
-                    <div class="col-sm-2 text-right">@notStartedSum</div>
-                    <div class="col-sm-1 text-right">@item.Surveys.Sum(s=>s.Cancelled)</div>
-                    <div class="col-sm-1 text-right">@item.Surveys.Sum(s=>s.Draft)</div>
-                    <div class="col-sm-1 text-right">@item.Surveys.Sum(s=>s.Rejected)</div>
-                    <div class="col-sm-1 text-right">@item.Surveys.Sum(s=>s.InApproval)</div>
-                    <div class="col-sm-1 text-right">@item.Surveys.Sum(s=>s.Completed)</div>
+                    <div class="col-sm-1 text-right" style="border-top-style: groove;">@item.Surveys.Sum(s=>s.Total)</div>
+                    <div class="col-sm-1 text-right" style="border-top-style: groove;">@notStartedSum</div>
+                    <div class="col-sm-1 text-right" style="border-top-style: groove;">@item.Surveys.Sum(s=>s.Cancelled)</div>
+                    <div class="col-sm-1 text-right" style="border-top-style: groove;">@item.Surveys.Sum(s=>s.Draft)</div>
+                    <div class="col-sm-1 text-right" style="border-top-style: groove;">@item.Surveys.Sum(s=>s.Rejected)</div>
+                    <div class="col-sm-1 text-right" style="border-top-style: groove;">@item.Surveys.Sum(s=>s.InApproval)</div>
+                    <div class="col-sm-1 text-right" style="border-top-style: groove;">@item.Surveys.Sum(s=>s.Completed)</div>
+                    <div class="col-sm-1"></div>
                 </div>
                 <br/>
             </div>            
@@ -124,3 +143,4 @@
     </div>
 </div>
 }
+</div>
