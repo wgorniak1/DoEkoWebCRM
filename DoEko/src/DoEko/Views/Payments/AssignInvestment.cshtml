@@ -15,100 +15,227 @@
 <!--Title-->
 <h2>Lista nieprzypisanych wpłat</h2>
 
-<form asp-action="AssignInvestment" asp-controller="Payments" method="post">
+<form asp-action="AssignInvestment" 
+      asp-controller="Payments" 
+      method="post">
+    
     <div class="form-group">
         <input type="submit" class="btn btn-primary" value="Zapisz">
         <a asp-action="Details" asp-controller="Contracts" asp-route-Id="@ViewBag.ContractId" class="btn btn-default">Anuluj</a>
     </div>
     <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="container-fluid pre-scrollable" style="padding-left:unset;padding-right:unset;">
-
-        <table class="table table-striped table-condensed table-hover">
-            <thead>
-                <tr>
-                    <th colspan="3">Szczegóły wpłaty</th>
-                    <th colspan="3">Inwestycja</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @for (int i = 0; i < Model.Count; i++)
+    <div class="row" style="background-color: #f6f6f6; min-height:30px;">
+        <div class="col-sm-12">
+            <div class="row"><div class="col-sm-12"><br /></div></div>
+            <div class="row">
+                <div class="col-sm-5"><div class="row"><div class="col-sm-12"><label class="control-label">Szczegóły wpłat</label></div></div></div>
+                <div class="col-sm-3"><div class="row"><div class="col-sm-12"><label class="control-label">Przypisanie inwestycji</label></div></div></div>
+                <div class="col-sm-3"><div class="row"><div class="col-sm-12"><label class="control-label">Źródło</label></div></div></div>
+                <div class="col-sm-1"><div class="row"><div class="col-sm-12"><label class="control-label">Usuń</label></div></div></div>
+            </div>
+            <div class="row"><div class="col-sm-12"><br/></div></div>
+        </div>
+    </div>
+    <div class="row container-fluid pre-scrollable" style="padding-left:unset;padding-right:unset;">
+        <div class="col-sm-12">
+            @{
+                char separator = ';';
+                if (Model.First().SourceRow != null)
                 {
-                    <tr id="@("Record[" + i.ToString() + "]")">
-                 
-                        <th style="vertical-align:middle">@(i+1)</th>
-                        <th class="small">
-                            <table>
-                                <tbody>
-                                    <tr><td>@Html.DisplayNameFor(model => Model[i].PaymentDate)</td></tr>
-                                    <tr><td>@Html.DisplayNameFor(model => Model[i].Amount)</td></tr>
-                                    <tr><td>Nadawca</td></tr>
-                                    <tr><td>Tytuł</td></tr>
-                                    @*@Html.DisplayNameFor(model => model.NotNeeded)*@
-                                </tbody>
-                            </table>
-                        </th>
-                        <td class="small">
-                            <table>
-                                <tbody>
-                                    <tr><td>@Html.DisplayFor(model => Model[i].PaymentDate)</td></tr>
-                                    <tr><td>@Model[i].Amount.ToString("C", System.Globalization.CultureInfo.CurrentUICulture)</td></tr>
-                                    <tr><td>@Model[i].SourceRow.Split(';')[7].Replace("Nazwa nadawcy:", "").ToString()</td></tr>
-                                    <tr><td>@Model[i].SourceRow.Split(';')[8].Replace("Tytuł:", "").ToString()</td></tr>
-                                </tbody>
-                            </table>
-                        </td>
-                        <td style="vertical-align:middle">
-                            <input asp-for="@Model[i].PaymentId" type="hidden">
-                            <input asp-for="@Model[i].ContractId" type="hidden">
-                            @*<input asp-for="@Model[i].Amount" type="hidden">*@
-                            @*<input asp-for="@Model[i].PaymentDate" type="hidden">*@
-                            @*<input asp-for="@Model[i].SourceRow" type="hidden">*@
-                            @*<input asp-for="@Model[i].PostingDate" type="hidden">*@
+                    if (Model.First().SourceRow.Split(separator).Length < 12)
+                    {
+                        separator = ',';
+                    }
+                }
 
-                            <select asp-for="@Model[i].InvestmentId" asp-items="@ViewBag.DLInvestments" 
-                                    class="form-control text-center">
-                                <option value="">Wybierz Inwestycję</option>
-                            </select>
-                        </td>
-                        <td>
-                            
-                            <div class="btn-group-vertical" data-toggle="buttons" >
-                                <label class="btn btn-default btn-xs" >
-                                    <input asp-for="@Model[i].RseFotovoltaic" type="checkbox" autocomplete="off">
+            }
+            @for (int i = 0; i < Model.Count; i++)
+            {
+
+                string background = ((i % 2) == 0) ? "background-color: #f6f6f6;" : "background-color: #ffffff;";
+                string payer = "";
+                string paytitle = "";
+                string payaddress = "";
+                if (Model[i].SourceRow != null)
+                {
+                    var arr = Model[i].SourceRow.Split(separator);
+
+                    payer = arr.Length >= 7 ? arr[7].Replace("Nazwa nadawcy:", "").ToString() : "";
+                    payaddress = arr.Length >= 8 ? arr[8].Replace("Adres nadawcy:", "").ToString() : "";
+                    paytitle = arr.Length >= 9 ? arr[9].Replace("Tytuł:","").ToString() : "";
+                }
+
+
+                <div class="row" id='@("Record[" + i.ToString() + "]")' style="@(background)">
+                    <div class="col-sm-5" style="font-size: smaller">
+                        <div class="row"><div class="col-sm-12"><br /></div></div>    
+                        <div class="row">
+                            <div class="col-sm-3"><label class="control-label">Data wpłaty</label></div>
+                            <div class="col-sm-8">@Model[i].PaymentDate.ToShortDateString()</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3"><label class="control-label">Kwota</label></div>
+                            <div class="col-sm-8">@Model[i].Amount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL"))</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3"><label class="control-label">Nadawca</label></div>
+                            <div class="col-sm-8">@payer</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3"><label class="control-label">Adres</label></div>
+                            <div class="col-sm-8">@payaddress</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3"><label class="control-label">Tytuł</label></div>
+                            <div class="col-sm-8">@paytitle</div>
+                        </div>      
+                        <div class="row"><div class="col-sm-12"><br/></div></div>                  
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="row"><div class="col-sm-12"><br/></div></div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <input asp-for="@Model[i].PaymentId" type="hidden">
+                                <input asp-for="@Model[i].ContractId" type="hidden">
+                                <input type="text" class="form-control input-sm investment-text-search" data-investment-reference='@("[" + i.ToString() + "].InvestmentId")'>
+                                <input asp-for="@Model[i].InvestmentId" type="hidden" />
+                            </div>
+                        </div>
+                        <div class="row"><div class="col-sm-12"><br/></div></div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <span name="[@i].InvestmentId" class="form-control-static"></span>
+                            </div>
+                        </div>
+                        <div class="row"><div class="col-sm-12"></div></div>
+                        <div class="row"><div class="col-sm-12"></div></div>
+                        <div class="row"><div class="col-sm-12"></div></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="row"><div class="col-sm-12"><br /></div></div>
+                        <div class="row"><div class="col-sm-12"></div></div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>
+                                    <input asp-for="@Model[i].RseFotovoltaic" type="checkbox">
                                     Inst. Fotowolt.
                                 </label>
-
-                                <label class="btn btn-default btn-xs" >
-                                    <input asp-for="@Model[i].RseHeatPump"
-                                           type="checkbox" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label class="">
+                                    <input asp-for="@Model[i].RseHeatPump" type="checkbox">
                                     Pompa ciepła
                                 </label>
-
-                                <label class="btn btn-default btn-xs" >
-                                    <input asp-for="@Model[i].RseSolar"
-                                           type="checkbox" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label class="">
+                                    <input asp-for="@Model[i].RseSolar" type="checkbox">
                                     Inst. Solar.
                                 </label>
                             </div>
-                        </td>
-                        <td style="vertical-align:middle">
-                            <div class="btn-group" data-toggle="buttons">
-                                <label class="btn btn-default btn-sm" title="Usuń wpłatę">
-                                    <input asp-for="@Model[i].NotNeeded"
-                                           type="checkbox" autocomplete="off">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                </label>
+                        </div>
+                        <div class="row"><div class="col-sm-12"></div></div>
+                        <div class="row"><div class="col-sm-12"></div></div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="row"><div class="col-sm-12"><br /></div></div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-default btn-sm" title="Usuń wpłatę">
+                                        <input asp-for="@Model[i].NotNeeded"
+                                            type="checkbox" autocomplete="off">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </label>
+                                </div>
                             </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </form>
+
+<form hidden>
+    <select id="DLInvestmentList" asp-items="@ViewBag.DLInvestments"></select>
+</form>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
+    <script type="text/javascript" title="autocomplete">
+        function onInvestmentSearchResult(event, ui) {
+            //stop further processing
+            event.stopPropagation();
+            event.preventDefault();
+
+            //search field
+            var searchBox = $(event.target);
+
+            //reference field 
+            var referenceId = "input[name='" + searchBox.data("investment-reference") + "']";
+            var referenceField = $(referenceId);
+            referenceField.val(ui.item.value);
+
+            //text field
+            var textId = "span[name='" + searchBox.data("investment-reference") + "']";
+            var textField = $(textId);
+            textField.text(ui.item.label);
+
+            //set value manually, because we're stopping event propagation
+            searchBox.val(ui.item.label);
+            searchBox.autocomplete("close");
+
+        }
+
+        function onInvestmentSearchBreak(event, data) {
+            var searchBox = $(event.target);
+
+            //reference field 
+            var referenceId = "input[name='" + searchBox.data("investment-reference") + "']";
+            var referenceField = $(referenceId);
+            referenceField.val("");
+
+            var textId = "span[name='" + searchBox.data("investment-reference") + "']";
+            var textField = $(textId);
+            textField.text("");
+            
+        }
+
+        $(document).ready
+           (
+               function () {
+                   //Prepare investment list
+                   var sel = document.getElementById('DLInvestmentList');
+                   var investmentList = new Array(sel.options.length);
+
+                   for (var i = 0, n = sel.options.length; i < n; i++) {
+                       if (sel.options[i].text)
+                       {
+                           investmentList[i] = {
+                               "label": sel.options[i].text,
+                               "value": sel.options[i].value
+                           };
+                       }
+                   }
+                   //attach autocomplete field
+                   $('.investment-text-search').each
+                   (
+                       function (index){
+                           $(this).autocomplete({ source: investmentList })
+                       });
+
+                   //event handler
+                   $(document).on("autocompleteselect", onInvestmentSearchResult);
+                   $(document).on("input", ".investment-text-search", onInvestmentSearchBreak);
+               });
+    </script>
 }

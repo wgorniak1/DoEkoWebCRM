@@ -56,11 +56,22 @@ namespace DoEko.Controllers
             //    .ThenInclude(i => i.Address)
             //    .ThenInclude(a=>a.Commune)
             //    .Single().Investments;
-            var investments = _context.Investments.Where(i => i.ContractId == ContractId)
+            var investments = _context.Investments
+                .Where(i => i.ContractId == ContractId)
                 .Include(i => i.Address).ThenInclude(a => a.Commune)
+                .Include(i => i.InvestmentOwners).ThenInclude(io=>io.Owner)
                 .OrderBy(i => i.Address.SingleLine)
                 .ToList();
-            ViewData["DLInvestments"] = new SelectList(investments, "InvestmentId", "Address.SingleLine", null);
+            var ls = investments
+                .Select(i => new SelectListItem
+                {
+                    Text = i.InvestmentOwners.Count > 0 ? i.Address.SingleLine + ", " +
+                            i.InvestmentOwners.FirstOrDefault().Owner.PartnerName1 + ' ' +
+                            i.InvestmentOwners.FirstOrDefault().Owner.PartnerName2 :
+                            i.Address.SingleLine,
+                    Value = i.InvestmentId.ToString()
+                }).ToList();
+            ViewData["DLInvestments"] = new SelectList(ls, "Value", "Text", null);
 
             var contract = _context.Contracts.Include(c=>c.Project).SingleOrDefault(c => c.ContractId == ContractId);
             ViewData["ProjectId"] = contract.ProjectId;
@@ -96,9 +107,22 @@ namespace DoEko.Controllers
                     Payments.Where(p => p.NotNeeded == true)
                         .ToList().ForEach(p => { p.InvestmentId = null; p.RseFotovoltaic = false; p.RseHeatPump = false; p.RseSolar = false; });
 
+                    //
+                    foreach (var item in Payments)
+                    {
+                        Payment dbp = _context.Payments.Single(p => p.PaymentId == item.PaymentId);
+
+                        dbp.InvestmentId = item.InvestmentId;
+                        dbp.NotNeeded = item.NotNeeded;
+                        dbp.RseFotovoltaic = item.RseFotovoltaic;
+                        dbp.RseHeatPump = item.RseHeatPump;
+                        dbp.RseSolar = item.RseSolar;
+                        _context.Payments.Update(dbp);
+                    }
+
                     try
                     {
-                        _context.UpdateRange(Payments);
+                        //_context.UpdateRange(Payments);
                         int x = await _context.SaveChangesAsync();
                         error = false;
                     }
@@ -115,13 +139,22 @@ namespace DoEko.Controllers
             }
             else
             {
-                var investments = _context.Contracts
-                                .Where(c => c.ContractId == ContractId)
-                                .Include(c => c.Investments)
-                                .ThenInclude(i => i.Address)
-                                .ThenInclude(a => a.Commune)
-                                .Single().Investments;
-                ViewData["DLInvestments"] = new SelectList(investments, "InvestmentId", "Address.SingleLine", null);
+                var investments = _context.Investments
+                                .Where(i => i.ContractId == ContractId)
+                                .Include(i => i.Address).ThenInclude(a => a.Commune)
+                                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                                .OrderBy(i => i.Address.SingleLine)
+                                .ToList();
+                var ls = investments
+                    .Select(i => new SelectListItem
+                    {
+                        Text = i.InvestmentOwners.Count > 0 ? i.Address.SingleLine + ", " +
+                                i.InvestmentOwners.FirstOrDefault().Owner.PartnerName1 + ' ' +
+                                i.InvestmentOwners.FirstOrDefault().Owner.PartnerName2 :
+                                i.Address.SingleLine,
+                        Value = i.InvestmentId.ToString()
+                    }).ToList();
+                ViewData["DLInvestments"] = new SelectList(ls, "Value", "Text", null);
 
                 var contract = _context.Contracts.Include(c => c.Project).SingleOrDefault(c => c.ContractId == ContractId);
                 ViewData["ProjectId"] = contract.ProjectId;
@@ -166,45 +199,72 @@ namespace DoEko.Controllers
             DateTime date;
             Decimal amount;
             index = 0;
+            //
+            char separator = ',';
+            if (CsvTable.First().Split(separator).Length < 12)
+                separator = ';';
+            if (CsvTable.First().Split(separator).Length < 12)
+            {
+                msg.Add("Błąd struktury pliku");
+                msg.Add("Nie można rozpoznać separatora (; lub ,)");
+                TempData["FileUploadResult"] = 8;
+                TempData["FileUploadType"] = "Import Wpłat";
+                TempData["FileUploadError"] = msg;
+                return RedirectToAction("Details", "Contracts", new { Id = ContractId });
+            }
+
             try
             {
+                //Remove header
+                try
+                {
+                    CsvTable.RemoveAt(0);
+                }
+                catch (Exception)
+                { }
                 foreach (string CsvLine in CsvTable)
                 {
                     index += 1;
-                    var LineFields = CsvLine.Split(';');
-                    if (LineFields.Length == 12)
+                    var LineFields = CsvLine.Split(separator);
+                    if (LineFields.Length < 12)
                     {
-                        payment = new Payment {
-                            ContractId = ContractId,
-                            SourceRow = CsvLine
-                            };
-                        if (DateTime.TryParse(LineFields[0].ToString(), out date))
-                        {
-                            payment.PaymentDate = date;
-                        }
-                        if (DateTime.TryParse(LineFields[1].ToString(), out date))
-                        {
-                            payment.PostingDate = date;
-                        }
-                        if (decimal.TryParse(LineFields[3].Replace('.',',').ToString(), out amount))
-                        {
-                            payment.Amount = amount;
-                        }
+                        continue;
+                    }
+                    payment = new Payment {
+                        ContractId = ContractId,
+                        SourceRow = CsvLine,
+                        PaymentDate = DateTime.Parse(LineFields[0].ToString()),
+                        PostingDate = DateTime.Parse(LineFields[1].ToString()),
+                        Amount = decimal.Parse(LineFields[3].Replace(',','.').ToString())
+                    };
+                    //if (DateTime.TryParse(LineFields[0].ToString(), out date))
+                    //{
+                    //    payment.PaymentDate = date;
+                    //}
+                    //if (DateTime.TryParse(LineFields[1].ToString(), out date))
+                    //{
+                    //    payment.PostingDate = date;
+                    //}
+                    //if (decimal.TryParse(LineFields[3].Replace('.',',').ToString(), out amount))
+                    //{
+                    //    payment.Amount = amount;
+                    //}
 
-                        if (payment.Amount != 0)
-                        {
-                            _context.Add(payment);
-                            await _context.SaveChangesAsync();
-                        }
+                    if (payment.Amount != 0)
+                    {
+                        _context.Add(payment);
+                        await _context.SaveChangesAsync();
                     }
                 }
-
             }
             catch (Exception exc)
             {
                 error = true;
                 msg.Add("Błąd podczas przetwarzania w wierszu " + index.ToString());
-                msg.Add(exc.Message);
+                if (exc.InnerException != null)
+                    msg.Add(exc.InnerException.Message);
+                else
+                    msg.Add(exc.Message);
             }
 
             if (error)

@@ -35,6 +35,14 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> SurveyExtract()
+        {
+            //ViewData['Contracts'] = lc;
+
+            return View();
+        }
+
+        [HttpGet]
         public async Task<IActionResult> ProgressSummary()
         {
             //disable change tracking
