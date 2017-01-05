@@ -49,7 +49,9 @@ namespace DoEko.ViewComponents
                     else if (isSurveyType((int)SurveyRSETypeHotWater.Solar, srv.SurveyId))
                         refSrv = getSurveyByRSE(srv.InvestmentId, SurveyRSETypeEnergy.PhotoVoltaic);
 
-                    if (refSrv != null && refSrv.RoofPlanes != null)
+                    if (refSrv != null && 
+                        refSrv.RoofPlanes != null && 
+                        refSrv.RoofPlanes.Count > 0)
                     {
                         model.Plane = refSrv.RoofPlanes.First();
                         model.Plane.SurveyId = srv.SurveyId;
@@ -122,19 +124,21 @@ namespace DoEko.ViewComponents
         /// <returns></returns>
         public Survey getSurveyByRSE(Guid investmentId, SurveyRSETypeCentralHeating Type)
         {
-                return _context.SurveysCH.Where(s => s.InvestmentId == investmentId && s.RSEType == Type).SingleOrDefault();
+                return _context.SurveysCH.Where(s => s.InvestmentId == investmentId && s.RSEType == Type && s.Status != SurveyStatus.Cancelled).SingleOrDefault();
         }
         public Survey getSurveyByRSE(Guid investmentId, SurveyRSETypeEnergy Type)
         {
                 return _context.SurveysEN
                 .Include(s => s.RoofPlanes)
-                .Where(s => s.InvestmentId == investmentId && s.RSEType == Type).SingleOrDefault();
+                .Where(s => s.InvestmentId == investmentId && s.RSEType == Type && s.Status != SurveyStatus.Cancelled).SingleOrDefault();
         }
         public Survey getSurveyByRSE(Guid investmentId, SurveyRSETypeHotWater Type)
         {
                 return _context.SurveysHW
                 .Include(s=>s.RoofPlanes)
-                .Where(s => s.InvestmentId == investmentId && s.RSEType == Type).SingleOrDefault();
+                .Where(s => s.InvestmentId == investmentId && 
+                            s.RSEType == Type && 
+                            s.Status != SurveyStatus.Cancelled ).SingleOrDefault();
         }
 
     }

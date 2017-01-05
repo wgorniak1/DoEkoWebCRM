@@ -426,11 +426,13 @@ namespace DoEko.Controllers
 
             _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
+            try
+            {
             //update
             var investmentsToAssign = _context.Investments.Where(i => InvestmentId.Any(inv => inv == i.InvestmentId)==true);
 
             await investmentsToAssign.LoadAsync();
-            await investmentsToAssign.ForEachAsync(i => i.InspectorId = _context.CurrentUserId);
+            await investmentsToAssign.ForEachAsync(i => i.InspectorId = InspectorId.Value);
 
             //foreach (Guid item in InvestmentId)
             //{
@@ -447,8 +449,6 @@ namespace DoEko.Controllers
             //    }
             //}
             //Save changes
-            try
-            {
                 _context.Investments.UpdateRange(investmentsToAssign);
                 await _context.SaveChangesAsync();
 
