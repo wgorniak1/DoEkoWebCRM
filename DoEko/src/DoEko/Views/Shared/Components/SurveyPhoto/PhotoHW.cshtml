@@ -15,8 +15,8 @@
 
 <legend>Zdjęcia</legend>
 @{ 
-    //HW SOL Picture0 Picture5    Picture6 Picture7 
-    //HW HP  Picture0 Picture5    Picture2 *
+//HW SOL Picture0 Picture5    Picture2 Picture6 Picture7 
+//HW HP  Picture0 Picture5    Picture2 *
 }
 
 <div class="row">
@@ -114,10 +114,37 @@
                     </button>
                 }
             </div>
-
-
         break;
-    case DoEko.Models.DoEko.Survey.SurveyRSETypeHotWater.Solar:   
+    case DoEko.Models.DoEko.Survey.SurveyRSETypeHotWater.Solar:
+        <div class="col-sm-3">
+            <label class="control-label">Zdjęcie kotłowni</label>
+            @if (Model.Attachments.Keys.Any(k => k == "Picture2") == false)
+            {
+                <a class="photo-link" style="cursor:pointer" name="Picture2">
+                    <img src="" alt="Zdjęcie kotłowni" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
+                </a>
+                    <form action="" method="post" enctype="multipart/form-data" hidden>
+                        <input type="file" id="Picture2" name="Picture2" class="photo-input" accept="image/*" capture>
+                        <input type="submit" value="Upload">
+                    </form>
+                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture2" hidden style="display:none; margin-top:5px;">
+                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
+                    </button>
+            }
+            else
+            {
+                <a href='@Model.Attachments["Picture2"].Url' target="_blank" class="photo-link" style="cursor:pointer" name="Picture2">
+                    <img src='@Model.Attachments["Picture2"].Url' alt="Ortofotomapa" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
+                </a>
+                    <form action="" method="post" enctype="multipart/form-data" hidden>
+                        <input type="file" id="Picture2" name="Picture2" class="photo-input" accept="image/*" capture>
+                        <input type="submit" value="Upload">
+                    </form>
+                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture2" style="margin-top:5px;">
+                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
+                    </button>
+            }
+        </div>
 
     <div class="col-sm-3">
                 <label class="control-label">Zdjęcie budynku wraz z dachem od strony południowej</label>

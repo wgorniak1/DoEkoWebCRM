@@ -372,6 +372,18 @@ namespace DoEko.Controllers
 
         }
 
+        [HttpGet]
+        public JsonResult GetProjectsAjax()
+        {
+            return Json(new SelectList(_context.Projects.Select(p => new SelectListItem()
+            {
+                Value = p.ProjectId.ToString(),
+                Text = p.ShortDescription + " (" +
+                       p.StartDate.ToShortDateString() + " - " +
+                       p.EndDate.ToShortDateString() + ")"
+            }).ToList(), "Value", "Text", null));
+        }
+
         private bool ProjectExists(int id)
         {
             return _context.Projects.Any(e => e.ProjectId == id);

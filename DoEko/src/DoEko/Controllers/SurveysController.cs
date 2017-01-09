@@ -543,6 +543,7 @@ namespace DoEko.Controllers
 
                 if (srv.BoilerRoom == null)
                 {
+                    boilerRoom.Volume = boilerRoom.Width * boilerRoom.Height * boilerRoom.Length;
                     _context.Add(boilerRoom);
                 }
                 else

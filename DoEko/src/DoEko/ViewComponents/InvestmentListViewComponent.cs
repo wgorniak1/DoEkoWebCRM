@@ -195,9 +195,9 @@ namespace DoEko.ViewComponents
                 qry = qry.Where(i => i.Investment.Address.City == filter.City);
             if (!string.IsNullOrEmpty(filter.FreeText))
                 qry = qry.Where(i => 
-                i.Investment.Address.SingleLine.Contains(filter.FreeText)
+                i.Investment.Address.SingleLine.ToLower().Contains(filter.FreeText.ToLower())
                 ||
-                (i.Owner.PartnerName1 + i.Owner.PartnerName2).Contains(filter.FreeText)
+                (i.Owner.PartnerName1 + i.Owner.PartnerName2).ToLower().Contains(filter.FreeText.ToLower())
                 );
 
             return qry;

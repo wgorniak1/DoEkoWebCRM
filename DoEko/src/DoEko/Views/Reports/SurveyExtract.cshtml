@@ -1,0 +1,68 @@
+﻿@using DoEko.Models.DoEko.Survey
+@using DoEko.Controllers.Extensions
+@using Microsoft.AspNetCore.Identity
+@using DoEko.Models.Identity
+@using DoEko.ViewModels.ReportsViewModels
+
+@model SurveyExtractViewModel
+
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Eksport ankiet";
+}
+
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li>Raporty</li>
+    <li class="active">Eksport ankiet</li>
+</ol>
+
+<!--Title-->
+<h2>Eksport danych z ankiet</h2>
+<hr />
+<form id="ReportSelectionScreen">
+    <fieldset>
+        <div class="row">
+            <div class="col-sm-1">
+                <label asp-for="ProjectId" class="control-label"></label>
+            </div>
+            <div class="col-sm-11 form-group">
+                <select asp-for="ProjectId" asp-items="@Model.ProjectList" class="form-control input-sm data-project" data-project="">
+                    <option selected value=""></option>
+                </select>
+                <span asp-validation-for="ProjectId"></span>
+            </div>
+         </div>
+        <div class="row">
+            <div class="col-sm-1">
+                <label asp-for="ContractId" class="control-label"></label>
+            </div>
+            <div class="col-sm-11 form-group">
+                <select asp-for="ContractId" class="form-control input-sm data-contract" asp-items="@Model.ContractList">
+                    <option selected value=""></option>
+                </select>
+                <span asp-validation-for="ContractId"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-1">
+                <label class="control-label"></label>
+            </div>
+            <div class="col-sm-11">
+                <a asp-action="SurveyToCSV" asp-route-projectId="" asp-route-contractId=""
+                   class="btn btn-primary data-link">Pobierz</a>
+            </div>
+        </div>
+    </fieldset>
+</form>
+
+@section Scripts {
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/Reports.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/Reports.min.js"></script>
+    </environment>
+}

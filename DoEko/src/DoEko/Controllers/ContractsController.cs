@@ -282,6 +282,29 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetContractsAjax(int? projectId)
+        {
+
+            var cq = projectId.HasValue ? _context.Contracts.Where(c=>c.ProjectId == projectId) : _context.Contracts;
+
+            var result = new SelectList(cq.Select(c => new SelectListItem()
+            {
+                Value = c.ContractId.ToString(),
+                Text = c.FullfilmentDate.HasValue ?
+                        c.Number + ' ' +
+                        c.ContractDate.ToShortDateString() + " - " +
+                        c.FullfilmentDate.Value.ToShortDateString() + ' ' +
+                        c.ShortDescription :
+
+                        c.Number + " " +
+                        c.ContractDate.ToShortDateString() + " " +
+                        c.ShortDescription
+            }).ToList(), "Value", "Text", null);
+
+            return Json(result);
+        }
+
+        [HttpGet]
         public IActionResult CalculateNewNumberAjax(ContractType type, DateTime contractDate)
         {
             return Json(CalculateNewNumber(type, contractDate));

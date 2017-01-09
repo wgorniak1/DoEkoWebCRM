@@ -38,33 +38,49 @@ namespace DoEko.Controllers
         [HttpGet]
         public async Task<IActionResult> SurveyExtract()
         {
-            ViewData["Projects"] = new SelectList(await _context.Projects.Select(p => new SelectListItem() {
+            //disable change tracking
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            //View model
+            SurveyExtractViewModel model = new SurveyExtractViewModel();
+
+            model.ProjectList = new SelectList(await _context.Projects.Select(p => new SelectListItem() {
                 Value = p.ProjectId.ToString(),
                 Text = p.ShortDescription + " (" +
                        p.StartDate.ToShortDateString() + " - " +
                        p.EndDate.ToShortDateString() + ")"
-            }).ToListAsync(),"Value","Item",null);
+            }).ToListAsync(),"Value","Text",null);
 
-            ViewData["Contracts"] = new SelectList(await _context.Contracts.Select(c => new SelectListItem() {
+            model.ContractList = new SelectList(await _context.Contracts.Select(c => new SelectListItem() {
                  Value = c.ContractId.ToString(),
                  Text = c.FullfilmentDate.HasValue ?  
-                        c.Number + 
-                        c.ContractDate.ToShortDateString() + 
-                        c.FullfilmentDate.Value.ToShortDateString() +
+                        c.Number + ' ' +
+                        c.ContractDate.ToShortDateString() + " - " +
+                        c.FullfilmentDate.Value.ToShortDateString() + ' ' +
                         c.ShortDescription :
 
-                        c.Number +
-                        c.ContractDate.ToShortDateString() +
-                        c.FullfilmentDate.Value.ToShortDateString() +
+                        c.Number + " " +
+                        c.ContractDate.ToShortDateString() + " " +
                         c.ShortDescription
             }).ToListAsync(), "Value","Text",null);
 
-            return View();
+            return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> SurveyToCSV(int? projectId, int? contractId, Guid? investmentId)
         {
+            //disable change tracking
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            //file name
+            string fileName = "DaneZAnkiet";
+            if (projectId.HasValue) fileName = fileName + "_Projekt=" + projectId.ToString();
+            if (contractId.HasValue) fileName = fileName + "_Umowa=" + contractId.ToString();
+            if (investmentId.HasValue) fileName = fileName + "_Inwestycja=" + investmentId.ToString();
+            fileName += ".csv";
+
+            //
             var sl = _context.Surveys.Where(s => s.Status != SurveyStatus.Cancelled);
 
             if (projectId.HasValue)
@@ -78,149 +94,351 @@ namespace DoEko.Controllers
                 .ThenBy(s => s.Investment.ContractId)
                 .ThenBy(s => s.InvestmentId);
 
-            sl.Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
-                .Include(s => s.Investment).ThenInclude(i => i.Address);
+            sl = sl.Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address)
+                   .Include(s => s.AirCondition)
+                   .Include(s => s.Audit)
+                   .Include(s => s.BathRoom)
+                   .Include(s => s.BoilerRoom)
+                   .Include(s => s.Building)
+                   .Include(s => s.Ground)
+                   .Include(s => s.PlannedInstall)
+                   .Include(s => s.RoofPlanes)
+                   .Include(s => s.Wall);
 
             var result = await sl.ToListAsync();
 
             CsvExport list = await SurveyListAsCSV(result);
-            return File(list.ExportToBytes(), "text/csv", "DaneZAnkiet.csv");
-
-        }
+            return File(list.ExportToBytes(), "application/csv", fileName);
+    }
 
         private async Task<CsvExport> SurveyListAsCSV(List<Survey> data)
         {
             CsvExport myExport = new CsvExport(columnSeparator: ";");
             
+            foreach (var srv in data)
+            {
+                //HEADER
+                myExport.AddRow();
 
-            //foreach (var srv in data)
-            //{
-            //    //HEADER
-            //    myExport.Addrow();
+                //DATA
 
-            //    //DATA
+                //SURVEY GENERAL
+                myExport["TYP OZE"] = srv.TypeFullDescription();
+                myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
 
-            //    //SURVEY GENERAL
-            //    myExport["TYP OZE"] = srv.TypeFullDescription();
-            //    myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
-
-            //    //INWESTYCJA
-            //    myExport["INWESTYCJA - ADRES"] = srv.Investment.Address.SingleLine();
+                //INWESTYCJA
+                myExport["INWESTYCJA - ADRES"] = srv.Investment.Address.SingleLine;
 
 
-            //    //WŁAŚCICIELE
-            //    for (int i = 0; i < 3; i++)
-            //    {
-            //        if (srv.Investment.InvestmentOwners.Count == (i + 1))
-            //        {
+                //WŁAŚCICIELE
+                for (int i = 0; i < 3; i++)
+                {
+                    if (srv.Investment.InvestmentOwners != null & srv.Investment.InvestmentOwners.Count == (i + 1))
+                    {
 
-            //            myExport["WŁAŚCICIEL " + i.ToString()] = srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName2 + " " + srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName1;
-            //            myExport["WŁAŚCICIEL ADRES " + i.ToString()] = srv.Investment.InvestmentOwners.ElementAt(i).Owner.Address.SingleLine;
-            //        }
-            //        else
-            //        {
-            //            myExport["WŁAŚCICIEL " + i.ToString()] = "";
-            //            myExport["WŁAŚCICIEL ADRES " + i.ToString()] = "";
-            //        }
-            //    }
+                        myExport["WŁAŚCICIEL " + i.ToString()] = srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName2 + " " + srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName1;
+                        myExport["WŁAŚCICIEL ADRES " + i.ToString()] = srv.Investment.InvestmentOwners.ElementAt(i).Owner.Address.SingleLine;
+                    }
+                    else
+                    {
+                        myExport["WŁAŚCICIEL " + i.ToString()] = "";
+                        myExport["WŁAŚCICIEL ADRES " + i.ToString()] = "";
+                    }
+                }
 
-            //    //INWESTYCJA OGOLNE
+                //INWESTYCJA OGOLNE
 
-            //    myExport["RODZ. DZIAŁALN."] = srv.Investment.BusinessActivity.DisplayName();
-            //    myExport["PALIWO GŁ.CO"] = srv.Investment.CentralHeatingFuel.DisplayName();
-            //    myExport["RODZAJ GŁ.CO"] = srv.Investment.CentralHeatingType == CentralHeatingType.Other ?
-            //                   srv.Investment.CentralHeatingType.DisplayName() : 
-            //                   srv.Investment.CentralHeatingTypeOther;
-            //    myExport["ROK BUDOWY"] = srv.Investment.CompletionYear.ToString();
-            //    myExport["POW. OGRZEWANA"] = srv.Investment.HeatedArea.ToString();
-            //    myExport["PALIWO GŁ. CW"] = srv.Investment.HotWaterFuel.DisplayName();
-            //    myExport["RODZAJ GŁ. CW"] = srv.Investment.HotWaterType.DisplayName();
-            //    myExport["INTERNET W M.INW."] = srv.Investment.InternetAvailable.ToString();
-            //    myExport["NR KS. WIECZ."] = srv.Investment.LandRegisterNo;
-            //    myExport["L.MIESZKAŃCÓW"] = srv.Investment.NumberOfOccupants.ToString();
-            //    //myExport[""] = srv.Investment.PlotAreaNumber;
-            //    myExport["NR DZIAŁKI"] = srv.Investment.PlotNumber;
-            //    myExport["STAN BUD."] = srv.Investment.Stage.DisplayName();
-            //    myExport["POW. CAŁK."] = srv.Investment.TotalArea.ToString();
-            //    myExport["RODZ.BUD."] = srv.Investment.Type.DisplayName();
-            //    myExport["POW. UŻYTK."] = srv.Investment.UsableArea.ToString();
+                myExport["RODZ. DZIAŁALN."] = srv.Investment.BusinessActivity.DisplayName();
+                myExport["PALIWO GŁ.CO"] = srv.Investment.CentralHeatingFuel.DisplayName();
+                myExport["RODZAJ GŁ.CO"] = srv.Investment.CentralHeatingType != CentralHeatingType.Other ?
+                                           srv.Investment.CentralHeatingType.DisplayName() :
+                                           srv.Investment.CentralHeatingTypeOther;
+                myExport["ROK BUDOWY"] = srv.Investment.CompletionYear.ToString();
+                myExport["POW. OGRZEWANA"] = srv.Investment.HeatedArea.ToString();
+                myExport["PALIWO GŁ. CW"] = srv.Investment.HotWaterFuel.DisplayName();
+                myExport["RODZAJ GŁ. CW"] = srv.Investment.HotWaterType.DisplayName();
+                myExport["INTERNET W M.INW."] = srv.Investment.InternetAvailable.AsYesNo();
+                myExport["NR KS. WIECZ."] = srv.Investment.LandRegisterNo;
+                myExport["L.MIESZKAŃCÓW"] = srv.Investment.NumberOfOccupants.ToString();
+                //myExport[""] = srv.Investment.PlotAreaNumber;
+                myExport["NR DZIAŁKI"] = srv.Investment.PlotNumber;
+                myExport["STAN BUD."] = srv.Investment.Stage.DisplayName();
+                myExport["POW. CAŁK."] = srv.Investment.TotalArea.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                myExport["RODZ.BUD."] = srv.Investment.Type.DisplayName();
+                myExport["POW. UŻYTK."] = srv.Investment.UsableArea.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
 
-            //    //AIRCOND
-            //    myExport["ISTN. KLIMAT."] = srv.AirCondition.Exists.ToString();
-            //    myExport["KLIMAT.PLANOWANA"] = srv.AirCondition.isPlanned.ToString();
-            //    myExport["MECH.WENT.ISTN."] = srv.AirCondition.MechVentilationExists.ToString();
-            //    myExport["RODZAJ WENT."] = srv.AirCondition.Type.DisplayName();
-            //    //ENERGY AUDIT
-            //    myExport["PAR.DOD.ŹR.CIEPŁA"] = srv.Audit.AdditionalHeatParams;
-            //    myExport["DOD.ŹR.CIEPŁA"] = srv.Audit.AdditionalHeatSource.ToString();
-            //    myExport["ŚR.ROCZNE ZUŻYCIE CO"] = srv.Audit.AverageYearlyFuelConsumption.ToString();
-            //    myExport["ŚR.ROCZNE KOSZTY CO"] = srv.Audit.AverageYearlyHeatingCosts.ToString();
-            //    myExport["MAX TEMP. PIECA"] = srv.Audit.BoilerMaxTemp.ToString();
-            //    myExport["PIEC - MOC"] = srv.Audit.BoilerNominalPower.ToString();
-            //    myExport["PIEC - PLAN. WYM."] = srv.Audit.BoilerPlannedReplacement.ToString();
-            //    myExport["PIEC - ROK PROD."] = srv.Audit.BoilerProductionYear.ToString();
-            //    myExport["CO PODLOG."] = srv.Audit.CHFRadiantFloorInstalled.ToString();
-            //    myExport["PLAN.POMPA BĘDZIE JEDYNYM ŹR."] = srv.Audit.CHIsHPOnlySource.ToString();
-            //    myExport["CO PODLOG. - PROCENT POW."] = srv.Audit.CHRadiantFloorAreaPerc.ToString();
-            //    myExport["CO GRZEJNIKI"] = srv.Audit.CHRadiatorsInstalled.ToString();
-            //    myExport["CO GRZEJNIKI - TYP"] = srv.Audit.CHRadiatorType.DisplayName();
-            //    myExport["UMOWA KOMPLEKS."] = srv.Audit.ComplexAgreement.ToString();
-            //    myExport["EE - ŚR. KOSZT/MC."] = srv.Audit.ElectricityAvgMonthlyCost.ToString();
-            //    myExport["EE - MOC PRZYŁ."] = srv.Audit.ElectricityPower.ToString();
-            //    myExport["EE - DOD. LICZNIK"] = srv.Audit.ENAdditionalConsMeter.ToString();
-            //    myExport["EE - UZIEMIENIE"] = srv.Audit.ENIsGround.ToString();
-            //    myExport["EE - PLANOWANA MOC"] = srv.Audit.ENPowerLevel.ToString();
-            //    myExport["CW - MOC"] = srv.Audit.HWSourcePower.ToString();
-            //    myExport["EE - L. FAZ"] = srv.Audit.PhaseCount.DisplayName();
-            //    myExport["EE - ROCZNE ZUŻYCIE"] = srv.Audit.PowerAvgYearlyConsumption.ToString();
-            //    myExport["EE - DYSTRYBUTOR"] = srv.Audit.PowerCompanyName.DisplayName();
-            //    myExport["EE - UMIEJSC. LICZNIKA"] = srv.Audit.PowerConsMeterLocation.DisplayName();
-            //    myExport["EE - RODZ. PRZYŁ."] = srv.Audit.PowerSupplyType.DisplayName();
-            //    myExport["CW - POW. WĘŻ."] = srv.Audit.TankCoilSize.ToString();
-            //    myExport["CW - ISTN. ZASOBNIK"] = srv.Audit.TankExists.ToString();
-            //    myExport["CW - OBJ. ZASOBNIKA"] = srv.Audit.TankVolume.ToString();
+                //AIRCOND
+                if (srv.AirCondition != null)
+                {
+                    myExport["ISTN. KLIMAT."] = srv.AirCondition.Exists.AsYesNo();
+                    myExport["KLIMAT.PLANOWANA"] = srv.AirCondition.isPlanned.AsYesNo();
+                    myExport["MECH.WENT.ISTN."] = srv.AirCondition.MechVentilationExists.AsYesNo();
+                    myExport["RODZAJ WENT."] = srv.AirCondition.Type.DisplayName();
+                }
+                else
+                {
+                    myExport["ISTN. KLIMAT."] = "";
+                    myExport["KLIMAT.PLANOWANA"] = "";
+                    myExport["MECH.WENT.ISTN."] = "";
+                    myExport["RODZAJ WENT."] = "";
+                }
+                //ENERGY AUDIT
+                if (srv.Audit != null)
+                {
+                    myExport["PAR.DOD.ŹR.CIEPŁA"] = srv.Audit.AdditionalHeatParams;
+                    myExport["DOD.ŹR.CIEPŁA"] = srv.Audit.AdditionalHeatSource.AsYesNo();
+                    myExport["ŚR.ROCZNE ZUŻYCIE CO"] = srv.Audit.AverageYearlyFuelConsumption.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["ŚR.ROCZNE KOSZTY CO"] = srv.Audit.AverageYearlyHeatingCosts.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["MAX TEMP. PIECA"] = srv.Audit.BoilerMaxTemp.ToString();
+                    myExport["PIEC - MOC"] = srv.Audit.BoilerNominalPower.ToString();
+                    myExport["PIEC - PLAN. WYM."] = srv.Audit.BoilerPlannedReplacement.AsYesNo();
+                    myExport["PIEC - ROK PROD."] = srv.Audit.BoilerProductionYear.ToString();
+                    myExport["CO PODLOG."] = srv.Audit.CHFRadiantFloorInstalled.AsYesNo();
+                    myExport["PLAN.POMPA BĘDZIE JEDYNYM ŹR."] = srv.Audit.CHIsHPOnlySource.AsYesNo();
+                    myExport["CO PODLOG. - PROCENT POW."] = srv.Audit.CHRadiantFloorAreaPerc.ToString();
+                    myExport["CO GRZEJNIKI"] = srv.Audit.CHRadiatorsInstalled.AsYesNo();
+                    myExport["CO GRZEJNIKI - TYP"] = srv.Audit.CHRadiatorType.DisplayName();
+                    myExport["UMOWA KOMPLEKS."] = srv.Audit.ComplexAgreement.AsYesNo();
+                    myExport["EE - ŚR. KOSZT/MC."] = srv.Audit.ElectricityAvgMonthlyCost.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["EE - MOC PRZYŁ."] = srv.Audit.ElectricityPower.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["EE - DOD. LICZNIK"] = srv.Audit.ENAdditionalConsMeter.AsYesNo();
+                    myExport["EE - UZIEMIENIE"] = srv.Audit.ENIsGround.AsYesNo();
+                    myExport["EE - PLANOWANA MOC"] = srv.Audit.ENPowerLevel.ToString();
+                    myExport["CW - MOC"] = srv.Audit.HWSourcePower.ToString();
+                    myExport["EE - L. FAZ"] = srv.Audit.PhaseCount.DisplayName();
+                    myExport["EE - ROCZNE ZUŻYCIE"] = srv.Audit.PowerAvgYearlyConsumption.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["EE - DYSTRYBUTOR"] = srv.Audit.PowerCompanyName.DisplayName();
+                    myExport["EE - UMIEJSC. LICZNIKA"] = srv.Audit.PowerConsMeterLocation.DisplayName();
+                    myExport["EE - RODZ. PRZYŁ."] = srv.Audit.PowerSupplyType.DisplayName();
+                    myExport["CW - POW. WĘŻ."] = srv.Audit.TankCoilSize.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["CW - ISTN. ZASOBNIK"] = srv.Audit.TankExists.AsYesNo();
+                    myExport["CW - OBJ. ZASOBNIKA"] = srv.Audit.TankVolume.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                }
+                else
+                {
+                    myExport["PAR.DOD.ŹR.CIEPŁA"] = "";
+                    myExport["DOD.ŹR.CIEPŁA"] = "";
+                    myExport["ŚR.ROCZNE ZUŻYCIE CO"] = "";
+                    myExport["ŚR.ROCZNE KOSZTY CO"] = "";
+                    myExport["MAX TEMP. PIECA"] = "";
+                    myExport["PIEC - MOC"] = "";
+                    myExport["PIEC - PLAN. WYM."] = "";
+                    myExport["PIEC - ROK PROD."] = "";
+                    myExport["CO PODLOG."] = "";
+                    myExport["PLAN.POMPA BĘDZIE JEDYNYM ŹR."] = "";
+                    myExport["CO PODLOG. - PROCENT POW."] = "";
+                    myExport["CO GRZEJNIKI"] = "";
+                    myExport["CO GRZEJNIKI - TYP"] = "";
+                    myExport["UMOWA KOMPLEKS."] = "";
+                    myExport["EE - ŚR. KOSZT/MC."] = "";
+                    myExport["EE - MOC PRZYŁ."] = "";
+                    myExport["EE - DOD. LICZNIK"] = "";
+                    myExport["EE - UZIEMIENIE"] = "";
+                    myExport["EE - PLANOWANA MOC"] = "";
+                    myExport["CW - MOC"] = "";
+                    myExport["EE - L. FAZ"] = "";
+                    myExport["EE - ROCZNE ZUŻYCIE"] = "";
+                    myExport["EE - DYSTRYBUTOR"] = "";
+                    myExport["EE - UMIEJSC. LICZNIKA"] = "";
+                    myExport["EE - RODZ. PRZYŁ."] = "";
+                    myExport["CW - POW. WĘŻ."] = "";
+                    myExport["CW - ISTN. ZASOBNIK"] = "";
+                    myExport["CW - OBJ. ZASOBNIKA"] = "";
+                }
 
-            //    //BATHROOM
-            //    myExport["ISTN. ŁAŹ."] = srv.BathRoom.BathExsists.ToString();
-            //    myExport["OBJ. WANNY"] = srv.BathRoom.BathVolume.ToString();
-            //    myExport["L.ŁAZIENEK"] = srv.BathRoom.NumberOfBathrooms.ToString();
-            //    myExport["ISTN.PRYSZNIC"] = srv.BathRoom.ShowerExists.ToString();
-            //    //BOILERROOM
-            //    myExport[""] = srv.BoilerRoom.AirVentilationExists
-            //    myExport[""] = srv.BoilerRoom.DoorHeight
-            //    myExport[""] = srv.BoilerRoom.Height
-            //    myExport[""] = srv.BoilerRoom.HighVoltagePowerSupply
-            //    myExport[""] = srv.BoilerRoom.HWCirculationInstalled
-            //    myExport[""] = srv.BoilerRoom.HWInstalled
-            //    myExport[""] = srv.BoilerRoom.HWPressureReductorExists
-            //    myExport[""] = srv.BoilerRoom.IsDryAndWarm
-            //    myExport[""] = srv.BoilerRoom.Length
-            //    myExport[""] = srv.BoilerRoom.RoomExists
-            //    myExport[""] = srv.BoilerRoom.ThreePowerSuppliesExists
-            //    myExport[""] = srv.BoilerRoom.Volume
-            //    myExport[""] = srv.BoilerRoom.Width
-            //    //BUILDING
-            //    myExport[""] = srv.Building
-            //    myExport[""] = srv.Building
-            //    myExport[""] = srv.Building
-            //    myExport[""] = srv.Building
-            //    myExport[""] = srv.Building
-            //    myExport[""] = srv.Building
-            //    //
-            //    myExport[""] = srv.CancelComments
-            //    myExport[""] = srv.CancelType
-            //    myExport[""] = srv.ChangedAt
-            //    myExport[""] = srv.ChangedBy
-            //    myExport[""] = srv.FreeCommments
-            //    myExport[""] = srv.Ground
-            //    myExport[""] = srv.IsPaid
-            //    myExport[""] = srv.PlannedInstall
-            //    myExport[""] = srv.RejectComments
-            //    srv.RoofPlanes
-            //    //srv.Status
-            //    myExport[""] = srv.Wall
+                //BATHROOM
+                if (srv.BathRoom != null)
+                {
+                    myExport["ISTN. ŁAŹ."] = srv.BathRoom.BathExsists.AsYesNo();
+                    myExport["OBJ. WANNY"] = srv.BathRoom.BathVolume.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["L.ŁAZIENEK"] = srv.BathRoom.NumberOfBathrooms.ToString();
+                    myExport["ISTN.PRYSZNIC"] = srv.BathRoom.ShowerExists.AsYesNo();
+                }
+                else
+                {
+                    myExport["ISTN. ŁAŹ."] = "";
+                    myExport["OBJ. WANNY"] = "";
+                    myExport["L.ŁAZIENEK"] = "";
+                    myExport["ISTN.PRYSZNIC"] = "";
+                }
+                //BOILERROOM
+                if (srv.BoilerRoom != null)
+                {
+                    myExport["KOTŁOWNIA - ISTNIEJE"] = srv.BoilerRoom.RoomExists.AsYesNo();
+                    myExport["KOTŁOWNIA - ISTN.WOLNY PRZEW.WENT"] = srv.BoilerRoom.AirVentilationExists.AsYesNo();
+                    myExport["KOTŁOWNIA - SZER.DRZWI"] = srv.BoilerRoom.DoorHeight.ToString();
+                    myExport["KOTŁOWNIA - WYS."] = srv.BoilerRoom.Height.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["KOTŁOWNIA - INST.400V"] = srv.BoilerRoom.HighVoltagePowerSupply.AsYesNo();
+                    myExport["KOTŁOWNIA - ISTN. CYRKULACJA"] = srv.BoilerRoom.HWCirculationInstalled.AsYesNo();
+                    myExport["KOTŁOWNIA - ISTN. INST. CW"] = srv.BoilerRoom.HWInstalled.AsYesNo();
+                    myExport["KOTŁOWNIA - ISTN. REDUKTOR C."] = srv.BoilerRoom.HWPressureReductorExists.AsYesNo();
+                    myExport["KOTŁOWNIA - SUCHA I > 0 ST."] = srv.BoilerRoom.IsDryAndWarm.AsYesNo();
+                    myExport["KOTŁOWNIA - DŁUG."] = srv.BoilerRoom.Length.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["KOTŁOWNIA - ISTN. 3 UZIEM.GNIAZDA"] = srv.BoilerRoom.ThreePowerSuppliesExists.AsYesNo();
+                    myExport["KOTŁOWNIA - KUBATURA"] = srv.BoilerRoom.Volume.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["KOTŁOWNIA - SZER."] = srv.BoilerRoom.Width.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                }
+                else
+                {
+                    myExport["KOTŁOWNIA - ISTNIEJE"] = "";
+                    myExport["KOTŁOWNIA - ISTN.WOLNY PRZEW.WENT"] = "";
+                    myExport["KOTŁOWNIA - SZER.DRZWI"] = "";
+                    myExport["KOTŁOWNIA - WYS."] = "";
+                    myExport["KOTŁOWNIA - INST.400V"] = "";
+                    myExport["KOTŁOWNIA - ISTN. CYRKULACJA"] = "";
+                    myExport["KOTŁOWNIA - ISTN. INST. CW"] = "";
+                    myExport["KOTŁOWNIA - ISTN. REDUKTOR C."] = "";
+                    myExport["KOTŁOWNIA - SUCHA I > 0 ST."] = "";
+                    myExport["KOTŁOWNIA - DŁUG."] = "";
+                    myExport["KOTŁOWNIA - ISTN. 3 UZIEM.GNIAZDA"] = "";
+                    myExport["KOTŁOWNIA - KUBATURA"] = "";
+                    myExport["KOTŁOWNIA - SZER."] = "";
+                }
 
-            //}
+                //BUILDING
+                if (srv.Building != null)
+                {
+                    myExport["IZOLACJA - GRUBOŚĆ"] = srv.Building.InsulationThickness.ToString();
+                    myExport["IZOLACJA - RODZAJ"] = srv.Building.InsulationType == InsulationType.Ins_3 ?
+                                   srv.Building.InsulationTypeOther.ToString() :
+                                   srv.Building.InsulationType.DisplayName();
+                    myExport["TECHNOLOGIA WYKONANIA"] = srv.Building.TechnologyType.DisplayName();
+                    myExport["KUBATURA BUD."] = srv.Building.Volume.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["MATERIAŁ ŚCIAN"] = srv.Building.WallMaterialOther != null ? srv.Building.WallMaterialOther.ToString() : "";
+                    myExport["GRUBOŚĆ ŚCIAN"] = srv.Building.WallThickness.ToString();
+                }
+                else
+                {
+                    myExport["IZOLACJA - GRUBOŚĆ"] = "";
+                    myExport["IZOLACJA - RODZAJ"] = "";
+                    myExport["TECHNOLOGIA WYKONANIA"] = "";
+                    myExport["KUBATURA BUD."] = "";
+                    myExport["MATERIAŁ ŚCIAN"] = "";
+                    myExport["GRUBOŚĆ ŚCIAN"] = "";
+                }
+
+                //GENERAL
+                myExport["ANULOWANA - KOMENTARZ"] = srv.CancelComments != null ? srv.CancelComments.ToString() : "";
+                myExport["ANULOWANA - POWÓD"] = srv.CancelType.HasValue ? srv.CancelType.DisplayName() : "";
+                myExport["OST.ZM. - DATA"] = string.Format("{0:yyyy-M-dd hh:mm:ss}", srv.ChangedAt);
+                if (srv.ChangedBy != Guid.Empty)
+                {
+                    var usr = await _userManager.FindByIdAsync(srv.ChangedBy.ToString());
+                    myExport["OST.ZM. - PRZEZ"] = usr.LastName + " " + usr.FirstName;
+                }
+                else
+                {
+                    myExport["OST.ZM. - PRZEZ"] = "";
+                }
+                
+                myExport["UWAGI"] = srv.FreeCommments != null ? srv.FreeCommments.ToString() : "";
+                myExport["ZAPLACONA"] = srv.IsPaid.AsYesNo();
+
+                //GROUND
+                if (srv.Ground != null)
+                {
+                    myExport["GRUNT - POW."] = srv.Ground.Area.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["GRUNT - BYLY TEREN WOJSK"] = srv.Ground.FormerMilitary.AsYesNo();
+                    myExport["GRUNT - ISTN.INSTALACJA"] = srv.Ground.OtherInstallation.AsYesNo();
+                    myExport["GRUNT - INSTALACJA TYP"] = srv.Ground.OtherInstallationType != null ? srv.Ground.OtherInstallationType : "";
+                    myExport["GRUNT - GRUZ,SKAŁY"] = srv.Ground.Rocks.AsYesNo();
+                    myExport["GRUNT - NACHYLENIE"] = srv.Ground.SlopeTerrain.DisplayName();
+                    myExport["GRUNT - PODMOKŁY"] = srv.Ground.WetLand.AsYesNo();
+                }
+                else
+                {
+                    myExport["GRUNT - POW."] = "";
+                    myExport["GRUNT - BYLY TEREN WOJSK"] = "";
+                    myExport["GRUNT - ISTN.INSTALACJA"] = "";
+                    myExport["GRUNT - INSTALACJA TYP"] = "";
+                    myExport["GRUNT - GRUZ,SKAŁY"] = "";
+                    myExport["GRUNT - NACHYLENIE"] = "";
+                    myExport["GRUNT - PODMOKŁY"] = "";
+                }
+
+                // PLANNED INSTALLATION
+                if (srv.PlannedInstall != null)
+                {
+                    myExport["ZESTAW KLIENTA"] = srv.PlannedInstall.Configuration.DisplayName();
+                    myExport["LOKALIZACJA INSTALACJI"] = srv.PlannedInstall.Localization.DisplayName();
+                    myExport["INSTALACJA NA SCIANIE"] = srv.PlannedInstall.OnWallPlacementAvailable.AsYesNo();
+                    myExport["PRZEZN. BUDYNKU"] = srv.PlannedInstall.Purpose.DisplayName();
+                }
+                else
+                {
+                    myExport["ZESTAW KLIENTA"] = "";
+                    myExport["LOKALIZACJA INSTALACJI"] = "";
+                    myExport["INSTALACJA NA SCIANIE"] = "";
+                    myExport["PRZEZN. BUDYNKU"] = "";
+                }
+
+                //myExport[""] = srv.RejectComments.ToString();
+
+                for (int i = 0; i < 3; i++)
+                {
+                    if (srv.RoofPlanes != null && srv.RoofPlanes.Count == (i + 1))
+                    {
+                        var roof = srv.RoofPlanes.ElementAt(i);
+
+                        myExport["POŁAĆ " + i.ToString() + " TYP"] = roof.Type.DisplayName();
+                        myExport["POŁAĆ " + i.ToString() + " WYS.BUD."] = roof.BuildingHeight.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                        myExport["POŁAĆ " + i.ToString() + " KOMINY"] = roof.Chimney.AsYesNo();
+                        myExport["POŁAĆ " + i.ToString() + " DŁ.KRAW."] = roof.EdgeLength.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                        myExport["POŁAĆ " + i.ToString() + " INSTALACJA POD"] = roof.InstallationUnderPlane.AsYesNo();
+                        myExport["POŁAĆ " + i.ToString() + " DŁUG."] = roof.Width.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                        myExport["POŁAĆ " + i.ToString() + " SZER."] = roof.Length.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                        myExport["POŁAĆ " + i.ToString() + " INST.ODGROM"] = roof.LightingProtection.AsYesNo();
+                        myExport["POŁAĆ " + i.ToString() + " WYS.OKAPU"] = roof.OkapHeight.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                        myExport["POŁAĆ " + i.ToString() + " DŁ.GRZBIETU"] = roof.RidgeWeight.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                        myExport["POŁAĆ " + i.ToString() + " DŁ. DACHU"] = roof.RoofLength.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                        myExport["POŁAĆ " + i.ToString() + " POKRYCIE"] = roof.RoofMaterial.DisplayName();
+                        myExport["POŁAĆ " + i.ToString() + " ŚWIETLIKI"] = roof.SkyLights.AsYesNo();
+                        myExport["POŁAĆ " + i.ToString() + " KĄT NACH."] = roof.SlopeAngle.ToString();
+                        myExport["POŁAĆ " + i.ToString() + " POWIERZCHNIA"] = roof.SurfaceArea.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                        myExport["POŁAĆ " + i.ToString() + " AZYMUT"] = roof.SurfaceAzimuth.ToString();
+                        myExport["POŁAĆ " + i.ToString() + " OKNA"] = roof.Windows.AsYesNo();
+                    }
+                    else
+                    {
+                        myExport["POŁAĆ " + i.ToString() + " TYP"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " WYS.BUD."] = "";
+                        myExport["POŁAĆ " + i.ToString() + " KOMINY"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " DŁ.KRAW."] = "";
+                        myExport["POŁAĆ " + i.ToString() + " INSTALACJA POD"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " DŁUG."] = "";
+                        myExport["POŁAĆ " + i.ToString() + " SZER."] = "";
+                        myExport["POŁAĆ " + i.ToString() + " INST.ODGROM"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " WYS.OKAPU"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " DŁ.GRZBIETU"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " DŁ. DACHU"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " POKRYCIE"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " ŚWIETLIKI"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " KĄT NACH."] = "";
+                        myExport["POŁAĆ " + i.ToString() + " POWIERZCHNIA"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " AZYMUT"] = "";
+                        myExport["POŁAĆ " + i.ToString() + " OKNA"] = "";
+                    }
+                }
+
+                //srv.Status
+
+                //WALL
+                if (srv.Wall != null)
+                {
+                    myExport["ELEW - AZYMUT"] = srv.Wall.Azimuth.ToString();
+                    myExport["ELEW - WYS."] = srv.Wall.Height.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["ELEW - SZER."] = srv.Wall.Width.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                    myExport["ELEW - POW."] = srv.Wall.UsableArea.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
+                }
+                else
+                {
+                    myExport["ELEW - AZYMUT"] = "";
+                    myExport["ELEW - WYS."] = "";
+                    myExport["ELEW - SZER."] = "";
+                    myExport["ELEW - POW."] = "";
+                }
+            }
 
             return myExport;
         }

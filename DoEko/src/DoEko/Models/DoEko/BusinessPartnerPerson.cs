@@ -57,8 +57,14 @@ namespace DoEko.Models.DoEko
                         month -= 20;
                     }
                     else { year += 1900; } //person born between 1900 - 1999
-
-                    return new DateTime(year: year, month: month, day: day);
+                    try
+                    {
+                        return new DateTime(year: year, month: month, day: day);
+                    }
+                    catch (Exception)
+                    {
+                        return DateTime.MinValue;
+                    }
                 }
                 else
                 {

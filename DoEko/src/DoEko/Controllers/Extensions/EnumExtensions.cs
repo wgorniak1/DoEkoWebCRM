@@ -11,7 +11,7 @@ namespace DoEko.Controllers.Extensions
     {
         public static string DisplayName(this Enum value)
         {
-            if (value != null)
+            if (value != null && Enum.GetName(value.GetType(), value) != null)
             {
                 var EnumMemberDispAttrib = value.GetType().GetMember(Enum.GetName(value.GetType(), value))[0].GetCustomAttributes(typeof(DisplayAttribute), false)[0];
 
@@ -19,7 +19,7 @@ namespace DoEko.Controllers.Extensions
             }
             else
             {
-                return "Nie ustawiono";
+                return "";
             }
                 
             
