@@ -1,5 +1,5 @@
 ﻿//
-function onAjaxDataTableRefreshFailed(xhr, status, error) {
+function onAjaxContractsGetFailed(xhr, status, error) {
     alert(error);
 }
 //
