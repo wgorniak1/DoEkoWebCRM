@@ -18,6 +18,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using DoEko.Controllers.Extensions;
 using DoEko.ViewModels.ReportsViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DoEko.Controllers
 {
@@ -37,9 +38,191 @@ namespace DoEko.Controllers
         [HttpGet]
         public async Task<IActionResult> SurveyExtract()
         {
-            //ViewData['Contracts'] = lc;
+            ViewData["Projects"] = new SelectList(await _context.Projects.Select(p => new SelectListItem() {
+                Value = p.ProjectId.ToString(),
+                Text = p.ShortDescription + " (" +
+                       p.StartDate.ToShortDateString() + " - " +
+                       p.EndDate.ToShortDateString() + ")"
+            }).ToListAsync(),"Value","Item",null);
+
+            ViewData["Contracts"] = new SelectList(await _context.Contracts.Select(c => new SelectListItem() {
+                 Value = c.ContractId.ToString(),
+                 Text = c.FullfilmentDate.HasValue ?  
+                        c.Number + 
+                        c.ContractDate.ToShortDateString() + 
+                        c.FullfilmentDate.Value.ToShortDateString() +
+                        c.ShortDescription :
+
+                        c.Number +
+                        c.ContractDate.ToShortDateString() +
+                        c.FullfilmentDate.Value.ToShortDateString() +
+                        c.ShortDescription
+            }).ToListAsync(), "Value","Text",null);
 
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SurveyToCSV(int? projectId, int? contractId, Guid? investmentId)
+        {
+            var sl = _context.Surveys.Where(s => s.Status != SurveyStatus.Cancelled);
+
+            if (projectId.HasValue)
+                sl = sl.Where(s => s.Investment.Contract.ProjectId == projectId);
+            if (contractId.HasValue)
+                sl = sl.Where(s => s.Investment.ContractId == contractId);
+            if (investmentId.HasValue)
+                sl = sl.Where(s => s.InvestmentId == investmentId);
+
+            sl = sl.OrderBy(s => s.Investment.Contract.ProjectId)
+                .ThenBy(s => s.Investment.ContractId)
+                .ThenBy(s => s.InvestmentId);
+
+            sl.Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
+                .Include(s => s.Investment).ThenInclude(i => i.Address);
+
+            var result = await sl.ToListAsync();
+
+            CsvExport list = await SurveyListAsCSV(result);
+            return File(list.ExportToBytes(), "text/csv", "DaneZAnkiet.csv");
+
+        }
+
+        private async Task<CsvExport> SurveyListAsCSV(List<Survey> data)
+        {
+            CsvExport myExport = new CsvExport(columnSeparator: ";");
+            
+
+            //foreach (var srv in data)
+            //{
+            //    //HEADER
+            //    myExport.Addrow();
+
+            //    //DATA
+
+            //    //SURVEY GENERAL
+            //    myExport["TYP OZE"] = srv.TypeFullDescription();
+            //    myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
+
+            //    //INWESTYCJA
+            //    myExport["INWESTYCJA - ADRES"] = srv.Investment.Address.SingleLine();
+
+
+            //    //WŁAŚCICIELE
+            //    for (int i = 0; i < 3; i++)
+            //    {
+            //        if (srv.Investment.InvestmentOwners.Count == (i + 1))
+            //        {
+
+            //            myExport["WŁAŚCICIEL " + i.ToString()] = srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName2 + " " + srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName1;
+            //            myExport["WŁAŚCICIEL ADRES " + i.ToString()] = srv.Investment.InvestmentOwners.ElementAt(i).Owner.Address.SingleLine;
+            //        }
+            //        else
+            //        {
+            //            myExport["WŁAŚCICIEL " + i.ToString()] = "";
+            //            myExport["WŁAŚCICIEL ADRES " + i.ToString()] = "";
+            //        }
+            //    }
+
+            //    //INWESTYCJA OGOLNE
+
+            //    myExport["RODZ. DZIAŁALN."] = srv.Investment.BusinessActivity.DisplayName();
+            //    myExport["PALIWO GŁ.CO"] = srv.Investment.CentralHeatingFuel.DisplayName();
+            //    myExport["RODZAJ GŁ.CO"] = srv.Investment.CentralHeatingType == CentralHeatingType.Other ?
+            //                   srv.Investment.CentralHeatingType.DisplayName() : 
+            //                   srv.Investment.CentralHeatingTypeOther;
+            //    myExport["ROK BUDOWY"] = srv.Investment.CompletionYear.ToString();
+            //    myExport["POW. OGRZEWANA"] = srv.Investment.HeatedArea.ToString();
+            //    myExport["PALIWO GŁ. CW"] = srv.Investment.HotWaterFuel.DisplayName();
+            //    myExport["RODZAJ GŁ. CW"] = srv.Investment.HotWaterType.DisplayName();
+            //    myExport["INTERNET W M.INW."] = srv.Investment.InternetAvailable.ToString();
+            //    myExport["NR KS. WIECZ."] = srv.Investment.LandRegisterNo;
+            //    myExport["L.MIESZKAŃCÓW"] = srv.Investment.NumberOfOccupants.ToString();
+            //    //myExport[""] = srv.Investment.PlotAreaNumber;
+            //    myExport["NR DZIAŁKI"] = srv.Investment.PlotNumber;
+            //    myExport["STAN BUD."] = srv.Investment.Stage.DisplayName();
+            //    myExport["POW. CAŁK."] = srv.Investment.TotalArea.ToString();
+            //    myExport["RODZ.BUD."] = srv.Investment.Type.DisplayName();
+            //    myExport["POW. UŻYTK."] = srv.Investment.UsableArea.ToString();
+
+            //    //AIRCOND
+            //    myExport["ISTN. KLIMAT."] = srv.AirCondition.Exists.ToString();
+            //    myExport["KLIMAT.PLANOWANA"] = srv.AirCondition.isPlanned.ToString();
+            //    myExport["MECH.WENT.ISTN."] = srv.AirCondition.MechVentilationExists.ToString();
+            //    myExport["RODZAJ WENT."] = srv.AirCondition.Type.DisplayName();
+            //    //ENERGY AUDIT
+            //    myExport["PAR.DOD.ŹR.CIEPŁA"] = srv.Audit.AdditionalHeatParams;
+            //    myExport["DOD.ŹR.CIEPŁA"] = srv.Audit.AdditionalHeatSource.ToString();
+            //    myExport["ŚR.ROCZNE ZUŻYCIE CO"] = srv.Audit.AverageYearlyFuelConsumption.ToString();
+            //    myExport["ŚR.ROCZNE KOSZTY CO"] = srv.Audit.AverageYearlyHeatingCosts.ToString();
+            //    myExport["MAX TEMP. PIECA"] = srv.Audit.BoilerMaxTemp.ToString();
+            //    myExport["PIEC - MOC"] = srv.Audit.BoilerNominalPower.ToString();
+            //    myExport["PIEC - PLAN. WYM."] = srv.Audit.BoilerPlannedReplacement.ToString();
+            //    myExport["PIEC - ROK PROD."] = srv.Audit.BoilerProductionYear.ToString();
+            //    myExport["CO PODLOG."] = srv.Audit.CHFRadiantFloorInstalled.ToString();
+            //    myExport["PLAN.POMPA BĘDZIE JEDYNYM ŹR."] = srv.Audit.CHIsHPOnlySource.ToString();
+            //    myExport["CO PODLOG. - PROCENT POW."] = srv.Audit.CHRadiantFloorAreaPerc.ToString();
+            //    myExport["CO GRZEJNIKI"] = srv.Audit.CHRadiatorsInstalled.ToString();
+            //    myExport["CO GRZEJNIKI - TYP"] = srv.Audit.CHRadiatorType.DisplayName();
+            //    myExport["UMOWA KOMPLEKS."] = srv.Audit.ComplexAgreement.ToString();
+            //    myExport["EE - ŚR. KOSZT/MC."] = srv.Audit.ElectricityAvgMonthlyCost.ToString();
+            //    myExport["EE - MOC PRZYŁ."] = srv.Audit.ElectricityPower.ToString();
+            //    myExport["EE - DOD. LICZNIK"] = srv.Audit.ENAdditionalConsMeter.ToString();
+            //    myExport["EE - UZIEMIENIE"] = srv.Audit.ENIsGround.ToString();
+            //    myExport["EE - PLANOWANA MOC"] = srv.Audit.ENPowerLevel.ToString();
+            //    myExport["CW - MOC"] = srv.Audit.HWSourcePower.ToString();
+            //    myExport["EE - L. FAZ"] = srv.Audit.PhaseCount.DisplayName();
+            //    myExport["EE - ROCZNE ZUŻYCIE"] = srv.Audit.PowerAvgYearlyConsumption.ToString();
+            //    myExport["EE - DYSTRYBUTOR"] = srv.Audit.PowerCompanyName.DisplayName();
+            //    myExport["EE - UMIEJSC. LICZNIKA"] = srv.Audit.PowerConsMeterLocation.DisplayName();
+            //    myExport["EE - RODZ. PRZYŁ."] = srv.Audit.PowerSupplyType.DisplayName();
+            //    myExport["CW - POW. WĘŻ."] = srv.Audit.TankCoilSize.ToString();
+            //    myExport["CW - ISTN. ZASOBNIK"] = srv.Audit.TankExists.ToString();
+            //    myExport["CW - OBJ. ZASOBNIKA"] = srv.Audit.TankVolume.ToString();
+
+            //    //BATHROOM
+            //    myExport["ISTN. ŁAŹ."] = srv.BathRoom.BathExsists.ToString();
+            //    myExport["OBJ. WANNY"] = srv.BathRoom.BathVolume.ToString();
+            //    myExport["L.ŁAZIENEK"] = srv.BathRoom.NumberOfBathrooms.ToString();
+            //    myExport["ISTN.PRYSZNIC"] = srv.BathRoom.ShowerExists.ToString();
+            //    //BOILERROOM
+            //    myExport[""] = srv.BoilerRoom.AirVentilationExists
+            //    myExport[""] = srv.BoilerRoom.DoorHeight
+            //    myExport[""] = srv.BoilerRoom.Height
+            //    myExport[""] = srv.BoilerRoom.HighVoltagePowerSupply
+            //    myExport[""] = srv.BoilerRoom.HWCirculationInstalled
+            //    myExport[""] = srv.BoilerRoom.HWInstalled
+            //    myExport[""] = srv.BoilerRoom.HWPressureReductorExists
+            //    myExport[""] = srv.BoilerRoom.IsDryAndWarm
+            //    myExport[""] = srv.BoilerRoom.Length
+            //    myExport[""] = srv.BoilerRoom.RoomExists
+            //    myExport[""] = srv.BoilerRoom.ThreePowerSuppliesExists
+            //    myExport[""] = srv.BoilerRoom.Volume
+            //    myExport[""] = srv.BoilerRoom.Width
+            //    //BUILDING
+            //    myExport[""] = srv.Building
+            //    myExport[""] = srv.Building
+            //    myExport[""] = srv.Building
+            //    myExport[""] = srv.Building
+            //    myExport[""] = srv.Building
+            //    myExport[""] = srv.Building
+            //    //
+            //    myExport[""] = srv.CancelComments
+            //    myExport[""] = srv.CancelType
+            //    myExport[""] = srv.ChangedAt
+            //    myExport[""] = srv.ChangedBy
+            //    myExport[""] = srv.FreeCommments
+            //    myExport[""] = srv.Ground
+            //    myExport[""] = srv.IsPaid
+            //    myExport[""] = srv.PlannedInstall
+            //    myExport[""] = srv.RejectComments
+            //    srv.RoofPlanes
+            //    //srv.Status
+            //    myExport[""] = srv.Wall
+
+            //}
+
+            return myExport;
         }
 
         [HttpGet]

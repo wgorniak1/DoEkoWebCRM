@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DoEko.Controllers.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -162,5 +163,29 @@ namespace DoEko.Models.DoEko.Survey
 
         [Display(Description = "", Name = "Uwagi", ShortName = "Uwagi")]
         public string FreeCommments { get; set; }
+
+        public string TypeFullDescription()
+        {
+            string source = "";
+            switch (Type)
+            {
+                case DoEko.Survey.SurveyType.CentralHeating:
+                    source = Type.DisplayName() + '|' +
+                            (((SurveyCentralHeating)this).RSEType.DisplayName());
+                    break;
+                case DoEko.Survey.SurveyType.HotWater:
+                    source = Type.DisplayName() + '|' +
+                            (((SurveyHotWater)this).RSEType.DisplayName());
+                    break;
+                case DoEko.Survey.SurveyType.Energy:
+                    source = Type.DisplayName() + '|' +
+                            (((SurveyEnergy)this).RSEType.DisplayName());
+                    break;
+                default:
+                    source = Type.DisplayName() + '|';
+                    break;
+            }
+            return source;
+        }
     }
 }

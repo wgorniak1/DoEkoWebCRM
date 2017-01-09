@@ -432,23 +432,30 @@ namespace DoEko.Controllers
             var investmentsToAssign = _context.Investments.Where(i => InvestmentId.Any(inv => inv == i.InvestmentId)==true);
 
             await investmentsToAssign.LoadAsync();
-            await investmentsToAssign.ForEachAsync(i => i.InspectorId = InspectorId.Value);
+            if (!InspectorId.HasValue)
+            {
+                await investmentsToAssign.ForEachAsync(i => i.InspectorId = _context.CurrentUserId);
+            }
+            else
+            {
+                await investmentsToAssign.ForEachAsync(i => i.InspectorId = InspectorId.Value);
+            }
 
-            //foreach (Guid item in InvestmentId)
-            //{
-            //    Investment singleInvestment = await _context.Investments.SingleAsync(m => m.InvestmentId == item);
-            //    if (singleInvestment != null)
-            //    {
-            //        if (singleInvestment.InspectorId == null)
-            //        {
-            //            singleInvestment.InspectorId = InspectorId;
-            //            _context.Update(singleInvestment);
-            //        }
-            //        else
-            //            result.Add("InvestmentAlreadyAssigned", singleInvestment.InvestmentId.ToString());
-            //    }
-            //}
-            //Save changes
+                //foreach (Guid item in InvestmentId)
+                //{
+                //    Investment singleInvestment = await _context.Investments.SingleAsync(m => m.InvestmentId == item);
+                //    if (singleInvestment != null)
+                //    {
+                //        if (singleInvestment.InspectorId == null)
+                //        {
+                //            singleInvestment.InspectorId = InspectorId;
+                //            _context.Update(singleInvestment);
+                //        }
+                //        else
+                //            result.Add("InvestmentAlreadyAssigned", singleInvestment.InvestmentId.ToString());
+                //    }
+                //}
+                //Save changes
                 _context.Investments.UpdateRange(investmentsToAssign);
                 await _context.SaveChangesAsync();
 
