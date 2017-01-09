@@ -11,7 +11,6 @@
 /// <reference path="js/InvestmentListUnassigned.js" />
 /// <reference path="js/InvestmentListUnassigned.min.js" />
 /// <reference path="js/reports.js" />
-/// <reference path="js/reports.min.js" />
 /// <reference path="js/site.js" />
 /// <reference path="js/Survey.js" />
 /// <reference path="js/survey.min.js" />
