@@ -20,7 +20,9 @@
 //               });
 //       });
 
+/////////////////////////////////////////////////////////////
 //on Building General info - Insulation Type change to other
+/////////////////////////////////////////////////////////////
 function onCHInsTypeChange() {
     var type = $(".insulationtype").val();
     if (type === '3') {
@@ -32,7 +34,7 @@ function onCHInsTypeChange() {
 }
 
 $('body').on('change', '.insulationtype', onCHInsTypeChange);
-
+/////////////////////////////////////////////////////////////
 //on Central Heating source change
 function onCHTypeChange() {
     var type = $(".centralheating-type").val();
@@ -50,6 +52,7 @@ function onCHTypeChange() {
     }
 }
 $('body').on('change', '.centralheating-type', onCHTypeChange);
+/////////////////////////////////////////////////////////////
 
 //Navigation steps
 var stepNo;
@@ -288,38 +291,6 @@ function btnAddOwner() {
             onAjaxGetFailure(xhr, status, error);
         });
     });
-
-    ////1. Post current div
-    //var form = $("#Dynamic form");
-    //form.validate();
-    //if (form.valid()) {
-    //    var url = form.attr("action"),
-    //        method = form.attr('data-ajax-method'),
-    //        ajaxTrue = form.attr('data-ajax');
-    //    //1st
-    //    var postCurrent =
-    //    $.ajax({
-    //        type: method || "POST",
-    //        url: url,
-    //        data: form.serialize()
-    //    });
-    //    //chain call     
-    //    $.when(postCurrent).done(function () {
-    //        // Get owner section again without id
-    //        var getNew =
-    //        $.ajax({
-    //            url: "/InvestmentOwners/CreatePersonAjax",
-    //            data: { investmentId: $("#InvestmentId").val() },
-    //            type: "GET",
-    //            dataType: "html"
-    //        });
-    //        getNew.done(function (data, success) {
-    //            onAjaxGetSuccess(data, success)
-    //        });
-    //        getNew.error(function (xhr, status, error) {
-    //            onAjaxGetFailure(xhr, status, error)
-    //        });
-    //    });
 }
 
 function removeOwner() {
@@ -354,6 +325,65 @@ function removeOwner() {
 
 $('body').on('click', '.addowner', btnAddOwner);
 $('body').on('click', '.deleteownersubmit', removeOwner);
+
+
+////////////////////////////////////////////////////////////////////
+// SECTION BUILDING - ROOF
+////////////////////////////////////////////////////////////////////
+// ON ADD NEW ROOF PLANE
+function onAddRoof() {
+    //1. Post current section and then if success, create new owner
+    ajaxPostCurrentSection(onAjaxPostError, function () {
+        var getNew = $.ajax({
+            url: "/Surveys/CreateRoofPLaneAjax",
+            data: { surveyId: $("#SurveyId").val() },
+            type: "GET",
+            dataType: "html"
+        });
+        getNew.done(function (data, success) {
+            onAjaxGetSuccess(data, success);
+        });
+
+        getNew.error(function (xhr, status, error) {
+            onAjaxGetFailure(xhr, status, error);
+        });
+    });
+}
+////////////////////////////////////////////////////////////////////
+// ON DELETE ROOF PLANE
+function onRemoveRoof() {
+    $("#DeleteRoofModal").modal('hide');
+    $("div.modal-backdrop").remove();
+
+    // ajax to delete current roof
+    // ajax to re read next / last roof
+    var surveyId = $("#SurveyId").val();
+    var roofId = $("#Plane_RoofPlaneId").val();
+    // id=@("SurveyRoofPlane_" + Model.RoofNumber.ToString() + '_' + Model.RoofTotal.ToString())
+    var formId = $("#Dynamic form").attr("id").split("_");
+    var RoofNo = formId[1];
+    var RoofTotal = formId[2];
+
+    if (roofId !== "00000000-0000-0000-0000-000000000000") {
+
+        var deleteCurrent = $.ajax({
+            type: "POST",
+            url: "/Surveys/DeleteRoofPlaneAjax",
+            data: { surveyId: surveyId, roofPlaneId: roofId }
+        });
+
+        //chain call     
+        deleteCurrent.done(ajaxGetPrevSection);
+    }
+    else {
+        ajaxGetPrevSection();
+    }
+}
+////////////////////////////////////////////////////////////////////
+$('body').on('click', '.addroof', onAddRoof);
+$('body').on('click', '.deleteroofsubmit', onRemoveRoof);
+////////////////////////////////////////////////////////////////////
+
 
 //<script type="text/javascript" title="StepFormNavigation">
 function NavigationPrev() {
