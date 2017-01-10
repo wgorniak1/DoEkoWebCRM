@@ -1,6 +1,24 @@
 ﻿@model DoEko.ViewComponents.ViewModels.SurveyRoofPlaneViewModel
 @using DoEko.Models.DoEko
 @using DoEko.Models.DoEko.Survey
+<div class="modal fade" id="DeleteRoofModal" tabindex="-1" role="dialog" aria-labelledby="DeleteRoofModalTitle">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="DeleteRoofModalTitle">Usuwanie Połaci dachu</h4>
+            </div>
+            <div class="modal-body">
+                Jeśli usuniesz połać jej dane zostaną trwale usuniętę z bazy danych.
+                Kontynuować?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Nie</button>
+                <button type="button" class="btn btn-primary deleteroofsubmit">Tak, Usuń</button>
+            </div>
+        </div>
+    </div>
+</div>
 @{
     string method = "";
 
@@ -13,8 +31,7 @@
         method = "EditRoofPlaneAjax";
     }
 }
-
-<form id=@("SurveyRoofPlane_" + Model.RoofNumber.ToString())
+<form id=@("SurveyRoofPlane_" + Model.RoofNumber.ToString() + '_' + Model.RoofTotal.ToString())
       asp-action="@method"
       asp-controller="Surveys"
       data-ajax="true"
@@ -28,9 +45,17 @@
             Dach | Połać @Model.RoofNumber.ToString() z @Model.RoofTotal.ToString()
             @if (Model.RoofTotal > 1)
             {
-                <button class="btn-sm btn-default remowner"><span class="glyphicon glyphicon-minus"></span></button>
+                <button type="button"
+                        class="btn-sm btn-link"
+                        data-toggle="modal"
+                        data-target="#DeleteRoofModal">
+                    <span class="glyphicon glyphicon-minus"></span>
+                </button>
             }
-            <button class="btn-sm btn-default addowner"><span class="glyphicon glyphicon-plus"></span></button>
+            @if (Model.RoofTotal < 3)
+            {
+                <button type="button" class="btn-sm btn-link addroof"><span class="glyphicon glyphicon-plus"></span></button>
+            }
         </legend>
 
         <input asp-for="SurveyId" type="hidden" />
@@ -47,7 +72,7 @@
             </div>
             <div class="col-sm-9">
                 <div class="img-thumbnail roof-thumbnail">
-                    @{ 
+                    @{
                         string source = "";
                         switch (Model.Plane.Type)
                         {

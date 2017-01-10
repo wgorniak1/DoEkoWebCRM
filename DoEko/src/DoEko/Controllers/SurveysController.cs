@@ -94,13 +94,13 @@ namespace DoEko.Controllers
                 switch (Srv.Type)
                 {
                     case SurveyType.CentralHeating:
-                        RSEType = _context.SurveysCH.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = ((SurveyCentralHeating)Srv).RSEType;
                         break;
                     case SurveyType.HotWater:
-                        RSEType = _context.SurveysHW.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = ((SurveyHotWater)Srv).RSEType;
                         break;
                     case SurveyType.Energy:
-                        RSEType = _context.SurveysEN.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = ((SurveyEnergy)Srv).RSEType;
                         break;
                     default:
                         return BadRequest();
@@ -142,7 +142,9 @@ namespace DoEko.Controllers
                         ViewComponentAttributes = new { investmentId = Srv.InvestmentId, ownerId = Srv.Investment.InvestmentOwners.ElementAt(1).OwnerId };
                         break;
                     case SurveyFormStep.SurveyRoofPlane:
-                        ViewComponentAttributes = new { surveyId = surveyId, roofId = Srv.RoofPlanes.ElementAt(1).RoofPlaneId };
+                        //take first roofplane or pass null
+                        var roofPlaneId = (Srv.RoofPlanes != null && Srv.RoofPlanes.Count > 0) ? Srv.RoofPlanes.First().RoofPlaneId : Guid.Empty;
+                        ViewComponentAttributes = new { surveyId = surveyId, roofPlaneId = roofPlaneId };
                         break;
                     default:
                         ViewComponentAttributes = new { surveyId = surveyId };
@@ -160,7 +162,6 @@ namespace DoEko.Controllers
                     return BadRequest(exc.Message);
             }
         }
-
         [HttpGet]
         public IActionResult MaintainNextStepAjax(string currentStep, Guid surveyId)
         {
@@ -299,7 +300,6 @@ namespace DoEko.Controllers
 
             return ViewComponent(NextStep.ToString(), ViewComponentAttributes);
         }
-
         [HttpGet]
         public IActionResult MaintainPreviousStepAjax(string currentStep, Guid surveyId)
         {
@@ -447,7 +447,6 @@ namespace DoEko.Controllers
 
             return ViewComponent(PrevStep.ToString(), ViewComponentAttributes);
         }
-
         [HttpPost]
         public IActionResult EditBuildingGeneralInfoAjax(Survey survey)
         {
@@ -497,7 +496,6 @@ namespace DoEko.Controllers
                 return BadRequest(exc);
             }
         }
-
         [HttpPost]
         public IActionResult EditPlannedInstallationAjax(SurveyDetPlannedInstall plannedInstall)
         {
@@ -708,7 +706,11 @@ namespace DoEko.Controllers
                 return BadRequest(exc);
             }
         }
-
+        [HttpGet]
+        public IActionResult CreateRoofPLaneAjax(Guid surveyId)
+        {
+            return ViewComponent("SurveyRoofPlane", new { surveyId = surveyId, viewMode = SurveyViewMode.Maintain });
+        }
         [HttpPost]
         public async Task<IActionResult> CreateRoofPlaneAjax(SurveyRoofPlaneViewModel model)
         {
@@ -808,6 +810,30 @@ namespace DoEko.Controllers
             }
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRoofPlaneAjax(Guid surveyId, Guid roofPlaneId)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                var roofPlane = _context.Surveys
+                    .Where(s => s.SurveyId == surveyId)
+                    .Select(s => s.RoofPlanes.Where(rp => rp.RoofPlaneId == roofPlaneId).Single())
+                    .Single();
+
+                _context.Remove(roofPlane);
+                int Result = await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> EditAuditCHAjax(SurveyAuditViewModel model)
         {
@@ -999,42 +1025,27 @@ namespace DoEko.Controllers
         [HttpPost]
         public IActionResult EditPhotoAjax(Guid SurveyId, Guid InvestmentId)//FormCollection Form, Guid SurveyId)
         {
-            //try
-            //{
-            //    if (model.SurveyID == null) return BadRequest();
-
-            //    _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
-            //    if (Request.Form.Files.Any(f => string.IsNullOrEmpty(f.FileName) == false))
-            //    {
-            //        CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
-
-            //        string Key = model.SurveyID.ToString();
-
-            //        foreach (var file in Request.Form.Files)
-            //        {
-            //            Stream stream = file.OpenReadStream();
-            //            if (file.Length == 0)
-            //                continue;
-
-            //            if (file.Length > 0)
-            //            {
-            //                string name = Key + '/' + file.Name + '/' + file.FileName;
-            //                CloudBlockBlob blob = Container.GetBlockBlobReference(name);
-            //                blob.UploadFromStream(file.OpenReadStream());
-            //            }
-            //        }
-            //    }
-            try { 
-                this.SetDraftStatus(SurveyId, true);
+            try {
                 Investment inv = _context.Investments.Single(i => i.InvestmentId == InvestmentId);
-                if (inv.InspectionStatus == InspectionStatus.Submitted)
+                switch (inv.InspectionStatus)
                 {
-                    //what to do 
+                    case InspectionStatus.ValueToDelete:
+                    case InspectionStatus.NotExists:
+                    case InspectionStatus.Draft:
+                    case InspectionStatus.Rejected:
+                        this.SetDraftStatus(SurveyId, true);
+                        inv.Status = InvestmentStatus.Initial;
+                        inv.InspectionStatus = InspectionStatus.Draft;
+                        _context.Investments.Update(inv);
+                        _context.SaveChanges();
+                        break;
+                    case InspectionStatus.Submitted:
+                    case InspectionStatus.Approved:
+                    case InspectionStatus.Completed:
+                        break;
+                    default:
+                        break;
                 }
-                inv.Status = InvestmentStatus.Initial;
-                inv.InspectionStatus = InspectionStatus.Draft;
-                _context.Investments.Update(inv);
-                _context.SaveChanges();
 
                 //update status
                 return RedirectToAction("Details", "Investments", new { Id = inv.InvestmentId });
@@ -1064,6 +1075,7 @@ namespace DoEko.Controllers
                 srv.Status = SurveyStatus.Cancelled;
                 _context.Update(srv);
 
+                //
                 if (model.ReplaceWithType != null)
                 {
                     switch (model.ReplaceWithType)
@@ -1101,7 +1113,12 @@ namespace DoEko.Controllers
                     }
                 }
 
+
                 int Result = await _context.SaveChangesAsync();
+
+                //UPDATE INVESTMENT STATUS
+                await this.updateInvestmentStatus(srv.InvestmentId);
+
                 return Ok();
             }
             catch (Exception exc)
@@ -1126,24 +1143,8 @@ namespace DoEko.Controllers
 
                 if (submitInvestment)
                 {
-                    Survey srv = await _context.Surveys
-                        .Include(s => s.Investment).ThenInclude(i => i.Surveys)
-                        .SingleAsync(s => s.SurveyId == surveyId);
-
-                    if (srv.Investment.Surveys.Any(s=>s.Status == SurveyStatus.Draft || 
-                                                      s.Status == SurveyStatus.New || 
-                                                      s.Status == SurveyStatus.Rejected))
-                    {
-                        //co zwróciæ ?
-                        
-                    }
-                    else
-                    {
-                        srv.Investment.InspectionStatus = InspectionStatus.Submitted;
-                        srv.Investment.Status = InvestmentStatus.Initial;
-                        _context.Investments.Update(srv.Investment);
-                        Result = await _context.SaveChangesAsync();
-                    }
+                    //UPDATE INVESTMENT STATUS
+                    await this.updateInvestmentStatus(_context.Surveys.Where(s=>s.SurveyId == surveyId).Select(s=>s.InvestmentId).First());
                 }
                 
                 return Ok();
@@ -1169,18 +1170,8 @@ namespace DoEko.Controllers
                     return BadRequest(ModelState);
                 }
 
-                Survey srv = await _context.Surveys
-                    .Include(s => s.Investment).ThenInclude(i => i.Surveys)
-                    .SingleAsync(s => s.SurveyId == surveyId);
-
-                if (srv.Investment.Surveys.All(s => s.Status == SurveyStatus.Approved ||
-                                                    s.Status == SurveyStatus.Cancelled ))
-                {
-                    srv.Investment.InspectionStatus = InspectionStatus.Approved;
-                    srv.Investment.Status = InvestmentStatus.Completed;
-                    _context.Investments.Update(srv.Investment);
-                    Result = await _context.SaveChangesAsync();
-                }
+                //UPDATE INVESTMENT STATUS
+                await this.updateInvestmentStatus(_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.InvestmentId).First());
 
                 return Ok();
             }
@@ -1205,18 +1196,8 @@ namespace DoEko.Controllers
                     return BadRequest(ModelState);
                 }
 
-                Survey srv = await _context.Surveys
-                    .Include(s => s.Investment).ThenInclude(i => i.Surveys)
-                    .SingleAsync(s => s.SurveyId == surveyId);
-
-                //if (srv.Investment.Surveys.Any(s => s.Status == SurveyStatus.Rejected ))
-                //{
-                srv.Investment.InspectionStatus = InspectionStatus.Rejected;
-                srv.Investment.Status = InvestmentStatus.Initial;
-
-                _context.Investments.Update(srv.Investment);
-                Result = await _context.SaveChangesAsync();
-                //}
+                //UPDATE INVESTMENT STATUS
+                await this.updateInvestmentStatus(_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.InvestmentId).First());
 
                 return Ok();
             }
@@ -1622,6 +1603,51 @@ namespace DoEko.Controllers
 
         }
 
+        private async Task<int> updateInvestmentStatus( Guid investmentId)
+        {
+            int Result = 0;
+
+            Investment inv = _context.Investments
+                .Include(i=>i.Surveys)
+                .Single(i => i.InvestmentId == investmentId);
+
+            if (inv.Surveys.Any(s => s.Status == SurveyStatus.Draft))
+            {
+                //draft
+                inv.InspectionStatus = InspectionStatus.Draft;
+                inv.Status = InvestmentStatus.Initial;
+                _context.Investments.Update(inv);
+                Result = await _context.SaveChangesAsync();
+            }
+            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approval ||
+                                          s.Status == SurveyStatus.Approved ||
+                                          s.Status == SurveyStatus.Cancelled))
+            {
+                //submitted
+                inv.InspectionStatus = InspectionStatus.Submitted;
+                inv.Status = InvestmentStatus.Initial;
+                _context.Investments.Update(inv);
+                Result = await _context.SaveChangesAsync();
+            }
+            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Rejected ||
+                                          s.Status == SurveyStatus.Cancelled))
+            {   //rejected
+                inv.InspectionStatus = InspectionStatus.Rejected;
+                inv.Status = InvestmentStatus.Initial;
+                _context.Investments.Update(inv);
+                Result = await _context.SaveChangesAsync();
+            }
+            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approved ||
+                                          s.Status == SurveyStatus.Cancelled))
+            {   //completed
+                inv.InspectionStatus = InspectionStatus.Completed;
+                inv.Status = InvestmentStatus.Completed;
+                _context.Investments.Update(inv);
+                Result = await _context.SaveChangesAsync();
+            }
+
+            return Result;
+        }
 
         public bool isSurveyType( int type, Guid surveyId)
         {

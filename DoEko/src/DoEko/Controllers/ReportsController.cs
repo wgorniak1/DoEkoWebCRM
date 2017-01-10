@@ -84,7 +84,20 @@ namespace DoEko.Controllers
             var sl = _context.Surveys.Where(s => s.Status != SurveyStatus.Cancelled);
 
             if (projectId.HasValue)
-                sl = sl.Where(s => s.Investment.Contract.ProjectId == projectId);
+            {
+                //
+                var project = _context.Projects
+                    .Include(p=>p.ChildProjects)
+                    .Single(p => p.ProjectId == projectId);
+                if (project.ChildProjects != null && project.ChildProjects.Count > 0)
+                {
+                    sl = sl.Where(s => s.Investment.Contract.ProjectId == projectId || project.ChildProjects.Any(cp=>cp.ProjectId == s.Investment.Contract.ProjectId));
+                }
+                else
+                {
+                    sl = sl.Where(s => s.Investment.Contract.ProjectId == projectId);
+                }
+            }
             if (contractId.HasValue)
                 sl = sl.Where(s => s.Investment.ContractId == contractId);
             if (investmentId.HasValue)
@@ -95,7 +108,9 @@ namespace DoEko.Controllers
                 .ThenBy(s => s.InvestmentId);
 
             sl = sl.Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
-                   .Include(s => s.Investment).ThenInclude(i => i.Address)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.State)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.District)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
                    .Include(s => s.AirCondition)
                    .Include(s => s.Audit)
                    .Include(s => s.BathRoom)
@@ -110,8 +125,190 @@ namespace DoEko.Controllers
 
             CsvExport list = await SurveyListAsCSV(result);
             return File(list.ExportToBytes(), "application/csv", fileName);
-    }
+        }
+        private void AddRow( ref CsvExport csv)
+        {
+            csv.AddRow();
 
+            //DATA
+            csv["ID INWESTYCJI"] = "";
+            csv["ID ANKIETY"] = "";
+            csv["TYP OZE"] = "";
+            csv["STATUS ANKIETY"] = "";
+            csv["INWEST - ADRES - WOJ."] = "";
+            csv["INWEST - ADRES - POW."] = "";
+            csv["INWEST - ADRES - GM."] = "";
+            csv["INWEST - ADRES - KOD"] = "";
+            csv["INWEST - ADRES - MIEJSC"] = "";
+            csv["INWEST - ADRES - ULICA"] = "";
+            csv["INWEST - ADRES - NR BUD."] = "";
+            csv["INWEST - ADRES - NR MIESZK"] = "";
+            csv["WŁAŚCICIEL 0"] = "";
+            csv["WŁAŚCICIEL ADRES 0"] = "";
+            csv["WŁAŚCICIEL TEL 0"] = "";
+            csv["WŁAŚCICIEL MAIL 0"] = "";
+            csv["WŁAŚCICIEL 1"] = "";
+            csv["WŁAŚCICIEL ADRES 1"] = "";
+            csv["WŁAŚCICIEL TEL 1"] = "";
+            csv["WŁAŚCICIEL MAIL 1"] = "";
+            csv["WŁAŚCICIEL 2"] = "";
+            csv["WŁAŚCICIEL ADRES 2"] = "";
+            csv["WŁAŚCICIEL TEL 2"] = "";
+            csv["WŁAŚCICIEL MAIL 2"] = "";
+            csv["INTERNET W M.INW."] = "";
+            csv["RODZ. DZIAŁALN."] = "";
+            csv["NR KS. WIECZ."] = "";
+            csv["NR DZIAŁKI"] = "";
+            csv["PALIWO GŁ.CO"] = "";
+            csv["RODZAJ GŁ.CO"] = "";
+            csv["PALIWO GŁ. CW"] = "";
+            csv["RODZAJ GŁ. CW"] = "";
+            csv["STAN BUD."] = "";
+            csv["ROK BUDOWY"] = "";
+            csv["L.MIESZKAŃCÓW"] = "";
+            csv["POW. UŻYTK."] = "";
+            csv["POW. OGRZEWANA"] = "";
+            csv["POW. CAŁK."] = "";
+            csv["RODZ.BUD."] = "";
+            csv["UMOWA KOMPLEKS."] = "";
+            csv["EE - DYSTRYBUTOR"] = "";
+            csv["EE - MOC PRZYŁ."] = "";
+            csv["EE - RODZ. PRZYŁ."] = "";
+            csv["EE - L. FAZ"] = "";
+            csv["EE - UZIEMIENIE"] = "";
+            csv["EE - UMIEJSC. LICZNIKA"] = "";
+            csv["EE - DOD. LICZNIK"] = "";
+            csv["EE - ROCZNE ZUŻYCIE"] = "";
+            csv["EE - ŚR. KOSZT/MC."] = "";
+            csv["EE - PLANOWANA MOC"] = "";
+            csv["KOTŁOWNIA - ISTNIEJE"] = "";
+            csv["KOTŁOWNIA - SZER.DRZWI"] = "";
+            csv["KOTŁOWNIA - DŁUG."] = "";
+            csv["KOTŁOWNIA - SZER."] = "";
+            csv["KOTŁOWNIA - WYS."] = "";
+            csv["KOTŁOWNIA - KUBATURA"] = "";
+            csv["KOTŁOWNIA - ISTN. INST. CW"] = "";
+            csv["KOTŁOWNIA - ISTN. CYRKULACJA"] = "";
+            csv["KOTŁOWNIA - ISTN. REDUKTOR C."] = "";
+            csv["KOTŁOWNIA - ISTN.WOLNY PRZEW.WENT"] = "";
+            csv["KOTŁOWNIA - SUCHA I > 0 ST."] = "";
+            csv["KOTŁOWNIA - ISTN. 3 UZIEM.GNIAZDA"] = "";
+            csv["KOTŁOWNIA - INST.400V"] = "";
+            csv["L.ŁAZIENEK"] = "";
+            csv["ISTN. WANNA"] = "";
+            csv["OBJ. WANNY"] = "";
+            csv["ISTN.PRYSZNIC"] = "";
+            csv["ZESTAW KLIENTA"] = "";
+            csv["CW - MOC"] = "";
+            csv["PIEC - MOC"] = "";
+            csv["PIEC - ROK PROD."] = "";
+            csv["PIEC - PLAN. WYM."] = "";
+            csv["CO GRZEJNIKI"] = "";
+            csv["CO GRZEJNIKI - TYP"] = "";
+            csv["CO PODLOG."] = "";
+            csv["CO PODLOG. - PROCENT POW."] = "";
+            csv["MAX TEMP. PIECA"] = "";
+            csv["ŚR.ROCZNE ZUŻYCIE CO"] = "";
+            csv["ŚR.ROCZNE KOSZTY CO"] = "";
+            csv["MECH.WENT.ISTN."] = "";
+            csv["ISTN. KLIMAT."] = "";
+            csv["KLIMAT.PLANOWANA"] = "";
+            csv["TYP INST.CHŁODZ."] = "";
+            csv["DOD.ŹR.CIEPŁA"] = "";
+            csv["PAR.DOD.ŹR.CIEPŁA"] = "";
+            csv["CW - ISTN. ZASOBNIK"] = "";
+            csv["CW - OBJ. ZASOBNIKA"] = "";
+            csv["CW - POW. WĘŻ."] = "";
+            csv["PLAN.POMPA BĘDZIE JEDYNYM ŹR."] = "";
+            csv["TECHNOLOGIA WYKONANIA"] = "";
+            csv["MATERIAŁ ŚCIAN"] = "";
+            csv["GRUBOŚĆ ŚCIAN"] = "";
+            csv["IZOLACJA - RODZAJ"] = "";
+            csv["IZOLACJA - GRUBOŚĆ"] = "";
+            csv["KUBATURA BUD."] = "";
+            csv["LOKALIZACJA INSTALACJI"] = "";
+            csv["INSTALACJA NA SCIANIE"] = "";
+            csv["PRZEZN. BUDYNKU"] = "";
+            csv["GRUNT - POW."] = "";
+            csv["GRUNT - BYLY TEREN WOJSK"] = "";
+            csv["GRUNT - ISTN.INSTALACJA"] = "";
+            csv["GRUNT - INSTALACJA TYP"] = "";
+            csv["GRUNT - GRUZ,SKAŁY"] = "";
+            csv["GRUNT - NACHYLENIE"] = "";
+            csv["GRUNT - PODMOKŁY"] = "";
+            csv["POŁAĆ 0 TYP"] = "";
+            csv["POŁAĆ 0 WYS.BUD."] = "";
+            csv["POŁAĆ 0 WYS.OKAPU"] = "";
+            csv["POŁAĆ 0 DŁ. DACHU"] = "";
+            csv["POŁAĆ 0 DŁ.KRAW."] = "";
+            csv["POŁAĆ 0 DŁ.GRZBIETU"] = "";
+            csv["POŁAĆ 0 KĄT NACH."] = "";
+            csv["POŁAĆ 0 DŁUG."] = "";
+            csv["POŁAĆ 0 SZER."] = "";
+            csv["POŁAĆ 0 POWIERZCHNIA"] = "";
+            csv["POŁAĆ 0 POKRYCIE"] = "";
+            csv["POŁAĆ 0 AZYMUT"] = "";
+            csv["POŁAĆ 0 OKNA"] = "";
+            csv["POŁAĆ 0 ŚWIETLIKI"] = "";
+            csv["POŁAĆ 0 KOMINY"] = "";
+            csv["POŁAĆ 0 INSTALACJA POD"] = "";
+            csv["POŁAĆ 0 INST.ODGROM"] = "";
+            csv["POŁAĆ 1 TYP"] = "";
+            csv["POŁAĆ 1 WYS.BUD."] = "";
+            csv["POŁAĆ 1 WYS.OKAPU"] = "";
+            csv["POŁAĆ 1 DŁ. DACHU"] = "";
+            csv["POŁAĆ 1 DŁ.KRAW."] = "";
+            csv["POŁAĆ 1 DŁ.GRZBIETU"] = "";
+            csv["POŁAĆ 1 KĄT NACH."] = "";
+            csv["POŁAĆ 1 DŁUG."] = "";
+            csv["POŁAĆ 1 SZER."] = "";
+            csv["POŁAĆ 1 POWIERZCHNIA"] = "";
+            csv["POŁAĆ 1 POKRYCIE"] = "";
+            csv["POŁAĆ 1 AZYMUT"] = "";
+            csv["POŁAĆ 1 OKNA"] = "";
+            csv["POŁAĆ 1 ŚWIETLIKI"] = "";
+            csv["POŁAĆ 1 KOMINY"] = "";
+            csv["POŁAĆ 1 INSTALACJA POD"] = "";
+            csv["POŁAĆ 1 INST.ODGROM"] = "";
+            csv["POŁAĆ 2 TYP"] = "";
+            csv["POŁAĆ 2 WYS.BUD."] = "";
+            csv["POŁAĆ 2 WYS.OKAPU"] = "";
+            csv["POŁAĆ 2 DŁ. DACHU"] = "";
+            csv["POŁAĆ 2 DŁ.KRAW."] = "";
+            csv["POŁAĆ 2 DŁ.GRZBIETU"] = "";
+            csv["POŁAĆ 2 KĄT NACH."] = "";
+            csv["POŁAĆ 2 DŁUG."] = "";
+            csv["POŁAĆ 2 SZER."] = "";
+            csv["POŁAĆ 2 POWIERZCHNIA"] = "";
+            csv["POŁAĆ 2 POKRYCIE"] = "";
+            csv["POŁAĆ 2 AZYMUT"] = "";
+            csv["POŁAĆ 2 OKNA"] = "";
+            csv["POŁAĆ 2 ŚWIETLIKI"] = "";
+            csv["POŁAĆ 2 KOMINY"] = "";
+            csv["POŁAĆ 2 INSTALACJA POD"] = "";
+            csv["POŁAĆ 2 INST.ODGROM"] = "";
+            csv["ELEW - WYS."] = "";
+            csv["ELEW - SZER."] = "";
+            csv["ELEW - AZYMUT"] = "";
+            csv["ELEW - POW."] = "";
+            csv["ANULOWANA - KOMENTARZ"] = "";
+            csv["ANULOWANA - POWÓD"] = "";
+            csv["OST.ZM. - DATA"] = "";
+            csv["OST.ZM. - PRZEZ"] = "";
+            csv["UWAGI"] = "";
+            csv["ZAPLACONA"] = "";
+
+            csv["Picture0"] = "";
+            csv["Picture1"] = "";
+            csv["Picture2"] = "";
+            csv["Picture3"] = "";
+            csv["Picture4"] = "";
+            csv["Picture5"] = "";
+            csv["Picture6"] = "";
+            csv["Picture7"] = "";
+            csv["Picture8"] = "";
+            csv["Picture9"] = "";
+        }
         private async Task<CsvExport> SurveyListAsCSV(List<Survey> data)
         {
             CsvExport myExport = new CsvExport(columnSeparator: ";");
@@ -119,31 +316,36 @@ namespace DoEko.Controllers
             foreach (var srv in data)
             {
                 //HEADER
-                myExport.AddRow();
+                this.AddRow(ref myExport);
 
                 //DATA
+                myExport["ID INWESTYCJI"] = srv.InvestmentId.ToString();
+                myExport["ID ANKIETY"] = srv.SurveyId.ToString();
 
                 //SURVEY GENERAL
                 myExport["TYP OZE"] = srv.TypeFullDescription();
                 myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
 
                 //INWESTYCJA
-                myExport["INWESTYCJA - ADRES"] = srv.Investment.Address.SingleLine;
-
-
+                myExport["INWEST - ADRES - WOJ."] = srv.Investment.Address.State.Text;
+                myExport["INWEST - ADRES - POW."] = srv.Investment.Address.District.Text;
+                myExport["INWEST - ADRES - GM."] = srv.Investment.Address.Commune.FullName;
+                myExport["INWEST - ADRES - KOD"] = srv.Investment.Address.PostalCode;
+                myExport["INWEST - ADRES - MIEJSC"] = srv.Investment.Address.City;
+                myExport["INWEST - ADRES - ULICA"] = srv.Investment.Address.Street;
+                myExport["INWEST - ADRES - NR BUD."] = srv.Investment.Address.BuildingNo;
+                myExport["INWEST - ADRES - NR MIESZK"] = srv.Investment.Address.ApartmentNo;
+                
                 //WŁAŚCICIELE
                 for (int i = 0; i < 3; i++)
                 {
-                    if (srv.Investment.InvestmentOwners != null & srv.Investment.InvestmentOwners.Count == (i + 1))
+                    if (srv.Investment.InvestmentOwners != null & srv.Investment.InvestmentOwners.Count >= (i + 1))
                     {
-
-                        myExport["WŁAŚCICIEL " + i.ToString()] = srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName2 + " " + srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName1;
-                        myExport["WŁAŚCICIEL ADRES " + i.ToString()] = srv.Investment.InvestmentOwners.ElementAt(i).Owner.Address.SingleLine;
-                    }
-                    else
-                    {
-                        myExport["WŁAŚCICIEL " + i.ToString()] = "";
-                        myExport["WŁAŚCICIEL ADRES " + i.ToString()] = "";
+                        var owner = srv.Investment.InvestmentOwners.ElementAt(i).Owner;
+                        myExport["WŁAŚCICIEL " + i.ToString()] = owner.PartnerName2 + " " + srv.Investment.InvestmentOwners.ElementAt(i).Owner.PartnerName1;
+                        myExport["WŁAŚCICIEL ADRES " + i.ToString()] = owner.Address.SingleLine;
+                        myExport["WŁAŚCICIEL TEL " + i.ToString()] = owner.PhoneNumber;
+                        myExport["WŁAŚCICIEL MAIL " + i.ToString()] = owner.Email;
                     }
                 }
 
@@ -161,7 +363,6 @@ namespace DoEko.Controllers
                 myExport["INTERNET W M.INW."] = srv.Investment.InternetAvailable.AsYesNo();
                 myExport["NR KS. WIECZ."] = srv.Investment.LandRegisterNo;
                 myExport["L.MIESZKAŃCÓW"] = srv.Investment.NumberOfOccupants.ToString();
-                //myExport[""] = srv.Investment.PlotAreaNumber;
                 myExport["NR DZIAŁKI"] = srv.Investment.PlotNumber;
                 myExport["STAN BUD."] = srv.Investment.Stage.DisplayName();
                 myExport["POW. CAŁK."] = srv.Investment.TotalArea.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
@@ -174,14 +375,7 @@ namespace DoEko.Controllers
                     myExport["ISTN. KLIMAT."] = srv.AirCondition.Exists.AsYesNo();
                     myExport["KLIMAT.PLANOWANA"] = srv.AirCondition.isPlanned.AsYesNo();
                     myExport["MECH.WENT.ISTN."] = srv.AirCondition.MechVentilationExists.AsYesNo();
-                    myExport["RODZAJ WENT."] = srv.AirCondition.Type.DisplayName();
-                }
-                else
-                {
-                    myExport["ISTN. KLIMAT."] = "";
-                    myExport["KLIMAT.PLANOWANA"] = "";
-                    myExport["MECH.WENT.ISTN."] = "";
-                    myExport["RODZAJ WENT."] = "";
+                    myExport["TYP INST.CHŁODZ."] = srv.AirCondition.Type.DisplayName();
                 }
                 //ENERGY AUDIT
                 if (srv.Audit != null)
@@ -215,53 +409,16 @@ namespace DoEko.Controllers
                     myExport["CW - ISTN. ZASOBNIK"] = srv.Audit.TankExists.AsYesNo();
                     myExport["CW - OBJ. ZASOBNIKA"] = srv.Audit.TankVolume.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
                 }
-                else
-                {
-                    myExport["PAR.DOD.ŹR.CIEPŁA"] = "";
-                    myExport["DOD.ŹR.CIEPŁA"] = "";
-                    myExport["ŚR.ROCZNE ZUŻYCIE CO"] = "";
-                    myExport["ŚR.ROCZNE KOSZTY CO"] = "";
-                    myExport["MAX TEMP. PIECA"] = "";
-                    myExport["PIEC - MOC"] = "";
-                    myExport["PIEC - PLAN. WYM."] = "";
-                    myExport["PIEC - ROK PROD."] = "";
-                    myExport["CO PODLOG."] = "";
-                    myExport["PLAN.POMPA BĘDZIE JEDYNYM ŹR."] = "";
-                    myExport["CO PODLOG. - PROCENT POW."] = "";
-                    myExport["CO GRZEJNIKI"] = "";
-                    myExport["CO GRZEJNIKI - TYP"] = "";
-                    myExport["UMOWA KOMPLEKS."] = "";
-                    myExport["EE - ŚR. KOSZT/MC."] = "";
-                    myExport["EE - MOC PRZYŁ."] = "";
-                    myExport["EE - DOD. LICZNIK"] = "";
-                    myExport["EE - UZIEMIENIE"] = "";
-                    myExport["EE - PLANOWANA MOC"] = "";
-                    myExport["CW - MOC"] = "";
-                    myExport["EE - L. FAZ"] = "";
-                    myExport["EE - ROCZNE ZUŻYCIE"] = "";
-                    myExport["EE - DYSTRYBUTOR"] = "";
-                    myExport["EE - UMIEJSC. LICZNIKA"] = "";
-                    myExport["EE - RODZ. PRZYŁ."] = "";
-                    myExport["CW - POW. WĘŻ."] = "";
-                    myExport["CW - ISTN. ZASOBNIK"] = "";
-                    myExport["CW - OBJ. ZASOBNIKA"] = "";
-                }
 
                 //BATHROOM
                 if (srv.BathRoom != null)
                 {
-                    myExport["ISTN. ŁAŹ."] = srv.BathRoom.BathExsists.AsYesNo();
+                    myExport["ISTN. WANNA"] = srv.BathRoom.BathExsists.AsYesNo();
                     myExport["OBJ. WANNY"] = srv.BathRoom.BathVolume.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
                     myExport["L.ŁAZIENEK"] = srv.BathRoom.NumberOfBathrooms.ToString();
                     myExport["ISTN.PRYSZNIC"] = srv.BathRoom.ShowerExists.AsYesNo();
                 }
-                else
-                {
-                    myExport["ISTN. ŁAŹ."] = "";
-                    myExport["OBJ. WANNY"] = "";
-                    myExport["L.ŁAZIENEK"] = "";
-                    myExport["ISTN.PRYSZNIC"] = "";
-                }
+
                 //BOILERROOM
                 if (srv.BoilerRoom != null)
                 {
@@ -279,22 +436,6 @@ namespace DoEko.Controllers
                     myExport["KOTŁOWNIA - KUBATURA"] = srv.BoilerRoom.Volume.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
                     myExport["KOTŁOWNIA - SZER."] = srv.BoilerRoom.Width.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
                 }
-                else
-                {
-                    myExport["KOTŁOWNIA - ISTNIEJE"] = "";
-                    myExport["KOTŁOWNIA - ISTN.WOLNY PRZEW.WENT"] = "";
-                    myExport["KOTŁOWNIA - SZER.DRZWI"] = "";
-                    myExport["KOTŁOWNIA - WYS."] = "";
-                    myExport["KOTŁOWNIA - INST.400V"] = "";
-                    myExport["KOTŁOWNIA - ISTN. CYRKULACJA"] = "";
-                    myExport["KOTŁOWNIA - ISTN. INST. CW"] = "";
-                    myExport["KOTŁOWNIA - ISTN. REDUKTOR C."] = "";
-                    myExport["KOTŁOWNIA - SUCHA I > 0 ST."] = "";
-                    myExport["KOTŁOWNIA - DŁUG."] = "";
-                    myExport["KOTŁOWNIA - ISTN. 3 UZIEM.GNIAZDA"] = "";
-                    myExport["KOTŁOWNIA - KUBATURA"] = "";
-                    myExport["KOTŁOWNIA - SZER."] = "";
-                }
 
                 //BUILDING
                 if (srv.Building != null)
@@ -308,15 +449,6 @@ namespace DoEko.Controllers
                     myExport["MATERIAŁ ŚCIAN"] = srv.Building.WallMaterialOther != null ? srv.Building.WallMaterialOther.ToString() : "";
                     myExport["GRUBOŚĆ ŚCIAN"] = srv.Building.WallThickness.ToString();
                 }
-                else
-                {
-                    myExport["IZOLACJA - GRUBOŚĆ"] = "";
-                    myExport["IZOLACJA - RODZAJ"] = "";
-                    myExport["TECHNOLOGIA WYKONANIA"] = "";
-                    myExport["KUBATURA BUD."] = "";
-                    myExport["MATERIAŁ ŚCIAN"] = "";
-                    myExport["GRUBOŚĆ ŚCIAN"] = "";
-                }
 
                 //GENERAL
                 myExport["ANULOWANA - KOMENTARZ"] = srv.CancelComments != null ? srv.CancelComments.ToString() : "";
@@ -326,10 +458,6 @@ namespace DoEko.Controllers
                 {
                     var usr = await _userManager.FindByIdAsync(srv.ChangedBy.ToString());
                     myExport["OST.ZM. - PRZEZ"] = usr.LastName + " " + usr.FirstName;
-                }
-                else
-                {
-                    myExport["OST.ZM. - PRZEZ"] = "";
                 }
                 
                 myExport["UWAGI"] = srv.FreeCommments != null ? srv.FreeCommments.ToString() : "";
@@ -346,16 +474,6 @@ namespace DoEko.Controllers
                     myExport["GRUNT - NACHYLENIE"] = srv.Ground.SlopeTerrain.DisplayName();
                     myExport["GRUNT - PODMOKŁY"] = srv.Ground.WetLand.AsYesNo();
                 }
-                else
-                {
-                    myExport["GRUNT - POW."] = "";
-                    myExport["GRUNT - BYLY TEREN WOJSK"] = "";
-                    myExport["GRUNT - ISTN.INSTALACJA"] = "";
-                    myExport["GRUNT - INSTALACJA TYP"] = "";
-                    myExport["GRUNT - GRUZ,SKAŁY"] = "";
-                    myExport["GRUNT - NACHYLENIE"] = "";
-                    myExport["GRUNT - PODMOKŁY"] = "";
-                }
 
                 // PLANNED INSTALLATION
                 if (srv.PlannedInstall != null)
@@ -365,19 +483,12 @@ namespace DoEko.Controllers
                     myExport["INSTALACJA NA SCIANIE"] = srv.PlannedInstall.OnWallPlacementAvailable.AsYesNo();
                     myExport["PRZEZN. BUDYNKU"] = srv.PlannedInstall.Purpose.DisplayName();
                 }
-                else
-                {
-                    myExport["ZESTAW KLIENTA"] = "";
-                    myExport["LOKALIZACJA INSTALACJI"] = "";
-                    myExport["INSTALACJA NA SCIANIE"] = "";
-                    myExport["PRZEZN. BUDYNKU"] = "";
-                }
 
                 //myExport[""] = srv.RejectComments.ToString();
 
                 for (int i = 0; i < 3; i++)
                 {
-                    if (srv.RoofPlanes != null && srv.RoofPlanes.Count == (i + 1))
+                    if (srv.RoofPlanes != null && srv.RoofPlanes.Count >= (i + 1))
                     {
                         var roof = srv.RoofPlanes.ElementAt(i);
 
@@ -399,29 +510,7 @@ namespace DoEko.Controllers
                         myExport["POŁAĆ " + i.ToString() + " AZYMUT"] = roof.SurfaceAzimuth.ToString();
                         myExport["POŁAĆ " + i.ToString() + " OKNA"] = roof.Windows.AsYesNo();
                     }
-                    else
-                    {
-                        myExport["POŁAĆ " + i.ToString() + " TYP"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " WYS.BUD."] = "";
-                        myExport["POŁAĆ " + i.ToString() + " KOMINY"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " DŁ.KRAW."] = "";
-                        myExport["POŁAĆ " + i.ToString() + " INSTALACJA POD"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " DŁUG."] = "";
-                        myExport["POŁAĆ " + i.ToString() + " SZER."] = "";
-                        myExport["POŁAĆ " + i.ToString() + " INST.ODGROM"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " WYS.OKAPU"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " DŁ.GRZBIETU"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " DŁ. DACHU"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " POKRYCIE"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " ŚWIETLIKI"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " KĄT NACH."] = "";
-                        myExport["POŁAĆ " + i.ToString() + " POWIERZCHNIA"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " AZYMUT"] = "";
-                        myExport["POŁAĆ " + i.ToString() + " OKNA"] = "";
-                    }
                 }
-
-                //srv.Status
 
                 //WALL
                 if (srv.Wall != null)
@@ -431,13 +520,13 @@ namespace DoEko.Controllers
                     myExport["ELEW - SZER."] = srv.Wall.Width.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
                     myExport["ELEW - POW."] = srv.Wall.UsableArea.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
                 }
-                else
+
+                //ZDJECIA
+                foreach (var item in this.SurveyPhotos(srv.SurveyId, srv.InvestmentId))
                 {
-                    myExport["ELEW - AZYMUT"] = "";
-                    myExport["ELEW - WYS."] = "";
-                    myExport["ELEW - SZER."] = "";
-                    myExport["ELEW - POW."] = "";
+                    myExport[item.Key] = item.Value;
                 }
+                
             }
 
             return myExport;
@@ -545,5 +634,41 @@ namespace DoEko.Controllers
 
             return ss;
         }
+
+        private Dictionary<string,string> SurveyPhotos(Guid surveyId, Guid investmentId)
+        {
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+            var SurveyBlockBlobs = Container.ListBlobs(prefix: surveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+            Dictionary<string, string> FileList = new Dictionary<string, string>();
+
+            foreach (var BlockBlob in SurveyBlockBlobs)
+            {
+                try
+                {
+                    FileList.Add(BlockBlob.Name.Split('/').Reverse().ToArray().ElementAt(1), BlockBlob.Uri.ToString());
+                }
+                catch (Exception) { }
+            };
+
+            //
+            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+            var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: investmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+            foreach (var BlockBlob in InvestmentBlockBlobs)
+            {
+                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
+                if (partNames[1].Contains("Picture"))
+                {
+                    try
+                    {
+                        FileList.Add(partNames[1], BlockBlob.Uri.ToString());
+                    }
+                    catch (Exception){ }
+                }
+            };
+
+            return FileList;
     }
+}
 }

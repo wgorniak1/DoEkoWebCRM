@@ -10,7 +10,7 @@ namespace DoEko.Models.DoEko.Survey
     public enum RoofMaterial
     {
         [Display(Name = "Blacha Falista")]
-        Material_1,
+        Material_1 = 1,
         [Display(Name = "Blacha Trapezowa")]
         Material_2,
         [Display(Name = "Blacha Na Zakładkę")]
@@ -36,7 +36,9 @@ namespace DoEko.Models.DoEko.Survey
         [Display(Name = "Onduline")]
         Material_13,
         [Display(Name = "Gont")]
-        Material_14
+        Material_14,
+        [Display(Name = "Inne")]
+        Material_15
     }
     public enum RoofType
     {
