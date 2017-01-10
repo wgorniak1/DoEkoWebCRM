@@ -213,7 +213,7 @@ namespace DoEko.Controllers
             csv["MECH.WENT.ISTN."] = "";
             csv["ISTN. KLIMAT."] = "";
             csv["KLIMAT.PLANOWANA"] = "";
-            csv["RODZAJ WENT."] = "";
+            csv["TYP INST.CHŁODZ."] = "";
             csv["DOD.ŹR.CIEPŁA"] = "";
             csv["PAR.DOD.ŹR.CIEPŁA"] = "";
             csv["CW - ISTN. ZASOBNIK"] = "";
@@ -375,7 +375,7 @@ namespace DoEko.Controllers
                     myExport["ISTN. KLIMAT."] = srv.AirCondition.Exists.AsYesNo();
                     myExport["KLIMAT.PLANOWANA"] = srv.AirCondition.isPlanned.AsYesNo();
                     myExport["MECH.WENT.ISTN."] = srv.AirCondition.MechVentilationExists.AsYesNo();
-                    myExport["RODZAJ WENT."] = srv.AirCondition.Type.DisplayName();
+                    myExport["TYP INST.CHŁODZ."] = srv.AirCondition.Type.DisplayName();
                 }
                 //ENERGY AUDIT
                 if (srv.Audit != null)
