@@ -174,7 +174,8 @@ namespace DoEko.Controllers.Helpers
         /// </summary>
         public void ExportToFile(string path)
         {
-            File.WriteAllLines(path, ExportToLines(), Encoding.UTF8);
+            //File.WriteAllLines(path, ExportToLines(), Encoding.UTF8);
+            File.WriteAllLines(path, ExportToLines(), Encoding.GetEncoding(1250));
         }
 
         /// <summary>
@@ -182,7 +183,8 @@ namespace DoEko.Controllers.Helpers
         /// </summary>
         public byte[] ExportToBytes()
         {
-            var data = Encoding.UTF8.GetBytes(Export());
+            //var data = Encoding.UTF8.GetBytes(Export());
+            var data = Encoding.GetEncoding(1250).GetBytes(Export());
             return Encoding.UTF8.GetPreamble().Concat(data).ToArray();
         }
     }
