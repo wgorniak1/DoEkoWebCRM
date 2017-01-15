@@ -81,7 +81,7 @@ namespace DoEko.Controllers
             fileName += ".csv";
 
             //
-            var sl = _context.Surveys.Where(s => s.Status != SurveyStatus.Cancelled);
+            var sl = _context.Surveys.AsQueryable(); //Where(s => s.Status != SurveyStatus.Cancelled);
 
             if (projectId.HasValue)
             {
@@ -442,7 +442,8 @@ namespace DoEko.Controllers
                 {
                     myExport["IZOLACJA - GRUBOŚĆ"] = srv.Building.InsulationThickness.ToString();
                     myExport["IZOLACJA - RODZAJ"] = srv.Building.InsulationType == InsulationType.Ins_3 ?
-                                   srv.Building.InsulationTypeOther.ToString() :
+                                   srv.Building.InsulationTypeOther != null ?
+                                   srv.Building.InsulationTypeOther.ToString() : "" :
                                    srv.Building.InsulationType.DisplayName();
                     myExport["TECHNOLOGIA WYKONANIA"] = srv.Building.TechnologyType.DisplayName();
                     myExport["KUBATURA BUD."] = srv.Building.Volume.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
