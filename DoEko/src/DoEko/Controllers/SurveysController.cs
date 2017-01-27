@@ -1714,13 +1714,11 @@ namespace DoEko.Controllers
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }
-            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approval ||
-                                          s.Status == SurveyStatus.Approved ||
+            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approved ||
                                           s.Status == SurveyStatus.Cancelled))
-            {
-                //submitted
-                inv.InspectionStatus = InspectionStatus.Submitted;
-                inv.Status = InvestmentStatus.Initial;
+            {   //completed
+                inv.InspectionStatus = InspectionStatus.Completed;
+                inv.Status = InvestmentStatus.Completed;
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }
@@ -1733,11 +1731,13 @@ namespace DoEko.Controllers
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }
-            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approved ||
+            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approval ||
+                                          s.Status == SurveyStatus.Approved ||
                                           s.Status == SurveyStatus.Cancelled))
-            {   //completed
-                inv.InspectionStatus = InspectionStatus.Completed;
-                inv.Status = InvestmentStatus.Completed;
+            {
+                //submitted
+                inv.InspectionStatus = InspectionStatus.Submitted;
+                inv.Status = InvestmentStatus.Initial;
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }
