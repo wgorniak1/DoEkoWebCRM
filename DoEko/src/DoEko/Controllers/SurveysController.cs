@@ -188,13 +188,13 @@ namespace DoEko.Controllers
                 switch (Srv.Type)
                 {
                     case SurveyType.CentralHeating:
-                        RSEType = _context.SurveysCH.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = (SurveyRSETypeCentralHeating)Srv.GetRSEType();
                         break;
                     case SurveyType.HotWater:
-                        RSEType = _context.SurveysHW.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = (SurveyRSETypeHotWater)Srv.GetRSEType();
                         break;
                     case SurveyType.Energy:
-                        RSEType = _context.SurveysEN.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = (SurveyRSETypeEnergy)Srv.GetRSEType();
                         break;
                     default:
                         return BadRequest();
@@ -251,7 +251,8 @@ namespace DoEko.Controllers
             }
 
             //Special logic for Ground/Wall/Roof - next section depends on value of Localization
-            if (NextStep == SurveyFormStep.SurveyGround)
+            if (NextStep == SurveyFormStep.SurveyGround && 
+                !RSEType.Equals(SurveyRSETypeCentralHeating.HeatPump)) 
             {
                 switch (Srv.PlannedInstall.Localization)
                 {
@@ -326,13 +327,13 @@ namespace DoEko.Controllers
                 switch (Srv.Type)
                 {
                     case SurveyType.CentralHeating:
-                        RSEType = _context.SurveysCH.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = (SurveyRSETypeCentralHeating)Srv.GetRSEType();
                         break;
                     case SurveyType.HotWater:
-                        RSEType = _context.SurveysHW.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = (SurveyRSETypeHotWater)Srv.GetRSEType();
                         break;
                     case SurveyType.Energy:
-                        RSEType = _context.SurveysEN.Single(s => s.SurveyId == surveyId).RSEType;
+                        RSEType = (SurveyRSETypeEnergy)Srv.GetRSEType();
                         break;
                     default:
                         return BadRequest();
@@ -483,12 +484,17 @@ namespace DoEko.Controllers
                 srv.Investment.TotalArea = survey.Investment.TotalArea;
                 srv.Investment.Type = survey.Investment.Type;
                 srv.Investment.UsableArea = survey.Investment.UsableArea;
+                srv.Investment.Stage = survey.Investment.Stage;
 
 
                 _context.Update(srv.Investment);
 
                 int Result = _context.SaveChanges();
-                
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(survey.SurveyId);
+                }
                 return Ok();
             }
             catch (Exception exc)
@@ -521,6 +527,11 @@ namespace DoEko.Controllers
                 }
 
                 int Result = _context.SaveChanges();
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(plannedInstall.SurveyId);
+                }
                 return Ok();
             }
             catch (Exception exc)
@@ -562,6 +573,11 @@ namespace DoEko.Controllers
                 }
 
                 int Result = _context.SaveChanges();
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(boilerRoom.SurveyId);
+                }
                 return Ok();
             }
             catch (Exception exc)
@@ -594,7 +610,11 @@ namespace DoEko.Controllers
                 }
 
                 int Result = await _context.SaveChangesAsync();
-
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    int result = this.SetStatusOnEdit(bathroom.SurveyId);
+                }
                 return Ok();
             }
             catch (Exception exc)
@@ -629,7 +649,11 @@ namespace DoEko.Controllers
                 }
 
                 int Result = await _context.SaveChangesAsync();
-
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    int result = this.SetStatusOnEdit(aircond.SurveyId);
+                }
                 return Ok();
             }
             catch (Exception exc)
@@ -665,6 +689,13 @@ namespace DoEko.Controllers
                     _context.Update(srv.Ground);
                 }
                 int Result = await _context.SaveChangesAsync();
+
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(ground.SurveyId);
+                }
+
                 return Ok();
             }
             catch (Exception exc)
@@ -681,12 +712,12 @@ namespace DoEko.Controllers
                 _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
                 Survey srv = await _context.Surveys
-                    .Include(s => s.Investment)
                     .Include(s => s.Wall)
                     .SingleAsync(s => s.SurveyId == wall.SurveyId);
 
                 if (srv.Wall == null)
                 {
+                    wall.UsableArea = wall.Width * wall.Height;
                     _context.Add(wall);
                 }
                 else
@@ -699,6 +730,13 @@ namespace DoEko.Controllers
                 }
 
                 int Result = await _context.SaveChangesAsync();
+
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(wall.SurveyId);
+                }
+
                 return Ok();
             }
             catch (Exception exc)
@@ -753,6 +791,13 @@ namespace DoEko.Controllers
                     _context.Update(plane);
                 }
                 int Result = await _context.SaveChangesAsync();
+
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    int result = this.SetStatusOnEdit(model.SurveyId);
+                }
+
                 return Ok();
             }
             catch (Exception exc)
@@ -802,6 +847,13 @@ namespace DoEko.Controllers
                     _context.Update(plane);
                 }
                 int Result = await _context.SaveChangesAsync();
+
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(model.SurveyId);
+                }
+
                 return Ok();
             }
             catch (Exception exc)
@@ -825,6 +877,13 @@ namespace DoEko.Controllers
 
                 _context.Remove(roofPlane);
                 int Result = await _context.SaveChangesAsync();
+
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(surveyId);
+                }
+
                 return Ok();
             }
             catch (Exception exc)
@@ -873,6 +932,12 @@ namespace DoEko.Controllers
 
                 int Result = await _context.SaveChangesAsync();
 
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(model.SurveyId);
+                }
+
                 return Ok();
             }
             catch (Exception exc)
@@ -916,6 +981,14 @@ namespace DoEko.Controllers
                 }
 
                 int Result = await _context.SaveChangesAsync();
+
+
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(model.SurveyId);
+                }
+
 
                 return Ok();
             }
@@ -961,6 +1034,12 @@ namespace DoEko.Controllers
 
                 int Result = await _context.SaveChangesAsync();
 
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    Result = this.SetStatusOnEdit(model.SurveyId);
+                }
+
                 return Ok();
             }
             catch (Exception exc)
@@ -975,6 +1054,12 @@ namespace DoEko.Controllers
             try
             {
                 _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                //update status
+                if (User.IsInRole(Roles.Inspector))
+                {
+                    int result = this.SetStatusOnEdit(survey.SurveyId);
+                }
 
                 switch (survey.Type)
                 {
@@ -1026,29 +1111,13 @@ namespace DoEko.Controllers
         public IActionResult EditPhotoAjax(Guid SurveyId, Guid InvestmentId)//FormCollection Form, Guid SurveyId)
         {
             try {
-                Investment inv = _context.Investments.Single(i => i.InvestmentId == InvestmentId);
-                switch (inv.InspectionStatus)
+                //update status
+                if (User.IsInRole(Roles.Inspector))
                 {
-                    case InspectionStatus.ValueToDelete:
-                    case InspectionStatus.NotExists:
-                    case InspectionStatus.Draft:
-                    case InspectionStatus.Rejected:
-                        this.SetDraftStatus(SurveyId, true);
-                        inv.Status = InvestmentStatus.Initial;
-                        inv.InspectionStatus = InspectionStatus.Draft;
-                        _context.Investments.Update(inv);
-                        _context.SaveChanges();
-                        break;
-                    case InspectionStatus.Submitted:
-                    case InspectionStatus.Approved:
-                    case InspectionStatus.Completed:
-                        break;
-                    default:
-                        break;
+                    int result = this.SetStatusOnEdit(SurveyId);
                 }
 
-                //update status
-                return RedirectToAction("Details", "Investments", new { Id = inv.InvestmentId });
+                return RedirectToAction("Details", "Investments", new { Id = InvestmentId });
             }
             catch (Exception exc)
             {
@@ -1379,6 +1448,31 @@ namespace DoEko.Controllers
              return RedirectToAction("Details", "Investments", new { Id = model.InvestmentId });
         }
 
+        private int SetStatusOnEdit (Guid surveyId)
+        {
+            Investment inv = _context.Investments.Single(i => i.Surveys.Any(s=>s.SurveyId == surveyId) == true);
+
+            switch (inv.InspectionStatus)
+            {
+                case InspectionStatus.ValueToDelete:
+                case InspectionStatus.NotExists:
+                case InspectionStatus.Draft:
+                case InspectionStatus.Rejected:
+                    this.SetDraftStatus(surveyId, true);
+                    inv.Status = InvestmentStatus.Initial;
+                    inv.InspectionStatus = InspectionStatus.Draft;
+                    _context.Investments.Update(inv);
+                    return _context.SaveChanges();
+
+                case InspectionStatus.Submitted:
+                case InspectionStatus.Approved:
+                case InspectionStatus.Completed:
+                    break;
+                default:
+                    break;
+            }
+            return 0;
+        }
         private int SetDraftStatus (Guid surveyId, bool commit = false)
         {
             try
@@ -1406,6 +1500,7 @@ namespace DoEko.Controllers
                     default:
                         return 0;
                 }
+                
                 if (commit)
                 {
                     return _context.SaveChanges();
@@ -1619,17 +1714,16 @@ namespace DoEko.Controllers
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }
-            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approval ||
-                                          s.Status == SurveyStatus.Approved ||
+            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approved ||
                                           s.Status == SurveyStatus.Cancelled))
-            {
-                //submitted
-                inv.InspectionStatus = InspectionStatus.Submitted;
-                inv.Status = InvestmentStatus.Initial;
+            {   //completed
+                inv.InspectionStatus = InspectionStatus.Completed;
+                inv.Status = InvestmentStatus.Completed;
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }
             else if (inv.Surveys.All(s => s.Status == SurveyStatus.Rejected ||
+                                          s.Status == SurveyStatus.Approved ||
                                           s.Status == SurveyStatus.Cancelled))
             {   //rejected
                 inv.InspectionStatus = InspectionStatus.Rejected;
@@ -1637,11 +1731,13 @@ namespace DoEko.Controllers
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }
-            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approved ||
+            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approval ||
+                                          s.Status == SurveyStatus.Approved ||
                                           s.Status == SurveyStatus.Cancelled))
-            {   //completed
-                inv.InspectionStatus = InspectionStatus.Completed;
-                inv.Status = InvestmentStatus.Completed;
+            {
+                //submitted
+                inv.InspectionStatus = InspectionStatus.Submitted;
+                inv.Status = InvestmentStatus.Initial;
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }

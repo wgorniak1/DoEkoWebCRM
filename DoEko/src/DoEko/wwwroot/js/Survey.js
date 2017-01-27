@@ -122,18 +122,11 @@ $('body').on('change', '#Localization', plndInstallChanged);
 
 //<script type="text/javascript" title="SectionsAjaxPost">
 function SectionPostFailure(xhr, status, error) {
-    //set error message
-    $("#AjaxErrorMsg").html(error);
-    //display message box
-    //$("#AjaxErrorDiv").alert();
-    $("#AjaxErrorDiv").fadeToggle(function () {
-        $("#AjaxErrorDiv").fadeToggle(3000);
-    });
-    alert("error");
+    WgTools.alert(error, true, 'E');
 }
 
 function SectionPostSuccess() {
-
+    WgTools.alert('Pomyślnie zapisano dane sekcji.', true, 'S');
 }
 //*******************************************************************
 //Updates Section DIV with new form that is returned from server
@@ -170,7 +163,7 @@ function onAjaxGetSuccess(data, status) {
 }
 
 function onAjaxGetFailure(xhr, status, error) {
-    alert(error);
+    WgTools.alert(error, true, 'E');
 }
 //Executes AJAX GET PREV section
 function ajaxGetPrevSection() {
@@ -266,7 +259,7 @@ function ajaxPostCurrentSection(onError, onSuccess) {
 
         postCurrent.error(onError);
         postCurrent.success(onSuccess);
-
+        postCurrent.success(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
         //$.when(postCurrent);
     }
 }
@@ -277,6 +270,10 @@ function ajaxPostCurrentSection(onError, onSuccess) {
 function btnAddOwner() {
     //1. Post current section and then if success, create new owner
     ajaxPostCurrentSection(onAjaxPostError, function () {
+
+        //1. Message informing
+        WgTools.alert('Pomyślnie zapisano dane sekcji', true, 'S');
+
         var getNew = $.ajax({
             url: "/InvestmentOwners/CreatePersonAjax",
             data: { investmentId: $("#InvestmentId").val() },
@@ -334,6 +331,9 @@ $('body').on('click', '.deleteownersubmit', removeOwner);
 function onAddRoof() {
     //1. Post current section and then if success, create new owner
     ajaxPostCurrentSection(onAjaxPostError, function () {
+        //1. Message informing
+        WgTools.alert('Pomyślnie zapisano dane sekcji', true, 'S');
+
         var getNew = $.ajax({
             url: "/Surveys/CreateRoofPLaneAjax",
             data: { surveyId: $("#SurveyId").val() },
@@ -383,9 +383,33 @@ function onRemoveRoof() {
 $('body').on('click', '.addroof', onAddRoof);
 $('body').on('click', '.deleteroofsubmit', onRemoveRoof);
 ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+function onRoofTypeChange() {
+    var newType = $(this).val();
+    var imgName = "roof_0p.jpg";
+    switch (newType) {
+        case "0":
+            imgName = "roof_0p.jpg";
+            break;
+        case "1":
+            imgName = "roof_1p.png";
+            break;
+        case "2":
+            imgName = "roof_2p.png";
+            break;
+        case "3":
+            imgName = "roof_4p.png";
+            break;
+        default:
+            break;
+    }
+    var d = new Date();    
+    $("img.roof-thumbnail").attr('src', '/images/' + imgName + "?" + d.getTime());
 
-
-//<script type="text/javascript" title="StepFormNavigation">
+}
+$('body').on('change', '.roof-type', onRoofTypeChange);
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 function NavigationPrev() {
     var section = $("#Dynamic form").attr('id');
 
@@ -394,83 +418,10 @@ function NavigationPrev() {
     } else {
         ajaxPostCurrentSection(onAjaxPostError, ajaxGetPrevSection);
     }
-
-
-
-    //var form = $("#Dynamic form");
-
-    //form.validate();
-
-    //if (form.valid()) {
-
-    //    var url = form.attr("action"),
-    //        method = form.attr('data-ajax-method'),
-    //        ajaxTrue = form.attr('data-ajax');
-
-    //    //1st
-    //    var postCurrent = 
-    //    $.ajax({
-    //        type: method || "POST",
-    //        url: url,
-    //        data: form.serialize()
-    //    });
-        
-    //    postCurrent.error(onAjaxPostErrors);
-    //    postCurrent.success();
-    //    //chain call                        
-    //    $.when(postCurrent).success();
-    //    done(function () {
-    //        var getPrev = 
-    //        $.ajax({
-    //            type: "GET",
-    //            url: "/Surveys/MaintainPreviousStepAjax",
-    //            data: {
-    //                currentStep: $('#Dynamic form').attr('id'),
-    //                surveyId: $("#MaintainedSurveyId").val()
-    //            },
-    //            dataType: "html"
-    //        });
-
-    //        getPrev.done(function (data, success) {
-    //            onAjaxGetSuccess(data, success);
-    //        });
-
-    //        getPrev.error(function (xhr, status, error) {
-    //            onAjaxGetFailure(xhr, status, error);
-    //        });
-
-    //    });
-    //}
 }
-
 function NavigationNext() {
-
     ajaxPostCurrentSection(onAjaxPostError, ajaxGetNextSection);
-    //var form = $("#Dynamic form");
-
-    //form.validate();
-
-    //if (form.valid()) {
-
-    //    //$form.submit();
-
-    //    var url = form.attr("action"),
-    //               method = form.attr('data-ajax-method'),
-    //               ajaxTrue = form.attr('data-ajax');
-
-    //    //1st
-    //    var postCurrent =
-    //    $.ajax({
-    //        type: method || "POST",
-    //        url: url,
-    //        data: form.serialize()
-    //    });
-
-    //    //chain call     
-    //    $.when(postCurrent).success(ajaxGetPrevSection);
-    //}
 }
-
 function NavigationLast() {
     var $form = $("#Dynamic form").first();
     $form.validate({
@@ -479,7 +430,6 @@ function NavigationLast() {
     if ($form.valid()) {
         $form.submit();
     }
-
 }
 
 $('body').on('click', '#stepNext', NavigationNext);
@@ -686,7 +636,7 @@ function onUploadPhotoCompleted(data, status, imageName) {
     a.siblings('button.photo-delete').first().show();
 }
 function onUploadPhotoFailed(xhr, status, error) {
-    alert(error);
+    WgTools.alert(error, true, 'E');
 }
 
 //---------------------------------------------------------------------------//
@@ -728,7 +678,7 @@ function onDeletePhotoCompleted(data, status, name) {
     a.siblings('form').first().children('input[type="file"]').first().val('');
 }
 function onDeletePhotoFailed(xhr, status, error) {
-alert(error)
+    WgTools.alert(error, true, 'E');
 }
 
 //---------------------------------------------------------------------------//

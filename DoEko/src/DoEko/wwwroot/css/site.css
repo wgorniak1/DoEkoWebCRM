@@ -104,17 +104,30 @@ textarea {
     js on click event disables event propagation to parent div, 
     so button clicked on collapsible panel header doesn't toggle the panel
 */
-wg-panel-header-button{
+.wg-panel-header-button{
 
 }
 
-wg-alert{
+.wg-alert-container{
+    -webkit-transform: translateZ(0);
     position: fixed;
-    top: 0;
-    width: auto;
-    max-width: 600px;
+    
     z-index: 999999;
+    width: 100%;
+    opacity: 0.9;
 }
+@media screen and (min-width: 0px) and (max-width: 768px) {
+    .wg-alert-container{
+        width: auto;
+        left: 15px;
+        right:15px;
+    }
+}
+@media (min-width: 768px) and (max-width: 992px)  { .wg-alert-container{ max-width: 720px; }}
+@media (min-width: 992px) and (max-width: 1200px) { .wg-alert-container{ max-width: 940px; }}
+@media (min-width: 1200px)                        { .wg-alert-container{ max-width: 1140px; }}
+
+
 /*--Navigation Tabs as Form step wizard*/
 .nav-tabs.nav-justified .active a, 
 .nav-tabs.nav-justified .active a:hover,
@@ -185,89 +198,3 @@ wg-alert{
     background-repeat:no-repeat;
     background-position:center center;
 }
-
-
-/*.f1-steps { overflow: hidden; position: relative; margin-top: 20px; }
-.f1-progress { position: absolute; top: 24px; left: 0; width: 100%; height: 1px; background: #ddd; }
-.f1-progress-line { position: absolute; top: 0; left: 0; height: 1px; background: #f35b3f; }
-.f1-step { position: relative; float: left; width: 33.333333%; padding: 0 5px; }
-.f1-step-icon {
-	display: inline-block; width: 40px; height: 40px; margin-top: 4px; background: #ddd;
-	font-size: 16px; color: #fff; line-height: 40px;
-	-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;
-}
-
-.wg-arrow-right {
-  width: 0; 
-  height: 0; 
-  border-top:    35px solid transparent;
-  border-bottom: 35px solid transparent;
-  border-left:   15px solid #2e8bcc;
-}*/
-
-
-
-/*.steps {
-  list-style-type: none;
-  padding: 0;
-}
-.steps li {
-  display: inline-block;
-  margin-bottom: 3px;
-}
-.steps li a, .steps li p {
-  background: #e5f4fd;
-  padding: 8px 20px;
-  color: #0077bf;
-  display: block;
-  font-size: 14px;
-  font-weight: bold;
-  position: relative;
-  text-indent: 12px;
-}
-.steps li a:hover, .steps li p:hover {
-  text-decoration: none;
-}
-.steps li a:before, .steps li p:before {
-  border-bottom: 18px solid transparent;
-  border-left: 12px solid #fff;
-  border-top: 18px solid transparent;
-  content: "";
-  height: 0;
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 0;
-  margin-top: -18px;
-}
-.steps li a:after, .steps li p:after {
-  border-bottom: 18px solid transparent;
-  border-left: 12px solid #e5f4fd;
-  border-top: 18px solid transparent;
-  content: "";
-  height: 0;
-  position: absolute;
-  left:100%;
-  top: 50%;
-  width: 0;
-  margin-top: -18px;
-  z-index: 1;
-}
-
-.steps li.active a, .steps li.active p {
-  background: #0077bf;
-  color: #fff;
-}
-.steps li.active a:after, .steps li.active p:after {
-  border-left: 12px solid #0077bf;
-}
-.steps li.undone a, .steps li.undone p {
-  background: #eee;
-  color: #333;
-}
-.steps li.undone a:after, .steps li.undone p:after {
-  border-left: 12px solid #eee;
-}
-.steps li.undone p {
-  color: #aaa;
-}*/

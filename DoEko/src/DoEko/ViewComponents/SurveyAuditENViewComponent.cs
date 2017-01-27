@@ -24,14 +24,43 @@ namespace DoEko.ViewComponents
         }
         public async Task<IViewComponentResult> InvokeAsync(Guid surveyId, SurveyViewMode viewMode)
         {
-            Survey srv = await _context.Surveys
-                .Include(s=>s.Audit)
-                .Include(s=>s.Investment)
-                .SingleAsync(s => s.SurveyId == surveyId);
+            Guid investmentId = await _context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.InvestmentId).SingleAsync();
+
+            Investment inv = await _context.Investments
+                .Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                .Include(i => i.Surveys).ThenInclude(s => s.Investment)
+                .SingleAsync(i => i.InvestmentId == investmentId);
+
+            Survey srv = inv.Surveys.Where(s => s.SurveyId == surveyId).Single();
+
+            //Try to copy some values from other existing surveys 
+            //in case this survey is filled for the first time
             if (srv.Audit == null)
             {
-                srv.Audit = new SurveyDetEnergyAudit() { Survey = srv, SurveyId = srv.SurveyId };
+                srv.Audit = new SurveyDetEnergyAudit() { SurveyId = srv.SurveyId, Survey = srv };
             }
+            if (srv.Audit.ElectricityPower == 0)
+            {
+                try
+                {
+                    double enPower = 0;
+                    switch (srv.GetRSEType())
+                    {
+                        case (int)SurveyRSETypeCentralHeating.HeatPump:
+                            enPower = inv.Surveys.Where(s => s.GetRSEType() == (int)SurveyRSETypeEnergy.PhotoVoltaic && s.SurveyId != surveyId && s.Audit.ElectricityPower != 0).Select(s=>s.Audit.ElectricityPower).First();
+                            break;
+                        case (int)SurveyRSETypeEnergy.PhotoVoltaic:
+                            enPower = inv.Surveys.Where(s => s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPump && s.SurveyId != surveyId && s.Audit.ElectricityPower != 0).Select(s=>s.Audit.ElectricityPower).First();
+                            break;
+                        default:
+                            break;
+                    }
+                    //
+                    srv.Audit.ElectricityPower = enPower;
+                }
+                catch (Exception) { }
+            }
+            
             SurveyAuditViewModel model = new SurveyAuditViewModel(srv);
 
             switch (srv.Type)

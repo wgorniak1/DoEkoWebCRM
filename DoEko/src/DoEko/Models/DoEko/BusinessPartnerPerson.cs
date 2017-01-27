@@ -75,7 +75,7 @@ namespace DoEko.Models.DoEko
             private set { }
         }
 
-        [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
+        //[Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
         [RegularExpression("^[0-9]{11}$",ErrorMessage ="Nr PESEL jest nieprawidłowy")]
         [Display(Description = "", Name = "Nr PESEL", ShortName = "PESEL")]
         [PESEL(ErrorMessage ="Nr PESEL jest nieprawidłowy")]

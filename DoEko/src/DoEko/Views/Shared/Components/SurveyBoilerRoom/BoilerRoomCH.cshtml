@@ -47,21 +47,21 @@
             </div>
             <div class="col-sm-1">
                 <div class="form-group-sm">
-                    <label class="control-label">wys.</label>
-                    <input asp-for="Height" class="form-control boilerroomvolume data-val-ignore" />
+                    <label class="control-label">wys.[m]</label>
+                    <input asp-for="Height" class="form-control boilerroomvolume" />
                     <span asp-validation-for="Height" class="text-danger" />
                 </div>
             </div>        
             <div class="col-sm-1">
                 <div class="form-group-sm">
-                    <label class="control-label">szer.</label>
+                    <label class="control-label">szer.[m]</label>
                     <input asp-for="Width" class="form-control boilerroomvolume" />
                     <span asp-validation-for="Width" class="text-danger" />
                 </div>
             </div>        
             <div class="col-sm-1">
                 <div class="form-group-sm">
-                    <label class="control-label">dł.</label>
+                    <label class="control-label">dł.[m]</label>
                     <input asp-for="Length" class="form-control boilerroomvolume" />
                     <span asp-validation-for="Length" class="text-danger" />
                 </div>
@@ -174,7 +174,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-3">
+            @*<div class="col-sm-3">
                 <div class="form-group-sm">
                     <label asp-for="AirVentilationExists" class="control-label"></label>
                     <input asp-for="AirVentilationExists" hidden/>
@@ -203,7 +203,7 @@
                         }
                     </div>
                 </div>
-            </div>
+            </div>*@
             <div class="col-sm-3">
                 <div class="form-group-sm">
                     <label asp-for="IsDryAndWarm" class="control-label"></label>

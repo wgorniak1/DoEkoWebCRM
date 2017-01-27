@@ -67,7 +67,7 @@ namespace DoEko.Models.DoEko.Survey
         /// <summary>
         /// building_volume
         /// </summary>
-        [Display(Name = "Kubatura budynku [m3]")]
+        [Display(Name = "Kubatura budynku [m3]",AutoGenerateFilter = true,AutoGenerateField =true)]
         public double Volume { get; set; }
         //building_wall_material
         [Display(Name = "Materiał ścian budynku")]

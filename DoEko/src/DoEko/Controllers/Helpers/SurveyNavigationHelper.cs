@@ -196,6 +196,7 @@ namespace DoEko.Controllers.Helpers
                 FormSteps.AddLast(SurveyFormStep.SurveyBoilerRoom);
                 FormSteps.AddLast(SurveyFormStep.SurveyBathroom);
                 FormSteps.AddLast(SurveyFormStep.SurveyAirCondition);
+                FormSteps.AddLast(SurveyFormStep.SurveyGround);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditCH);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditHW);
                 FormSteps.AddLast(SurveyFormStep.SurveyAuditEN);

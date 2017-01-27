@@ -127,7 +127,7 @@ function onAjaxSurveyApproveFailed(xhr, status, error) {
 //---------------------------------------------------------------------------//
 //
 function ajaxSurveyApprovePost() {
-    var form = $("#SurveySubmitModalForm");
+    var form = $("#SurveyApprovalModalForm");
     var srv = $("#SurveyId", form);
 
     var call = $.ajax({

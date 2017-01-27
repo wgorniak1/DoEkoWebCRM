@@ -525,7 +525,8 @@ namespace DoEko.Controllers
                 //ZDJECIA
                 foreach (var item in this.SurveyPhotos(srv.SurveyId, srv.InvestmentId))
                 {
-                    myExport[item.Key] = item.Value;
+                    myExport[item.Key] =
+                        "=HYPERLINK(\"" + item.Value + "\";" + "\"" + item.Key + "\"" + ")";
                 }
                 
             }
