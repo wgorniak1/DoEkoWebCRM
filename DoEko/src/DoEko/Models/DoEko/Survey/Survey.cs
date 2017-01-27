@@ -187,5 +187,21 @@ namespace DoEko.Models.DoEko.Survey
             }
             return source;
         }
+
+        public int GetRSEType () 
+        {
+            switch (Type)
+            {
+                case DoEko.Survey.SurveyType.CentralHeating:
+                    return (int)((SurveyCentralHeating)this).RSEType;
+                case DoEko.Survey.SurveyType.HotWater:
+                    return (int)((SurveyHotWater)this).RSEType;
+                case DoEko.Survey.SurveyType.Energy:
+                    return (int)((SurveyEnergy)this).RSEType;
+                default:
+                    return 0;
+            }
+        }
+
     }
 }

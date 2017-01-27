@@ -113,12 +113,12 @@
     {
         case DoEko.Models.DoEko.Survey.SurveyRSETypeCentralHeating.PelletBoiler:
             break;
-        case DoEko.Models.DoEko.Survey.SurveyRSETypeCentralHeating.HeatPump:
+        case DoEko.Models.DoEko.Survey.SurveyRSETypeCentralHeating.HeatPumpAir:
             <div class="col-sm-3">
                 <label class="control-label">Zdjęcie ściany na montaż parownika</label>
                 @if (Model.Attachments.Keys.Any(k => k == "Picture4") == false)
                 {
-                    <a class="photo-link" style="cursor:pointer" name="Picture0">
+                    <a class="photo-link" style="cursor:pointer" name="Picture4">
                         <img src="" alt="Dodaj zdjęcie" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
                     </a>
                     <form action="" method="post" enctype="multipart/form-data" hidden>
@@ -144,7 +144,7 @@
                 }
             </div>
             break;
-        case DoEko.Models.DoEko.Survey.SurveyRSETypeCentralHeating.HeatPumpAir:
+        case DoEko.Models.DoEko.Survey.SurveyRSETypeCentralHeating.HeatPump:
             <div class="col-sm-3">
                 <label class="control-label">Zdjęcie wjazdu na działkę</label>
                 @if (Model.Attachments.Keys.Any(k => k == "Picture3") == false)

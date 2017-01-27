@@ -40,6 +40,7 @@ namespace DoEko.ViewComponents
                 model.OwnerTotal    = IOList.Count;
                 model.InvestmentId  = IO.InvestmentId;
                 model.OwnershipType = IO.OwnershipType;
+                model.Sponsor       = IO.Sponsor;
                 model.SameAddress   = IO.Investment.AddressId == IO.Owner.AddressId ? true : false;
             }
             else
@@ -52,6 +53,7 @@ namespace DoEko.ViewComponents
                 model.OwnerTotal = IOList.Count + 1;
                 model.InvestmentId = IO.InvestmentId;
                 model.SameAddress = true;
+                model.Sponsor = false;
             }
 
             ViewData["OwnAddrStateId"] = AddressesController.GetStates(_context, model.Owner.Address.StateId);

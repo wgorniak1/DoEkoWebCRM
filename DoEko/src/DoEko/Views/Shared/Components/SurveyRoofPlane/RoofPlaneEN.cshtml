@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div class="col-sm-9">
-                <div class="img-thumbnail roof-thumbnail">
+                <div class="img-thumbnail">
                     @{
                         string source = "";
                         switch (Model.Plane.Type)
@@ -92,7 +92,7 @@
                                 break;
                         }
                     }
-                    <img src="~/images/@source" alt="Rodzaj Dachu" />
+                    <img src="~/images/@source" class="roof-thumbnail" alt="Rodzaj Dachu" />
                 </div>
             </div>
         </div>

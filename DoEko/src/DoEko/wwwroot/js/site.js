@@ -3,14 +3,60 @@
     $('.wg-panel-header-button').click(function (e) { event.stopPropagation(); });
 });
 
-//jQuery.fn.fadeOutAndRemove = function (speed) {
-//    "use strict";
+//my tools           
 
-//    $(this).fadeOut(speed, function () {
-//        $(this).remove();
-//    });
-//};
+var WgTools = new alertClass();
 
+function alertClass() {
+    //alert method
+    var count = 0;
+
+    this.alert = function (msgText, fade, msgType) {
+        var alertContainer = document.getElementById('dynamicAlertBox'),
+            alertBox = document.createElement('div'),
+            boxCloseBtn = document.createElement('button'),
+            closeBtnIcon = document.createElement('span'),
+            alertMessageContainer = document.createElement('div');
+
+        count += 1;
+
+
+        closeBtnIcon.setAttribute('aria-hidden', 'true');
+        closeBtnIcon.innerHTML = "&times;";
+
+        boxCloseBtn.setAttribute('type','button');
+        boxCloseBtn.setAttribute('class','close');
+        boxCloseBtn.setAttribute('data-dismiss','alert');
+        boxCloseBtn.setAttribute('aria-label','Close');
+        boxCloseBtn.appendChild(closeBtnIcon);
+
+        alertMessageContainer.appendChild(document.createTextNode(msgText));
+            
+        switch (msgType) {
+            case 'E': alertBox.setAttribute('class', 'alert alert-danger alert-dismissable');
+                        break;
+            case 'W': alertBox.setAttribute('class', 'alert alert-warning alert-dismissable');
+                        break;
+            case 'S': alertBox.setAttribute('class', 'alert alert-success alert-dismissable');
+                        break;
+            default:  alertBox.setAttribute('class', 'alert alert-info alert-dismissable');
+                        break;
+        }
+
+        var idAlertBox = 'AlertBoxNo' + count;
+
+        alertBox.setAttribute('role','alert');
+        alertBox.setAttribute('id',idAlertBox);           
+        alertBox.appendChild(boxCloseBtn);
+        alertBox.appendChild(alertMessageContainer);
+
+        alertContainer.appendChild(alertBox);
+
+        if (fade === true) {
+            $('#' + idAlertBox).fadeOut(6000,'swing');
+        }
+    };
+};
 /////
 //function NavBarStepList(stepListId, prevBtnId, nextBtnId) {
 //    "use strict";

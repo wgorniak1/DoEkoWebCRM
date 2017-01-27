@@ -63,21 +63,21 @@ namespace DoEko.Models.DoEko.Survey
 
         [Display(Name = "Rodzaj dachu")]
         public RoofType Type { get; set; }
-        [Display(Name = "Wysokość budynku [m]")]
+        [Display(Name = "1.Wysokość budynku [m]")]
         public double BuildingHeight { get; set; }
-        [Display(Name = "Wysokość okapu [m]")]
+        [Display(Name = "2.Wysokość okapu [m]")]
         public double OkapHeight { get; set; }
-        [Display(Name = "Dł. Dachu [m]")]
+        [Display(Name = "3.Dł. Dachu [m]")]
         public double RoofLength { get; set; }
-        [Display(Name = "Dł. kraw. dachu")]
+        [Display(Name = "4.Dł. kraw. dachu")]
         public double EdgeLength { get; set; }
-        [Display(Name = "Dł. grzbietu [m]")]
+        [Display(Name = "5.Dł. grzbietu [m]")]
         public double RidgeWeight { get; set; }
-        [Display(Name = "Kąt pochylenia dachu")]
+        [Display(Name = "6.Kąt pochylenia dachu")]
         public double SlopeAngle { get; set; }
-        [Display(Name = "Dług.")]
+        [Display(Name = "7a.Dług.")]
         public double Width { get; set; }
-        [Display(Name = "Szer.")]
+        [Display(Name = "7b.Szer.")]
         public double Length { get; set; }
         [Display(Name = "Powierzchnia")]
         public double SurfaceArea { get; set; }

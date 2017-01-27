@@ -29,15 +29,6 @@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     </head>
     <body>
-        <!--Popup Message with errors-->
-        <div class="alert alert-danger alert-dismissable hidden wg-alert" 
-             role="alert" 
-             id="AjaxErrorDiv">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <div id="AjaxErrorMsg">
-            </div>
-        </div>
-
 
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
@@ -61,8 +52,11 @@
                 </div>
             </div>
         </div>
+
         @RenderSection("modals", required: false)
         <div class="container body-content">
+            <!--Popup Message with info, warning or errors-->
+            <div id="dynamicAlertBox" class="wg-alert-container"></div>
             @RenderBody()
             <hr />
             <footer>

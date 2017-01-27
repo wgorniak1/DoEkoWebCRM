@@ -278,6 +278,10 @@ namespace DoEko.Controllers
             {
                 investment.InvestmentId = Guid.NewGuid();
 
+                investment.Status = InvestmentStatus.Initial;
+                investment.InspectionStatus = InspectionStatus.NotExists;
+
+
                 _context.Add(investment.Address);
                 _context.Add(investment);
 

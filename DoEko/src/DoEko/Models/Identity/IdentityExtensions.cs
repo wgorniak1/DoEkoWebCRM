@@ -51,6 +51,7 @@ namespace DoEko.Models.Identity
                         await userManager.AddToRoleAsync(admin, Roles.Admin);
                     }
                 }
+
             }
         }
     }
