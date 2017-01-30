@@ -1714,6 +1714,13 @@ namespace DoEko.Controllers
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }
+            else if (inv.Surveys.All(s => s.Status == SurveyStatus.Cancelled))
+            {   //completed
+                inv.InspectionStatus = InspectionStatus.Completed;
+                inv.Status = InvestmentStatus.Cancelled;
+                _context.Investments.Update(inv);
+                Result = await _context.SaveChangesAsync();
+            }
             else if (inv.Surveys.All(s => s.Status == SurveyStatus.Approved ||
                                           s.Status == SurveyStatus.Cancelled))
             {   //completed

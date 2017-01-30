@@ -14,28 +14,153 @@
 
 <!--Title-->
 <h2><small>Umowa nr </small>@Html.DisplayFor(model => model.Number)</h2>
+@if (ViewBag.FileUploadFinished)
+{
+    if (ViewBag.FileUploadResult == 8)
+    {
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>@ViewBag.FileUploadType</strong><br />
+            <span>Błędy</span>
+            <ul>
+                @foreach (var msg in ViewBag.FileUploadErrorMessage)
+                {
+                    <li>@msg</li>
+                } 
+            </ul>
+        </div>
+    }
+    else if (ViewBag.FileUploadResult == 4)
+    {
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>@ViewBag.FileUploadType</strong><br />
+            <span>@(ViewBag.FileUploadSuccessMessage)</span><br />
+            <span>Błędy</span>
+            <ul>
+                @foreach (var msg in ViewBag.FileUploadErrorMessage)
+                {
+                    <li>@msg</li>
+                }
+            </ul>
+            
+        </div>
+    }
+    else if (ViewBag.FileUploadResult == 0)
+    {
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>@ViewBag.FileUploadType</strong><br />
+            @(ViewBag.FileUploadSuccessMessage)
+        </div>
+    }
+
+}
 
 <!--Panels-->
-<div class="panel-group" id="panel-group"  role="tablist" aria-multiselectable="true">
+@if (ViewBag.EditInspector)
+{
+<div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
-        <div class="panel-heading wg-panel-heading" 
-             role="tab" 
-             id="heading-details" 
-             data-toggle="collapse" 
-             data-parent="#panel-group" 
-             data-target="#details">
-            
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-details">
+            <h4 class="panel-title pull-left wg-panel-title">
+                Dane Umowy
+            </h4>
             <div class="btn-group pull-right">
                 <a asp-action="Edit"
-                   asp-controller="Contracts"
-                   asp-route-Id="@Model.ContractId"
-                   asp-route-ReturnUrl="@Url.Action("Details","Contracts", new { Id = Model.ContractId }, null,null,"details")">
-                   <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                    asp-controller="Contracts"
+                    asp-route-Id="@Model.ContractId"
+                    asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "details")"
+                    class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-edit"></span>
                 </a>
             </div>
-            <h4 class="panel-title">
-                    Dane Umowy
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <form asp-action="AssignInspector"
+              asp-controller="Investments"
+              asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "heading-investments")"
+              method="post" novalidate="" class="form-inline">
+
+            <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-investments">
+                <h4 class="panel-title pull-left wg-panel-title">
+                    Inwestycje
+                </h4>
+                <div class="btn-group pull-right">
+                    <div class="form-inline">
+                        <select class="form-control small"
+                                asp-items="@ViewBag.InspectorId"
+                                title="Inspektor"
+                                id="InspectorId" name="InspectorId"
+                                data-val-required="Proszę wybrać Inspektora"
+                                data-val="true"
+                                aria-required="true"
+                                aria-invalid="false"
+                                aria-describedby="Number-error">
+                            <option value="" selected>Inspektor</option>
+                        </select>
+
+                        <button type="submit" class="btn btn-success btn-sm wg-panel-header-button">
+                            <span class="glyphicon glyphicon-user" title="Przypisz inspektora"></span>
+                        </button>
+
+                        <a asp-action="Details"
+                           asp-controller="Contracts"
+                           asp-route-Id="@Model.ContractId"
+                           asp-route-ReturnUrl="@ViewBag.ReturnUrl"
+                           asp-route-EditInspector="false"
+                           class="btn btn-danger btn-sm wg-panel-header-button">
+                            <span class="glyphicon glyphicon-remove" title="Anuluj"></span>
+                        </a>
+                    </div>
+                    <span class="text-danger field-validation-valid" data-valmsg-for="InspectorId" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+            <div id="investments" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="header-investments">
+                @await Html.PartialAsync("_InvestmentListPartial", Model.Investments)
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+    $(function () {
+        $('#AllRowsSelector').change (function () {
+            $('.singlerowselector').prop('checked', this.checked);
+        });
+    });
+</script>
+
+}
+        }
+        else
+        {
+<div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-details" data-toggle="collapse" data-parent="#panel-group" data-target="#details">
+            <h4 class="panel-title pull-left wg-panel-title">
+                Dane Umowy
             </h4>
+            <div class="btn-toolbar pull-right">
+                <a asp-action="Edit"
+                    asp-controller="Contracts"
+                    asp-route-Id="@Model.ContractId"
+                    asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "details")"
+                   title="Edytuj podstawowe informacje o umowie" 
+                   class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                </a>
+
+                <label for="INFUpload" class="btn btn-primary btn-sm wg-panel-header-button" title="Importuj inwestycje">
+                    <span class="glyphicon glyphicon-save-file"></span>
+                </label>
+
+                <label for="FIFile" class="btn btn-primary btn-sm wg-panel-header-button" title="Importuj wyciąg z iPKO">
+                    <span class="glyphicon glyphicon-usd"></span>
+                </label>
+            </div>
         </div>
         <div id="details" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-details">
             <div class="panel-body">
@@ -43,24 +168,122 @@
             </div>
         </div>
     </div>
-    <div class="panel panel-primary">
-        <div class="panel-heading wg-panel-heading" role="tab" id="heading-investments" data-toggle="collapse" data-parent="#panel-group" data-target="#investments">
-            <div class="btn-group pull-right">
-                <a asp-action="Create"
-                   asp-controller="Investments"
-                   asp-route-ContractId="@Model.ContractId"
-                   asp-route-ReturnUrl="@Url.Action("Details","Contracts", new { Id = Model.ContractId }, null,null,"heading-investments")">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </a>
-            </div>
-            <h4 class="panel-title">
-                <a class="collapsed wg-link-nounderline" role="button"  href="#investments" aria-expanded="false" aria-controls="investments">
-                    Inwestycje
-                </a>
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-investments" data-toggle="collapse" data-parent="#panel-group" data-target="#investments">
+            <h4 class="panel-title pull-left wg-panel-title">
+                Inwestycje
             </h4>
+            <div class="btn-toolbar pull-right">
+
+                <a asp-action="Create"
+                    asp-controller="Investments"
+                    asp-route-ContractId="@Model.ContractId"
+                    asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "heading-investments")"
+                    class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-plus" title="Dodaj nową Inwestycję"></span>
+                </a>
+                        
+                <a asp-action="Details"
+                    asp-controller="Contracts"
+                    asp-route-Id="@Model.ContractId"
+                    asp-route-ReturnUrl="@ViewBag.ReturnUrl"
+                    asp-route-EditInspector="true"
+                    class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-user" title="Przypisz inspektora"></span>
+                </a>
+
+                @if (ViewBag.PaymentsExists)
+                {
+                    <a asp-action="AssignInvestment" asp-controller="Payments"
+                       asp-route-ContractId="@Model.ContractId" 
+                       class="btn btn-primary btn-sm wg-panel-header-button"
+                       title="Przypisz wpłaty do inwestycji">
+                        <span class="glyphicon glyphicon-random"></span>
+                    </a>
+                }
+            </div>
         </div>
         <div id="investments" class="panel-collapse collapse" role="tabpanel" aria-labelledby="header-investments">
-            @await Html.PartialAsync("_InvestmentListPartial",Model.Investments)
+            @await Html.PartialAsync("_InvestmentListPartial", Model.Investments)
         </div>
     </div>
 </div>
+
+<form id="FIForm"
+      class="navbar-form"
+      asp-action="UploadPaymentFile"
+      asp-controller="Payments"
+      method="post"
+      enctype="multipart/form-data" hidden>
+
+    <input id="FIFile" name="FIFiles[]"
+           type="file" hidden class="hidden"
+           accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+
+    <input id="FIContract" name="ContractId" type="hidden" value="@Model.ContractId" />
+    <input id="FISubmit" name="FISubmit" type="submit" hidden>
+</form>
+
+<form id="INFForm"
+      class="navbar-form"
+      asp-action="UploadDataFromFile"
+      asp-controller="Investments"
+      method="post"
+      enctype="multipart/form-data" 
+      accept-charset="UTF-8"
+      hidden>
+    
+    <input id="INFUpload" name="INFFiles[]"
+           type="file" hidden class="hidden"
+           accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+
+    <input id="INFContract" name="ContractId" type="hidden" value="@Model.ContractId" />
+    <input id="INFSubmit"   name="INFSubmit"   type="submit" hidden>
+
+</form>
+
+@section Scripts{
+<script>
+    $("#FIFile").change(function () {
+        var fileUpload = $("#FIFile").get(0);
+        if (fileUpload.files.length == 1) {
+            $("#FIForm").submit();
+        }});
+
+    $("#INFUpload").change(function () {
+        var fileUpload = $("#INFUpload").get(0);
+        if (fileUpload.files.length == 1) {
+            $("#INFForm").submit();
+        }});
+        //var fileUpload = $("#files").get(0);
+        //var files = fileUpload.files;
+        //var data = new FormData();
+        //for (var i = 0; i < files.length ; i++) {
+        //    data.append(files[i].name, files[i]);
+        //}
+        //$.ajax({
+        //    type: "POST",
+        //    url: "/home/UploadFilesAjax",
+        //    contentType: false,
+        //    processData: false,
+        //    data: data,
+        //    success: function (message) {
+        //        alert(message);
+        //    },
+        //    error: function () {
+        //        alert("There was error uploading files!");
+        //    }
+
+        //    $.ajax({
+        //        url: '/UploadPayments',
+        //        type: 'post',
+        //        dataType: 'json',
+        //        data: $('form#myForm').serialize(),
+        //        success: function(data) {
+
+        //        }
+        //    });
+</script>
+
+}
+        }
