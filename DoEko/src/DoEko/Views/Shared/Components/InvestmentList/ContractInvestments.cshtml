@@ -3,17 +3,11 @@
 @using DoEko.Models.DoEko
 @using DoEko.ViewModels.InvestmentViewModels;
 
-
-@if (Model.Filtering.RenderFilteringSection)
-{
-
-}
-
 @if (Model.List.Count == 0)
 {
     <div class="row">
         <div class="col-md-12">
-            <h4 class="text-info">Brak inwestycji.</h4>
+            <h4 class="text-info">Brak inspekcji spełaniających wybrane kryteria.</h4>
         </div>
     </div>
 }

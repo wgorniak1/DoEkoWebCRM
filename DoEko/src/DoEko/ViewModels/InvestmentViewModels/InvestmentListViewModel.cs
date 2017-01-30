@@ -104,5 +104,9 @@ namespace DoEko.ViewModels.InvestmentViewModels
 
         public bool FilterByInspector { get; set; }
 
+        /// <summary>
+        /// If <value>True</value> then output HTML contains filtering section
+        /// </summary>
+        public bool RenderFilteringSection { get; set; }
     }
 }
