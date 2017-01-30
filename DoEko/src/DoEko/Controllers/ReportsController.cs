@@ -526,7 +526,7 @@ namespace DoEko.Controllers
                 foreach (var item in this.SurveyPhotos(srv.SurveyId, srv.InvestmentId))
                 {
                     myExport[item.Key] =
-                        "=HYPERLINK(\"" + item.Value + "\";" + "\"" + item.Key + "\"" + ")";
+                        "=HIPERŁĄCZE(\"" + item.Value + "\";\"" + item.Key + "\")";
                 }
                 
             }
