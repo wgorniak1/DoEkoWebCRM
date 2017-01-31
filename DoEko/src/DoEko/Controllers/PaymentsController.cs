@@ -226,7 +226,7 @@ namespace DoEko.Controllers
                 {
                     index += 1;
                     var LineFields = CsvLine.Split(separator);
-                    if (LineFields.Length < 12)
+                    if (LineFields.Length < 10)
                     {
                         continue;
                     }
