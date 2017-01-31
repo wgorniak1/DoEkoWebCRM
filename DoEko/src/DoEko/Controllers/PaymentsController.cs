@@ -201,9 +201,9 @@ namespace DoEko.Controllers
             index = 0;
             //
             char separator = ',';
-            if (CsvTable.First().Split(separator).Length < 12)
+            if (CsvTable.First().Split(separator).Length < 10)
                 separator = ';';
-            if (CsvTable.First().Split(separator).Length < 12)
+            if (CsvTable.First().Split(separator).Length < 10)
             {
                 msg.Add("Błąd struktury pliku");
                 msg.Add("Nie można rozpoznać separatora (; lub ,)");
