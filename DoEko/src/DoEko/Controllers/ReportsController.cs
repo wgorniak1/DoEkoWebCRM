@@ -295,6 +295,7 @@ namespace DoEko.Controllers
             csv["ANULOWANA - POWÓD"] = "";
             csv["OST.ZM. - DATA"] = "";
             csv["OST.ZM. - PRZEZ"] = "";
+            csv["PRZYP. INSPEKTOR"] = "";
             csv["UWAGI"] = "";
             csv["ZAPLACONA"] = "";
 
@@ -325,6 +326,14 @@ namespace DoEko.Controllers
                 //SURVEY GENERAL
                 myExport["TYP OZE"] = srv.TypeFullDescription();
                 myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
+
+                //INSPEKTOR
+                if (srv.Investment.InspectorId.HasValue &&
+                    srv.Investment.InspectorId != Guid.Empty)
+                {
+                    var usr = await _userManager.FindByIdAsync(srv.Investment.InspectorId.Value.ToString());
+                    myExport["PRZYP. INSPEKTOR"] = usr.LastName + " " + usr.FirstName;
+                }
 
                 //INWESTYCJA
                 myExport["INWEST - ADRES - WOJ."] = srv.Investment.Address.State.Text;
