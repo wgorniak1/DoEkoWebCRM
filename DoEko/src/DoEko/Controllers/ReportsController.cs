@@ -333,8 +333,8 @@ namespace DoEko.Controllers
                 myExport["INWEST - ADRES - KOD"] = srv.Investment.Address.PostalCode;
                 myExport["INWEST - ADRES - MIEJSC"] = srv.Investment.Address.City;
                 myExport["INWEST - ADRES - ULICA"] = srv.Investment.Address.Street;
-                myExport["INWEST - ADRES - NR BUD."] = srv.Investment.Address.BuildingNo;
-                myExport["INWEST - ADRES - NR MIESZK"] = srv.Investment.Address.ApartmentNo;
+                myExport["INWEST - ADRES - NR BUD."] = "=\"" + srv.Investment.Address.BuildingNo + "\"";
+                myExport["INWEST - ADRES - NR MIESZK"] = "=\"" + srv.Investment.Address.ApartmentNo + "\"";
                 
                 //WŁAŚCICIELE
                 for (int i = 0; i < 3; i++)
@@ -361,9 +361,9 @@ namespace DoEko.Controllers
                 myExport["PALIWO GŁ. CW"] = srv.Investment.HotWaterFuel.DisplayName();
                 myExport["RODZAJ GŁ. CW"] = srv.Investment.HotWaterType.DisplayName();
                 myExport["INTERNET W M.INW."] = srv.Investment.InternetAvailable.AsYesNo();
-                myExport["NR KS. WIECZ."] = srv.Investment.LandRegisterNo;
+                myExport["NR KS. WIECZ."] = "=\"" + srv.Investment.LandRegisterNo + "\"";
                 myExport["L.MIESZKAŃCÓW"] = srv.Investment.NumberOfOccupants.ToString();
-                myExport["NR DZIAŁKI"] = srv.Investment.PlotNumber;
+                myExport["NR DZIAŁKI"] = "=\"" + srv.Investment.PlotNumber + "\"";
                 myExport["STAN BUD."] = srv.Investment.Stage.DisplayName();
                 myExport["POW. CAŁK."] = srv.Investment.TotalArea.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
                 myExport["RODZ.BUD."] = srv.Investment.Type.DisplayName();
