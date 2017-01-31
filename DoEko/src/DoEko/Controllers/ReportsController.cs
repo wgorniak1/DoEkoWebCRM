@@ -333,8 +333,8 @@ namespace DoEko.Controllers
                 myExport["INWEST - ADRES - KOD"] = srv.Investment.Address.PostalCode;
                 myExport["INWEST - ADRES - MIEJSC"] = srv.Investment.Address.City;
                 myExport["INWEST - ADRES - ULICA"] = srv.Investment.Address.Street;
-                myExport["INWEST - ADRES - NR BUD."] = srv.Investment.Address.BuildingNo;
-                myExport["INWEST - ADRES - NR MIESZK"] = srv.Investment.Address.ApartmentNo;
+                myExport["INWEST - ADRES - NR BUD."] = "\"" + srv.Investment.Address.BuildingNo + "\"";
+                myExport["INWEST - ADRES - NR MIESZK"] = "\"" + srv.Investment.Address.ApartmentNo + "\"";
                 
                 //WŁAŚCICIELE
                 for (int i = 0; i < 3; i++)
