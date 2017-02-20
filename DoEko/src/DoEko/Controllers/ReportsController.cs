@@ -36,17 +36,15 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        public IActionResult InspectionSummary(Guid? id)
+        public async Task<IActionResult> InspectionSummary(Guid? id)
         {
             //disable change tracking
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-            GenericSelectionScreenViewModel model = new GenericSelectionScreenViewModel(_context);
-
             if (id.HasValue && id.Value != Guid.Empty)
             {
 
-                var inv = _context.Investments
+                var inv = await _context.Investments
                     .Include(i => i.Address).ThenInclude(a => a.State)
                     .Include(i => i.Address).ThenInclude(a => a.District)
                     .Include(i => i.Address).ThenInclude(a => a.Commune)
@@ -62,7 +60,7 @@ namespace DoEko.Controllers
                     .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
                     //.Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
                     //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
-                    .Single(i => i.InvestmentId == id.Value);
+                    .SingleAsync(i => i.InvestmentId == id.Value);
 
                 InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);
 
@@ -74,6 +72,8 @@ namespace DoEko.Controllers
             }
             else
             {
+                GenericSelectionScreenViewModel model = new GenericSelectionScreenViewModel(_context);
+
                 return View(model);    
             }
 

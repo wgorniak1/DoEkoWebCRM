@@ -16,12 +16,12 @@ namespace DoEko.Controllers.Helpers
 {
     public class InspectionSummaryBuilder
     {
-        public DoEkoContext _context;
+        //public DoEkoContext _context;
         public IFileStorage _fileStorage;
 
         public InspectionSummaryBuilder(DoEkoContext context, IFileStorage fileStorage)
         {
-            this._context = context;
+            //this._context = context;
             this._fileStorage = fileStorage;
         }
 
