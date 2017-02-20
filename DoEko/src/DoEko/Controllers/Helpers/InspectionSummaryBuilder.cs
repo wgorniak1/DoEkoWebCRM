@@ -134,7 +134,7 @@ namespace DoEko.Controllers.Helpers
 
             //Save data into file
             var documents = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);
-            var targetName = "Results/InspectionSummary/" + inv.InspectorId+'_'+DateTime.Now.ToString("yyyyMMddHHmmss") + ".docx";
+            var targetName = "Results/InspectionSummary/" + inv.InvestmentId+'_'+DateTime.Now.ToString("yyyyMMddHHmmss") + ".docx";
             var targetblob = documents.GetBlockBlobReference(targetName);
             targetblob.UploadFromStream(MainStream);
 
