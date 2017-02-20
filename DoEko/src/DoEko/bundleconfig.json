@@ -80,5 +80,17 @@
     "inputFiles": [
       "wwwroot/js/Reports.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/UserList.min.js",
+    "inputFiles": [
+      "wwwroot/js/UserList.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ReportTemplateList.min.js",
+    "inputFiles": [
+      "wwwroot/js/ReportTemplateList.js"
+    ]
   }
 ]

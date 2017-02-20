@@ -1,4 +1,5 @@
-﻿$(document).ready(function() { 
+﻿//
+$(document).ready(function () {
     var table = $('#ReportTemplateTable').DataTable({
         ajax: { 
             url: "List",
