@@ -6,6 +6,7 @@
 
   "dependencies": {
     "BundlerMinifier.Core": "2.2.281",
+    "jquery.datatables": "1.10.12",
     "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
@@ -52,6 +53,7 @@
       "type": "build"
     },
     "Microsoft.WindowsAzure.ConfigurationManager": "3.2.2",
+    "OpenXml-Complete-SDK": "2.5.0",
     "RazorEngine": "3.9.1",
     "SendGrid.NetCore": "1.0.0-rtm-00002",
     "System.Spatial": "5.7.0",

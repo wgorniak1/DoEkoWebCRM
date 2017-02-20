@@ -19,6 +19,7 @@
                 <ul class="dropdown-menu">
                     <li><a asp-controller="Reports" asp-action="ProgressSummary">Statystyki dla źródeł</a></li>
                     <li><a asp-controller="Reports" asp-action="SurveyExtract">Eksport danych z ankiet</a></li>
+                    <li><a asp-controller="Reports" asp-action="InspectionSummary">Podsumowanie inspekcji</a></li>
                 </ul>
             </li>
 
@@ -29,7 +30,8 @@
                 </a>
                 <ul class="dropdown-menu">
                     @*<li><a asp-controller="Companies" asp-action="Index">Spółki</a></li>*@
-                    <li><a asp-controller="Settings"  asp-action="Index">Stałe do raportów</a></li>
+                    <li><a asp-controller="Settings" asp-action="Index">Stałe do raportów</a></li>
+                    <li><a asp-controller="ReportTemplates"  asp-action="List">Szablony</a></li>
                     <li><a asp-controller="Users"      asp-action="Index">Użytkownicy</a></li>
                 </ul>
             </li>

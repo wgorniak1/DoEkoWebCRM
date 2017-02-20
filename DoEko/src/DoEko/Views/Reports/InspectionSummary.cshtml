@@ -9,20 +9,22 @@
 @inject UserManager<ApplicationUser> UserManager
 
 @{
-    ViewData["Title"] = "Eksport ankiet";
+    ViewData["Title"] = "Raport - Podsumowanie inspekcji";
 }
 
 <!-- Navigation -->
 <ol class="breadcrumb">
     <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
     <li>Raporty</li>
-    <li class="active">Eksport ankiet</li>
+    <li class="active">Podsumowanie inspekcji</li>
 </ol>
 
 <!--Title-->
-<h2>Eksport danych z ankiet</h2>
+<h2>Raport - Podsumowanie inspekcji</h2>
 <hr />
-<form id="ReportSelectionScreen">
+<form id="ReportSelectionScreen" 
+      asp-action="InspectionSummary"
+      asp-controller="Reports">
     <fieldset>
         <div class="row">
             <div class="col-sm-1">
@@ -51,14 +53,31 @@
                 <label class="control-label"></label>
             </div>
             <div class="col-sm-11">
-                <a asp-action="SurveyToCSV" asp-route-projectId="" asp-route-contractId=""
-                   class="btn btn-primary data-link">Pobierz</a>
+                <input type="submit" class="btn btn-primary" value="Wykonaj" />
             </div>
         </div>
     </fieldset>
 </form>
+@if (ViewData["ResultList"] != null)
+{
+    <div class="" id="InspectionSummaryContainer">
+        <table class="table table-condensed table-striped" id="InspectionSummaryTable" style="width:100%;">
+            <thead>
+                <tr>
+                    <th><span class="glyphicon glyphicon-link"></span> Raport dla inwestycji</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+}
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
 
 @section Scripts {
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+
     <environment names="Development">
         <script type="text/javascript" src="~/js/Reports.js"></script>
     </environment>

@@ -1,8 +1,8 @@
 ﻿@using DoEko.Models.Identity
 @using DoEko.ViewModels
 @inject Microsoft.Extensions.Options.IOptions<DoEko.Controllers.Settings.AppSettings> AppSettings;
-    <!DOCTYPE html>
-    <html>
+<!DOCTYPE html>
+<html>
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,10 +27,10 @@
             <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
         </environment>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        @RenderSection("stylesheets", required: false)
     </head>
     <body>
-
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <div id="NavBarMain" class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -52,7 +52,6 @@
                 </div>
             </div>
         </div>
-
         @RenderSection("modals", required: false)
         <div class="container body-content">
             <!--Popup Message with info, warning or errors-->
@@ -60,7 +59,7 @@
             @RenderBody()
             <hr />
             <footer>
-                <p>&copy; 2016 - DoEko</p>
+                <p>&copy; @DateTime.Today.Year - @AppSettings.Value.MailTemplatesOptions.Company.Name</p>
             </footer>
         </div>
 

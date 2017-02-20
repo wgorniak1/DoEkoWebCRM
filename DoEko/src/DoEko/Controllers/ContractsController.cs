@@ -255,18 +255,42 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            int result;
             try
             {
                 var contract = await _context.Contracts
                     .Include(c=>c.Investments).ThenInclude(i=>i.Payments)
                     .Include(c=>c.Investments).ThenInclude(i=>i.Surveys)
-                    .Include(c=>c.Investments).ThenInclude(i=>i.InvestmentOwners)
+                    .Include(c=>c.Investments).ThenInclude(i=>i.InvestmentOwners).ThenInclude(io=>io.Owner).ThenInclude(o=>o.Address)
                     .Include(c=>c.Investments).ThenInclude(i=>i.Address)
                     .SingleAsync(m => m.ContractId == id);
 
+                foreach (var inv in contract.Investments.ToList())
+                {
+                    _context.Payments.RemoveRange(inv.Payments);
+
+                    _context.InvestmentOwners.RemoveRange(inv.InvestmentOwners);
+                    result = _context.SaveChanges();
+
+                    foreach (var item in inv.InvestmentOwners)
+                    {
+                        _context.Addresses.Remove(item.Owner.Address);
+                        _context.BusinessPartners.Remove(item.Owner);
+                    }
+                    
+                    _context.Surveys.RemoveRange(inv.Surveys);
+                    _context.Addresses.Remove(inv.Address);
+                    _context.Investments.Remove(inv);
+
+                    result = _context.SaveChanges();
+
+
+                }
+
+
                 _context.Contracts.Remove(contract);
 
-                int result = await _context.SaveChangesAsync();
+                result = await _context.SaveChangesAsync();
 
                 return Ok(result);
 

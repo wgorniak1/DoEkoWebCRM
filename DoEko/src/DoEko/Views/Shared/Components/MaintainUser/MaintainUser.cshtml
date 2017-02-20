@@ -1,0 +1,88 @@
+﻿@model DoEko.ViewComponents.ViewModels.EditUserViewModel
+@using DoEko.Models.DoEko
+
+@{
+    ViewData["Title"] = "Edycja Konta " + Model.UserName;
+}
+<div class="modal fade" id="MaintainUserModal" tabindex="-1" role="dialog" aria-labelledby="MaintainUserModalTitle"
+     data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <form asp-controller="Users" 
+                  asp-action="Edit" 
+                  asp-route-returnurl="" 
+                  method="post"
+                  data-ajax="true"
+                  data-ajax-method="post">
+                <div class="modal-header">
+                    <button type="button" class="close user-edit-cancel" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="MaintainUserModalTitle">@ViewBag.Title</h4>
+                </div>
+                <div class="modal-body form-horizontal">                    
+                    
+                    <div class="validation-summary-valid text-danger small" data-valmsg-summary="true">
+                        <ul>
+                            <li style="display:none"></li>
+                        </ul>
+                    </div>
+                                                            
+                    <input asp-for="Id" hidden />
+                    <div class="form-group">
+                        <label asp-for="UserName" class="col-md-3 control-label"></label>
+                        <div class="col-md-9">
+                            <input asp-for="UserName" class="form-control disabled" readonly />
+                            <span asp-validation-for="UserName" class="text-danger small" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="col-md-3 control-label"></label>
+                        <div class="col-md-9">
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger small" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LastName" class="col-md-3 control-label"></label>
+                        <div class="col-md-9">
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger small" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="col-md-3 control-label"></label>
+                        <div class="col-md-9">
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small" />
+                        </div>
+                    </div>
+                    @*<div class="form-group">
+                        <label asp-for="Password" class="col-md-3 control-label"></label>
+                        <div class="col-md-9">
+                            <input asp-for="Password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger small" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword" class="col-md-3 control-label"></label>
+                        <div class="col-md-9">
+                            <input asp-for="ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small" />
+                        </div>
+                    </div>*@
+                    <div class="form-group">
+                        <label asp-for="RoleId" class="col-md-3 control-label"></label>
+                        <div class="col-md-9">
+                            <select asp-for="RoleId" class="form-control"
+                                    asp-items="ViewBag.RoleList"></select>
+                            <span asp-validation-for="RoleId" class="text-danger small" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger user-edit-cancel">Anuluj</button>
+                    <button type="button" class="btn btn-success user-edit-submit">Zapisz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

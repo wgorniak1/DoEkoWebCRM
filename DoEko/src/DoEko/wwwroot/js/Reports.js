@@ -1,4 +1,5 @@
-﻿//
+﻿
+//
 function onAjaxContractsGetFailed(xhr, status, error) {
     alert(error);
 }

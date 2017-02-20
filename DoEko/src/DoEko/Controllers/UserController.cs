@@ -8,6 +8,8 @@ using DoEko.Models.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using DoEko.ViewModels.UserViewModel;
+using DoEko.Controllers.Extensions;
+using DoEko.ViewComponents.ViewModels;
 
 namespace DoEko.Controllers
 {
@@ -25,6 +27,39 @@ namespace DoEko.Controllers
             _roleManager = roleManager;
         }
 
+        [HttpGet]
+        public IActionResult List()
+        {
+            //
+            if (HttpContext.Request.IsAjaxRequest())
+            {
+                var model = _userManager.Users
+                    .Select(u => new {
+
+                        u.Id,
+                        u.UserName,
+                        u.FirstName,
+                        u.LastName,
+                        u.PhoneNumber,
+                        u.Email,
+                        u.EmailConfirmed,
+                        u.AccessFailedCount,
+                        u.LockoutEnabled,
+                        u.LockoutEnd,
+                        _roles = u.Roles.Select(r => new {
+                            r.RoleId,
+                            _roleManager.Roles.Single(rm => rm.Id == r.RoleId).Name
+                        })
+                    }).ToList();
+
+                return Json(new { data = model });
+            }
+            else
+            {
+                return View();
+            }
+
+        }
         
         public async Task<IActionResult> Index(UserIndexSortOrder sortOrder, 
                                                string currentFilter, 
@@ -64,14 +99,95 @@ namespace DoEko.Controllers
         [HttpGet]
         public ActionResult Create(string returnUrl = null)
         {
-            //Temporary model for role list
-            var UserIndexVM = new UserIndexViewModel(_userManager, _roleManager);
+            ////Temporary model for role list
+            //var UserIndexVM = new UserIndexViewModel(_userManager, _roleManager);
 
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.RoleIdList = UserIndexVM.RoleList("");
-
-            return View();
+            //ViewBag.ReturnUrl = returnUrl;
+            //ViewBag.RoleIdList = UserIndexVM.RoleList("");
+            if (Request.IsAjaxRequest())
+            {
+                return ViewComponent("MaintainUser");
+            }
+            else
+            {
+                return View();
+            }
         }
+        [HttpGet]
+        public ActionResult Edit(Guid userId)
+        {
+            if (Request.IsAjaxRequest())
+            {
+                return ViewComponent("MaintainUser", new { userId = userId });
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
+        {
+            IdentityResult result;
+
+            var user = await _userManager.FindByIdAsync(model.Id.ToString());
+
+            if (user == null)
+            {
+                ModelState.AddModelError("Id", "Nie znaleziono konta u¿ytkownika");
+
+                return BadRequest(ModelState);
+            }
+
+            //
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+
+            if (user.Email != model.Email)
+            {
+                user.Email = model.Email;
+                user.EmailConfirmed = false;
+            }
+
+            //
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                AddErrors(result);
+
+                return BadRequest(ModelState);
+            }
+
+            var currentRole = (await _userManager.GetRolesAsync(user)).First();
+            var role = await _roleManager.FindByIdAsync(model.RoleId.ToString());
+            if (!await _userManager.IsInRoleAsync(user,role.Name))
+            {
+                result = await _userManager.RemoveFromRoleAsync(user, currentRole);
+                if (!result.Succeeded)
+                {
+                    AddErrors(result);
+                    return BadRequest(ModelState);
+                }
+                result = await _userManager.AddToRoleAsync(user, role.Name);
+                if (!result.Succeeded)
+                {
+                    AddErrors(result);
+                    return BadRequest(ModelState);
+                }
+            }
+
+            return Ok();
+        }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

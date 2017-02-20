@@ -1,0 +1,97 @@
+﻿@model DoEko.ViewComponents.ViewModels.ReportTemplateViewModel
+@using DoEko.Models.DoEko
+@using DoEko.Controllers.Extensions
+
+<table class="table table-condensed table-striped" id="ReportTemplateTable">
+    <thead class="">
+        <tr class="">
+            <th class="">Rodzaj szablonu</th>
+            <th class="">Plik szablonu</th>
+            <th class=""></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Templates)
+        {
+        <tr name="@item.Key.ToString()">
+            <td class="col-sm-3" data-column="TemplateName">@item.Key.DisplayName()</td>
+            <td class="col-sm-7" data-column="TemplateLink">
+                @if (item.Value.Url != null)
+                {
+                    <a class="wg-link-nounderline" href="@item.Value.Url">
+                        <span class="glyphicon glyphicon-link"></span>
+                        @item.Value.Name
+                    </a>
+                }
+                else
+                {
+                    <span class="text-danger">Brak</span>
+                }
+            </td>
+            <td class="col-sm-2" data-column="TemplateManage">
+                <div class="btn-toolbar pull-right">
+                    @if (item.Value.Url != null)
+                    {
+                        <button class="btn btn-default btn-sm template-delete" type="button">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-default btn-sm template-upload">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                        <form action="" method="post" enctype="multipart/form-data" hidden>
+                            <input type="file" id="@item.Key.ToString()" name="@item.Key.ToString()" class="template-input" 
+                                   accept="application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template">
+                            <input type="submit" value="Upload">
+                        </form>
+                    }
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@*<div class="row" style="background-color: #f6f6f6; border-bottom-style: groove; border-bottom-width: thin;">
+    <div class="col-sm-3">Rodzaj szablonu</div>
+    <div class="col-sm-7">Plik szablonu</div>
+    <div class="col-sm-2"></div>
+</div>
+
+@foreach (var item in Model.Templates)
+{
+    <div class="row">
+        <div class="col-sm-3">@item.Key.ToString()</div>
+        <div class="col-sm-7">
+                @if (item.Value.Url != null)
+                {
+                    <a class="wg-link-nounderline" href="@item.Value.Url">
+                        <span class="glyphicon glyphicon-link"></span>
+                        @item.Value.Name
+                    </a>
+                }
+                else
+                {
+                    <span class="text-danger">Brak</span>
+                }
+        </div>
+        <div class="col-sm-2">
+            <div class="btn-toolbar pull-right">
+                @if (item.Value.Url != null)
+                {
+                    <button class="btn btn-default btn-sm" type="button">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}*@

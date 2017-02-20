@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DoEko.Models.DoEko.Survey;
+using System.Collections;
+using System.Linq;
 
 namespace DoEko.Models.DoEko
 {
@@ -166,10 +168,10 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         //[StringLength(19,MinimumLength = 19,ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
-        //[RegularExpression("^[0-9]{6}(_)[0-9]{1}(.)[0-9]{4}(.)[0-9]{3}(/)[0-9]{1}$", ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
+        //[RegularExpression("^[0-9]{3}(/)[0-9]{1}$", ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
         [Display(Description = "Opis", Name = "Nr Działki", ShortName = "Nr Działki")]
         public string PlotNumber { get; set; }
-        //[RegularExpression("^[0-9]{6}(_)[0-9]{1}(.)[0-9]{4}(.)[0-9]{3}(/)[0-9]{1}$", ErrorMessage = "Proszę podać nr formacie 112233_4.5678.123/1")]
+        [RegularExpression("^[0-9]{4}$", ErrorMessage = "Proszę podać nr formacie 0000")]
         [Display(Description = "Opis", Name = "Nr obrębu", ShortName = "Nr obrębu")]
         public string PlotAreaNumber { get; set; }
         /// <summary>
@@ -269,5 +271,34 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Display(Description = "", Name = "Priorytet", ShortName = "Priorytet")]
         public long PriorityIndex { get; set; }
+        #region Metody
+        [NotMapped]
+        public string PlotFullNumber
+        {
+            get
+            {
+                string teryt = "";
+                try
+                {
+                    teryt = Address.StateId.ToString() +
+                            Address.DistrictId.ToString() +
+                            Address.CommuneId.ToString() + '_' +
+                            Address.CommuneType.ToString() + '.' +
+                            PlotAreaNumber.ToString() + '.' + 
+                            PlotNumber;
+
+                    return teryt;
+
+                }
+                catch (Exception)
+                {
+                    return PlotNumber;
+                }
+            }
+            private set
+            {
+            }
+        }
+        #endregion
     }
 }

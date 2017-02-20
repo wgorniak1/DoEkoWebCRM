@@ -36,33 +36,106 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SurveyExtract()
+        public IActionResult InspectionSummary(Guid? id)
+        {
+            //disable change tracking
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            GenericSelectionScreenViewModel model = new GenericSelectionScreenViewModel(_context);
+
+            if (id.HasValue && id.Value != Guid.Empty)
+            {
+
+                var inv = _context.Investments
+                    .Include(i => i.Address).ThenInclude(a => a.State)
+                    .Include(i => i.Address).ThenInclude(a => a.District)
+                    .Include(i => i.Address).ThenInclude(a => a.Commune)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                    .Single(i => i.InvestmentId == id.Value);
+
+                InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);
+
+                //string docUrl = docBuilder.Build(inv);
+                CloudBlockBlob doc = docBuilder.Build(new InvestmentViewModel(inv)); 
+                //return single doc
+                //return PhysicalFile(docUrl,"");
+                return Redirect(doc.Uri.AbsoluteUri);
+            }
+            else
+            {
+                return View(model);    
+            }
+
+        }
+
+        [HttpPost]
+        public IActionResult InspectionSummary(GenericSelectionScreenViewModel model)
+        {
+            //disable change tracking
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            var invIdsQry = _context.Investments.AsQueryable();
+            if (model.ProjectId != 0)
+            {
+                invIdsQry = invIdsQry.Where(i=>i.Contract.ProjectId == model.ProjectId);
+            };
+            if (model.ContractId != 0)
+            {
+                invIdsQry = invIdsQry.Where(i => i.ContractId == model.ContractId);
+            };
+
+            var invIds = invIdsQry.Select(i => i.InvestmentId).ToList();
+
+            var urls = new System.Collections.Generic.List<string>();
+
+            InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context, _fileStorage);
+
+            foreach (var invId in invIds)
+            {
+                var inv = _context.Investments
+                    .Include(i => i.Address).ThenInclude(a => a.State)
+                    .Include(i => i.Address).ThenInclude(a => a.District)
+                    .Include(i => i.Address).ThenInclude(a => a.Commune)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                    .Single(i => i.InvestmentId == invId);
+
+                
+                urls.Add(docBuilder.Build(new InvestmentViewModel(inv)).Uri.AbsoluteUri);
+            }
+            ViewData["ResultList"] = urls;
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult SurveyExtract()
         {
             //disable change tracking
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
             //View model
-            SurveyExtractViewModel model = new SurveyExtractViewModel();
-
-            model.ProjectList = new SelectList(await _context.Projects.Select(p => new SelectListItem() {
-                Value = p.ProjectId.ToString(),
-                Text = p.ShortDescription + " (" +
-                       p.StartDate.ToShortDateString() + " - " +
-                       p.EndDate.ToShortDateString() + ")"
-            }).ToListAsync(),"Value","Text",null);
-
-            model.ContractList = new SelectList(await _context.Contracts.Select(c => new SelectListItem() {
-                 Value = c.ContractId.ToString(),
-                 Text = c.FullfilmentDate.HasValue ?  
-                        c.Number + ' ' +
-                        c.ContractDate.ToShortDateString() + " - " +
-                        c.FullfilmentDate.Value.ToShortDateString() + ' ' +
-                        c.ShortDescription :
-
-                        c.Number + " " +
-                        c.ContractDate.ToShortDateString() + " " +
-                        c.ShortDescription
-            }).ToListAsync(), "Value","Text",null);
+            GenericSelectionScreenViewModel model = new GenericSelectionScreenViewModel(_context);
 
             return View(model);
         }

@@ -1,0 +1,90 @@
+﻿@model DoEko.ViewComponents.ViewModels.ContractDetailsViewModel
+@using DoEko.Models.DoEko
+
+<div id="ContractDetailsMainContainer">
+    <form id="ContractDetailsForm"
+          asp-action="EditAjax"
+          asp-controller="Contracts"
+          data-ajax="true"
+          data-ajax-method="POST"
+          data-ajax-mode="UPDATE"
+          data-ajax-update=""
+          data-ajax-failure="FormPostError"
+          data-ajax-success="FormPostSuccess">
+        
+        <fieldset @{ 
+                        if (!Model.EditMode)
+                        { 
+                            @:disabled="disabled" 
+                        }
+                  }>
+
+
+
+
+
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <input asp-for="ContractId" type="hidden" />
+        <label asp-for="Company.Name" class="control-label"/>
+        <input asp-for="Company.Name" class="form-control" disabled="disabled"/>
+        <span asp-validation-for="Company.Name" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label asp-for="Project.ShortDescription" class="control-label"/>
+        <input asp-for="Project.ShortDescription" class="form-control" disabled="disabled" />
+        <span asp-validation-for="Project.ShortDescription" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group"></div>
+</div>
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label asp-for="Number" class="control-label"/>
+        <input asp-for="Number" class="form-control"/>
+        <span asp-validation-for="Number" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label asp-for="Type" class="control-label"/>
+        <select asp-for="Type" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.ContractType))"></select>
+        <span asp-validation-for="Type" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group"></div>
+</div>
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label asp-for="ContractDate" class="control-label"/>
+        <input asp-for="ContractDate" class="form-control"/>
+        <span asp-validation-for="ContractDate" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label asp-for="FullfilmentDate" class="control-label"/>
+        <input asp-for="FullfilmentDate" class="form-control"/>
+        <span asp-validation-for="FullfilmentDate" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group">
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label asp-for="ShortDescription" class="control-label"/>
+        <input asp-for="ShortDescription" class="form-control"/>
+        <span asp-validation-for="ShortDescription" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label asp-for="Status" class="control-label"/>
+        <select asp-for="Status" class="form-control"  asp-items="@Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.ContractStatus))"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group">
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <button type="submit" class="btn btn-success">Zapisz</button>
+        <button class="btn btn-danger">Anuluj</button>
+    </div>
+</div>
+            
+        </fieldset>
+    </form>
+</div>

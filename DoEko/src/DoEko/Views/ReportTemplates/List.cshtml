@@ -1,0 +1,58 @@
+﻿@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko
+@using DoEko.Models.Identity
+
+@{
+    ViewData["Title"] = "Szablony do raportów";
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">Szablony do raportów</li>
+</ol>
+
+<h2>Lista szablonów</h2>
+<hr />
+<div class="" id="ReportTemplateContainer">
+@*    
+    @await Component.InvokeAsync("ReportTemplate", new { model = Model })
+*@
+@section modals{
+    @{await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
+                  new DoEko.ViewModels.SharedViewModels.ModalConfirmationViewModel()
+                  {
+                      Id = "TemplateDeleteModal",
+                      Title = "Usuwanie szablonu",
+                      Question = "Czy na pewno chcesz usunąć plik szablonu?",
+                      BtnYes = "Tak, Usuń",
+                      BtnYesClass = "template-delete-confirmed"
+                  });}
+}
+    <table class="table table-condensed table-striped" id="ReportTemplateTable" style="width:100%;">
+        <thead>
+            <tr>
+                <th title="Typ szablonu - sekcja w szablonie"><span class="glyphicon glyphicon-duplicate"></span> Rodzaj szablonu</th>
+                <th><span class="glyphicon glyphicon-link"></span> Plik szablonu</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+    <form id="TemplateUpload" action="" method="post" enctype="multipart/form-data" hidden>
+        <input type="file" id="" name="" class="template-input"
+               accept="application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template">
+        <input type="submit" value="Upload">
+    </form>
+</div>
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+
+}
+@section scripts{    
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/ReportTemplateList.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/ReportTemplateList.min.js"></script>
+    </environment>
+}
