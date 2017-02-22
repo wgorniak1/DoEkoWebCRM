@@ -8,7 +8,7 @@ namespace DoEko.Controllers.Extensions
 {
     public static class ObjectExtensions
     {
-        public static Object GetPropValue(this Object obj, String name)
+        public static string GetPropValue(this Object obj, String name)
         {
             foreach (String part in name.Split('.'))
             {

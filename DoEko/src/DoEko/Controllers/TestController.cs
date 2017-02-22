@@ -1,25 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DoEko.Models.DoEko;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using DoEko.Models.Identity;
-using DoEko.Models.DoEko.Addresses;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DoEko.Controllers.Extensions;
 using DoEko.Controllers.Helpers;
+using DoEko.Models.DoEko;
+using DoEko.Models.DoEko.Addresses;
 using DoEko.Models.DoEko.Survey;
+using DoEko.Models.Identity;
+using DoEko.Services;
+using DoEko.ViewComponents.ViewModels;
+using DoEko.ViewModels.ReportsViewModels;
 using DoEko.ViewModels.SurveyViewModels;
 using DoEko.ViewModels.TestViewModels;
-using DoEko.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.WindowsAzure.Storage.Blob;
-using DoEko.Controllers.Extensions;
-using DocumentFormat.OpenXml.Packaging;
-using DoEko.ViewComponents.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using DoEko.ViewModels.ReportsViewModels;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DoEko.Controllers
 {
@@ -52,6 +53,161 @@ namespace DoEko.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+
+
+
+        [HttpGet]
+        public ActionResult OpenXml()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<ActionResult> OpenXml(FormCollection form)
+        {
+
+            var data = await _context.Investments
+                    .Include(i => i.Address).ThenInclude(a => a.State)
+                    .Include(i => i.Address).ThenInclude(a => a.District)
+                    .Include(i => i.Address).ThenInclude(a => a.Commune)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                    .SingleAsync(i => i.InvestmentId == Guid.Parse("74f3e0bf-6d3d-40c5-981f-dba25056d1e8"));
+            data = new InvestmentViewModel(data) { Survey = data.Surveys.First() };
+
+            const string fieldDelimeter = "MERGEFIELD";
+
+            var file = HttpContext.Request.Form.Files.First();
+
+            //1. Title section is always populated
+            System.IO.MemoryStream MainStream = new System.IO.MemoryStream();
+            file.CopyTo(MainStream);
+
+            //Stream MainStream = this.GetTemplate("InspectionSummary", OfficeTemplateType.Title);
+
+            WordprocessingDocument doc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(stream: MainStream, isEditable: true);
+
+            //            var simpleFields = doc.MainDocumentPart.RootElement.Descendants<SimpleField>().Where(fc => fc.Instruction.HasValue && fc.Instruction.InnerText.Contains(fieldDelimeter)).ToArray();
+            //            var fieldCharBegin = doc.MainDocumentPart.RootElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Begin).ToArray();
+
+            
+            //Dictionary<string, string> mergeFields = new Dictionary<string, string>();
+
+            foreach (var runBegin in doc.MainDocumentPart.RootElement.Descendants<Run>()
+                .Where(r => r.Descendants<FieldChar>().Where(fc=> fc.FieldCharType == FieldCharValues.Begin).Any() &&
+                            r.NextSibling<Run>().Descendants<FieldCode>().Where(fc=>fc.Text.Contains("MERGEFIELD")).Any()).ToArray())
+            {
+                //1. take Run with MERGEFIELD
+                string FieldName = "";
+
+                Run runMerge = runBegin.NextSibling<Run>();
+
+                FieldName = runMerge.Descendants<FieldCode>().Where(fc => fc.Text.Contains("MERGEFIELD")).First().Text;
+                foreach (var run in runBegin.ElementsAfter())
+                {
+
+                }
+            }
+
+                foreach (var fieldCode in doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(fc => fc.Text.Contains(fieldDelimeter)).ToArray())
+            {
+                var fieldName = fieldCode.Text.Substring(fieldCode.Text.LastIndexOf(fieldDelimeter, System.StringComparison.Ordinal) + fieldDelimeter.Length).Trim().Split(' ').First();
+                var fieldValue = data.GetPropValue(fieldName) == null ? "" : data.GetPropValue(fieldName);
+                //if (!mergeFields.Keys.Any(key => key == "«" + fieldName + "»"))
+                //{
+                //    mergeFields.Add("«" + fieldName + "»", data.GetPropValue(fieldName));
+                //}
+                //Console.WriteLine(mergeFields.Last().Key.ToString() + " - " + mergeFields.Last().Value.ToString());
+
+                //insert Text right before "run:begin"
+                var newText = new Run(new Text(fieldValue));
+                fieldCode.Parent.PreviousSibling<Run>().InsertBeforeSelf(newText);
+
+                //set cursor on inserted run:text and delete all elements after until "run:end"
+                var run = newText;
+                foreach (var run1 in run.ElementsAfter().ToArray())
+                {
+                    if (run1.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.End).Any())
+                    {
+                        run1.Remove();
+                        break;
+                    }
+                    else
+                    {
+                        run1.Remove();
+                    }               
+                }
+            }
+
+            
+            ////Loop through all mergfields in document and put values
+            //var fieldCharSeparate = doc.MainDocumentPart.RootElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Separate).ToArray();
+            //foreach (FieldChar mergeSeparate in fieldCharSeparate)
+            //{
+
+            //    //loop through all text elements to build text to replace
+            //    List<TextType> textParts = new List<TextType>();
+                
+            //    //take next run section
+            //    var run = mergeSeparate.Parent.NextSibling<Run>();
+            //    while (!run.Descendants<FieldChar>().Where(f=>f.FieldCharType == FieldCharValues.End).Any())
+            //    {    
+            //        textParts.AddRange(run.Descendants<Text>());
+            //        textParts.AddRange(run.Descendants<FieldCode>());
+            //        run = run.NextSibling<Run>();
+            //    }
+            //    string textToReplace = string.Join(string.Empty,textParts.Select(t => t.Text).ToList());
+
+            //    //if there is a value for mergefield then loop through all "text" sections and replace the text with value
+            //    if (mergeFields.ContainsKey(textToReplace))
+            //    {
+            //        string replaceWithText = mergeFields[textToReplace] == null ? "" : mergeFields[textToReplace];
+
+            //        //loop through all text elements to replace symbol with text
+            //        foreach (var text in textParts)
+            //        {
+            //            if (replaceWithText.Length >= text.Text.Length || text != textParts.Last())
+            //            {
+            //                text.Text = replaceWithText.Substring(0, text.Text.Length);
+            //                replaceWithText = replaceWithText.Remove(0, text.Text.Length);
+            //            }
+            //            else if (replaceWithText.Length > 0)
+            //            {
+            //                text.Text = replaceWithText;
+            //                replaceWithText = "";
+            //            }
+            //            else
+            //            {
+            //                text.Parent.Remove();
+            //            }
+            //        }
+            //    }
+
+
+            //}
+
+            doc.Dispose();
+
+            MainStream.Position = 0;
+
+            //Save data into file
+            var documents = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);
+            var targetName = "Results/InspectionSummary/aaatest" + '_' + DateTime.Now.ToString("yyyyMMddHHmmss") + ".docx";
+            var targetblob = documents.GetBlockBlobReference(targetName);
+            targetblob.UploadFromStream(MainStream);
+
+            return Redirect(targetblob.Uri.AbsoluteUri);
+
         }
 
         [HttpGet]

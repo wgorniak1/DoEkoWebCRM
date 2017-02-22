@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Test OpenXML</h2>
+
+<form asp-action="OpenXml"
+      asp-controller="Test"
+      enctype="multipart/form-data" 
+      method="post">
+      @*
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-mode="UPDATE"
+      data-ajax-update="">*@
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group-sm">
+                <input type="text" name="test" id="test"/>
+                <label>checkbox</label>                
+                <input type="file" id="word" name="word">
+            </div>
+        </div>
+    </div>
+    <input type="submit" value="odczytaj"/>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script title ="test" type="text/javascript">
+
+    </script>
+}
