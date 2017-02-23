@@ -12,12 +12,14 @@ namespace DoEko.ViewComponents.ViewModels
     {
         [Display(Name = "Wyniki analizy techn. - Tytuł")]
         Title,
-        [Display(Name = "Wyniki analizy techn. - Pompa G.")]
-        HeatPump,
-        [Display(Name = "Wyniki analizy techn. - Solar")]
-        Solar,
         [Display(Name = "Wyniki analizy techn. - PV")]
         PhotoVoltaic,
+        [Display(Name = "Wyniki analizy techn. - Solar")]
+        Solar,
+        [Display(Name = "Wyniki analizy techn. - Pompa G.(CWU)")]
+        HWHeatPump,
+        [Display(Name = "Wyniki analizy techn. - Pompa G.(CO)")]
+        CHHeatPump,
         [Display(Name = "Wyniki analizy techn. - Pompa")]
         HeatPumpAir,
         [Display(Name = "Wyniki analizy techn. - Kocioł")]

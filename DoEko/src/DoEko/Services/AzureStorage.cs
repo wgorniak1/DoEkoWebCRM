@@ -18,7 +18,8 @@ namespace DoEko.Services
         Contract,
         Investment,
         Survey,
-        Templates
+        Templates,
+        ReportResults
     }
     public class AzureStorage : IFileStorage
     {

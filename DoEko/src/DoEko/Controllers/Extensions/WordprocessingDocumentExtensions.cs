@@ -12,7 +12,59 @@ namespace DoEko.Controllers.Extensions
 {
     public static class WordprocessingDocumentExtensions
     {
-        public const string fieldDelimeter = " MERGEFIELD ";
+        public const string fieldDelimeter = "MERGEFIELD";
+
+        public static WordprocessingDocument MergeFields(this WordprocessingDocument doc, object data)
+        {
+            foreach (var runBegin in doc.MainDocumentPart.RootElement.Descendants<Run>()
+                .Where(r => r.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Begin).Any() &&
+                            r.NextSibling<Run>().Descendants<FieldCode>().Where(fc => fc.Text.Contains(fieldDelimeter)).Any()).ToArray())
+            {
+                Run runSeparate;
+                //1. take all run elements between "begin" and "separate" 
+                //   to concatenate all mergefield name parts = this wiil give us mergefield name
+                string fieldName = "";
+
+                //Run runMerge = runBegin.NextSibling<Run>();
+
+                //fieldName = runMerge.Descendants<FieldCode>().Where(fc => fc.Text.Contains(fieldDelimeter)).First().Text;
+                foreach (Run run in runBegin.ElementsAfter())
+                {
+                    if (run.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Separate).Any())
+                    {
+                        runSeparate = run;
+                        break;
+                    }
+                    fieldName = fieldName + run.Descendants<FieldCode>().First().Text;
+                }
+                fieldName = fieldName.Substring(fieldName.LastIndexOf(fieldDelimeter, System.StringComparison.Ordinal) + fieldDelimeter.Length).Trim().Split(' ').First();
+
+
+                //2. Calculate data value and insert new run element with that data
+                var fieldValue = data.GetPropValue(fieldName) == null ? "" : data.GetPropValue(fieldName);
+                
+                //insert Text right before "run:begin"
+                var newText = new Run(new Text(fieldValue));
+                runBegin.InsertBeforeSelf(newText);
+
+                //3. Delete all mergefield configuration
+                foreach (var runElement in newText.ElementsAfter().ToArray())
+                {
+
+                    if (runElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.End).Any())
+                    {
+                        runElement.Remove();
+                        break;
+                    }
+                    else
+                    {
+                        runElement.Remove();
+                    }
+                }
+            }
+
+            return doc;
+        }
         public static WordprocessingDocument MailMerge(this WordprocessingDocument doc, object data)
         {
             var fieldCodes = doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(fc => fc.Text.Contains(fieldDelimeter)).ToArray();

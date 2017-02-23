@@ -24,8 +24,24 @@ namespace DoEko.Controllers.Helpers
             //this._context = context;
             this._fileStorage = fileStorage;
         }
-
-        public CloudBlockBlob Build(InvestmentViewModel inv)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inv"></param>
+        /// <param name="resultsFolder"></param>
+        /// <returns></returns>
+        //public Task<string> BuildAsync(InvestmentViewModel inv, string resultsFolder)
+        //{
+        //    Task<string> task = Task.Factory.StartNew( () => (Build(inv, resultsFolder)));
+        //    return task;
+        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inv">Investment for which data will be generated</param>
+        /// <param name="resultsFolder">folder to place generated document</param>
+        /// <returns>URL of the generated document</returns>
+        public Task BuildAsync(InvestmentViewModel inv, string resultsFolder)
         {
             //1. Initialize:
             inv.ReadPictures(_fileStorage);
@@ -34,113 +50,36 @@ namespace DoEko.Controllers.Helpers
             Stream MainStream = this.GetTemplate("InspectionSummary", OfficeTemplateType.Title);
 
             WordprocessingDocument doc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(stream: MainStream, isEditable: true);
-            doc = doc.MailMerge(inv).MergePictures(inv);
+            doc = doc.MergeFields(inv).MergePictures(inv);
 
             doc.MainDocumentPart.Document.Save();
 
-
-            //2. PV section
-            if (inv.Surveys.Any(s => s.Status != SurveyStatus.Cancelled && s.GetRSEType() == (int)SurveyRSETypeEnergy.PhotoVoltaic))
+            List<Task<Stream>> docParts = new List<Task<Stream>>();
+            foreach (OfficeTemplateType type in Enum.GetValues(typeof(OfficeTemplateType)))
             {
-                using (Stream StreamToMerge = this.GetTemplate("InspectionSummary", OfficeTemplateType.PhotoVoltaic))
-                {
-                    inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeEnergy.PhotoVoltaic && s.Status != SurveyStatus.Cancelled);
-
-                    WordprocessingDocument tmpDoc = WordprocessingDocument.Open(stream: StreamToMerge, isEditable: true);
-                    tmpDoc.MailMerge(inv)
-                        .MergePictures(inv)
-                        .Dispose();
-
-                    StreamToMerge.Position = 0;
-                    doc = doc.MergeStream(StreamToMerge);
-                }
+                docParts.Add(this.BuildPartAsync(inv, type));
             }
 
-            //3. Ground heat pump
-            if (inv.Surveys.Any(s => s.Status != SurveyStatus.Cancelled && s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPump))
+            //Wait untill all parts are generated
+            Task.WaitAll(docParts.ToArray());
+
+            //Merge all parts
+            foreach (var part in docParts)
             {
-                using (Stream StreamToMerge = this.GetTemplate("InspectionSummary", OfficeTemplateType.HeatPump))
-                {
-                    inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPump && s.Status != SurveyStatus.Cancelled);
-
-                    WordprocessingDocument tmpDoc = WordprocessingDocument.Open(stream: StreamToMerge, isEditable: true);
-                    tmpDoc.MailMerge(inv)
-                        .MergePictures(inv)
-                        .Dispose();
-
-                    StreamToMerge.Position = 0;
-                    doc = doc.MergeStream(StreamToMerge);
-                }
-            }
-
-            //4. Air Heat Pump
-            if (inv.Surveys.Any(s => s.Status != SurveyStatus.Cancelled &&  ( s.Type == SurveyType.CentralHeating && s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPumpAir ) ||
-                                                                            ( s.Type == SurveyType.HotWater && s.GetRSEType() == (int)SurveyRSETypeHotWater.HeatPump))
-                                                                           )
-            {
-                using (Stream StreamToMerge = this.GetTemplate("InspectionSummary", OfficeTemplateType.HeatPumpAir))
-                {
-                    inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled && 
-                    ( s.Type == SurveyType.CentralHeating && s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPumpAir ) ||
-                    ( s.Type == SurveyType.HotWater && s.GetRSEType() == (int)SurveyRSETypeHotWater.HeatPump));
-
-                    WordprocessingDocument tmpDoc = WordprocessingDocument.Open(stream: StreamToMerge, isEditable: true);
-                    tmpDoc.MailMerge(inv)
-                        .MergePictures(inv)
-                        .Dispose();
-
-                    StreamToMerge.Position = 0;
-                    doc = doc.MergeStream(StreamToMerge);
-                }
-            }
-
-            //5. Boiler
-            if (inv.Surveys.Any(s => s.Status != SurveyStatus.Cancelled && s.GetRSEType() == (int)SurveyRSETypeCentralHeating.PelletBoiler))
-            {
-                using (Stream StreamToMerge = this.GetTemplate("InspectionSummary", OfficeTemplateType.PelletBoiler))
-                {
-                    inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeCentralHeating.PelletBoiler && s.Status != SurveyStatus.Cancelled);
-
-                    WordprocessingDocument tmpDoc = WordprocessingDocument.Open(stream: StreamToMerge, isEditable: true);
-                    tmpDoc.MailMerge(inv)
-                        .MergePictures(inv)
-                        .Dispose();
-
-                    StreamToMerge.Position = 0;
-                    doc = doc.MergeStream(StreamToMerge);
-                }
-            }
-
-            //6. Solar
-            if (inv.Surveys.Any(s => s.Status != SurveyStatus.Cancelled && s.GetRSEType() == (int)SurveyRSETypeHotWater.Solar))
-            {
-                using (Stream StreamToMerge = this.GetTemplate("InspectionSummary", OfficeTemplateType.Solar))
-                {
-                    inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeHotWater.Solar && s.Status != SurveyStatus.Cancelled);
-
-                    WordprocessingDocument tmpDoc = WordprocessingDocument.Open(stream: StreamToMerge, isEditable: true);
-                    tmpDoc.MailMerge(inv)
-                        .MergePictures(inv)
-                        .Dispose();
-
-                    StreamToMerge.Position = 0;
-                    doc = doc.MergeStream(StreamToMerge);
-                }
+                doc = part.Result != Stream.Null ? doc.MergeStream(part.Result) : doc;
             }
 
             //Save & Close main document, reset stream position for downloading it to azure storage
             doc.Dispose();
-            MainStream.Position = 0;
 
             //Save data into file
-            var documents = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);
-            var targetName = "Results/InspectionSummary/" + inv.InvestmentId+'_'+DateTime.Now.ToString("yyyyMMddHHmmss") + ".docx";
-            var targetblob = documents.GetBlockBlobReference(targetName);
-            targetblob.UploadFromStream(MainStream);
 
-            //return Uri
-            return targetblob;
+            var blob = _fileStorage
+                .GetBlobContainer(enuAzureStorageContainerType.ReportResults)
+                .GetBlockBlobReference("InspectionSummary/" + resultsFolder + '/' + inv.InvestmentId + ".docx");
 
+            MainStream.Position = 0;
+            return blob.UploadFromStreamAsync(MainStream);
         }
 
         private Stream GetTemplate(string templateType, OfficeTemplateType templateSection)
@@ -162,5 +101,61 @@ namespace DoEko.Controllers.Helpers
             }
         }
 
+        private Stream BuildPart(InvestmentViewModel inv, OfficeTemplateType type)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case OfficeTemplateType.CHHeatPump:
+                        inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
+                                                            s.Type == SurveyType.CentralHeating &&
+                                                            s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPumpAir);
+                        break;
+                    case OfficeTemplateType.HWHeatPump:
+                        inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
+                                                            s.Type == SurveyType.HotWater &&
+                                                            s.GetRSEType() == (int)SurveyRSETypeHotWater.HeatPump);
+                        break;
+                    case OfficeTemplateType.Solar:
+                        inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeHotWater.Solar && s.Status != SurveyStatus.Cancelled);
+                        break;
+                    case OfficeTemplateType.PhotoVoltaic:
+                        inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeEnergy.PhotoVoltaic && s.Status != SurveyStatus.Cancelled);
+                        break;
+                    case OfficeTemplateType.HeatPumpAir:
+                        inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPumpAir && s.Status != SurveyStatus.Cancelled);
+                        break;
+                    case OfficeTemplateType.PelletBoiler:
+                        inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeCentralHeating.PelletBoiler && s.Status != SurveyStatus.Cancelled);
+                        break;
+                    default:
+                        return Stream.Null;
+                }
+            }
+            catch (Exception)
+            {
+                //NOT FOUND
+                return Stream.Null;
+            }
+
+            Stream partStream = this.GetTemplate("InspectionSummary", type);
+
+            WordprocessingDocument tmpDoc = WordprocessingDocument.Open(stream: partStream, isEditable: true);
+            tmpDoc
+                .MergeFields(inv)
+                .MergePictures(inv)
+                .Dispose();
+
+            partStream.Position = 0;
+
+            return partStream;
+        }
+
+        private Task<Stream> BuildPartAsync(InvestmentViewModel inv, OfficeTemplateType type)
+        {
+            Task<Stream> task = Task.Factory.StartNew(() => BuildPart(new InvestmentViewModel(inv), type));
+            return task;
+        }
     }
 }

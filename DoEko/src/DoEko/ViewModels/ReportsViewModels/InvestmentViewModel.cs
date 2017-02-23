@@ -12,6 +12,10 @@ namespace DoEko.ViewModels.ReportsViewModels
 {
     public class InvestmentViewModel : Investment
     {
+        public InvestmentViewModel(InvestmentViewModel inv) : this((Investment)inv)
+        {
+            Pictures = inv.Pictures;
+        }
         public InvestmentViewModel(Investment inv)
         {
             this.Address = inv.Address;

@@ -64,10 +64,13 @@ namespace DoEko.Controllers
 
                 InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);
 
-                //string docUrl = docBuilder.Build(inv);
-                CloudBlockBlob doc = docBuilder.Build(new InvestmentViewModel(inv)); 
+                string resultsFolder = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+
+                await docBuilder.BuildAsync(new InvestmentViewModel(inv),resultsFolder);
                 //return single doc
                 //return PhysicalFile(docUrl,"");
+                var doc = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary/" + resultsFolder).ListBlobs(true).OfType<CloudBlockBlob>().First();
+
                 return Redirect(doc.Uri.AbsoluteUri);
             }
             else
@@ -97,9 +100,10 @@ namespace DoEko.Controllers
 
             var invIds = invIdsQry.Select(i => i.InvestmentId).ToList();
 
-            var urls = new System.Collections.Generic.List<string>();
-
             InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context, _fileStorage);
+
+            List<Task> docList = new List<Task>();
+            string resultsFolder = DateTime.Now.ToString("yyyyMMddHHmmssfff");
 
             foreach (var invId in invIds)
             {
@@ -121,10 +125,13 @@ namespace DoEko.Controllers
                     //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
                     .Single(i => i.InvestmentId == invId);
 
-                
-                urls.Add(docBuilder.Build(new InvestmentViewModel(inv)).Uri.AbsoluteUri);
+                docList.Add(docBuilder.BuildAsync(new InvestmentViewModel(inv), resultsFolder));
             }
-            ViewData["ResultList"] = urls;
+
+            Task.WaitAll(docList.ToArray());
+
+            //ViewData["ResultList"] = urls;
+            ViewData["ResultsFolder"] = resultsFolder;
             return View(model);
         }
 
