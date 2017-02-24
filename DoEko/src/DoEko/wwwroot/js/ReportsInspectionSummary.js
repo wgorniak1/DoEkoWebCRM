@@ -171,12 +171,13 @@ function onReportDownload(row){
     });
     getModal.done(function (data, success) {
         data.data.forEach(function (row) {
-            var link = document.createElement('a');
-            link.href = row.url;
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            delete link;
+            window.open(row.url, '_blank');
+            //var link = document.createElement('a');
+            //link.href = row.url;
+            //link.style.display = 'none';
+            //document.body.appendChild(link);
+            //link.click();
+            //delete link;
         });
     });
     getModal.error(function (xhr, status, error) {
