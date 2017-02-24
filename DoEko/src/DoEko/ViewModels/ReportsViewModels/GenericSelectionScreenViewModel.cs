@@ -18,7 +18,7 @@ namespace DoEko.ViewModels.ReportsViewModels
 
         public GenericSelectionScreenViewModel(DoEkoContext _context)
         {
-            this.Initialize(_context);
+           this.Initialize(_context);
         }
 
         public SelectList ProjectList { get; set; }
@@ -30,15 +30,15 @@ namespace DoEko.ViewModels.ReportsViewModels
 
         private async void Initialize(DoEkoContext _context)
         {
-            ProjectList = new SelectList(await _context.Projects.Select(p => new SelectListItem()
+            ProjectList = new SelectList(_context.Projects.Select(p => new SelectListItem()
             {
                 Value = p.ProjectId.ToString(),
                 Text = p.ShortDescription + " (" +
                        p.StartDate.ToShortDateString() + " - " +
                        p.EndDate.ToShortDateString() + ")"
-            }).ToListAsync(), "Value", "Text", null);
+            }).ToList(), "Value", "Text", null);
 
-            ContractList = new SelectList(await _context.Contracts.Select(c => new SelectListItem()
+            ContractList = new SelectList(_context.Contracts.Select(c => new SelectListItem()
             {
                 Value = c.ContractId.ToString(),
                 Text = c.FullfilmentDate.HasValue ?
@@ -50,7 +50,7 @@ namespace DoEko.ViewModels.ReportsViewModels
                         c.Number + " " +
                         c.ContractDate.ToShortDateString() + " " +
                         c.ShortDescription
-            }).ToListAsync(), "Value", "Text", null);
+            }).ToList(), "Value", "Text", null);
         }
     }
 }

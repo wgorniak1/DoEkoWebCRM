@@ -248,7 +248,8 @@ function onReportCreateSubmit() {
         var submit = $.ajax({
             type: $form.attr('data-ajax-method') || "POST",
             url: $form.attr("action"),
-            data: formData
+            data: formData,
+            timeout: 600000
         });
 
         submit.error(function (error) {
