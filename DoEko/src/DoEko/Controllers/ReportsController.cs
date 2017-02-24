@@ -81,9 +81,21 @@ namespace DoEko.Controllers
             }
 
         }
+        [HttpGet]
+        public IActionResult InspectionSummaryCreateAjax()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_CreateNewInspectionSummaryPartial", new GenericSelectionScreenViewModel(_context));
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
 
         [HttpPost]
-        public IActionResult InspectionSummary(GenericSelectionScreenViewModel model)
+        public IActionResult InspectionSummaryAjax(GenericSelectionScreenViewModel model)
         {
             //disable change tracking
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
@@ -103,7 +115,16 @@ namespace DoEko.Controllers
             InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context, _fileStorage);
 
             List<Task> docList = new List<Task>();
-            string resultsFolder = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            string resultsFolder = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            if (model.ProjectId != 0)
+            {
+                resultsFolder = "Projekt " + _context.Projects.Where(p => p.ProjectId == model.ProjectId).Select(p => p.ShortDescription).First() + ' ' + resultsFolder;
+            }
+            else
+            {
+                resultsFolder = "Umowa " + _context.Contracts.Where(c => c.ContractId == model.ContractId).Select(c => c.Number + '(' + c.Project.ShortDescription + ')').First() + ' ' + resultsFolder;
+            }
+
 
             foreach (var invId in invIds)
             {
@@ -761,5 +782,55 @@ namespace DoEko.Controllers
 
             return FileList;
     }
-}
+
+        [HttpGet]
+        public IActionResult InspectionSummaryList(bool singleDocuments, string reportName)
+        {
+            if (!Request.IsAjaxRequest())
+            {
+                return BadRequest();
+            }
+
+            List<Object> files = new List<Object>();
+
+            var rootDir = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
+
+            if (singleDocuments)
+            {
+                int i = 1;
+                foreach (var singleDoc in rootDir.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>())
+                {
+                    files.Add(new
+                    {
+                        key = i.ToString(),
+                        reportName = singleDoc.Parent.Prefix.Split('/')[1],
+                        name = singleDoc.Name.Split('/')[2],
+                        url = singleDoc.Uri.AbsoluteUri
+                    });
+                    i++;
+                }
+            }
+            else
+            {
+                int i = 1;
+                foreach (var singleRep in rootDir.ListBlobs().OfType<CloudBlobDirectory>())
+                {
+                    //parent row
+                    files.Add(new
+                    {
+                        key = i.ToString(),
+                        reportName = singleRep.Prefix.Split('/')[1],
+                        name = "",
+                        url = "",
+                        count = singleRep.ListBlobs().OfType<CloudBlockBlob>().Count()
+                    });
+                    i++;
+                }
+            }
+
+            return Json(new { data = files });
+        }
+
+
+    }
 }

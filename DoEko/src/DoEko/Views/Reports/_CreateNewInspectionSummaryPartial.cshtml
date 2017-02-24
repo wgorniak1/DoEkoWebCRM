@@ -1,0 +1,49 @@
+﻿@using DoEko.ViewModels.ReportsViewModels
+@model GenericSelectionScreenViewModel
+
+<div class="modal fade" id="ReportCreateModal" tabindex="-1" role="dialog" aria-labelledby="ReportCreateModalTitle">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close report-create-cancel" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ReportCreateModal">Utwórz nowy raport</h4>
+            </div>
+            <form id="ReportCreateForm"
+                    asp-action="InspectionSummaryAjax"
+                    asp-controller="Reports"
+                  data-ajax-method="POST">
+                <div class="modal-body">
+                    <fieldset>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <label asp-for="ProjectId" class="control-label"></label>
+                            </div>
+                            <div class="col-sm-10 form-group">
+                                <select asp-for="ProjectId" asp-items="@Model.ProjectList" class="form-control input-sm data-project" data-project="">
+                                    <option selected value=""></option>
+                                </select>
+                                <span asp-validation-for="ProjectId"></span>
+                            </div>
+                         </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <label asp-for="ContractId" class="control-label"></label>
+                            </div>
+                            <div class="col-sm-10 form-group">
+                                <select asp-for="ContractId" class="form-control input-sm data-contract" asp-items="@Model.ContractList">
+                                    <option selected value=""></option>
+                                </select>
+                                <span asp-validation-for="ContractId"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger report-create-cancel" data-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-success report-create-submit">Generuj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

@@ -12,15 +12,13 @@
 /// <reference path="js/InvestmentListUnassigned.min.js" />
 /// <reference path="js/reports.js" />
 /// <reference path="js/reports.min.js" />
+/// <reference path="js/reportsinspectionsummary.js" />
 /// <reference path="js/reporttemplatelist.js" />
 /// <reference path="js/reporttemplatelist.min.js" />
-/// <reference path="js/reporttemplatelist222 - copy.js" />
 /// <reference path="js/site.js" />
 /// <reference path="js/Survey.js" />
 /// <reference path="js/survey.min.js" />
 /// <reference path="js/userlist.js" />
-/// <reference path="js/userlist222 - copy.js" />
-/// <reference path="js/UserList222.js" />
 /// <reference path="js/ValidationFixes.js" />
 /// <reference path="lib/bootstrap/dist/js/bootstrap.js" />
 /// <reference path="lib/bootstrap-fileinput/js/fileinput.min.js" />

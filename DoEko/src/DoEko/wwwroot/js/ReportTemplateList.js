@@ -17,7 +17,7 @@ $(document).ready(function () {
                         type: 'html',
                         render: function (data, type, row, meta) {
                             if (data.name !== null) {
-                                return '<a href="' + data.url + '" class="wg-link-default">' + data.name + '</a>';
+                                return '<a href="' + data.url + '" class="wg-link-default"> ' + data.name + '</a>';
                             }
                             else {
                                 return '<span class="text-danger">Brak</span>';

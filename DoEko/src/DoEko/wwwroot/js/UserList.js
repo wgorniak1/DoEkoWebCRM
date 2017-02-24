@@ -309,7 +309,7 @@ function onUserEdit(userId) {
         WgTools.alert(error, false, "E");
     });
 
-    S(this).bind()
+    $(this).bind();
 }
 
 function onUserDelete(userId) {

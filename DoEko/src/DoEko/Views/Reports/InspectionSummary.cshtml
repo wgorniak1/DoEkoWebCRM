@@ -22,66 +22,42 @@
 <!--Title-->
 <h2>Raport - Podsumowanie inspekcji</h2>
 <hr />
-<form id="ReportSelectionScreen" 
-      asp-action="InspectionSummary"
-      asp-controller="Reports">
-    <fieldset>
-        <div class="row">
-            <div class="col-sm-1">
-                <label asp-for="ProjectId" class="control-label"></label>
-            </div>
-            <div class="col-sm-11 form-group">
-                <select asp-for="ProjectId" asp-items="@Model.ProjectList" class="form-control input-sm data-project" data-project="">
-                    <option selected value=""></option>
-                </select>
-                <span asp-validation-for="ProjectId"></span>
-            </div>
-         </div>
-        <div class="row">
-            <div class="col-sm-1">
-                <label asp-for="ContractId" class="control-label"></label>
-            </div>
-            <div class="col-sm-11 form-group">
-                <select asp-for="ContractId" class="form-control input-sm data-contract" asp-items="@Model.ContractList">
-                    <option selected value=""></option>
-                </select>
-                <span asp-validation-for="ContractId"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-1">
-                <label class="control-label"></label>
-            </div>
-            <div class="col-sm-11">
-                <input type="submit" class="btn btn-primary" value="Wykonaj" />
-            </div>
-        </div>
-    </fieldset>
-</form>
-@if (ViewData["ResultList"] != null)
-{
-    <div class="" id="InspectionSummaryContainer">
-        <table class="table table-condensed table-striped" id="InspectionSummaryTable" style="width:100%;">
-            <thead>
-                <tr>
-                    <th><span class="glyphicon glyphicon-link"></span> Raport dla inwestycji</th>
-                    <th></th>
-                </tr>
-            </thead>
-        </table>
-    </div>
+@section modals{
+    @{await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
+                            new DoEko.ViewModels.SharedViewModels.ModalConfirmationViewModel()
+                            {
+                                Id = "ReportDeleteModal",
+                                Title = "Usuwanie Raportu",
+                                Question = "Czy na pewno chcesz usunąć wygenerowane dokumenty?",
+                                BtnYes = "Tak, Usuń",
+                                BtnYesClass = "user-delete-submit"
+                            });
+    }
+    
 }
+<div class="" id="InspectionSummaryContainer">
+    <table class="table table-condensed table-striped" id="InspectionSummaryTable" style="width:100%;">
+        <thead>
+            <tr>
+                <th>Raport</th>
+                <th>Liczba dokumentów</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
 @section stylesheets{
     @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
 }
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+@{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <environment names="Development">
-        <script type="text/javascript" src="~/js/Reports.js"></script>
+        <script type="text/javascript" src="~/js/ReportsInspectionSummary.js"></script>
     </environment>
     <environment names="Staging,Production">
-        <script type="text/javascript" src="~/js/Reports.min.js"></script>
+        <script type="text/javascript" src="~/js/ReportsInspectionSummary.min.js"></script>
     </environment>
 }
