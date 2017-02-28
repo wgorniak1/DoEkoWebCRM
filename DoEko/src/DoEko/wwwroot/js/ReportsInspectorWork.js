@@ -9,24 +9,24 @@ $(document).ready(function () {
         columns: [
                     {
                         data: "inspectorName",
-                        name: "Inspektor",
+                        name: "Inspektor"
                     },
                     {
                         data: "projectDescr",
-                        name: "Projekt",
+                        name: "Projekt"
                     },
                     {
                         data: "contractNo",
-                        name: "Nr Umowy",
+                        name: "Nr Umowy"
                     },
                     {
                         data: "period",
-                        name: "Okres",
+                        name: "Okres"
                     },
                     {
                         data: "surveyCount",
-                        name: "Liczba źródeł",
-                    },
+                        name: "Liczba źródeł"
+                    }
         ],
         stateSave: true,
         language: {
@@ -99,8 +99,8 @@ $(document).ready(function () {
         footerCallback: function (row, data, start, end, display) {
             var api = this.api();
 
-            $(api.table().column( 4 ).footer()).html(
-              api.column(4, { page: 'current' }).data().sum()
+            $(api.table().column(4).footer()).html(
+              'Suma:' + api.column(4, { page: 'current' }).data().sum()
             );
         }
     });
