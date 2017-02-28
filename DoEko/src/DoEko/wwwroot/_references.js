@@ -13,6 +13,7 @@
 /// <reference path="js/reports.js" />
 /// <reference path="js/reports.min.js" />
 /// <reference path="js/reportsinspectionsummary.js" />
+/// <reference path="js/reportsinspectorwork.js" />
 /// <reference path="js/reporttemplatelist.js" />
 /// <reference path="js/reporttemplatelist.min.js" />
 /// <reference path="js/site.js" />

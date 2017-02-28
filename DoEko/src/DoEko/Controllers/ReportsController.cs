@@ -36,6 +36,44 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> InspectorWork()
+        {
+            if (this.Request.IsAjaxRequest())
+            {
+                //disable change tracking
+                _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+                List<object> model = new List<object>();
+
+                var SurveysGroupedByManyFactors = _context.Surveys
+                    .Include(s => s.Investment).ThenInclude(i=>i.Contract).ThenInclude(c=>c.Project)
+                    .OrderBy(s => s.Investment.InspectorId)
+                    .ThenBy(s => s.Investment.ContractId)
+                    .ThenBy(s => s.ChangedAt)
+                    .ThenBy(s => s.Status)
+                    .GroupBy(s => new { InspectorId = s.Investment.InspectorId, Contract = s.Investment.Contract, Period = s.ChangedAt.Year + s.ChangedAt.Month.ToString("D2") });
+
+                await SurveysGroupedByManyFactors.ForEachAsync( surveyGroup => model.Add(new {
+                    inspectorId = surveyGroup.Key.InspectorId.HasValue ? surveyGroup.Key.InspectorId.Value : Guid.Empty,
+                    inspectorName = surveyGroup.Key.InspectorId.HasValue ? _userManager.FindByIdAsync(surveyGroup.Key.InspectorId.Value.ToString()).GetAwaiter().GetResult().FullName : "Nie przypisanych",
+                    projectDescr = surveyGroup.Key.Contract.Project.ShortDescription,
+                    contractNo = surveyGroup.Key.Contract.Number,
+                    period = surveyGroup.Key.Period,
+                    surveyCount = surveyGroup.Where(s => s.Status == SurveyStatus.Approval ||
+                                                         s.Status == SurveyStatus.Approved ||
+                                                        (s.Status == SurveyStatus.Cancelled && s.CancelType == SurveyCancelType.After) ||
+                                                        (s.Status == SurveyStatus.Cancelled && s.CancelType == SurveyCancelType.TechnicalIssue)).Count()
+                }));
+
+                return Json( new { data = model });
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> InspectionSummary(Guid? id)
         {
             //disable change tracking

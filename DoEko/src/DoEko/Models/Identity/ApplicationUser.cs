@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoEko.Models.Identity
 {
@@ -21,5 +22,14 @@ namespace DoEko.Models.Identity
         [Display(Description = "", Name = "Nazwisko", ShortName = "Nazwisko")]
         public string LastName { get; set; }
 
+        [NotMapped]
+        public string FullName
+        {
+            get
+            {
+                return this.FirstName + ' ' + this.LastName;
+            }
+            private set { }
+        }
     }
 }

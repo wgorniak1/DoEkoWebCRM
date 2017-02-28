@@ -1,0 +1,72 @@
+﻿@using DoEko.Models.DoEko.Survey
+@using DoEko.Controllers.Extensions
+@using Microsoft.AspNetCore.Identity
+@using DoEko.Models.Identity
+@using DoEko.ViewModels.ReportsViewModels
+
+@{
+    ViewData["Title"] = "Raport - Inspekcje inspektora";
+}
+
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li>Raporty</li>
+    <li class="active">Inspekcje inspektora</li>
+</ol>
+
+<!--Title-->
+<h2>Raport - Podsumowanie inspekcji</h2>
+<hr />
+@section modals{
+    @*@{await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
+                            new DoEko.ViewModels.SharedViewModels.ModalConfirmationViewModel()
+                            {
+                                Id = "ReportDeleteModal",
+                                Title = "Usuwanie Raportu",
+                                Question = "Czy na pewno chcesz usunąć wygenerowane dokumenty?",
+                                BtnYes = "Tak, Usuń",
+                                BtnYesClass = "user-delete-submit"
+                            });
+    }*@
+    
+}
+<div class="" id="InspectorWorkContainer">
+    <table class="table table-condensed table-striped" id="InspectorWorkTable" style="width:100%;">
+        <thead>
+            <tr>
+                <th>Inspektor</th>
+                <th>Projekt</th>
+                <th>Nr umowy</th>
+                <th>Okres</th>
+                <th>Liczba inspekcji</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
+
+@section Scripts {
+@{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/ReportsInspectorWork.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/ReportsInspectorWork.min.js"></script>
+    </environment>
+}
