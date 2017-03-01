@@ -12,11 +12,5 @@ namespace DoEko.Models.DoEko.Survey
     public class SurveyHotWater : Survey
     {
         public SurveyRSETypeHotWater RSEType { get; set; }
-
-        [Display(Name = "Ostateczny dobór kolektorów")]
-        public string FinalSOLConfig { get; set; }
-        [Display(Name = "Roczne zapotrzebowanie na en dla CWU - stan pierwotny")]
-        public double HWRequiredEnYearly { get; set; }
-
     }
 }
