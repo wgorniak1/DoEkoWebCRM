@@ -161,7 +161,7 @@ namespace DoEko.Models.DoEko.Survey
         public SurveyDetGround Ground { get; set; }
         public SurveyDetEnergyAudit Audit { get; set; }
 
-        public SurveyResultCalculations ResultCalculation { get; set; }
+        //public SurveyResultCalculations ResultCalculation { get; set; }
 
         [Display(Description = "", Name = "Uwagi", ShortName = "Uwagi")]
         public string FreeCommments { get; set; }
