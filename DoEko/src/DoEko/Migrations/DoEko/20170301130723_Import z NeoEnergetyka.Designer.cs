@@ -8,9 +8,10 @@ using DoEko.Models.DoEko;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20170301130723_Import z NeoEnergetyka")]
+    partial class ImportzNeoEnergetyka
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -967,7 +968,7 @@ namespace DoEko.Migrations.DoEko
                 {
                     b.HasBaseType("DoEko.Models.DoEko.Survey.Survey");
 
-                    b.Property<string>("FinalSOLConfig");
+                    b.Property<double>("FinalSOLConfig");
 
                     b.Property<double>("HWRequiredEnYearly");
 

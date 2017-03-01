@@ -271,6 +271,11 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Display(Description = "", Name = "Priorytet", ShortName = "Priorytet")]
         public long PriorityIndex { get; set; }
+
+        [Display(Description = "", Name = "Link do geoportalu", ShortName = "Geoportal")]
+        [DataType(DataType.Url)]
+        public string GeoPortal { get; set; }
+        
         #region Metody
         [NotMapped]
         public string PlotFullNumber
