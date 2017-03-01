@@ -99,8 +99,8 @@ $(document).ready(function () {
         footerCallback: function (row, data, start, end, display) {
             var api = this.api();
 
-            $(api.table().column('salary:rse_count').footer()).html(
-              'Suma:' + api.column('salary:rse_count', { page: 'current' }).data().sum()
+            $(api.table().column('rse_count:name').footer()).html(
+              'Suma:' + api.column('rse_count:name', { page: 'current' }).data().sum()
             );
         }
     });
