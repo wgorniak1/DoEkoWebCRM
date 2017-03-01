@@ -15,7 +15,13 @@ namespace DoEko.Models.DoEko.Survey
         [Key,ForeignKey("Survey")]
         public Guid SurveyId { get; set; }
         public virtual Survey Survey { get; set; }
-        
+
+        [Display(Name = "Ostateczny dobór paneli")]
+        public double FinalPVConfig { get; set; }
+        //
+        [Display(Name = "Ostateczny dobór kolektorów")]
+        public string FinalSOLConfig { get; set; }
+
         [Display(Name = "Ostateczny dobór mocy OZE")]
         public double FinalRSEPower { get; set; }
         [Display(Name = "Sprawność OZE")]
@@ -24,39 +30,6 @@ namespace DoEko.Models.DoEko.Survey
         public double RSEWorkingTime { get; set; }
         [Display(Name = "Roczna produkcja OZE")]
         public double RSEYearlyProduction { get; set; }
-        [Display(Name = "Roczne zużycie en. elektr.")]
-        public double RSEEnYearlyConsumption { get; set; }
-        [Display(Name = "Kwota Netto")]
-        public double RSENetPrice { get; set; }
-        [Display(Name = "VAT")]
-        public double RSETax { get; set; }
-        [Display(Name = "Kwota brutto")]
-        public double RSEGrossPrice { get; set; }
-
-        //
-        [Display(Name = "ΔRÓWNOWAŻNE(PYŁY, NOX, SOX) CO2")]
-        public double CO2DustEquivValue { get; set; }
-        [Display(Name = "ΔRÓWNOWAŻNE(PYŁY, NOX, SOX) CO2")]
-        public double CO2DustEquivPercent { get; set; }
-        [Display(Name = "ΔRÓWNOWAŻNE CO2")]
-        public double CO2EquivValue { get; set; }
-        [Display(Name = "ΔCO2")]
-        public double CO2Value { get; set; }
-        [Display(Name = "ΔCO2")]
-        public double CO2Percent { get; set; }
-        [Display(Name = "ΔPM10")]
-        public double PM10Value { get; set; }
-        [Display(Name = "ΔPM10")]
-        public double PM10Percent { get; set; }
-        [Display(Name = "ΔPM2,5")]
-        public double PM25Value { get; set; }
-        [Display(Name = "ΔPM2,5")]
-        public double PM25Percent { get; set; }
-        [Display(Name = "ΔBENZO(A)PIREN")]
-        public double BenzoPirenValue { get; set; }
-        [Display(Name = "ΔBENZO(A)PIREN")]
-        public double BenzoPirenPercent { get; set; }
-        //
         [Display(Name = "Wsp. strat ciepła")]
         public double HeatLossFactor { get; set; }
         [Display(Name = "Wsp. zapotrzebowania na energię")]
@@ -84,8 +57,37 @@ namespace DoEko.Models.DoEko.Survey
             get { return this.RSEYearlyProduction; }
             set { this.RSEYearlyProduction = value; }
         }
+        [Display(Name = "Roczne zużycie en. elektr.")]
+        public double RSEEnYearlyConsumption { get; set; }
+        [Display(Name = "Kwota Netto")]
+        public double RSENetPrice { get; set; }
+        [Display(Name = "VAT")]
+        public double RSETax { get; set; }
+        [Display(Name = "Kwota brutto")]
+        public double RSEGrossPrice { get; set; }
+        [Display(Name = "ΔRÓWNOWAŻNE(PYŁY, NOX, SOX) CO2")]
+        public double CO2DustEquivValue { get; set; }
+        [Display(Name = "ΔRÓWNOWAŻNE(PYŁY, NOX, SOX) CO2")]
+        public double CO2DustEquivPercent { get; set; }
+        [Display(Name = "ΔRÓWNOWAŻNE CO2")]
+        public double CO2EquivValue { get; set; }
+        [Display(Name = "ΔCO2")]
+        public double CO2Value { get; set; }
+        [Display(Name = "ΔCO2")]
+        public double CO2Percent { get; set; }
+        [Display(Name = "ΔPM10")]
+        public double PM10Value { get; set; }
+        [Display(Name = "ΔPM10")]
+        public double PM10Percent { get; set; }
+        [Display(Name = "ΔPM2,5")]
+        public double PM25Value { get; set; }
+        [Display(Name = "ΔPM2,5")]
+        public double PM25Percent { get; set; }
+        [Display(Name = "ΔBENZO(A)PIREN")]
+        public double BenzoPirenValue { get; set; }
+        [Display(Name = "ΔBENZO(A)PIREN")]
+        public double BenzoPirenPercent { get; set; }
         //
-        [Display(Name = "Ostateczny dobór kolektorów")]
-        public string FinalSOLConfig { get; set; }
+
     }
 }

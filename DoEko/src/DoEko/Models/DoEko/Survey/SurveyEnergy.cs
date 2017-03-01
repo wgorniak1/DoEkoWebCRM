@@ -13,8 +13,7 @@ namespace DoEko.Models.DoEko.Survey
     {
         public SurveyRSETypeEnergy RSEType { get; set; }
 
-        [Display(Name ="Ostateczny dobór paneli")]
-        public double FinalPVConfig { get; set; }
+
 
     }
 }
