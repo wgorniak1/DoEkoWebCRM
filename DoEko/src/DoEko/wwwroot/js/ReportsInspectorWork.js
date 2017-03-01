@@ -25,7 +25,7 @@ $(document).ready(function () {
                     },
                     {
                         data: "surveyCount",
-                        name: "Liczba źródeł"
+                        name: "rse_count"
                     }
         ],
         stateSave: true,
@@ -99,8 +99,8 @@ $(document).ready(function () {
         footerCallback: function (row, data, start, end, display) {
             var api = this.api();
 
-            $(api.table().column(4).footer()).html(
-              'Suma:' + api.column(4, { page: 'current' }).data().sum()
+            $(api.table().column('salary:rse_count').footer()).html(
+              'Suma:' + api.column('salary:rse_count', { page: 'current' }).data().sum()
             );
         }
     });
