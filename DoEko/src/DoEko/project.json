@@ -82,7 +82,11 @@
   },
 
   "frameworks": {
-    "net461": { }
+    "net461": {
+      "frameworkAssemblies": {
+        "System.Data.DataSetExtensions": "4.0.0.0"
+      }
+    }
   },
 
   "buildOptions": {

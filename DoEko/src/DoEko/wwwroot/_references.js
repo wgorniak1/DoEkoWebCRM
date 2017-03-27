@@ -3,6 +3,7 @@
 /// <reference path="js/addressdropdown.min.js" />
 /// <reference path="js/ContractDelete.js" />
 /// <reference path="js/ContractDelete.min.js" />
+/// <reference path="js/contractdetails.js" />
 /// <reference path="js/customvalidationwithdataannotation.js" />
 /// <reference path="js/InvestmentDetails.js" />
 /// <reference path="js/InvestmentDetails.min.js" />

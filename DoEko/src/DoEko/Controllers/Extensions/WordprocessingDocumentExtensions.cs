@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DoEko.Models.DoEko;
 using DoEko.ViewModels.ReportsViewModels;
@@ -16,52 +17,102 @@ namespace DoEko.Controllers.Extensions
 
         public static WordprocessingDocument MergeFields(this WordprocessingDocument doc, object data)
         {
-            foreach (var runBegin in doc.MainDocumentPart.RootElement.Descendants<Run>()
-                .Where(r => r.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Begin).Any() &&
-                            r.NextSibling<Run>().Descendants<FieldCode>().Where(fc => fc.Text.Contains(fieldDelimeter)).Any()).ToArray())
+            var splitter = new[] { ' ', '"' };
+            const string tmergefield = "MERGEFIELD";
+            var tmergeFields = doc.MainDocumentPart.HeaderParts.Cast<OpenXmlPart>()
+                .Concat(doc.MainDocumentPart.FooterParts.Cast<OpenXmlPart>())
+                .Concat(new OpenXmlPart[] { doc.MainDocumentPart })
+                .SelectMany(x => x.RootElement.Descendants<SimpleField>().Select(sf => new { text = sf.Instruction.Value, el = (OpenXmlElement)sf })
+                                .Concat(x.RootElement.Descendants<FieldCode>().Select(fc => new { text = fc.Text, el = (OpenXmlElement)fc })))
+                .Select(a => new { words = a.text.Split(splitter, StringSplitOptions.RemoveEmptyEntries), el = a.el })
+                .Where(a => tmergefield.Equals(a.words.FirstOrDefault(), StringComparison.OrdinalIgnoreCase))
+                .ToLookup(k => string.Join(" ", k.words.Skip(1).TakeWhile(i => i != "\\*")), v => v.el);
+            foreach (var t in tmergeFields)
             {
-                Run runSeparate;
-                //1. take all run elements between "begin" and "separate" 
-                //   to concatenate all mergefield name parts = this wiil give us mergefield name
-                string fieldName = "";
+                //
+                var fieldValue = data.GetPropValue(t.Key) == null ? "" : data.GetPropValue(t.Key);
 
-                //Run runMerge = runBegin.NextSibling<Run>();
-
-                //fieldName = runMerge.Descendants<FieldCode>().Where(fc => fc.Text.Contains(fieldDelimeter)).First().Text;
-                foreach (Run run in runBegin.ElementsAfter())
+                foreach (var tag in t.OfType<SimpleField>())
                 {
-                    if (run.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Separate).Any())
-                    {
-                        runSeparate = run;
-                        break;
-                    }
-                    fieldName = fieldName + run.Descendants<FieldCode>().First().Text;
+                    //insert Text right before "current tag"
+                    var newText = new Run(new Text(fieldValue));
+                    tag.InsertBeforeSelf(newText);
+
+                    tag.Remove();
                 }
-                fieldName = fieldName.Substring(fieldName.LastIndexOf(fieldDelimeter, System.StringComparison.Ordinal) + fieldDelimeter.Length).Trim().Split(' ').First();
 
-
-                //2. Calculate data value and insert new run element with that data
-                var fieldValue = data.GetPropValue(fieldName) == null ? "" : data.GetPropValue(fieldName);
-                
-                //insert Text right before "run:begin"
-                var newText = new Run(new Text(fieldValue));
-                runBegin.InsertBeforeSelf(newText);
-
-                //3. Delete all mergefield configuration
-                foreach (var runElement in newText.ElementsAfter().ToArray())
+                foreach (var tag in t.OfType<FieldCode>())
                 {
+                    //insert Text right before "run:begin"
+                    var newText = new Run(new Text(fieldValue));
 
-                    if (runElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.End).Any())
+                    //
+                    var runBegin = tag.Parent.PreviousSibling();
+
+                    runBegin.InsertBeforeSelf(newText);
+
+                    foreach (var runElement in newText.ElementsAfter().ToArray())
                     {
-                        runElement.Remove();
-                        break;
-                    }
-                    else
-                    {
-                        runElement.Remove();
+
+                        if (runElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.End).Any())
+                        {
+                            runElement.Remove();
+                            break;
+                        }
+                        else
+                        {
+                            runElement.Remove();
+                        }
                     }
                 }
+
             }
+            //foreach (var runBegin in doc.MainDocumentPart.RootElement.Descendants<Run>()
+            //    .Where(r => r.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Begin).Any() &&
+            //                r.NextSibling<Run>().Descendants<FieldCode>().Where(fc => fc.Text.Contains(fieldDelimeter)).Any()).ToArray())
+            //{
+            //    Run runSeparate;
+            //    //1. take all run elements between "begin" and "separate" 
+            //    //   to concatenate all mergefield name parts = this wiil give us mergefield name
+            //    string fieldName = "";
+
+            //    //Run runMerge = runBegin.NextSibling<Run>();
+
+            //    //fieldName = runMerge.Descendants<FieldCode>().Where(fc => fc.Text.Contains(fieldDelimeter)).First().Text;
+            //    foreach (Run run in runBegin.ElementsAfter())
+            //    {
+            //        if (run.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Separate).Any())
+            //        {
+            //            runSeparate = run;
+            //            break;
+            //        }
+            //        fieldName = fieldName + run.Descendants<FieldCode>().First().Text;
+            //    }
+            //    fieldName = fieldName.Substring(fieldName.LastIndexOf(fieldDelimeter, System.StringComparison.Ordinal) + fieldDelimeter.Length).Trim().Split(' ').First();
+
+
+            //    //2. Calculate data value and insert new run element with that data
+            //    var fieldValue = data.GetPropValue(fieldName) == null ? "" : data.GetPropValue(fieldName);
+                
+            //    //insert Text right before "run:begin"
+            //    var newText = new Run(new Text(fieldValue));
+            //    runBegin.InsertBeforeSelf(newText);
+
+            //    //3. Delete all mergefield configuration
+            //    foreach (var runElement in newText.ElementsAfter().ToArray())
+            //    {
+
+            //        if (runElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.End).Any())
+            //        {
+            //            runElement.Remove();
+            //            break;
+            //        }
+            //        else
+            //        {
+            //            runElement.Remove();
+            //        }
+            //    }
+            //}
 
             return doc;
         }

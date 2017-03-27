@@ -124,7 +124,6 @@
     </div>
 </div>
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 <script>
     $(function () {
         $('#AllRowsSelector').change (function () {
@@ -160,6 +159,10 @@
                 <label for="FIFile" class="btn btn-primary btn-sm wg-panel-header-button" title="Importuj wyciąg z iPKO">
                     <span class="glyphicon glyphicon-usd"></span>
                 </label>
+
+                <button class="btn btn-sm btn-primary wg-panel-header-button wg-btn-handle-neoenergetyka" type="button" title="Iportuj wyniki z neoenergetyki">
+                    <span class="glyphicon glyphicon-dashboard"></span>
+                </button>
             </div>
         </div>
         <div id="details" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-details">
@@ -209,6 +212,26 @@
     </div>
 </div>
 
+
+    //  asp-action="UploadNeoenergetykaResults"
+    //  asp-controller="Contracts"
+    //data-ajax="true"
+    //data-ajax-method="POST"
+    //data-ajax-mode="REPLACE"
+    //data-ajax-update=""
+    //data-ajax-failure="onNeoenergetykaPostFailure"
+    //data-ajax-success="onNeoenergetykaPostSuccess"
+
+<form id="NeoenergetykaForm" method="post" 
+      asp-action="UploadNeoenergetykaResults"
+      asp-controller="Contracts"
+      enctype="multipart/form-data" hidden>
+        <input id="ContractId" name="contractId" type="hidden" value="@Model.ContractId" />
+        <input id="Neoenergetyka" name="neoenergetyka" type="file" hidden
+                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
+        <input type="submit" hidden/>
+</form>
+
 <form id="FIForm"
       class="navbar-form"
       asp-action="UploadPaymentFile"
@@ -243,6 +266,15 @@
 </form>
 
 @section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<environment names="Development">
+    <script src="~/js/ContractDetails.js"></script>
+</environment>
+<environment names="Staging,Production">
+    <script src="~/js/ContractDetails.min.js"></script>
+</environment>
+
 <script>
     $("#FIFile").change(function () {
         var fileUpload = $("#FIFile").get(0);

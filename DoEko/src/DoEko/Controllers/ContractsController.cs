@@ -10,6 +10,13 @@ using Microsoft.AspNetCore.Identity;
 using DoEko.Models.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DoEko.Controllers.Extensions;
+using System.Runtime.Remoting.Contexts;
+using Microsoft.AspNetCore.Http;
+using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Controllers
 {
@@ -45,7 +52,7 @@ namespace DoEko.Controllers
             var contract = await _context.Contracts
                 .Include(c => c.Company)
                 .Include(c => c.Project)
-                .Include(c => c.Investments).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
+                .Include(c => c.Investments).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
                 .Include(c => c.Investments).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
                 .SingleOrDefaultAsync(m => m.ContractId == id);
             if (contract == null)
@@ -54,17 +61,17 @@ namespace DoEko.Controllers
             }
             if (TempData.ContainsKey("FileUploadResult"))
             {
-                ViewData["FileUploadType"]    = TempData["FileUploadType"];
-                ViewData["FileUploadResult"]  = TempData["FileUploadResult"];
+                ViewData["FileUploadType"] = TempData["FileUploadType"];
+                ViewData["FileUploadResult"] = TempData["FileUploadResult"];
                 ViewData["FileUploadSuccessMessage"] = TempData["FileUploadSuccess"];
                 ViewData["FileUploadErrorMessage"] = TempData["FileUploadError"];
-                ViewData["FileUploadFinished"] = true;                
-            } 
+                ViewData["FileUploadFinished"] = true;
+            }
             else
             {
                 ViewData["FileUploadFinished"] = false;
             }
-            
+
             //Payments
             ViewData["PaymentsExists"] = _context.Payments.Where(p => p.ContractId == id && p.NotNeeded == false && p.InvestmentId == null).Any();
             // end of payments
@@ -81,7 +88,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Contracts/Create
-       
+
         public IActionResult Create(int? ProjectId, string ReturnUrl = null)
         {
 
@@ -99,12 +106,12 @@ namespace DoEko.Controllers
                     return RedirectToAction("Index", new { StatusMessage = 1 });
                     //return NotFound();
                 }
-                model.Project = _context.Projects.Include(p=>p.Company).SingleOrDefault(p => p.ProjectId == ProjectId);
+                model.Project = _context.Projects.Include(p => p.Company).SingleOrDefault(p => p.ProjectId == ProjectId);
                 model.ProjectId = model.Project.ProjectId;
                 model.Company = model.Project.Company;
                 model.CompanyId = model.Project.CompanyId;
 
-                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p=> p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription", model.Project);
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription", model.Project);
                 ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", model.Company);
                 ViewData["ReturnUrl"] = ReturnUrl;
 
@@ -116,7 +123,7 @@ namespace DoEko.Controllers
                 ViewData["ReturnUrl"] = ReturnUrl;
             }
             model.Number = CalculateNewNumber(model.Type, model.ContractDate);
-            
+
             return View(model);
         }
         // POST: Contracts/Create
@@ -138,7 +145,7 @@ namespace DoEko.Controllers
                 //}
                 //else
                 //{
-                return RedirectToAction("Details","Projects", new { Id = contract.ProjectId });
+                return RedirectToAction("Details", "Projects", new { Id = contract.ProjectId });
                 //}
                 //contract = await _context.Contracts.Include(c => c.Investments).SingleOrDefaultAsync(c => c.ContractId == contract.ContractId);
             }
@@ -154,12 +161,12 @@ namespace DoEko.Controllers
                 ViewData["ReturnUrl"] = ReturnUrl;
             }
             else
-            { 
+            {
                 ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription");
                 ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name");
             }
 
-            ViewData["ReturnUrl"]   = ReturnUrl;
+            ViewData["ReturnUrl"] = ReturnUrl;
 
             return View(contract);
         }
@@ -173,9 +180,9 @@ namespace DoEko.Controllers
             }
 
             var contract = await _context.Contracts
-                .Include( c => c.Company)
-                .Include( c => c.Project)
-                .Include( c => c.Investments)
+                .Include(c => c.Company)
+                .Include(c => c.Project)
+                .Include(c => c.Investments)
                 .SingleOrDefaultAsync(m => m.ContractId == id);
             if (contract == null)
             {
@@ -219,16 +226,16 @@ namespace DoEko.Controllers
                 }
                 if (ReturnUrl != null)
                 {
-                    return Redirect(ReturnUrl);               
+                    return Redirect(ReturnUrl);
                 }
                 else
                 {
-                    return RedirectToAction("Details",new { Id = contract.ContractId});
+                    return RedirectToAction("Details", new { Id = contract.ContractId });
                 }
             }
             ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", contract.ProjectId);
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name",contract.CompanyId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
 
             return View(contract);
         }
@@ -259,10 +266,10 @@ namespace DoEko.Controllers
             try
             {
                 var contract = await _context.Contracts
-                    .Include(c=>c.Investments).ThenInclude(i=>i.Payments)
-                    .Include(c=>c.Investments).ThenInclude(i=>i.Surveys)
-                    .Include(c=>c.Investments).ThenInclude(i=>i.InvestmentOwners).ThenInclude(io=>io.Owner).ThenInclude(o=>o.Address)
-                    .Include(c=>c.Investments).ThenInclude(i=>i.Address)
+                    .Include(c => c.Investments).ThenInclude(i => i.Payments)
+                    .Include(c => c.Investments).ThenInclude(i => i.Surveys)
+                    .Include(c => c.Investments).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
+                    .Include(c => c.Investments).ThenInclude(i => i.Address)
                     .SingleAsync(m => m.ContractId == id);
 
                 foreach (var inv in contract.Investments.ToList())
@@ -277,7 +284,7 @@ namespace DoEko.Controllers
                         _context.Addresses.Remove(item.Owner.Address);
                         _context.BusinessPartners.Remove(item.Owner);
                     }
-                    
+
                     _context.Surveys.RemoveRange(inv.Surveys);
                     _context.Addresses.Remove(inv.Address);
                     _context.Investments.Remove(inv);
@@ -303,6 +310,190 @@ namespace DoEko.Controllers
                 }
                 else return BadRequest(exc.Message);
             }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
+        public IActionResult UploadNeoenergetykaResults(IFormFile neoenergetyka, int contractId)
+        {
+            //fields validation
+            string[] allowedFileTypes = {
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                //"application/vnd.ms-excel" 
+            };
+
+            if (neoenergetyka == null)
+            {
+                ModelState.AddModelError(nameof(neoenergetyka), "Nieodnaleziono pliku");
+                return Json(ModelState);
+            }
+            if (!allowedFileTypes.Any(s => s == neoenergetyka.ContentType))
+            {
+                ModelState.AddModelError(nameof(neoenergetyka), "Nieobs³ugiwany format pliku");
+                return Json(ModelState);
+            }
+
+            //
+            IList<string> errMessage = new List<string>();
+            DataTable dt = new DataTable();
+
+            try
+            {
+
+                //read file
+                using (SpreadsheetDocument doc = SpreadsheetDocument.Open(stream: neoenergetyka.OpenReadStream(), isEditable: false))
+                {
+                    dt = doc.RetrieveDataTable(true);
+                }
+
+                //get survey Ids from excel table
+                var surveyIds = dt.Rows.OfType<DataRow>().Where(dr => !string.IsNullOrEmpty(dr.Field<string>(1))).Select(dr => Guid.Parse(dr.Field<string>(1))).ToList();
+                if (surveyIds.Count == 0)
+                {
+                    ModelState.AddModelError(nameof(neoenergetyka), "B³ad odczytu kolumny z ID ankiety");
+                    return Json(ModelState);
+                }
+
+                //get all surveys that will be updated.
+                var surveys = _context.Surveys
+                    .Where(s => surveyIds.Contains<Guid>(s.SurveyId))
+                    .Include(s => s.Investment)
+                    .Include(s => s.ResultCalculation)
+                    .ToList();
+
+                if (surveys.Count == 0)
+                {
+                    ModelState.AddModelError(nameof(neoenergetyka), "Nie znaleziono w systemie ¿adnej ankiety dla danych z excela");
+                    return Json(ModelState);
+                }
+
+                foreach (var srv in surveys)
+                {
+                        var surveyExcel = dt.Rows.OfType<DataRow>().Single(dr => dr.Field<string>(1) == srv.SurveyId.ToString());
+
+                        srv.Investment.GeoPortal = surveyExcel.Field<string>(2);
+                        srv.ResultCalculation    = new SurveyResultCalculations(srv.Type, srv.GetRSEType(), surveyExcel);
+                    _context.Update(srv.Investment);
+                }
+
+                _context.UpdateRange(surveys);
+                var result = _context.SaveChanges();                  
+            }
+            catch (Exception exc)
+            {
+                ModelState.AddModelError("B³¹d systemu", exc.InnerException != null ? exc.InnerException.Message : exc.Message);
+                return Json(ModelState);
+            }
+
+
+            //    i += 1;
+            //    if (!(i > 1))
+            //    {
+            //        continue;
+            //    }
+            //    using (var transaction = _context.Database.BeginTransaction())
+            //    {
+            //        try
+            //        {
+            //            //set line to parse
+            //            uploadhelper.Record = CsvRecord;
+
+            //            //Parse Investment Address - also check if address has already been registered in the db
+            //            InvestmentAddress = uploadhelper.ParseInvestmentAddress();
+
+            //            Investment = uploadhelper.ParseInvestment();
+            //            Investment.Address = InvestmentAddress;
+
+            //            OwnerAddress = uploadhelper.ParseOwnerAddress();
+            //            Owner = (BusinessPartnerPerson)uploadhelper.ParseInvestmentOwner();
+
+            //            if (OwnerAddress.SingleLine == InvestmentAddress.SingleLine)
+            //            {
+            //                Owner.Address = InvestmentAddress;
+            //                OwnerAddress = null;
+            //            }
+            //            else
+            //            {
+            //                Owner.Address = OwnerAddress;
+            //            }
+
+            //            InvestmentOwner = new InvestmentOwner
+            //            {
+            //                Investment = Investment,
+            //                InvestmentId = Investment.InvestmentId,
+            //                Owner = Owner,
+            //                OwnerId = Owner.BusinessPartnerId
+            //            };
+
+            //            Surveys = uploadhelper.ParseSurveys();
+            //            foreach (var Survey in Surveys)
+            //            {
+            //                Survey.Investment = Investment;
+            //                Survey.InvestmentId = Investment.InvestmentId;
+            //            };
+            //            if (InvestmentAddress.AddressId == 0)
+            //            {
+            //                _context.Add(InvestmentAddress);
+            //            }
+            //            //int x = _context.SaveChanges();
+            //            _context.Add(Investment);
+            //            //x = _context.SaveChanges();
+            //            if (OwnerAddress != null && OwnerAddress.AddressId == 0)
+            //            {
+            //                _context.Add(OwnerAddress);
+            //                //x = _context.SaveChanges();
+            //            }
+            //            _context.Add(Owner);
+            //            //x = _context.SaveChanges();
+            //            _context.Add(InvestmentOwner);
+            //            //x = _context.SaveChanges();
+            //            _context.AddRange(Surveys);
+            //            //x = _context.SaveChanges();
+
+            //            int x = _context.SaveChanges();
+
+            //            transaction.Commit();
+            //            //transaction.Dispose();
+            //            success += 1;
+            //        }
+            //        catch (Exception exc)
+            //        {
+            //            transaction.Rollback();
+            //            if (exc.Message.Contains("See the inner exception for details"))
+            //                errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.InnerException.Message.ToString());
+            //            else
+            //                errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
+            //        }
+            //    }
+            //}
+            ////catch (ArgumentOutOfRangeException)
+            ////catch (NullReferenceException)
+            ////catch (ArgumentNullException)
+            ////catch (InvalidOperationException)
+            ////catch (OutOfMemoryException)
+            ////catch (FormatException)
+
+            //sr.Close();
+
+            //if (errMessage.Count != 0)
+            //{
+            //    TempData["FileUploadType"] = "Import Inwestycji";
+            //    TempData["FileUploadResult"] = 8;
+            //    TempData["FileUploadError"] = errMessage;
+            //    if (success != 0)
+            //    {
+            //        TempData["FileUploadResult"] = 4;
+            //        TempData["FileUploadSuccess"] = "Pomyœlnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
+            //    }
+            //}
+            //else
+            //{
+            //    TempData["FileUploadType"] = "Import Inwestycji";
+            //    TempData["FileUploadResult"] = 0;
+            //    TempData["FileUploadSuccess"] = "Pomyœlnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
+            //}
+
+            return Json(0);
         }
 
         [HttpGet]
