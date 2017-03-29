@@ -233,7 +233,8 @@ namespace DoEko.Controllers.Extensions
             altChunk.Id = AltChunkId;
 
             doc.MainDocumentPart.Document.Body
-                .InsertAfter(altChunk, doc.MainDocumentPart.Document.Body.Elements<Paragraph>().Last());
+                .InsertAfter(altChunk, doc.MainDocumentPart.Document.Body.LastChild);
+                //.InsertAfter(altChunk, doc.MainDocumentPart.Document.Body.Elements<Paragraph>().Last());
 
             doc.MainDocumentPart.Document.Save();
             
