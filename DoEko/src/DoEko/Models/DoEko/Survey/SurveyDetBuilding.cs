@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DoEko.Controllers.Extensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -92,5 +93,22 @@ namespace DoEko.Models.DoEko.Survey
 
 
         public virtual Survey Survey { get; set; }
+        #region METODY
+        public string WallFabric
+        {
+            get {
+                return this.WallMaterialOther;
+            }
+            private set { }
+        }
+        public string InsulationFabric
+        {
+            get
+            {
+                return InsulationType != InsulationType.Ins_3 ? InsulationTypeOther : InsulationType.DisplayName();
+            }
+            private set { }
+        }
+        #endregion
     }
 }
