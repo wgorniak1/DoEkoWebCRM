@@ -94,6 +94,7 @@ namespace DoEko.Models.DoEko.Survey
 
         public virtual Survey Survey { get; set; }
         #region METODY
+        [NotMapped]
         public string WallFabric
         {
             get {
@@ -101,6 +102,7 @@ namespace DoEko.Models.DoEko.Survey
             }
             private set { }
         }
+        [NotMapped]
         public string InsulationFabric
         {
             get
