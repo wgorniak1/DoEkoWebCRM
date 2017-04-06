@@ -23,7 +23,6 @@ namespace DoEko.Controllers.Extensions
                 if (part.Contains("["))
                 {
                     
-                    
                     PropertyInfo info = type.GetProperty(part.Substring(0, part.Length - 3));
 
                     if (info == null) { return null; }
@@ -49,14 +48,20 @@ namespace DoEko.Controllers.Extensions
                 }
 
             }
-
-            if (obj.GetType().IsEnum)
+            if (obj == null){
+                return string.Empty;
+            }
+            else if (obj.GetType().IsEnum)
             {
                 return ((Enum)Enum.ToObject(obj.GetType(), obj)).DisplayName();
             }
             else if (obj is Double)
             {
                 return ((Double)obj).ToString("N2", CultureInfo.CurrentUICulture);
+            }
+            else if (obj is Boolean)
+            {
+                return ((Boolean)obj).AsYesNo();
             }
             else
             {

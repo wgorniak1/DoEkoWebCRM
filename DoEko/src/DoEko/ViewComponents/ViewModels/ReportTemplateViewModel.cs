@@ -10,19 +10,19 @@ namespace DoEko.ViewComponents.ViewModels
 {
     public enum OfficeTemplateType
     {
-        [Display(Name = "Wyniki analizy techn. - Tytuł")]
+        [Display(Name = "(Raport Dla Mieszk.)|Tytuł")]
         Title,
-        [Display(Name = "Wyniki analizy techn. - PV")]
+        [Display(Name = "(Raport Dla Mieszk.)|PV")]
         PhotoVoltaic,
-        [Display(Name = "Wyniki analizy techn. - Solar")]
+        [Display(Name = "(Raport Dla Mieszk.)|Solar")]
         Solar,
-        [Display(Name = "Wyniki analizy techn. - Pompa G.(CWU)")]
+        [Display(Name = "(Raport Dla Mieszk.)|Pompa Ciepła (CWU)")]
         HWHeatPump,
-        [Display(Name = "Wyniki analizy techn. - Pompa G.(CO)")]
+        [Display(Name = "(Raport Dla Mieszk.)|Pompa Ciepła G(CO)")]
         CHHeatPump,
-        [Display(Name = "Wyniki analizy techn. - Pompa")]
+        [Display(Name = "(Raport Dla Mieszk.)|Pompa Ciepła P(CO)")]
         HeatPumpAir,
-        [Display(Name = "Wyniki analizy techn. - Kocioł")]
+        [Display(Name = "(Raport Dla Mieszk.)|Kocioł")]
         PelletBoiler
     }
 

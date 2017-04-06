@@ -110,7 +110,7 @@ namespace DoEko.Controllers.Helpers
                     case OfficeTemplateType.CHHeatPump:
                         inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
                                                             s.Type == SurveyType.CentralHeating &&
-                                                            s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPumpAir);
+                                                            s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPump);
                         break;
                     case OfficeTemplateType.HWHeatPump:
                         inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
@@ -145,7 +145,7 @@ namespace DoEko.Controllers.Helpers
                 {
 
                 }
-                inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100;
+                inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100 + inv.Survey.ResultCalculation.RSETax;
                 //inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
                 //    (100 - (int)inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
                 //    (100 - (int)inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
