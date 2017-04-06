@@ -98,6 +98,7 @@ namespace DoEko.Controllers
                     .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
                     .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
                     .Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                    .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
                     .SingleAsync(i => i.InvestmentId == id.Value);
 
                 InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);

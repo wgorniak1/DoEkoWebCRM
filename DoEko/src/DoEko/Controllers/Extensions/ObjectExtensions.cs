@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -19,11 +20,34 @@ namespace DoEko.Controllers.Extensions
 
                 if (part == type.Name) { continue; }
 
-                PropertyInfo info = type.GetProperty(part);
+                if (part.Contains("["))
+                {
+                    
+                    
+                    PropertyInfo info = type.GetProperty(part.Substring(0, part.Length - 3));
 
-                if (info == null) { return null; }
+                    if (info == null) { return null; }
 
-                obj = info.GetValue(obj, null);
+                    obj = info.GetValue(obj, null);
+
+                    if (obj is IList)
+                    {
+                        var x = int.Parse(part.Substring(part.Length - 2, 1));
+                        if (x > (((IList)obj).Count - 1)) { return null; }
+                        obj = ((IList)obj)[x];
+                    }
+
+                }
+                else
+                {
+                    PropertyInfo info = type.GetProperty(part);
+
+                    if (info == null) { return null; }
+
+                    obj = info.GetValue(obj, null);
+
+                }
+
             }
 
             if (obj.GetType().IsEnum)
