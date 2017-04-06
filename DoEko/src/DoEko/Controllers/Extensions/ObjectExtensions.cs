@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -28,6 +29,10 @@ namespace DoEko.Controllers.Extensions
             if (obj.GetType().IsEnum)
             {
                 return ((Enum)Enum.ToObject(obj.GetType(), obj)).DisplayName();
+            }
+            else if (obj is Double)
+            {
+                return ((Double)obj).ToString("N2", CultureInfo.CurrentUICulture);
             }
             else
             {

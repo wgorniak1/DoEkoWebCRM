@@ -90,14 +90,14 @@ namespace DoEko.Controllers
                     .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
                     .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
                     //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Audit)
                     //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
                     .Include(i => i.Surveys).ThenInclude(s => s.Building)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Ground)
                     .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                    .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Wall)
                     .SingleAsync(i => i.InvestmentId == id.Value);
 
                 InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);

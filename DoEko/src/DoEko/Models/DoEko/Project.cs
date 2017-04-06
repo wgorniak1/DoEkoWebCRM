@@ -30,12 +30,10 @@ namespace DoEko.Models.DoEko
     {
         [Display(Name = "Brak")]
         NoFunds = 0,
-        [Display(Name ="10 %")]
-        One = 10,
-        [Display(Name = "20 %")]
-        Two = 20,
-        [Display(Name = "30 %")]
-        Three = 30
+        [Display(Name = "60%")]
+        One = 60,
+        [Display(Name = "85%")]
+        Two = 85,
     }
 
     [Table(nameof(Project))]
@@ -50,14 +48,14 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(200,ErrorMessage = "Maksymalna długość opisu to {1} znaków")]
+        [StringLength(200, ErrorMessage = "Maksymalna długość opisu to {1} znaków")]
         [Display(Description = "Opis", Name = "Opis", ShortName = "Opis")]
         public string Description { get; set; }
         /// <summary>
         /// 
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
-        [StringLength(50,ErrorMessage ="Maksymalna dlugość pola {0} wynosi {1} znaków")]
+        [StringLength(50, ErrorMessage = "Maksymalna dlugość pola {0} wynosi {1} znaków")]
         [Display(Description = "Krótka nazwa identyfikująca projekt", Name = "Nazwa Projektu", ShortName = "Nazwa")]
         public string ShortDescription { get; set; }
         /// <summary>
@@ -102,14 +100,20 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [EnumDataType(typeof(UEFundsLevel), ErrorMessage = "Enum Type Error")]
-        [Display(Description = "Poziom dofinansowania określa procentową dopłatę do inwestycji", 
-                 Name = "Poziom dofinansowania", 
+        [Display(Description = "Poziom dofinansowania określa procentową dopłatę do inwestycji",
+                 Name = "Poziom dofinansowania",
                  ShortName = "Poziom dofinansowania",
-                Prompt ="Wybierz poziom dofinasowania")]
+                Prompt = "Wybierz poziom dofinasowania")]
         public UEFundsLevel UEFundsLevel { get; set; }
         /// <summary>
         /// 
         /// </summary>
+        //[Display(Description = "",
+        //         Name = "Dofinansowanie Netto / Brutto[x]",
+        //         ShortName = "Netto / Brutto[x]",
+        //        Prompt = "Netto/Brutto[x]")]
+        //public bool GrossNetFundsType {get; set; }
+
         [Display(Description = "Projekt nadrzędny", Name = "Projekt nadrzędny", ShortName = "Proj.Nad.")]
         public int? ParentProjectId { get; set; }
         /// <summary>

@@ -76,7 +76,7 @@ namespace DoEko.Controllers.Helpers
 
             var blob = _fileStorage
                 .GetBlobContainer(enuAzureStorageContainerType.ReportResults)
-                .GetBlockBlobReference("InspectionSummary/" + resultsFolder + '/' + inv.InvestmentId + ".docx");
+                .GetBlockBlobReference("InspectionSummary/" + resultsFolder + '/' + inv.InvestmentId + ".docm");
 
             MainStream.Position = 0;
             return blob.UploadFromStreamAsync(MainStream);
@@ -138,6 +138,24 @@ namespace DoEko.Controllers.Helpers
                 //NOT FOUND
                 return Stream.Null;
             }
+
+            try
+            {
+                if (true)
+                {
+
+                }
+                inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100;
+                //inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
+                //    (100 - (int)inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
+                //    (100 - (int)inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
 
             Stream partStream = this.GetTemplate("InspectionSummary", type);
 

@@ -152,6 +152,9 @@ namespace DoEko.Models.DoEko.Survey
         public double RSETax { get; set; }
         [Display(Name = "Kwota brutto")]
         public double RSEGrossPrice { get; set; }
+        [Display(Name = "Udział własny")]
+        public double RSEOwnerContrib { get; set; }
+
         [Display(Name = "ΔRÓWNOWAŻNE(PYŁY, NOX, SOX) CO2")]
         public double CO2DustEquivValue { get; set; }
         [Display(Name = "ΔRÓWNOWAŻNE(PYŁY, NOX, SOX) CO2")]

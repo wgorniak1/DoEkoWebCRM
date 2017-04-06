@@ -104,5 +104,11 @@
     "inputFiles": [
       "wwwroot/js/ReportsInspectorWork.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ContractDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/ContractDetails.js"
+    ]
   }
 ]
