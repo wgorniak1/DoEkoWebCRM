@@ -152,6 +152,7 @@ namespace DoEko.Models.DoEko.Survey
         public double RSETax { get; set; }
         [Display(Name = "Kwota brutto")]
         public double RSEGrossPrice { get; set; }
+        [NotMapped]
         [Display(Name = "Udział własny")]
         public double RSEOwnerContrib { get; set; }
 
