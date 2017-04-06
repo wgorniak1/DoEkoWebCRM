@@ -152,8 +152,7 @@ namespace DoEko.Controllers.Helpers
             }
             catch (Exception)
             {
-
-                throw;
+                
             }
 
 
