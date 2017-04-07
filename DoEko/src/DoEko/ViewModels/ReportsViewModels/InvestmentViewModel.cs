@@ -48,6 +48,7 @@ namespace DoEko.ViewModels.ReportsViewModels
             this.TotalArea = inv.TotalArea;
             this.Type = inv.Type;
 
+            this.Investment = this;
 
         }
         public Uri Picture(string id)
@@ -154,6 +155,7 @@ namespace DoEko.ViewModels.ReportsViewModels
         /// 
         /// </summary>
         public Survey Survey { get; set; }
-
+        [NotMapped]
+        public InvestmentViewModel Investment { get; set; }
     }
 }
