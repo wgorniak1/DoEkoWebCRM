@@ -15,6 +15,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x86</PlatformTarget>
+    <DefineConstants>TRACE;RELEASE;NET461</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
