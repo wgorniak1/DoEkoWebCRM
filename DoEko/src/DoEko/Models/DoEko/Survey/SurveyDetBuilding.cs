@@ -107,7 +107,7 @@ namespace DoEko.Models.DoEko.Survey
         {
             get
             {
-                return InsulationType != InsulationType.Ins_3 ? InsulationTypeOther : InsulationType.DisplayName();
+                return InsulationType == InsulationType.Ins_3 ? InsulationTypeOther : InsulationType.DisplayName();
             }
             private set { }
         }

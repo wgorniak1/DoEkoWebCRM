@@ -107,27 +107,34 @@ namespace DoEko.Controllers.Helpers
             {
                 switch (type)
                 {
-                    case OfficeTemplateType.CHHeatPump:
+                    case OfficeTemplateType.PhotoVoltaic:
                         inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
-                                                            s.Type == SurveyType.CentralHeating &&
-                                                            s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPump);
+                                                            s.GetRSEType() == (int)SurveyRSETypeEnergy.PhotoVoltaic);
+                        break;
+                    case OfficeTemplateType.Solar:
+                        inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
+                                                            s.Type == SurveyType.HotWater &&
+                                                            s.GetRSEType() == (int)SurveyRSETypeHotWater.Solar);
                         break;
                     case OfficeTemplateType.HWHeatPump:
                         inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
                                                             s.Type == SurveyType.HotWater &&
                                                             s.GetRSEType() == (int)SurveyRSETypeHotWater.HeatPump);
                         break;
-                    case OfficeTemplateType.Solar:
-                        inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeHotWater.Solar && s.Status != SurveyStatus.Cancelled);
-                        break;
-                    case OfficeTemplateType.PhotoVoltaic:
-                        inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeEnergy.PhotoVoltaic && s.Status != SurveyStatus.Cancelled);
+                    case OfficeTemplateType.CHHeatPump:
+                        inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
+                                                            s.Type == SurveyType.CentralHeating &&
+                                                            s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPump);
                         break;
                     case OfficeTemplateType.HeatPumpAir:
-                        inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPumpAir && s.Status != SurveyStatus.Cancelled);
+                        inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled &&
+                                                            s.Type == SurveyType.CentralHeating && 
+                                                            s.GetRSEType() == (int)SurveyRSETypeCentralHeating.HeatPumpAir);
                         break;
                     case OfficeTemplateType.PelletBoiler:
-                        inv.Survey = inv.Surveys.First(s => s.GetRSEType() == (int)SurveyRSETypeCentralHeating.PelletBoiler && s.Status != SurveyStatus.Cancelled);
+                        inv.Survey = inv.Surveys.First(s => s.Status != SurveyStatus.Cancelled && 
+                                                            s.Type == SurveyType.CentralHeating &&
+                                                            s.GetRSEType() == (int)SurveyRSETypeCentralHeating.PelletBoiler);
                         break;
                     default:
                         return Stream.Null;

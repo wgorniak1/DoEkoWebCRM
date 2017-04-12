@@ -221,14 +221,17 @@ namespace DoEko.Controllers
                         //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
                         //await _signInManager.SignInAsync(user, isPersistent: false);
                         //_logger.LogInformation(3, "User created a new account with password.");
-                        return RedirectToAction("Index");
+                        //return RedirectToAction("Index");
+
+                        return Created("",user.Id);
                     }
                 }
                 AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            //return View(model);
+            return BadRequest(ModelState);
         }
 
 
