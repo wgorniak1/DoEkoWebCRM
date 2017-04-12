@@ -28,7 +28,7 @@ namespace DoEko.ViewModels.ReportsViewModels
         [Display(Name ="Umowa")]
         public int ContractId { get; set; }
 
-        private async void Initialize(DoEkoContext _context)
+        private void Initialize(DoEkoContext _context)
         {
             ProjectList = new SelectList(_context.Projects.Select(p => new SelectListItem()
             {

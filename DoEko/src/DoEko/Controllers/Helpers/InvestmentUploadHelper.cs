@@ -334,7 +334,7 @@ namespace DoEko.Controllers.Helpers
             {
                 throw;
             }
-            catch (Exception exc)
+            catch (Exception)
             {
                 throw new InvestmentUploadException(cellNumber.DisplayName(), cellValue);
             }

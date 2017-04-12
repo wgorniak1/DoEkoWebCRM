@@ -196,8 +196,8 @@ namespace DoEko.Controllers
             sr.Close();
 
             Payment payment;
-            DateTime date;
-            Decimal amount;
+            //DateTime date;
+            //Decimal amount;
             index = 0;
             //
             char separator = ',';

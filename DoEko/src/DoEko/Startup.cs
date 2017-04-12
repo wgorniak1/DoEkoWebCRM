@@ -32,7 +32,9 @@ namespace DoEko
             if (env.IsDevelopment())
             {
                 // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
+#pragma warning disable CS0618 // Type or member is obsolete
                 builder.AddUserSecrets();
+#pragma warning restore CS0618 // Type or member is obsolete
             }
 
             builder.AddEnvironmentVariables();

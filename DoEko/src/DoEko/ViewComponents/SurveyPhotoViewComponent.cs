@@ -109,7 +109,7 @@ namespace DoEko.ViewComponents
                     {
                         FileList.Add(partNames[1], new SurveyPhoto { Name = partNames[0], Url = BlockBlob.Uri.ToString() });
                     }
-                    catch (Exception exc)
+                    catch (Exception)
                     {
                         
                     }

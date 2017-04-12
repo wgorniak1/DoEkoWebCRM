@@ -85,7 +85,7 @@ namespace DoEko.Controllers
                     .SingleAsync(i => i.InvestmentId == Guid.Parse("74f3e0bf-6d3d-40c5-981f-dba25056d1e8"));
             data = new InvestmentViewModel(data) { Survey = data.Surveys.First() };
 
-            const string fieldDelimeter = "MERGEFIELD";
+            //const string fieldDelimeter = "MERGEFIELD";
 
             var file = HttpContext.Request.Form.Files.First();
 
@@ -208,8 +208,8 @@ namespace DoEko.Controllers
 
         private WordprocessingDocument MergePictures(WordprocessingDocument doc, Investment inv)
         {
-            const string imgPlaceHolder = "Image.Picture";
-            const string fieldDelimiter = "MERGEFIELD";
+            //const string imgPlaceHolder = "Image.Picture";
+            //const string fieldDelimiter = "MERGEFIELD";
 
             int count = doc.MainDocumentPart.ExternalRelationships.Count();
             for (int i = 0; i < count; i++)

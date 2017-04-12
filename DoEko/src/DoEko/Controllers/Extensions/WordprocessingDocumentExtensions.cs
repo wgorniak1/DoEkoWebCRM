@@ -206,7 +206,7 @@ namespace DoEko.Controllers.Extensions
                             mainDoc.DeleteExternalRelationship(extRelation);
 
                         }
-                        catch (Exception exc)
+                        catch (Exception )
                         {
                             //
                             //Console.Write(exc);

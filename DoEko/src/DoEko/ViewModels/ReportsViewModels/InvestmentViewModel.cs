@@ -59,7 +59,7 @@ namespace DoEko.ViewModels.ReportsViewModels
                     Pictures[InvestmentId][id] :
                     Pictures[Survey.SurveyId][id];
             }
-            catch (Exception exc)
+            catch (Exception)
             {
                 return null;
             }
