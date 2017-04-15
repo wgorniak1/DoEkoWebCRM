@@ -3,26 +3,22 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:44342/",
-      "sslPort": 44342
+      "applicationUrl": "http://localhost:44000/",
+      "sslPort": 44305
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "https://localhost:44305/",
       "environmentVariables": {
-        "Key": "Value",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "DoEko": {
       "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "http://localhost:5000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Staging"
-      }
+      "applicationUrl": "http://localhost:5000/"
     }
   }
 }
