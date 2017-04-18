@@ -24,8 +24,8 @@ Global
 		{F6EB9E39-F47E-4C7F-AA0B-56E34E4CBD7D}.Debug|x86.Deploy.0 = Debug|x86
 		{F6EB9E39-F47E-4C7F-AA0B-56E34E4CBD7D}.Release|Any CPU.ActiveCfg = Release|x86
 		{F6EB9E39-F47E-4C7F-AA0B-56E34E4CBD7D}.Release|Any CPU.Deploy.0 = Release|x86
-		{F6EB9E39-F47E-4C7F-AA0B-56E34E4CBD7D}.Release|x86.ActiveCfg = Release|x86
-		{F6EB9E39-F47E-4C7F-AA0B-56E34E4CBD7D}.Release|x86.Build.0 = Release|x86
+		{F6EB9E39-F47E-4C7F-AA0B-56E34E4CBD7D}.Release|x86.ActiveCfg = Release|Any CPU
+		{F6EB9E39-F47E-4C7F-AA0B-56E34E4CBD7D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
