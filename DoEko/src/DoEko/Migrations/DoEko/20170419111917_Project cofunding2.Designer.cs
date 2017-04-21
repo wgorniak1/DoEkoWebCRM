@@ -10,9 +10,10 @@ using DoEko.Models.DoEko.Survey;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20170419111917_Project cofunding2")]
+    partial class Projectcofunding2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.3")
@@ -444,17 +445,9 @@ namespace DoEko.Migrations.DoEko
                     b.Property<int>("ProjectId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("ChangedAt");
-
-                    b.Property<Guid>("ChangedBy");
-
                     b.Property<int>("ClimateZone");
 
                     b.Property<int>("CompanyId");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<Guid>("CreatedBy");
 
                     b.Property<string>("Description")
                         .HasMaxLength(200);

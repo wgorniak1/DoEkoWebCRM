@@ -152,10 +152,10 @@ namespace DoEko.Controllers.Helpers
                 {
 
                 }
-                inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100 + inv.Survey.ResultCalculation.RSETax;
-                //inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
-                //    (100 - (int)inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
-                //    (100 - (int)inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
+                //inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100 + inv.Survey.ResultCalculation.RSETax;
+                inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
+                    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
+                    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
             }
             catch (Exception)
             {

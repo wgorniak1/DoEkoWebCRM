@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using DoEko.Models.Identity;
 using DoEko.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace DoEko.Controllers
 {
@@ -22,11 +23,13 @@ namespace DoEko.Controllers
         private readonly DoEkoContext   _context;
         //private readonly IConfiguration _configuration;
         private readonly IFileStorage _fileStorage;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProjectsController(DoEkoContext context, IFileStorage fileStorage)
+        public ProjectsController(DoEkoContext context, IFileStorage fileStorage, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _fileStorage = fileStorage;
+            _userManager = userManager;
             //_configuration = configuration;
         }
 
@@ -120,8 +123,7 @@ namespace DoEko.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> Create(
-            [Bind("CompanyId,Description,EndDate,ParentProjectId,RealEnd,RealStart,ShortDescription,StartDate,UEFundsLevel")] Project project, string ReturnUrl = null)
+        public async Task<IActionResult> Create(Project project, string ReturnUrl = null)
         {
             if (!ModelState.IsValid)
             {
@@ -130,6 +132,9 @@ namespace DoEko.Controllers
 
                 return View(project);                
             }
+            //user for change fields
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
             project.Status = ProjectStatus.New;
 
             _context.Add(project);
@@ -189,6 +194,9 @@ namespace DoEko.Controllers
             {
                 try
                 {
+                    //user for change fields
+                    _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
                     _context.Update(project);
                     await _context.SaveChangesAsync();
                 }
