@@ -99,6 +99,7 @@ namespace DoEko.Controllers
                     .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
                     .Include(i => i.Surveys).ThenInclude(s => s.Wall)
                     .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
+                    .Include(i => i.Contract).ThenInclude(c => c.Project)
                     .SingleAsync(i => i.InvestmentId == id.Value);
 
                 InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);
@@ -184,6 +185,7 @@ namespace DoEko.Controllers
                     .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
                     .Include(i => i.Surveys).ThenInclude(s => s.Wall)
                     .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
+                    .Include(i => i.Contract).ThenInclude(c => c.Project)
                     .Single(i => i.InvestmentId == invId);
 
                 docList.Add(docBuilder.BuildAsync(new InvestmentViewModel(inv), resultsFolder));

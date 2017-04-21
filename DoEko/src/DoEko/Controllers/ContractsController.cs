@@ -549,7 +549,7 @@ namespace DoEko.Controllers
                     category = "X";
                     break;
             }
-            string number = (_context.Contracts.OrderByDescending(c=>c.ContractId).Select(c=>c.ContractId).First() + 1).ToString();
+            string number = _context.Contracts.Any() ? (_context.Contracts.OrderByDescending(c=>c.ContractId).Select(c=>c.ContractId).First() + 1).ToString() : 1.ToString();
 
             return number + "/" + category + "/" + contractDate.Month.ToString() + "/" + contractDate.Year.ToString();
         }
