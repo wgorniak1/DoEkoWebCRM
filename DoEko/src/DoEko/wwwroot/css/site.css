@@ -114,7 +114,7 @@ textarea {
     
     z-index: 999999;
     width: 100%;
-    opacity: 0.9;
+    opacity: 0.95;
 }
 @media screen and (min-width: 0px) and (max-width: 768px) {
     .wg-alert-container{
@@ -192,9 +192,24 @@ textarea {
     text-decoration: none;
 }
 
-.wg-loader{
-    background-color: #ffffff;
+.wg-loader{    
+    z-index: 99999;
+    /*top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;*/
+    background-color: rgba(255,255,255,0);
     background-image: url("../images/ajax-loader.gif");
     background-repeat:no-repeat;
     background-position:center center;
+    border: none;
+    border-width: 0;
+    box-shadow: none;
+    width: 55px;
+    height: 55px;
+}
+
+a.wg-link-default::before{
+    font-family: 'Glyphicons Halflings';
+    content: "\e144 ";
 }

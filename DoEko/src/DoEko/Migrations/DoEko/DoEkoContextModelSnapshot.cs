@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using DoEko.Models.DoEko;
+using DoEko.Models.DoEko.Addresses;
+using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Migrations.DoEko
 {
@@ -13,7 +15,7 @@ namespace DoEko.Migrations.DoEko
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.1")
+                .HasAnnotation("ProductVersion", "1.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("DoEko.Models.DoEko.Addresses.Address", b =>
@@ -22,15 +24,15 @@ namespace DoEko.Migrations.DoEko
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ApartmentNo")
-                        .HasAnnotation("MaxLength", 5);
+                        .HasMaxLength(5);
 
                     b.Property<string>("BuildingNo")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 5);
+                        .HasMaxLength(5);
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.Property<int>("CommuneId");
 
@@ -41,16 +43,16 @@ namespace DoEko.Migrations.DoEko
                     b.Property<int>("DistrictId");
 
                     b.Property<string>("PostOfficeLocation")
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 6);
+                        .HasMaxLength(6);
 
                     b.Property<int>("StateId");
 
                     b.Property<string>("Street")
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.HasKey("AddressId");
 
@@ -77,7 +79,7 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.HasKey("StateId", "DistrictId", "CommuneId", "Type");
 
@@ -93,11 +95,11 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 2);
+                        .HasMaxLength(2);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.HasKey("CountryId");
 
@@ -114,7 +116,7 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.HasKey("StateId", "DistrictId");
 
@@ -129,15 +131,15 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("CapitalCity")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 5);
+                        .HasMaxLength(5);
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.HasKey("StateId");
 
@@ -189,10 +191,10 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 30);
+                        .HasMaxLength(30);
 
                     b.Property<string>("Name2")
-                        .HasAnnotation("MaxLength", 30);
+                        .HasMaxLength(30);
 
                     b.Property<string>("PhoneNumber");
 
@@ -200,7 +202,7 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("TaxId")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 13);
+                        .HasMaxLength(13);
 
                     b.HasKey("CompanyId");
 
@@ -222,13 +224,13 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("Number")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 20);
+                        .HasMaxLength(20);
 
                     b.Property<int>("ProjectId");
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.Property<int>("Status");
 
@@ -306,6 +308,8 @@ namespace DoEko.Migrations.DoEko
                     b.Property<short>("CompletionYear");
 
                     b.Property<int>("ContractId");
+
+                    b.Property<string>("GeoPortal");
 
                     b.Property<double>("HeatedArea");
 
@@ -440,12 +444,24 @@ namespace DoEko.Migrations.DoEko
                     b.Property<int>("ProjectId")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<DateTime>("ChangedAt");
+
+                    b.Property<Guid>("ChangedBy");
+
+                    b.Property<int>("ClimateZone");
+
                     b.Property<int>("CompanyId");
 
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<Guid>("CreatedBy");
+
                     b.Property<string>("Description")
-                        .HasAnnotation("MaxLength", 200);
+                        .HasMaxLength(200);
 
                     b.Property<DateTime>("EndDate");
+
+                    b.Property<bool>("GrossNetFundsType");
 
                     b.Property<int?>("ParentProjectId");
 
@@ -455,7 +471,7 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 50);
+                        .HasMaxLength(50);
 
                     b.Property<DateTime>("StartDate");
 
@@ -806,6 +822,78 @@ namespace DoEko.Migrations.DoEko
                     b.ToTable("SurveyDetWall");
                 });
 
+            modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyResultCalculations", b =>
+                {
+                    b.Property<Guid>("SurveyId");
+
+                    b.Property<double>("BenzoPirenPercent");
+
+                    b.Property<double>("BenzoPirenValue");
+
+                    b.Property<double>("CHMaxRequiredEn");
+
+                    b.Property<double>("CHRSEWorkingTime");
+
+                    b.Property<double>("CHRSEYearlyProduction");
+
+                    b.Property<double>("CHRequiredEn");
+
+                    b.Property<double>("CHRequiredEnFactor");
+
+                    b.Property<double>("CO2DustEquivPercent");
+
+                    b.Property<double>("CO2DustEquivValue");
+
+                    b.Property<double>("CO2EquivValue");
+
+                    b.Property<double>("CO2Percent");
+
+                    b.Property<double>("CO2Value");
+
+                    b.Property<double>("FinalPVConfig");
+
+                    b.Property<double>("FinalRSEPower");
+
+                    b.Property<string>("FinalSOLConfig");
+
+                    b.Property<double>("HWRSEWorkingTime");
+
+                    b.Property<double>("HWRSEYearlyProduction");
+
+                    b.Property<double>("HWRequiredEnYearly");
+
+                    b.Property<double>("HeatLossFactor");
+
+                    b.Property<double>("PM10Percent");
+
+                    b.Property<double>("PM10Value");
+
+                    b.Property<double>("PM25Percent");
+
+                    b.Property<double>("PM25Value");
+
+                    b.Property<double>("RSEEfficiency");
+
+                    b.Property<double>("RSEEnYearlyConsumption");
+
+                    b.Property<double>("RSEGrossPrice");
+
+                    b.Property<double>("RSENetPrice");
+
+                    b.Property<double>("RSETax");
+
+                    b.Property<double>("RSEWorkingTime");
+
+                    b.Property<double>("RSEYearlyProduction");
+
+                    b.HasKey("SurveyId");
+
+                    b.HasIndex("SurveyId")
+                        .IsUnique();
+
+                    b.ToTable("SurveyResultCalculations");
+                });
+
             modelBuilder.Entity("DoEko.Models.DoEko.test", b =>
                 {
                     b.Property<Guid>("PaymentId")
@@ -848,10 +936,10 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 30);
+                        .HasMaxLength(30);
 
                     b.Property<string>("Name2")
-                        .HasAnnotation("MaxLength", 30);
+                        .HasMaxLength(30);
 
                     b.ToTable("BusinessPartnerEntity");
 
@@ -866,16 +954,15 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 30);
+                        .HasMaxLength(30);
 
                     b.Property<string>("IdNumber");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 30);
+                        .HasMaxLength(30);
 
-                    b.Property<string>("Pesel")
-                        .IsRequired();
+                    b.Property<string>("Pesel");
 
                     b.ToTable("BusinessPartnerPerson");
 
@@ -1106,6 +1193,14 @@ namespace DoEko.Migrations.DoEko
                     b.HasOne("DoEko.Models.DoEko.Survey.Survey", "Survey")
                         .WithOne("Wall")
                         .HasForeignKey("DoEko.Models.DoEko.Survey.SurveyDetWall", "SurveyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("DoEko.Models.DoEko.Survey.SurveyResultCalculations", b =>
+                {
+                    b.HasOne("DoEko.Models.DoEko.Survey.Survey", "Survey")
+                        .WithOne("ResultCalculation")
+                        .HasForeignKey("DoEko.Models.DoEko.Survey.SurveyResultCalculations", "SurveyId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }

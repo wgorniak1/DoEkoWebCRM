@@ -76,10 +76,25 @@
         <div class="form-group">
             <label asp-for="UEFundsLevel" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="UEFundsLevel" class="form-control" asp-items="Html.GetEnumSelectList(typeof(UEFundsLevel))"></select>
+                <input asp-for="UEFundsLevel" class="form-control" step="5" min="0" max="100" />
                 <span asp-validation-for="UEFundsLevel" class="text-danger" />
             </div>
         </div>
+        <div class="form-group">
+            <label asp-for="GrossNetFundsType" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="GrossNetFundsType" class="form-control checkbox" data-toggle="toggle" data-on="Brutto" data-off="Netto" />
+                <span asp-validation-for="GrossNetFundsType" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ClimateZone" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="ClimateZone" class="form-control" asp-items="Html.GetEnumSelectList(typeof(DoEko.Models.DoEko.ClimateZone))"></select>
+                <span asp-validation-for="ClimateZone" class="text-danger" />
+            </div>
+        </div>
+
         <div class="form-group">
             <label asp-for="Description" class="col-md-2 control-label"></label>
             <div class="col-md-10">

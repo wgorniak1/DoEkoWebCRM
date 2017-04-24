@@ -17,15 +17,13 @@ namespace DoEko.Services
         Project,
         Contract,
         Investment,
-        Survey
+        Survey,
+        Templates,
+        ReportResults
     }
     public class AzureStorage : IFileStorage
     {
         private readonly CloudStorageAccount Account;
-        //public AzureStorage(string connectionString)
-        //{
-        //    Account = CloudStorageAccount.Parse( connectionString );
-        //}
 
         public AzureStorage(IOptions<AppSettings> options)
         {

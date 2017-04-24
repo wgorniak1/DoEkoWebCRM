@@ -207,8 +207,12 @@ namespace DoEko.Controllers
         //
         // GET: /Manage/ChangePassword
         [HttpGet]
-        public IActionResult ChangePassword()
+        public IActionResult ChangePassword(bool passwordExpiration)
         {
+            if (passwordExpiration)
+            {
+                ModelState.AddModelError("", "Twoje hasło wygasło i musi zostać zmienione");
+            }
             return View();
         }
 
@@ -228,6 +232,10 @@ namespace DoEko.Controllers
                 var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
                 if (result.Succeeded)
                 {
+                    //reset password change date
+                    user.PasswordChangedOn = DateTime.UtcNow;
+                    await _userManager.UpdateAsync(user);
+
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation(3, "User changed their password successfully.");
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangePasswordSuccess });

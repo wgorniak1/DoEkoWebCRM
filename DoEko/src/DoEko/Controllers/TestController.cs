@@ -1,21 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DoEko.Models.DoEko;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using DoEko.Models.Identity;
-using DoEko.Models.DoEko.Addresses;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DoEko.Controllers.Extensions;
 using DoEko.Controllers.Helpers;
+using DoEko.Models.DoEko;
+using DoEko.Models.DoEko.Addresses;
 using DoEko.Models.DoEko.Survey;
+using DoEko.Models.Identity;
+using DoEko.Services;
+using DoEko.ViewComponents.ViewModels;
+using DoEko.ViewModels.ReportsViewModels;
 using DoEko.ViewModels.SurveyViewModels;
 using DoEko.ViewModels.TestViewModels;
-using DoEko.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.WindowsAzure.Storage.Blob;
-using DoEko.Controllers.Extensions;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DoEko.Controllers
 {
@@ -49,6 +54,289 @@ namespace DoEko.Controllers
         {
             return View();
         }
+
+
+
+        [HttpGet]
+        public ActionResult OpenXml()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<ActionResult> OpenXml(FormCollection form)
+        {
+
+            var data = await _context.Investments
+                    .Include(i => i.Address).ThenInclude(a => a.State)
+                    .Include(i => i.Address).ThenInclude(a => a.District)
+                    .Include(i => i.Address).ThenInclude(a => a.Commune)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                    .SingleAsync(i => i.InvestmentId == Guid.Parse("74f3e0bf-6d3d-40c5-981f-dba25056d1e8"));
+            data = new InvestmentViewModel(data) { Survey = data.Surveys.First() };
+
+            //const string fieldDelimeter = "MERGEFIELD";
+
+            var file = HttpContext.Request.Form.Files.First();
+
+            //1. Title section is always populated
+            System.IO.MemoryStream MainStream = new System.IO.MemoryStream();
+            file.CopyTo(MainStream);
+
+            //Stream MainStream = this.GetTemplate("InspectionSummary", OfficeTemplateType.Title);
+
+            WordprocessingDocument doc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(stream: MainStream, isEditable: true);
+
+            //            var simpleFields = doc.MainDocumentPart.RootElement.Descendants<SimpleField>().Where(fc => fc.Instruction.HasValue && fc.Instruction.InnerText.Contains(fieldDelimeter)).ToArray();
+            //            var fieldCharBegin = doc.MainDocumentPart.RootElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Begin).ToArray();
+
+
+            //Dictionary<string, string> mergeFields = new Dictionary<string, string>();
+            doc = doc.MergeFields(data);
+            doc.Dispose();
+
+            MainStream.Position = 0;
+
+            //Save data into file
+            var documents = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);
+            var targetName = "Results/InspectionSummary/aaatest" + '_' + DateTime.Now.ToString("yyyyMMddHHmmss") + ".docx";
+            var targetblob = documents.GetBlockBlobReference(targetName);
+            targetblob.UploadFromStream(MainStream);
+
+            return Redirect(targetblob.Uri.AbsoluteUri);
+
+        }
+
+        [HttpGet]
+        public ActionResult GetWord(Guid? investmentId )
+        {
+            //Source data
+
+            var id = investmentId.HasValue ? investmentId.Value : Guid.Parse("74f3e0bf-6d3d-40c5-981f-dba25056d1e8");
+
+            InvestmentViewModel inv = (InvestmentViewModel)_context.Investments
+                .Include(i => i.Address).ThenInclude(a=>a.State)
+                .Include(i => i.Address).ThenInclude(a=>a.District)
+                .Include(i => i.Address).ThenInclude(a=>a.Commune)
+                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a=>a.State)
+                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a=>a.District)
+                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a=>a.Commune)
+                .Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                .Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                .Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                .Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                .Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                .Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                .Single(i => i.InvestmentId == id);
+
+            //Main document 
+            
+            
+            return Ok();
+        }
+
+        private Stream GetTemplate (string templateType, OfficeTemplateType templateSection)
+        {
+            try
+            {
+                var templates = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);            
+                var template = templates.GetDirectoryReference(templateType);
+                var templateDoc = template.GetDirectoryReference(templateSection.ToString()).ListBlobs().OfType<CloudBlockBlob>().First();
+            
+                Stream stream = new MemoryStream();
+                templateDoc.DownloadToStream(stream);
+
+                return stream;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private Stream GetPicture(Guid? investmentId, Guid? surveyId, string pictureName, out ImagePartType type)
+        {
+            try
+            {
+                CloudBlobContainer container;
+                CloudBlobDirectory directory;
+                if (investmentId.HasValue)
+                {
+                    container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+                    directory = container.GetDirectoryReference(investmentId.ToString());
+                }
+                else
+                {
+                    container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+                    directory = container.GetDirectoryReference(surveyId.ToString());
+                }
+
+                var pictureFile = directory.GetDirectoryReference(pictureName).ListBlobs().OfType<CloudBlockBlob>().First();
+
+                Stream stream = new MemoryStream();
+                pictureFile.DownloadToStream(stream);
+                //pictureFile.Properties.ContentType;
+
+                switch (pictureFile.Uri.ToString().Split('.').Reverse().First().ToLower())
+                {
+                    case "jpg": type = ImagePartType.Jpeg;
+                                break;
+                    default:    Enum.TryParse(pictureFile.Uri.ToString().Split('.').Reverse().First(), out type);
+                                break;
+                }
+                
+                return stream;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private WordprocessingDocument MergePictures(WordprocessingDocument doc, Investment inv)
+        {
+            //const string imgPlaceHolder = "Image.Picture";
+            //const string fieldDelimiter = "MERGEFIELD";
+
+            int count = doc.MainDocumentPart.ExternalRelationships.Count();
+            for (int i = 0; i < count; i++)
+            {
+                ExternalRelationship extRelation = doc.MainDocumentPart.ExternalRelationships.ElementAt(0);
+                if (extRelation.Uri.OriginalString.StartsWith("Picture"))
+                {
+                    string relationId = extRelation.Id;
+                    string relationType = extRelation.RelationshipType;
+                    doc.MainDocumentPart.DeleteExternalRelationship(extRelation);
+                    //doc.MainDocumentPart.AddHyperlinkRelationship(new System.Uri("https://doekostorage.blob.core.windows.net/investment/00b7adec-b60f-49c8-b260-dd04031f4ff1/Picture5/IMG_0042.JPG"), true, relationId);
+                    doc.MainDocumentPart.AddExternalRelationship(relationType, new System.Uri("https://doekostorage.blob.core.windows.net/investment/00b7adec-b60f-49c8-b260-dd04031f4ff1/Picture5/IMG_0042.JPG"), relationId);
+
+                    
+                }
+            }
+
+            //remove picture control if picture not uploaded to azure storage
+            var item = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Vml.ImageData>().Where(i => i.RelationshipId == "rId12").FirstOrDefault();
+            item.Parent.Parent.Remove();                
+
+            //foreach (FieldCode field in doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(a => a.Text.Contains(imgPlaceHolder) == true))
+            //{
+            //    var fieldNameStart = field.Text.LastIndexOf(fieldDelimiter, System.StringComparison.Ordinal);
+            //    var PictureType = field.Text.Substring(fieldNameStart + fieldDelimiter.Length).Trim().Split(' ').First().Split('.')[1];
+
+            //    try
+            //    {
+            //        //Stream pictStream;
+            //        //ImagePartType contentType;
+            //        ////1. Load picture
+            //        //if (PictureType.Contains('0') || PictureType.Contains('5'))
+            //        //{ pictStream = GetPicture(inv.InvestmentId, null, PictureType, out contentType); }
+            //        //else
+            //        //{ pictStream = GetPicture(null, inv.CurrentSurvey.SurveyId, PictureType, out contentType); }
+
+            //        ////2. Add Picture data to document parts
+            //        //ImagePart imagePart = doc.MainDocumentPart.AddImagePart(contentType);
+            //        //pictStream.Position = 0;
+            //        //imagePart.FeedData(pictStream);
+
+            //        //string imageId = doc.MainDocumentPart.GetIdOfPart(imagePart);
+            //        //3. Insert Pictue into document content
+
+                    
+            //        foreach (Run run in doc.MainDocumentPart.Document.Descendants<Run>())
+            //        {
+            //            foreach (Text txtFromRun in run.Descendants<Text>().Where(a => a.Text == "«Image." + PictureType + "»"))
+            //            {
+            //                string x = Guid.NewGuid().ToString();
+            //                var run1 = new Run();
+            //                var picture1 = new Picture();
+            //                var shape1 = new DocumentFormat.OpenXml.Vml.Shape() { Id = "_x0000_i1025" + x};
+            //                var rId = "rId" + x;
+            //                var imagedata1 = new DocumentFormat.OpenXml.Vml.ImageData() { RelationshipId = rId };
+            //                shape1.Append(imagedata1);
+            //                //shape1.AllowInCell = true;
+            //                shape1.AllowOverlap = false;
+            //                //shape1.Horizontal = true;
+            //                //shape1.HorizontalAlignment = DocumentFormat.OpenXml.Vml.Office.HorizontalRuleAlignmentValues.Center;
+            //                //shape1.HorizontalPercentage = 100;
+            //                shape1.Style = "width:10cm;height:7.5cm;mso-position-horizontal:center;mso-position-horizontal-relative:text;mso-position-vertical:center;mso-position-vertical-relative:text;mso-width-relative:page;mso-height-relative:page";
+            //                //shape1.Style = "width:10cm;height:100%;mso-position-horizontal:center;mso-position-horizontal-relative:text;mso-position-vertical:center;mso-position-vertical-relative:text;mso-width-relative:page;mso-height-relative:page";
+            //                picture1.Append(shape1);
+            //                run1.Append(picture1);
+
+            //                doc.MainDocumentPart.AddExternalRelationship(
+            //                    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
+            //                    new System.Uri("https://doekostorage.blob.core.windows.net/survey/0e82cd43-86f7-4b64-8d32-2351aef57b51/Picture7/P1020638.JPG", System.UriKind.RelativeOrAbsolute), rId);
+            //                //new System.Uri("https://doekostorage.blob.core.windows.net/investment/00b7adec-b60f-49c8-b260-dd04031f4ff1/Picture5/IMG_0042.JPG", System.UriKind.RelativeOrAbsolute), rId);
+
+            //                var par1 = new Paragraph()
+            //                {   
+            //                    ParagraphProperties = new ParagraphProperties()
+            //                    {
+            //                        Justification = new Justification()
+            //                        {
+            //                            Val = JustificationValues.Center
+            //                        }
+            //                    }
+            //                };
+            //                par1.Append(run1);
+            //                //
+            //                run.Parent.Parent.ReplaceChild(par1, run.Parent);
+
+            //                //var element = new Paragraph( new Run( new Drawing()
+            //                //{
+            //                //    Inline = new DocumentFormat.OpenXml.Drawing.Wordprocessing.Inline()
+            //                //    {
+            //                //        Extent = new DocumentFormat.OpenXml.Drawing.Wordprocessing.Extent()
+            //                //        {
+            //                //        },
+            //                //        DocProperties = new DocumentFormat.OpenXml.Drawing.Wordprocessing.DocProperties()
+            //                //        {
+            //                //            Id = (UInt32Value)1U,
+            //                //            Name = PictureType
+            //                //        },
+            //                //        Graphic = new DocumentFormat.OpenXml.Drawing.Graphic()
+            //                //        {
+            //                //            GraphicData = new DocumentFormat.OpenXml.Drawing.GraphicData( 
+            //                //                new DocumentFormat.OpenXml.Drawing.Picture(
+            //                //                    new DocumentFormat.OpenXml.Drawing.BlipFill(
+            //                //                        new DocumentFormat.OpenXml.Drawing.Blip()
+            //                //                        {
+            //                //                            Embed = imageId,
+            //                //                            CompressionState = DocumentFormat.OpenXml.Drawing.BlipCompressionValues.None
+            //                //                        })))
+            //                //        }
+            //                //    }
+            //                //}));
+
+
+            //            }
+            //        }
+
+            //    }
+            //    catch (Exception exc)
+            //    {
+            //        //no picture found on azure storage
+            //        continue;
+            //    }
+
+            //};
+            
+            return doc;
+        }
+
         [HttpGet]
         public async Task<IActionResult> ListPhotos(bool exportToCsv = false)
         {

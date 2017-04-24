@@ -569,7 +569,7 @@ namespace DoEko.Controllers
             //
             while ((CsvRecord = sr.ReadLine()) != null)
             {
-                if (errMessage.Count > 5) break;
+                //if (errMessage.Count > 5) break;
 
                 i += 1;
                 if (!(i>1))

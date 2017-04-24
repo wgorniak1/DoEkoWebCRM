@@ -36,33 +36,176 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SurveyExtract()
+        public async Task<IActionResult> InspectorWork()
+        {
+            if (this.Request.IsAjaxRequest())
+            {
+                //disable change tracking
+                _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+                List<object> model = new List<object>();
+
+                var SurveysGroupedByManyFactors = _context.Surveys
+                    .Include(s => s.Investment).ThenInclude(i=>i.Contract).ThenInclude(c=>c.Project)
+                    .OrderBy(s => s.Investment.InspectorId)
+                    .ThenBy(s => s.Investment.ContractId)
+                    .ThenBy(s => s.ChangedAt)
+                    .ThenBy(s => s.Status)
+                    .GroupBy(s => new { InspectorId = s.Investment.InspectorId, Contract = s.Investment.Contract, Period = s.ChangedAt.Year + s.ChangedAt.Month.ToString("D2") });
+
+                await SurveysGroupedByManyFactors.ForEachAsync( surveyGroup => model.Add(new {
+                    inspectorId = surveyGroup.Key.InspectorId.HasValue ? surveyGroup.Key.InspectorId.Value : Guid.Empty,
+                    inspectorName = surveyGroup.Key.InspectorId.HasValue ? _userManager.FindByIdAsync(surveyGroup.Key.InspectorId.Value.ToString()).GetAwaiter().GetResult().FullName : "Nie przypisanych",
+                    projectDescr = surveyGroup.Key.Contract.Project.ShortDescription,
+                    contractNo = surveyGroup.Key.Contract.Number,
+                    period = surveyGroup.Key.Period,
+                    surveyCount = surveyGroup.Where(s => s.Status == SurveyStatus.Approval ||
+                                                         s.Status == SurveyStatus.Approved ||
+                                                        (s.Status == SurveyStatus.Cancelled && s.CancelType == SurveyCancelType.After) ||
+                                                        (s.Status == SurveyStatus.Cancelled && s.CancelType == SurveyCancelType.TechnicalIssue)).Count()
+                }));
+
+                return Json( new { data = model });
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> InspectionSummary(Guid? id)
+        {
+            //disable change tracking
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            if (id.HasValue && id.Value != Guid.Empty)
+            {
+
+                var inv = await _context.Investments
+                    .Include(i => i.Address).ThenInclude(a => a.State)
+                    .Include(i => i.Address).ThenInclude(a => a.District)
+                    .Include(i => i.Address).ThenInclude(a => a.Commune)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                    .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                    .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
+                    .Include(i => i.Contract).ThenInclude(c => c.Project)
+                    .SingleAsync(i => i.InvestmentId == id.Value);
+
+                InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);
+
+                string resultsFolder = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+
+                await docBuilder.BuildAsync(new InvestmentViewModel(inv),resultsFolder);
+                //return single doc
+                //return PhysicalFile(docUrl,"");
+                var doc = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary/" + resultsFolder).ListBlobs(true).OfType<CloudBlockBlob>().First();
+
+                return Redirect(doc.Uri.AbsoluteUri);
+            }
+            else
+            {
+                GenericSelectionScreenViewModel model = new GenericSelectionScreenViewModel(_context);
+
+                return View(model);    
+            }
+
+        }
+        [HttpGet]
+        public IActionResult InspectionSummaryCreateAjax()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_CreateNewInspectionSummaryPartial", new GenericSelectionScreenViewModel(_context));
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult InspectionSummaryAjax(GenericSelectionScreenViewModel model)
+        {
+            //disable change tracking
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            var invIdsQry = _context.Investments.AsQueryable();
+            if (model.ProjectId != 0)
+            {
+                invIdsQry = invIdsQry.Where(i=>i.Contract.ProjectId == model.ProjectId);
+            };
+            if (model.ContractId != 0)
+            {
+                invIdsQry = invIdsQry.Where(i => i.ContractId == model.ContractId);
+            };
+
+            var invIds = invIdsQry.Select(i => i.InvestmentId).ToList();
+
+            InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context, _fileStorage);
+
+            List<Task> docList = new List<Task>();
+            string resultsFolder = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            if (model.ProjectId != 0)
+            {
+                resultsFolder = "Projekt " + _context.Projects.Where(p => p.ProjectId == model.ProjectId).Select(p => p.ShortDescription).First() + ' ' + resultsFolder;
+            }
+            else
+            {
+                resultsFolder = "Umowa " + _context.Contracts.Where(c => c.ContractId == model.ContractId).Select(c => c.Number + '(' + c.Project.ShortDescription + ')').First() + ' ' + resultsFolder;
+            }
+
+
+            foreach (var invId in invIds)
+            {
+                var inv = _context.Investments
+                    .Include(i => i.Address).ThenInclude(a => a.State)
+                    .Include(i => i.Address).ThenInclude(a => a.District)
+                    .Include(i => i.Address).ThenInclude(a => a.Commune)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                    .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                    .Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                    .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
+                    .Include(i => i.Contract).ThenInclude(c => c.Project)
+                    .Single(i => i.InvestmentId == invId);
+
+                docList.Add(docBuilder.BuildAsync(new InvestmentViewModel(inv), resultsFolder));
+            }
+
+            Task.WaitAll(docList.ToArray());
+
+            //ViewData["ResultList"] = urls;
+            ViewData["ResultsFolder"] = resultsFolder;
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult SurveyExtract()
         {
             //disable change tracking
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
             //View model
-            SurveyExtractViewModel model = new SurveyExtractViewModel();
-
-            model.ProjectList = new SelectList(await _context.Projects.Select(p => new SelectListItem() {
-                Value = p.ProjectId.ToString(),
-                Text = p.ShortDescription + " (" +
-                       p.StartDate.ToShortDateString() + " - " +
-                       p.EndDate.ToShortDateString() + ")"
-            }).ToListAsync(),"Value","Text",null);
-
-            model.ContractList = new SelectList(await _context.Contracts.Select(c => new SelectListItem() {
-                 Value = c.ContractId.ToString(),
-                 Text = c.FullfilmentDate.HasValue ?  
-                        c.Number + ' ' +
-                        c.ContractDate.ToShortDateString() + " - " +
-                        c.FullfilmentDate.Value.ToShortDateString() + ' ' +
-                        c.ShortDescription :
-
-                        c.Number + " " +
-                        c.ContractDate.ToShortDateString() + " " +
-                        c.ShortDescription
-            }).ToListAsync(), "Value","Text",null);
+            GenericSelectionScreenViewModel model = new GenericSelectionScreenViewModel(_context);
 
             return View(model);
         }
@@ -295,6 +438,7 @@ namespace DoEko.Controllers
             csv["ANULOWANA - POWÓD"] = "";
             csv["OST.ZM. - DATA"] = "";
             csv["OST.ZM. - PRZEZ"] = "";
+            csv["PRZYP. INSPEKTOR"] = "";
             csv["UWAGI"] = "";
             csv["ZAPLACONA"] = "";
 
@@ -326,6 +470,14 @@ namespace DoEko.Controllers
                 myExport["TYP OZE"] = srv.TypeFullDescription();
                 myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
 
+                //INSPEKTOR
+                if (srv.Investment.InspectorId.HasValue &&
+                    srv.Investment.InspectorId != Guid.Empty)
+                {
+                    var usr = await _userManager.FindByIdAsync(srv.Investment.InspectorId.Value.ToString());
+                    myExport["PRZYP. INSPEKTOR"] = usr.LastName + " " + usr.FirstName;
+                }
+
                 //INWESTYCJA
                 myExport["INWEST - ADRES - WOJ."] = srv.Investment.Address.State.Text;
                 myExport["INWEST - ADRES - POW."] = srv.Investment.Address.District.Text;
@@ -333,8 +485,8 @@ namespace DoEko.Controllers
                 myExport["INWEST - ADRES - KOD"] = srv.Investment.Address.PostalCode;
                 myExport["INWEST - ADRES - MIEJSC"] = srv.Investment.Address.City;
                 myExport["INWEST - ADRES - ULICA"] = srv.Investment.Address.Street;
-                myExport["INWEST - ADRES - NR BUD."] = srv.Investment.Address.BuildingNo;
-                myExport["INWEST - ADRES - NR MIESZK"] = srv.Investment.Address.ApartmentNo;
+                myExport["INWEST - ADRES - NR BUD."] = "=\"" + srv.Investment.Address.BuildingNo + "\"";
+                myExport["INWEST - ADRES - NR MIESZK"] = "=\"" + srv.Investment.Address.ApartmentNo + "\"";
                 
                 //WŁAŚCICIELE
                 for (int i = 0; i < 3; i++)
@@ -361,9 +513,9 @@ namespace DoEko.Controllers
                 myExport["PALIWO GŁ. CW"] = srv.Investment.HotWaterFuel.DisplayName();
                 myExport["RODZAJ GŁ. CW"] = srv.Investment.HotWaterType.DisplayName();
                 myExport["INTERNET W M.INW."] = srv.Investment.InternetAvailable.AsYesNo();
-                myExport["NR KS. WIECZ."] = srv.Investment.LandRegisterNo;
+                myExport["NR KS. WIECZ."] = "=\"" + srv.Investment.LandRegisterNo + "\"";
                 myExport["L.MIESZKAŃCÓW"] = srv.Investment.NumberOfOccupants.ToString();
-                myExport["NR DZIAŁKI"] = srv.Investment.PlotNumber;
+                myExport["NR DZIAŁKI"] = "=\"" + srv.Investment.PlotNumber + "\"";
                 myExport["STAN BUD."] = srv.Investment.Stage.DisplayName();
                 myExport["POW. CAŁK."] = srv.Investment.TotalArea.ToString(System.Globalization.CultureInfo.GetCultureInfo("pl-PL").NumberFormat);
                 myExport["RODZ.BUD."] = srv.Investment.Type.DisplayName();
@@ -672,5 +824,55 @@ namespace DoEko.Controllers
 
             return FileList;
     }
-}
+
+        [HttpGet]
+        public IActionResult InspectionSummaryList(bool singleDocuments, string reportName)
+        {
+            if (!Request.IsAjaxRequest())
+            {
+                return BadRequest();
+            }
+
+            List<Object> files = new List<Object>();
+
+            var rootDir = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
+
+            if (singleDocuments)
+            {
+                int i = 1;
+                foreach (var singleDoc in rootDir.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>())
+                {
+                    files.Add(new
+                    {
+                        key = i.ToString(),
+                        reportName = singleDoc.Parent.Prefix.Split('/')[1],
+                        name = singleDoc.Name.Split('/')[2],
+                        url = singleDoc.Uri.AbsoluteUri
+                    });
+                    i++;
+                }
+            }
+            else
+            {
+                int i = 1;
+                foreach (var singleRep in rootDir.ListBlobs().OfType<CloudBlobDirectory>())
+                {
+                    //parent row
+                    files.Add(new
+                    {
+                        key = i.ToString(),
+                        reportName = singleRep.Prefix.Split('/')[1],
+                        name = "",
+                        url = "",
+                        count = singleRep.ListBlobs().OfType<CloudBlockBlob>().Count()
+                    });
+                    i++;
+                }
+            }
+
+            return Json(new { data = files });
+        }
+
+
+    }
 }

@@ -1,0 +1,57 @@
+﻿@using DoEko.Controllers.Extensions
+@using DoEko.Models.DoEko
+@using DoEko.Models.Identity
+@{
+    ViewData["Title"] = "Lista kont użytkowników";
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">Konta użytkowników</li>
+</ol>
+<h2>Lista kont użytkowników</h2>
+<hr />
+<div id="UserListContainer">
+    @section modals{
+        @{
+            await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
+                              new DoEko.ViewModels.SharedViewModels.ModalConfirmationViewModel()
+                              {
+                                  Id = "UserDeleteModal",
+                                  Title = "Usuwanie konta użytkownika",
+                                  Question = "Czy na pewno chcesz usunąć konto użytkownika?",
+                                  BtnYes = "Tak, Usuń",
+                                  BtnYesClass = "user-delete-submit"
+                              });
+        }
+    }
+    <table class="table table-condensed table-striped table-hover" id="UserListTable" style="width:100%;">
+        @*<thead>
+            <tr>
+                <th title="">Nazwisko i Imię</th>
+                <th title="">Login</th>
+                <th title="">E-mail</th>
+                <th title="">Rola</th>
+                <th title="">Blokada</th>
+                <th></th>
+            </tr>
+        </thead>*@
+    </table>
+
+</div>
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+
+}
+@section scripts{
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/UserList.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/UserList.min.js"></script>
+    </environment>
+
+}

@@ -1,0 +1,63 @@
+﻿@using DoEko.Models.DoEko.Survey
+@using DoEko.Controllers.Extensions
+@using Microsoft.AspNetCore.Identity
+@using DoEko.Models.Identity
+@using DoEko.ViewModels.ReportsViewModels
+
+@model GenericSelectionScreenViewModel
+
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Raport - Podsumowanie inspekcji";
+}
+
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li>Raporty</li>
+    <li class="active">Podsumowanie inspekcji</li>
+</ol>
+
+<!--Title-->
+<h2>Raport - Podsumowanie inspekcji</h2>
+<hr />
+@section modals{
+    @{await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
+                            new DoEko.ViewModels.SharedViewModels.ModalConfirmationViewModel()
+                            {
+                                Id = "ReportDeleteModal",
+                                Title = "Usuwanie Raportu",
+                                Question = "Czy na pewno chcesz usunąć wygenerowane dokumenty?",
+                                BtnYes = "Tak, Usuń",
+                                BtnYesClass = "user-delete-submit"
+                            });
+    }
+    
+}
+<div class="" id="InspectionSummaryContainer">
+    <table class="table table-condensed table-striped" id="InspectionSummaryTable" style="width:100%;">
+        <thead>
+            <tr>
+                <th>Raport</th>
+                <th>Liczba dokumentów</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
+
+@section Scripts {
+@{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/ReportsInspectionSummary.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/ReportsInspectionSummary.min.js"></script>
+    </environment>
+}

@@ -80,5 +80,35 @@
     "inputFiles": [
       "wwwroot/js/Reports.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/UserList.min.js",
+    "inputFiles": [
+      "wwwroot/js/UserList.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ReportTemplateList.min.js",
+    "inputFiles": [
+      "wwwroot/js/ReportTemplateList.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ReportsInspectionSummary.min.js",
+    "inputFiles": [
+      "wwwroot/js/ReportsInspectionSummary.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ReportsInspectorWork.min.js",
+    "inputFiles": [
+      "wwwroot/js/ReportsInspectorWork.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ContractDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/ContractDetails.js"
+    ]
   }
 ]

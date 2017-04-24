@@ -1,0 +1,25 @@
+﻿@using DoEko.ViewModels.SharedViewModels
+@model ModalConfirmationViewModel
+
+<div class="modal fade" id="@Model.Id" tabindex="-1" role="dialog" 
+     aria-labelledby="@(Model.Id + "Title")"
+     data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Model.BtnClose)
+                {
+                    <button type="button" class="@("close " + Model.BtnCloseClass)" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                }
+                <h4 class="modal-title" id="@(Model.Id + "Title")">@Model.Title</h4>
+            </div>
+            <div class="modal-body">
+                @Model.Question
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="@("btn btn-danger " + Model.BtnNoClass)" data-dismiss="modal">@Model.BtnNo</button>
+                <button type="button" class="@("btn btn-success " + Model.BtnYesClass)" data-dismiss="modal">@Model.BtnYes</button>
+            </div>
+        </div>
+    </div>
+</div>

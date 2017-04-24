@@ -339,7 +339,7 @@ namespace DoEko.Controllers
                         return BadRequest();
                 }
             }
-            catch (Exception exc)
+            catch (Exception )
             {
                 return BadRequest();
             }

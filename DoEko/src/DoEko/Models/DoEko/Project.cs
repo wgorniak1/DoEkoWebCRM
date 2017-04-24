@@ -30,12 +30,24 @@ namespace DoEko.Models.DoEko
     {
         [Display(Name = "Brak")]
         NoFunds = 0,
-        [Display(Name ="10 %")]
-        One = 10,
-        [Display(Name = "20 %")]
-        Two = 20,
-        [Display(Name = "30 %")]
-        Three = 30
+        [Display(Name = "60%")]
+        One = 60,
+        [Display(Name = "85%")]
+        Two = 85,
+    }
+
+    public enum ClimateZone
+    {
+        [Display(Name ="Strefa I   (śr. r. tmp. zewn.: 7,7 st.C) ")]
+        I = 1,
+        [Display(Name ="Strefa II  (śr. r. tmp. zewn.: 7,9 st.C) ")]
+        II = 2,
+        [Display(Name ="Strefa III (śr. r. tmp. zewn.: 7,6 st.C) ")]
+        III = 3,
+        [Display(Name ="Strefa IV  (śr. r. tmp. zewn.: 6,9 st.C) ")]
+        IV = 4,
+        [Display(Name ="Strefa V   (śr. r. tmp. zewn.: 5,5 st.C) ")]
+        V = 5
     }
 
     [Table(nameof(Project))]
@@ -50,14 +62,14 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(200,ErrorMessage = "Maksymalna długość opisu to {1} znaków")]
+        [StringLength(200, ErrorMessage = "Maksymalna długość opisu to {1} znaków")]
         [Display(Description = "Opis", Name = "Opis", ShortName = "Opis")]
         public string Description { get; set; }
         /// <summary>
         /// 
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
-        [StringLength(50,ErrorMessage ="Maksymalna dlugość pola {0} wynosi {1} znaków")]
+        [StringLength(50, ErrorMessage = "Maksymalna dlugość pola {0} wynosi {1} znaków")]
         [Display(Description = "Krótka nazwa identyfikująca projekt", Name = "Nazwa Projektu", ShortName = "Nazwa")]
         public string ShortDescription { get; set; }
         /// <summary>
@@ -102,14 +114,25 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [EnumDataType(typeof(UEFundsLevel), ErrorMessage = "Enum Type Error")]
-        [Display(Description = "Poziom dofinansowania określa procentową dopłatę do inwestycji", 
-                 Name = "Poziom dofinansowania", 
-                 ShortName = "Poziom dofinansowania",
-                Prompt ="Wybierz poziom dofinasowania")]
-        public UEFundsLevel UEFundsLevel { get; set; }
+        [Display(Description = "Poziom dofinansowania określa procentową dopłatę do inwestycji",
+                 Name = "Poziom dofinans. [%]",
+                 ShortName = "Poziom dofinans.[%]",
+                Prompt = "Podaj poziom dof.")]
+        [Range(0, 100, ErrorMessage = "Proszę podać warość od 0 do 100")]
+        public int UEFundsLevel { get; set; }
         /// <summary>
         /// 
         /// </summary>
+        [Display(Description = "",
+                 Name = "Typ dofinansowania",
+                 ShortName = "Brutto",
+                Prompt = "Brutto?")]
+        public bool GrossNetFundsType { get; set; }
+        
+        [Display(Description = "Strefa klimatyczna",Name = "Strefa Klimatyczna", ShortName ="Strefa Kl.")]
+        [EnumDataType(typeof(ClimateZone), ErrorMessage = "Proszę podać prawidłową wartość")]
+        public ClimateZone ClimateZone { get; set; }
+
         [Display(Description = "Projekt nadrzędny", Name = "Projekt nadrzędny", ShortName = "Proj.Nad.")]
         public int? ParentProjectId { get; set; }
         /// <summary>
@@ -145,23 +168,22 @@ namespace DoEko.Models.DoEko
         [Display(Description = "Załączniki", Name = "Załączniki", ShortName = "Załączniki")]
         [NotMapped]
         public IList<File> Attachments { get; set; }
-        //{
-        //    get
-        //    {
-        //        //var _array = Array.ConvertAll<String, String>(AttachmentsAsString.Split('|'), null);
-        //        //return _array.ToList();
-        //    }
-        //    set
-        //    {
-        //        var _data = value;
-        //        AttachmentsAsString = String.Join("|", _data.Select(p => p.ToString()).ToArray());
-        //    }
-        //}
         /// <summary>
         /// 
         /// </summary>
-        //[EditorBrowsable(EditorBrowsableState.Never)]
-        //public string AttachmentsAsString { get; set; }
+        public DateTime CreatedAt { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Guid CreatedBy { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTime ChangedAt { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Guid ChangedBy { get; set; }
 
     }
 }

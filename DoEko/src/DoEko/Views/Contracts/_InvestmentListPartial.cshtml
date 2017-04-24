@@ -73,15 +73,24 @@
                                     }
 
                                 </td>
-                                <td>
-                                    <a asp-action="Edit" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                <td class="pull-right">
+                                    <a asp-action="Edit" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                                       class="btn btn-sm btn-default">
                                         <span class="glyphicon glyphicon-pencil"></span>
-                                    </a>|
-                                    <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                    </a>
+                                    <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                                       class="btn btn-sm btn-default">
                                         <span class="glyphicon glyphicon-eye-open"></span>
-                                    </a>|
-                                    <a asp-action="Delete" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                                    </a>
+                                    <a asp-action="Delete" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                                       class="btn btn-sm btn-default">
                                         <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                    <a asp-action="InspectionSummary" asp-controller="Reports" asp-route-id="@item.InvestmentId"
+                                       class="btn btn-sm btn-default"
+                                       title="Pobierz Raport - Podsumowanie analizy technicznych 
+możliwości instalacji OZE">
+                                        <span class="glyphicon glyphicon-save-file"></span>
                                     </a>
                                 </td>
                             </tr>
@@ -150,16 +159,26 @@ else
                         }
 
                     </td>
-                    <td>
-                        <a asp-action="Edit" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                    <td class="pull-right">
+                        <a asp-action="Edit" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                           class="btn btn-sm btn-default">
                             <span class="glyphicon glyphicon-pencil"></span>
-                        </a>|
-                        <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                        </a>
+                        <a asp-action="Details" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                           class="btn btn-sm btn-default">
                             <span class="glyphicon glyphicon-eye-open"></span>
-                        </a>|
-                        <a asp-action="Delete" asp-controller="Investments" asp-route-id="@item.InvestmentId">
+                        </a>
+                        <a asp-action="Delete" asp-controller="Investments" asp-route-id="@item.InvestmentId"
+                           class="btn btn-sm btn-default">
                             <span class="glyphicon glyphicon-trash"></span>
                         </a>
+                        <a asp-action="InspectionSummary" asp-controller="Reports" asp-route-id="@item.InvestmentId"
+                           class="btn btn-sm btn-default"
+                           title="Pobierz Raport - Podsumowanie analizy technicznych
+możliwości instalacji OZE">
+                            <span class="glyphicon glyphicon-save-file"></span>
+                        </a>
+
                     </td>
                 </tr>
                             }

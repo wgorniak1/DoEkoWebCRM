@@ -367,7 +367,7 @@ namespace DoEko.Controllers
                                 //
                                 Result = _context.SaveChanges();
                             }
-                            catch (Exception exc) { }
+                            catch (Exception ) { }
                     }
                     else
                     {
@@ -467,7 +467,7 @@ namespace DoEko.Controllers
                     Result = _context.SaveChanges();
 
                 }
-                catch (Exception exc) { //if address is the same  
+                catch (Exception) { //if address is the same  
                                       };
                 return Ok();
             }
