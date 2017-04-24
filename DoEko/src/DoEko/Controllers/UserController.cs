@@ -202,7 +202,8 @@ namespace DoEko.Controllers
                     LastName = model.LastName,
                     UserName = model.UserName,
                     Email = model.Email,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    PasswordChangedOn = DateTime.UtcNow
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);

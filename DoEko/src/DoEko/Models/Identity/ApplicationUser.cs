@@ -22,6 +22,17 @@ namespace DoEko.Models.Identity
         [Display(Description = "", Name = "Nazwisko", ShortName = "Nazwisko")]
         public string LastName { get; set; }
 
+        public DateTime PasswordChangedOn { get; set; }
+
+        [NotMapped]
+        public bool PasswordExpired {
+            get {
+                var period = DateTime.UtcNow - this.PasswordChangedOn;
+                return ( period.Days > 30 );
+            }
+            private set { }
+        }
+
         [NotMapped]
         public string FullName
         {
