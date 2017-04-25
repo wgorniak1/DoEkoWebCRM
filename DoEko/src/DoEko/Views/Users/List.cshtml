@@ -12,6 +12,9 @@
 <h2>Lista kont użytkowników</h2>
 <hr />
 <div id="UserListContainer">
+    <form>
+        @Html.AntiForgeryToken()
+    </form>
     @section modals{
         @{
             await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
@@ -47,7 +50,7 @@
     @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <environment names="Development">
+    <environment names="Development">        
         <script type="text/javascript" src="~/js/UserList.js"></script>
     </environment>
     <environment names="Staging,Production">

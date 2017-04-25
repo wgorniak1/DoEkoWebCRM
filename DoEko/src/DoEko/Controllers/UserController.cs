@@ -10,6 +10,7 @@ using System;
 using DoEko.ViewModels.UserViewModel;
 using DoEko.Controllers.Extensions;
 using DoEko.ViewComponents.ViewModels;
+using System.Globalization;
 
 namespace DoEko.Controllers
 {
@@ -45,7 +46,7 @@ namespace DoEko.Controllers
                         u.EmailConfirmed,
                         u.AccessFailedCount,
                         u.LockoutEnabled,
-                        u.LockoutEnd,
+                        LockoutEnd = u.LockoutEnd.HasValue ? u.LockoutEnd.Value == DateTimeOffset.MinValue ? "" : u.LockoutEnd.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss") : "",
                         _roles = u.Roles.Select(r => new {
                             r.RoleId,
                             _roleManager.Roles.Single(rm => rm.Id == r.RoleId).Name
@@ -60,7 +61,16 @@ namespace DoEko.Controllers
             }
 
         }
-        
+        /// <summary>
+        /// OBSOLETE - USE LIST()
+        /// </summary>
+        /// <param name="sortOrder"></param>
+        /// <param name="currentFilter"></param>
+        /// <param name="currentRole"></param>
+        /// <param name="searchString"></param>
+        /// <param name="RoleId"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Index(UserIndexSortOrder sortOrder, 
                                                string currentFilter, 
                                                string currentRole,
@@ -313,7 +323,7 @@ namespace DoEko.Controllers
             return View(model);
         }
 
-        // POST: Contracts/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string Id)
@@ -322,22 +332,78 @@ namespace DoEko.Controllers
             {
                 var user = await _userManager.FindByIdAsync(Id);
                 var result = await _userManager.DeleteAsync(user);
-
+                
                 if (result.Succeeded)
                 
                     return Ok();
                 else
-                    return Json("Error");
-                
+                {
+                    AddErrors(result);
+
+                    return BadRequest(ModelState);
+                }                
             }
-            catch (Exception)
+            catch (Exception exc)
             {
-                return Json(new { result = false, responsemessage = "B³¹d" });
+                ModelState.AddModelError("", exc.InnerException == null ? exc.Message : exc.InnerException.Message);
+                return BadRequest(ModelState);//Json(new { result = false, responsemessage = "B³¹d" });
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Lock(string Id)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(Id);
+                var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
 
+                if (result.Succeeded)
 
+                    return Ok();
+                else
+                {
+                    AddErrors(result);
 
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception exc)
+            {
+                ModelState.AddModelError("", exc.InnerException == null ? exc.Message : exc.InnerException.Message);
+                return BadRequest(ModelState);
+            }
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnLock(string Id)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(Id);
+                var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MinValue);
+
+                if (result.Succeeded)
+
+                    return Ok();
+                else
+                {
+                    AddErrors(result);
+
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception exc)
+            {
+                ModelState.AddModelError("", exc.InnerException == null ? exc.Message : exc.InnerException.Message);
+                return BadRequest(ModelState);
+            }
+        }
         #region Helpers
         private void AddErrors(IdentityResult result)
         {

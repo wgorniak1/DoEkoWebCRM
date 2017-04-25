@@ -85,45 +85,50 @@ $(document).ready(function () {
                         visible: false
 
                     },
-                    {
-                        data: "lockoutEnabled",
-                        name: "lockoutEnabled",
-                        title: "Blokada",
-                        render: function (data, type, row, meta) {
-                            return data === true ?
-                                '<span class="glyphicon glyphicon-ok"></span>' :
-                                '<span class="glyphicon glyphicon-remove"></span>';
-                        },
-                        searchable: false,
-                        orderable: false,
-                        visible: true
+                    //{
+                    //    data: "lockoutEnabled",
+                    //    name: "lockoutEnabled",
+                    //    title: "Blokada",
+                    //    render: function (data, type, row, meta) {
+                    //        return data === true ?
+                    //            '<span class="glyphicon glyphicon-ok"></span>' :
+                    //            '<span class="glyphicon glyphicon-remove"></span>';
+                    //    },
+                    //    searchable: false,
+                    //    orderable: false,
+                    //    visible: true
 
-                    },
+                    //},
                     {
                         data: "lockoutEnd",
                         name: "lockoutEnd",
-                        title: "Koniec blokady",
+                        title: "Zablokowane do",
                         searchable: false,
                         orderable: true,
                         visible: false
-                        //render: function (data, type, row, meta) {
-                        //    return '<a href="mailto:' + data + '" class="">' + data + '</a>';
-                        //},
                     },
                     {
                         data: null,
                         name: "actions",
                         type: 'html',
                         render: function (data, type, row, meta) {
+                            var currentDate = new Date();
+                            var lockDate = row.lockoutEnd === "" ? currentDate : new Date(Date.parse(row.lockoutEnd));
+
                             var content = "";
                             content = '<div class="pull-right">';
                             content += '<button title="Edytuj dane" class="btn btn-default btn-sm user-edit" type="button">' +
                                             '<span class="glyphicon glyphicon-pencil"></span>' +
                                         '</button>';
-                            if (row.lockoutEnabled) {
+                            if ( lockDate <= currentDate && row.lockoutEnabled === true) {
                                 content += '<button title="Zablokuj konto" class="btn btn-default btn-sm user-lock" type="button">' +
                                                 '<i class="fa fa-lock"></i>' +
                                            '</button>';
+                            }
+                            else if (lockDate <= currentDate && row.lockoutEnabled === false) {
+                                content += '<button title="Zablokuj konto" class="btn btn-default btn-sm disabled" type="button" disabled>' +
+                                    '<i class="fa fa-lock"></i>' +
+                                    '</button>';
                             }
                             else {
                                 content += '<button title="Odblokuj konto" class="btn btn-default btn-sm user-unlock" type="button">' +
@@ -206,8 +211,7 @@ $(document).ready(function () {
           { responsivePriority: 800, targets: 5 },
           { responsivePriority: 900, targets: 6 },
           { responsivePriority: 900, targets: 7 },
-          { responsivePriority: 900, targets: 8 },
-          { responsivePriority: 1, targets: 9 }
+          { responsivePriority: 1, targets: 8 }
         ],
         fixedHeader: {
             headerOffset: $('#NavBarMain').outerHeight()
@@ -237,7 +241,7 @@ $(document).ready(function () {
 
 });
 ///////////////////////////////////////////////////////////////////////////////
-$('body').one('click', 'button.user-edit', function () { $(this).attr("disabled", "disabled"); onUserEdit(this, $('#UserListTable').DataTable().row($(this).parents('tr')).id()); $(this).removeAttr("disabled"); });
+$('body').on('click', 'button.user-edit', function () { $(this).attr("disabled", "disabled"); onUserEdit($('#UserListTable').DataTable().row($(this).parents('tr')).id()); $(this).removeAttr("disabled"); });
 $('body').on('click', 'button.user-lock', function () { $(this).attr("disabled", "disabled"); onUserLock($('#UserListTable').DataTable().row($(this).parents('tr')).id()); $(this).removeAttr("disabled"); });
 $('body').on('click', 'button.user-unlock', function () { $(this).attr("disabled", "disabled"); onUserUnlock($('#UserListTable').DataTable().row($(this).parents('tr')).id()); $(this).removeAttr("disabled"); });
 $('body').on('click', 'button.user-delete', function () { $(this).attr("disabled", "disabled"); onUserDelete($('#UserListTable').DataTable().row($(this).parents('tr')).id()); $(this).removeAttr("disabled"); });
@@ -311,18 +315,75 @@ function onUserEdit(userId) {
 
     $(this).bind();
 }
-
 function onUserDelete(userId) {
-    $('body').one('click', 'button.user-delete-submit', onUserDeleteSubmit);
-
+    $('body').one('click', 'button.user-delete-submit', { userId: userId } , onUserDeleteSubmit);
     $('#UserDeleteModal').modal('show');
-
 }
 function onUserLock(userId) {
+    //get modal with form
+    var token = $('input[name="__RequestVerificationToken"]').val();
 
+    var deleteAction = $.ajax({
+        type: "POST",
+        url: "Lock",
+        data: {
+            Id: userId,
+            __RequestVerificationToken: token,
+        }
+    });
+
+    deleteAction.done(function () {
+        //Post was successful
+
+        //close modal
+        //DestroyModal("#MaintainUserModal");
+        //refresh table
+        $('#UserListTable').DataTable().ajax.reload();
+        //popup message
+        WgTools.alert("Konto użytkownika zostało zablokowane.", true, 'S');
+    });
+
+    deleteAction.fail(function (xhr, textStatus, error) {
+
+        $.each(xhr.responseJSON, function (idx, data) {
+            if (data.length > 0) {
+                WgTools.alert(data, false, 'E');
+            }
+        });
+    });
 }
 function onUserUnlock(userId) {
+    //get modal with form
+    var token = $('input[name="__RequestVerificationToken"]').val();
 
+    var deleteAction = $.ajax({
+        type: "POST",
+        url: "UnLock",
+        data: {
+            Id: userId,
+            __RequestVerificationToken: token,
+        }
+    });
+
+    deleteAction.done(function () {
+        //Post was successful
+
+        //close modal
+        //DestroyModal("#MaintainUserModal");
+        //refresh table
+        $('#UserListTable').DataTable().ajax.reload();
+        //popup message
+        WgTools.alert("Konto użytkownika zostało odblokowane.", true, 'S');
+    });
+
+    deleteAction.fail(function (xhr, textStatus, error) {
+
+        $.each(xhr.responseJSON, function (idx, data) {
+            if (data.length > 0) {
+                WgTools.alert(data, false, 'E');
+            }
+        });
+    });
 }
 //---------------------------------------------------------------------------//
 // User Edit \ Cancel | Submit
@@ -475,9 +536,40 @@ function onUserCreateSubmit() {
 function onUserDeleteCancel() {
 
 }
-function onUserDeleteSubmit() {
-    alert('za');
+function onUserDeleteSubmit(event) {
+    //get modal with form
+    var token = $('input[name="__RequestVerificationToken"]').val();
+
+    var deleteAction = $.ajax({
+        type: "POST",
+        url: "Delete",
+        data: {
+            Id: event.data.userId,
+            __RequestVerificationToken: token, }
+    });
+
+    deleteAction.done(function () {
+        //Post was successful
+
+        //close modal
+        //DestroyModal("#MaintainUserModal");
+        //refresh table
+        $('#UserListTable').DataTable().ajax.reload();
+        //popup message
+        WgTools.alert("Konto użytkownika zostało usunięte.", true, 'S');
+    });
+
+    deleteAction.fail(function (xhr, textStatus, error) {
+        
+        $.each(xhr.responseJSON, function (idx, data) {
+            if (data.length > 0) {
+                WgTools.alert(data, false, 'E');
+            }
+
+        });
+    });
 }
+
 //---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
 
