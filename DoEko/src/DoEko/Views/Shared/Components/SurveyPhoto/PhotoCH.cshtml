@@ -14,100 +14,38 @@
 </form>
 
 <legend>Zdjęcia</legend>
-@{ //CH BOI Picture0 Picture5    Picture2 
-//CH GP  Picture0 Picture5    Picture2 Picture3  Picture1  
-//CH HP  Picture0 Picture5    Picture2 Picture4 
-
+@{ 
+//CH BOI Picture0 Picture5 Picture2                              Picture10
+//CH GP  Picture0 Picture5 Picture2          Picture3  Picture1  Picture10
+//CH HP  Picture0 Picture5 Picture2 Picture4                     Picture10
 }
 
 <div class="row">
     <div class="col-sm-3">
-        <label class="control-label">Ortofotomapa</label>
-        @if (Model.Attachments.Keys.Any(k => k == "Picture0") == false)
-        {
-            <a class="photo-link" style="cursor:pointer" name="Picture0" title="Naciśnij aby dodać zdjęcie">
-                <img src="" alt="Dodaj zdjęcie" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-            </a>
-            <form action="" method="post" enctype="multipart/form-data" hidden>
-                <input type="file" id="Picture0" name="Picture0" class="photo-input" accept="image/*" capture>
-                <input type="submit" value="Upload">
-            </form>
-            <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture0" hidden style="display:none; margin-top:5px;">
-                <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-            </button>
-        }
-        else
-        {
-            <a href='@Model.Attachments["Picture0"].Url' target="_blank" class="photo-link" style="cursor:pointer" name="Picture0">
-                <img src='@Model.Attachments["Picture0"].Url' alt="Ortofotomapa"
-                        style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-            </a>
-            <form action="" method="post" enctype="multipart/form-data" hidden>
-                <input type="file" id="Picture0" name="Picture0" class="photo-input" accept="image/*" capture>
-                <input type="submit" value="Upload">
-            </form>
-            <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture0" style="margin-top:5px;">
-                <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-            </button>
-        }
+        <survey-picture picture-id="Picture10"
+                        picture-title="Ankieta papierowa"
+                        picture-link='@( Model.Attachments.ContainsKey("Picture10") ? Model.Attachments["Picture10"].Url : "" )'>
+        </survey-picture>
     </div>
     <div class="col-sm-3">
-        <label class="control-label">Zdjęcie budynku</label>
-        @if (Model.Attachments.Keys.Any(k => k == "Picture5") == false)
-        {
-            <a class="photo-link" style="cursor:pointer" name="Picture5">
-                <img src="" alt="Dodaj zdjęcie" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-            </a>
-            <form action="" method="post" enctype="multipart/form-data" hidden>
-                <input type="file" id="Picture5" name="Picture5" class="photo-input" accept="image/*" capture>
-                <input type="submit" value="Upload">
-            </form>
-            <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture5" hidden style="display:none; margin-top:5px;">
-                <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-            </button>
-        }
-        else
-        {
-            <a href='@Model.Attachments["Picture5"].Url' target="_blank" class="photo-link" style="cursor:pointer" name="Picture5">
-                <img src='@Model.Attachments["Picture5"].Url' alt="Zdjęcie budynku" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-            </a>
-            <form action="" method="post" enctype="multipart/form-data" hidden>
-                <input type="file" id="Picture5" name="Picture5" class="photo-input" accept="image/*" capture>
-                <input type="submit" value="Upload">
-            </form>
-            <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture5" style="margin-top:5px;">
-                <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-            </button>
-        }
+        <survey-picture picture-id="Picture0"
+                        picture-title="Ortofotomapa"
+                        picture-link='@( Model.Attachments.ContainsKey("Picture0") ? Model.Attachments["Picture0"].Url : "" )'>
+        </survey-picture>
     </div>
     <div class="col-sm-3">
-        <label class="control-label">Zdjęcie kotłowni</label>
-        @if (Model.Attachments.Keys.Any(k => k == "Picture2") == false)
-        {
-            <a class="photo-link" style="cursor:pointer" name="Picture2">
-                <img src="" alt="Dodaj zdjęcie" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-            </a>
-                    <form action="" method="post" enctype="multipart/form-data" hidden>
-                        <input type="file" id="Picture2" name="Picture2" class="photo-input" accept="image/*" capture>
-                        <input type="submit" value="Upload">
-                    </form>
-                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture2" hidden style="display:none; margin-top:5px;">
-                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                    </button>
-        }
-        else
-        {
-            <a href='@Model.Attachments["Picture2"].Url' target="_blank" class="photo-link" style="cursor:pointer" name="Picture2">
-                <img src='@Model.Attachments["Picture2"].Url' alt="Ortofotomapa" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-            </a>
-                    <form action="" method="post" enctype="multipart/form-data" hidden>
-                        <input type="file" id="Picture2" name="Picture2" class="photo-input" accept="image/*" capture>
-                        <input type="submit" value="Upload">
-                    </form>
-                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture2" style="margin-top:5px;">
-                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                    </button>
-        }
+        <survey-picture picture-id="Picture5"
+                        picture-title="Zdjęcie budynku"
+                        picture-link='@( Model.Attachments.ContainsKey("Picture5") ? Model.Attachments["Picture5"].Url : "" )'>
+        </survey-picture>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+        <survey-picture picture-id="Picture2"
+                        picture-title="Zdjęcie kotłowni"
+                        picture-link='@( Model.Attachments.ContainsKey("Picture2") ? Model.Attachments["Picture2"].Url : "" )'>
+        </survey-picture>
     </div>
     @switch (Model.Type_CH)
     {
@@ -115,109 +53,27 @@
             break;
         case DoEko.Models.DoEko.Survey.SurveyRSETypeCentralHeating.HeatPumpAir:
             <div class="col-sm-3">
-                <label class="control-label">Zdjęcie ściany na montaż parownika</label>
-                @if (Model.Attachments.Keys.Any(k => k == "Picture4") == false)
-                {
-                    <a class="photo-link" style="cursor:pointer" name="Picture4">
-                        <img src="" alt="Dodaj zdjęcie" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-                    </a>
-                    <form action="" method="post" enctype="multipart/form-data" hidden>
-                        <input type="file" id="Picture4" name="Picture4" class="photo-input" accept="image/*" capture>
-                        <input type="submit" value="Upload">
-                    </form>
-                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture4" hidden style="display:none; margin-top:5px;">
-                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                    </button>
-                }
-                else
-                {
-                    <a href='@Model.Attachments["Picture4"].Url' target="_blank" class="photo-link" style="cursor:pointer" name="Picture4">
-                        <img src='@Model.Attachments["Picture4"].Url' alt="Zdjęcie ściany na montaż parownika" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-                    </a>
-                    <form action="" method="post" enctype="multipart/form-data" hidden>
-                        <input type="file" id="Picture4" name="Picture4" class="photo-input" accept="image/*" capture>
-                        <input type="submit" value="Upload">
-                    </form>
-                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture4" style="margin-top:5px;">
-                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                    </button>
-                }
+                <survey-picture picture-id="Picture4"
+                                picture-title="Zdj.ściany na montaż parownika"
+                                picture-link='@( Model.Attachments.ContainsKey("Picture4") ? Model.Attachments["Picture4"].Url : "" )'>
+                </survey-picture>
             </div>
             break;
         case DoEko.Models.DoEko.Survey.SurveyRSETypeCentralHeating.HeatPump:
             <div class="col-sm-3">
-                <label class="control-label">Zdjęcie wjazdu na działkę</label>
-                @if (Model.Attachments.Keys.Any(k => k == "Picture3") == false)
-                {
-                    <a class="photo-link" style="cursor:pointer" name="Picture3">
-                        <img src="" alt="Dodaj zdjęcie" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-                    </a>
-                    <form action="" method="post" enctype="multipart/form-data" hidden>
-                        <input type="file" id="Picture3" name="Picture3" class="photo-input" accept="image/*" capture>
-                        <input type="submit" value="Upload">
-                    </form>
-                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture3" hidden style="display:none; margin-top:5px;">
-                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                    </button>
-                }
-                else
-                {
-                    <a href='@Model.Attachments["Picture3"].Url' target="_blank" class="photo-link" style="cursor:pointer" name="Picture3">
-                        <img src='@Model.Attachments["Picture3"].Url' alt="Zdjęcie wjazdu na działkę" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-                    </a>
-                    <form action="" method="post" enctype="multipart/form-data" hidden>
-                        <input type="file" id="Picture3" name="Picture3" class="photo-input" accept="image/*" capture>
-                        <input type="submit" value="Upload">
-                    </form>
-                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture3" style="margin-top:5px;">
-                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                    </button>
-                }
+                <survey-picture picture-id="Picture3"
+                                picture-title="Zdjęcie wjazdu na działkę"
+                                picture-link='@( Model.Attachments.ContainsKey("Picture3") ? Model.Attachments["Picture3"].Url : "" )'>
+                </survey-picture>
             </div>
             <div class="col-sm-3">
-                <label class="control-label">Zdjęcie działki (miejsce proponowane pod odwierty pionowe)</label>
-                @if (Model.Attachments.Keys.Any(k => k == "Picture1") == false)
-                {
-                    <a class="photo-link" style="cursor:pointer" name="Picture1">
-                        <img src="" alt="Dodaj zdjęcie" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-                    </a>
-                    <form action="" method="post" enctype="multipart/form-data" hidden>
-                        <input type="file" id="Picture1" name="Picture1" class="photo-input" accept="image/*" capture>
-                        <input type="submit" value="Upload">
-                    </form>
-                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture1" hidden style="display:none; margin-top:5px;">
-                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                    </button>
-                }
-                else
-                {
-                    <a href='@Model.Attachments["Picture1"].Url' target="_blank" class="photo-link" style="cursor:pointer" name="Picture1">
-                        <img src='@Model.Attachments["Picture1"].Url' alt="Zdjęcie działki (miejsce proponowane pod odwierty pionowe)" style="width:100%; min-height:150px; max-height:150px;" class="img-thumbnail wg-image-placeholder" />
-                    </a>
-                    <form action="" method="post" enctype="multipart/form-data" hidden>
-                        <input type="file" id="Picture1" name="Picture1" class="photo-input" accept="image/*" capture>
-                        <input type="submit" value="Upload">
-                    </form>
-                    <button class="btn btn-sm btn-default photo-delete" data-photo-name="Picture1" style="margin-top:5px;">
-                        <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                    </button>
-                }
+                <survey-picture picture-id="Picture1"
+                                picture-title="Zdjęcie działki (miejsce pod odwierty pionowe)"
+                                picture-link='@( Model.Attachments.ContainsKey("Picture1") ? Model.Attachments["Picture1"].Url : "" )'>
+                </survey-picture>
             </div>
-
             break;
         default:
             break;
     }
 </div>
-    @{
-        //Ortofotomapa
-        //Zdjęcie działki (miejsce proponowane pod odwierty pionowe)
-        //Zdjęcie kotłowni
-        //Zdjęcie wjazdu na działkę
-        //Zdjęcie ściany na montaż parownika(tylko dla pompy powietrze / woda)
-        //Zdjęcie budynku
-        //zdjęcie budynku wraz z dachem od strony południowej
-        //połać 1
-        //połać 2
-        //połać 3
-    }

@@ -543,14 +543,16 @@ function onPhotoLinkClick(event) {
 }
 //---------------------------------------------------------------------------//
 function onPhotoInputChanged() {
-    const investmentlevel = ( "Picture0", "Picture5" );
+    const investmentlevel = ( "Picture0", "Picture5", "Picture10" );
     var input = $(this);
     var type = "";
     var guid = "";
     if (input.val() !== undefined) {
         //1. get file name 
         if (input.attr('name') === "Picture0" || 
-            input.attr('name') === "Picture5") {
+            input.attr('name') === "Picture5" ||
+            input.attr('name') === "Picture10" )
+                {
             type = "Investment";
             guid = $("#Dynamic form input[name='InvestmentId']").val();
         }

@@ -79,7 +79,7 @@ namespace DoEko.ViewComponents
             {
                 var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
 
-                if (partNames[1].Equals("Picture0") || partNames[1].Equals("Picture5"))
+                if (partNames[1].Equals("Picture0") || partNames[1].Equals("Picture5") || partNames[1].Equals("Picture10"))
                 {
                     partNames[2] = investmentId.ToString();
                     string targetName = partNames[2] + '/' + partNames[1] + '/' + partNames[0];

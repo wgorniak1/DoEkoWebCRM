@@ -775,7 +775,7 @@ namespace DoEko.Controllers
             {
                 var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
 
-                if (partNames[1].Equals("Picture0") || partNames[1].Equals("Picture5"))
+                if (partNames[1].Equals("Picture0") || partNames[1].Equals("Picture5") || partNames[1].Equals("Picture10"))
                 {
                     //calculate investment
                     Guid srvid = Guid.Parse(partNames[2]);

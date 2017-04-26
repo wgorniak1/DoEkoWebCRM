@@ -55,7 +55,7 @@ namespace DoEko.ViewModels.ReportsViewModels
         {
             try
             {
-                return (id == "Picture0" || id == "Picture5") ?
+                return (id == "Picture0" || id == "Picture5" || id == "Picture10" ) ?
                     Pictures[InvestmentId][id] :
                     Pictures[Survey.SurveyId][id];
             }
