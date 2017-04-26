@@ -148,6 +148,8 @@ namespace DoEko.Models.DoEko.Survey
         public DateTime FirstEditAt { get; set; }
         public Guid FirstEditBy { get; set; }
 
+        public DateTime InspectionDateTime { get; set; }
+
         //***********************************************
         //nr obrębu (jeśli nie ma w nr ks lub działki)
 
