@@ -29,8 +29,14 @@ function alertClass() {
         boxCloseBtn.setAttribute('data-dismiss','alert');
         boxCloseBtn.setAttribute('aria-label','Close');
         boxCloseBtn.appendChild(closeBtnIcon);
-
-        alertMessageContainer.appendChild(document.createTextNode(msgText));
+        //
+        if (msgText.constructor === Array) {
+            for (var i = 0; i < msgText.length; i++) {
+                alertMessageContainer.appendChild(document.createTextNode(msgText[i]));
+            }
+        } else {
+            alertMessageContainer.appendChild(document.createTextNode(msgText));
+        }
             
         switch (msgType) {
             case 'E': alertBox.setAttribute('class', 'alert alert-danger alert-dismissable');

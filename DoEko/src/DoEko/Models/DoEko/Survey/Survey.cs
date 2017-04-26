@@ -148,6 +148,11 @@ namespace DoEko.Models.DoEko.Survey
         public DateTime FirstEditAt { get; set; }
         public Guid FirstEditBy { get; set; }
 
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
+        [DataType("datetime-local",ErrorMessage = "Data inspekcji jest obowiązkowa")]
+        [Display(Description = "Data przeprowadzenia inspekcji", Name = "Data inspekcji", ShortName = "Data inspekcji")]
+        public DateTime? InspectionDateTime { get; set; }
+
         //***********************************************
         //nr obrębu (jeśli nie ma w nr ks lub działki)
 

@@ -420,7 +420,17 @@ function NavigationPrev() {
     }
 }
 function NavigationNext() {
-    ajaxPostCurrentSection(onAjaxPostError, ajaxGetNextSection);
+    //DateTime validation
+    
+    var inspectionDateTimeForm = $("#SurveyInspectionDateTime");
+
+    inspectionDateTimeForm.validate({
+        lang: 'pl'
+    });
+
+    if (inspectionDateTimeForm.valid()) {
+        ajaxPostCurrentSection(onAjaxPostError, ajaxGetNextSection);
+    }
 }
 function NavigationLast() {
     var $form = $("#Dynamic form").first();
@@ -543,14 +553,16 @@ function onPhotoLinkClick(event) {
 }
 //---------------------------------------------------------------------------//
 function onPhotoInputChanged() {
-    const investmentlevel = ( "Picture0", "Picture5" );
+    const investmentlevel = ( "Picture0", "Picture5", "Picture10" );
     var input = $(this);
     var type = "";
     var guid = "";
     if (input.val() !== undefined) {
         //1. get file name 
         if (input.attr('name') === "Picture0" || 
-            input.attr('name') === "Picture5") {
+            input.attr('name') === "Picture5" ||
+            input.attr('name') === "Picture10" )
+                {
             type = "Investment";
             guid = $("#Dynamic form input[name='InvestmentId']").val();
         }
@@ -684,3 +696,44 @@ function onDeletePhotoFailed(xhr, status, error) {
 //---------------------------------------------------------------------------//
 
 ///////////////////////////////////////////////////////////////////////////////
+
+$('body').on('change', '.inspectiondatetime', onInspectionDateTimeChange);
+
+function onInspectionDateTimeChange() {
+
+    var form = $("#SurveyInspectionDateTime");
+
+        form.validate({
+            lang: 'pl'
+        });
+
+        if (form.valid()) {
+            form.submit();
+            //var url = form.attr("action"),
+            //    method = form.attr('data-ajax-method'),
+            //    ajaxTrue = form.attr('data-ajax');
+
+            ////1st
+            //var postCurrent = $.ajax({
+            //    type: method || "POST",
+            //    url: url,
+            //    data: form.serialize()
+            //});
+
+            //postCurrent.error(onError);
+            //postCurrent.success(onSuccess);
+            //postCurrent.success(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
+            ////$.when(postCurrent);
+        }
+    
+}
+
+function InspectionDateTimePostFailure(xhr, status, error) {
+    //WgTools.alert(error, true, 'E');
+}
+
+function InspectionDateTimePostSuccess() {
+    //WgTools.alert('Pomyślnie zapisano dane sekcji.', true, 'S');
+}
+
+

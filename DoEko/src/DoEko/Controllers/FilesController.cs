@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -95,7 +95,7 @@ namespace DoEko.Controllers
 
             if (guid == Guid.Empty)
             {
-                ModelState.AddModelError("guid", "Nr Ankiety nie mo¿e byæ pusty");
+                ModelState.AddModelError("guid", "Nr Ankiety nie moÅ¼e byÄ‡ pusty");
                 return BadRequest(ModelState);
             }
             if (Request.Form.Files.Count == 0)
@@ -112,11 +112,67 @@ namespace DoEko.Controllers
                 string name = guid.ToString() + '/' + file.Name + '/' + file.FileName;
                 CloudBlockBlob blob = Container.GetBlockBlobReference(name);
                 blob.UploadFromStream(file.OpenReadStream());
+                blob.Properties.ContentType = this.GetFileContentType(file.FileName);
+                blob.SetProperties();
 
                 TargetUrl = blob.Uri.ToString();
             }
             //}
             return Ok(TargetUrl);
+        }
+
+        private string GetFileContentType(string fileName)
+        {
+            string ContentType = String.Empty;
+            string Extension = Path.GetExtension(fileName).ToLower();
+
+            switch (Extension)
+            {
+                case ".pdf":
+                    ContentType = "application/pdf";
+                    break;
+                case ".txt":
+                    ContentType = "text/plain";
+                    break;
+                case ".bmp":
+                    ContentType = "image/bmp";
+                    break;
+                case ".gif":
+                    ContentType = "image/gif";
+                    break;
+                case ".png":
+                    ContentType = "image/png";
+                    break;
+                case ".jpg":
+                    ContentType = "image/jpeg";
+                    break;
+                case ".jpeg":
+                    ContentType = "image/jpeg";
+                    break;
+                case ".xls":
+                    ContentType = "application/vnd.ms-excel";
+                    break;
+                case ".xlsx":
+                    ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    break;
+                case ".csv":
+                    ContentType = "text/csv";
+                    break;
+                case ".html":
+                    ContentType = "text/html";
+                    break;
+                case ".xml":
+                    ContentType = "text/xml";
+                    break;
+                case ".zip":
+                    ContentType = "application/zip";
+                    break;
+                default:
+                    ContentType = "application/octet-stream";
+                    break;
+            }
+
+            return ContentType;
         }
 
         [HttpPost]

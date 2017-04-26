@@ -10,9 +10,10 @@ using DoEko.Models.DoEko.Survey;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20170426091207_SurveyInspectionDate")]
+    partial class SurveyInspectionDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.3")
@@ -515,8 +516,7 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<string>("FreeCommments");
 
-                    b.Property<DateTime?>("InspectionDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("InspectionDateTime");
 
                     b.Property<Guid>("InvestmentId");
 

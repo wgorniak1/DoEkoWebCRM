@@ -452,6 +452,9 @@ namespace DoEko.Controllers
             csv["Picture7"] = "";
             csv["Picture8"] = "";
             csv["Picture9"] = "";
+            csv["Picture10"] = "";
+            csv["Picture11"] = "";
+
         }
         private async Task<CsvExport> SurveyListAsCSV(List<Survey> data)
         {

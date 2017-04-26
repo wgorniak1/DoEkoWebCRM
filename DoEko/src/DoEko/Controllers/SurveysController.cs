@@ -52,6 +52,12 @@ namespace DoEko.Controllers
                         .Include(s=>s.Investment)
                         .ThenInclude(i => i.InvestmentOwners)
                         .SingleAsync(s => s.SurveyId == Id);
+
+                    if (srvch.InspectionDateTime <= DateTime.MinValue)
+                    {
+                        srvch.InspectionDateTime = null;
+                    }
+
                     return View("MaintainCH", srvch);
                 case SurveyType.HotWater:
                     SurveyHotWater srvhw = await _context.SurveysHW
@@ -60,6 +66,10 @@ namespace DoEko.Controllers
                         .Include(s => s.Investment)
                         .ThenInclude(i => i.InvestmentOwners)
                         .SingleAsync(s => s.SurveyId == Id);
+                    if (srvhw.InspectionDateTime <= DateTime.MinValue)
+                    {
+                        srvhw.InspectionDateTime = null;
+                    }
                     return View("MaintainHW", srvhw);
                 case SurveyType.Energy:
                     SurveyEnergy srven = await _context.SurveysEN
@@ -68,6 +78,10 @@ namespace DoEko.Controllers
                         .Include(s => s.Investment)
                         .ThenInclude(i => i.InvestmentOwners)
                         .SingleAsync(s => s.SurveyId == Id);
+                    if (srven.InspectionDateTime <= DateTime.MinValue)
+                    {
+                        srven.InspectionDateTime = null;
+                    }
                     return View("MaintainEN", srven);
                 default:
                     return NotFound();
@@ -1129,6 +1143,46 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> UpdateInspectionDateAjax(Guid surveyId, DateTime inspectionDateTime)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                SurveyType SurveyType = _context.Surveys.Where(s=> s.SurveyId == surveyId).Select(s => s.Type).Single();
+
+                switch (SurveyType)
+                {
+                    case SurveyType.CentralHeating:
+                        var SrvCH = _context.SurveysCH.Single(s => s.SurveyId == surveyId);
+                        SrvCH.InspectionDateTime = inspectionDateTime;
+                        _context.SurveysCH.Update(SrvCH);
+                        break;
+                    case SurveyType.HotWater:
+                        var SrvHW = _context.SurveysHW.Single(s => s.SurveyId == surveyId);
+                        SrvHW.InspectionDateTime = inspectionDateTime;
+                        _context.SurveysHW.Update(SrvHW);
+                        break;
+                    case SurveyType.Energy:
+                        var SrvEN = _context.SurveysEN.Single(s => s.SurveyId == surveyId);
+                        SrvEN.InspectionDateTime = inspectionDateTime;
+                        _context.SurveysEN.Update(SrvEN);
+                        break;
+                    default:
+                        return BadRequest();
+                }
+
+                int Result = await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
+
+    [HttpPost]
         public async Task<IActionResult> CancelAjax(SurveyCancelViewModel model)
         {
             try

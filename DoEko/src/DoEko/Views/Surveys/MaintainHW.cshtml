@@ -35,7 +35,7 @@ else
 }
 <!--Static Survey Header-->
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <div class="form-group-sm">
             <label class="control-label">
                 <i class="fa fa-plug" aria-hidden="true"></i> OZE
@@ -45,17 +45,37 @@ else
             </p>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <div class="form-group-sm">
             <label class="control-label">
-                <i class="fa fa-map-marker" aria-hidden="true"></i> Inwestycja
+                <i class="fa fa-map-marker" aria-hidden="true"></i> Adres inwestycji
             </label>
             <p class="form-control-static">
                 @Model.Investment.Address.SingleLine
             </p>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-3">
+        <div class="form-group-sm">
+            <form id="SurveyInspectionDateTime"
+                  asp-action="UpdateInspectionDateAjax"
+                  asp-controller="Surveys"
+                  data-ajax="true"
+                  data-ajax-method="POST"
+                  data-ajax-mode="UPDATE"
+                  data-ajax-update=""
+                  data-ajax-failure="InspectionDateTimePostFailure"
+                  data-ajax-success="InspectionDateTimePostSuccess">
+                <input asp-for="SurveyId" type="hidden" />
+                <label class="control-label">
+                    <i class="fa fa-calendar" aria-hidden="true"></i> Data i czas inspekcji
+                </label>
+                <input asp-for="InspectionDateTime" class="form-control inspectiondatetime" />
+                <span asp-validation-for="InspectionDateTime" class="text-danger" />
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-3">
         <div class="form-group-sm">
             <label class="control-label">
                 <i class="fa fa-cogs" aria-hidden="true"></i> Status inspekcji
