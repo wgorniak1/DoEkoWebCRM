@@ -420,7 +420,17 @@ function NavigationPrev() {
     }
 }
 function NavigationNext() {
-    ajaxPostCurrentSection(onAjaxPostError, ajaxGetNextSection);
+    //DateTime validation
+    
+    var inspectionDateTimeForm = $("#SurveyInspectionDateTime");
+
+    inspectionDateTimeForm.validate({
+        lang: 'pl'
+    });
+
+    if (inspectionDateTimeForm.valid()) {
+        ajaxPostCurrentSection(onAjaxPostError, ajaxGetNextSection);
+    }
 }
 function NavigationLast() {
     var $form = $("#Dynamic form").first();
@@ -686,3 +696,44 @@ function onDeletePhotoFailed(xhr, status, error) {
 //---------------------------------------------------------------------------//
 
 ///////////////////////////////////////////////////////////////////////////////
+
+$('body').on('change', '.inspectiondatetime', onInspectionDateTimeChange);
+
+function onInspectionDateTimeChange() {
+
+    var form = $("#SurveyInspectionDateTime");
+
+        form.validate({
+            lang: 'pl'
+        });
+
+        if (form.valid()) {
+            form.submit();
+            //var url = form.attr("action"),
+            //    method = form.attr('data-ajax-method'),
+            //    ajaxTrue = form.attr('data-ajax');
+
+            ////1st
+            //var postCurrent = $.ajax({
+            //    type: method || "POST",
+            //    url: url,
+            //    data: form.serialize()
+            //});
+
+            //postCurrent.error(onError);
+            //postCurrent.success(onSuccess);
+            //postCurrent.success(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
+            ////$.when(postCurrent);
+        }
+    
+}
+
+function InspectionDateTimePostFailure(xhr, status, error) {
+    //WgTools.alert(error, true, 'E');
+}
+
+function InspectionDateTimePostSuccess() {
+    //WgTools.alert('Pomyślnie zapisano dane sekcji.', true, 'S');
+}
+
+
