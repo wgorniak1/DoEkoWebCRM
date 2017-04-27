@@ -1,4 +1,5 @@
-﻿@{
+﻿@model ILookup<string, DocumentFormat.OpenXml.OpenXmlElement>
+@{
     ViewData["Title"] = "Create";
 }
 
@@ -25,6 +26,42 @@
     </div>
     <input type="submit" value="odczytaj"/>
 </form>
+<br/>
+@if (Model != null)
+{
+    <table border="1" cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th>Klucz</th>
+                <th>liczba wystąpień</th>
+                <th>xml</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Key</td>
+                    <td>@item.Count()</td>
+                    <td>
+                        <table>
+                            <tbody>
+                                @foreach (var item2 in item)
+                                {
+                                    <tr>
+                                        <td>@item2.OuterXml</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+}
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

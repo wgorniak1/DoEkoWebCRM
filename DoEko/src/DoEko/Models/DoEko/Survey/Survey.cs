@@ -89,6 +89,10 @@ namespace DoEko.Models.DoEko.Survey
     [Table(nameof(Survey))]
     public class Survey
     {
+        public Survey()
+        {
+            InspectionDateTime = DateTime.MinValue;
+        }
         /// <summary>
         /// 
         /// </summary>

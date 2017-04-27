@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DoEko.Controllers.Extensions;
 using DoEko.Controllers.Helpers;
@@ -66,24 +67,24 @@ namespace DoEko.Controllers
         public async Task<ActionResult> OpenXml(FormCollection form)
         {
 
-            var data = await _context.Investments
-                    .Include(i => i.Address).ThenInclude(a => a.State)
-                    .Include(i => i.Address).ThenInclude(a => a.District)
-                    .Include(i => i.Address).ThenInclude(a => a.Commune)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.Audit)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.Ground)
-                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
-                    .SingleAsync(i => i.InvestmentId == Guid.Parse("74f3e0bf-6d3d-40c5-981f-dba25056d1e8"));
-            data = new InvestmentViewModel(data) { Survey = data.Surveys.First() };
+            //var data = await _context.Investments
+            //        .Include(i => i.Address).ThenInclude(a => a.State)
+            //        .Include(i => i.Address).ThenInclude(a => a.District)
+            //        .Include(i => i.Address).ThenInclude(a => a.Commune)
+            //        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+            //        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+            //        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+            //        //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+            //        //.Include(i => i.Surveys).ThenInclude(s => s.Audit)
+            //        //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+            //        //.Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+            //        .Include(i => i.Surveys).ThenInclude(s => s.Building)
+            //        //.Include(i => i.Surveys).ThenInclude(s => s.Ground)
+            //        .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+            //        //.Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+            //        //.Include(i => i.Surveys).ThenInclude(s => s.Wall)
+            //        .SingleAsync(i => i.InvestmentId == Guid.Parse("74f3e0bf-6d3d-40c5-981f-dba25056d1e8"));
+            //data = new InvestmentViewModel(data) { Survey = data.Surveys.First() };
 
             //const string fieldDelimeter = "MERGEFIELD";
 
@@ -95,25 +96,38 @@ namespace DoEko.Controllers
 
             //Stream MainStream = this.GetTemplate("InspectionSummary", OfficeTemplateType.Title);
 
-            WordprocessingDocument doc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(stream: MainStream, isEditable: true);
+            WordprocessingDocument doc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(stream: MainStream, isEditable: false);
 
-            //            var simpleFields = doc.MainDocumentPart.RootElement.Descendants<SimpleField>().Where(fc => fc.Instruction.HasValue && fc.Instruction.InnerText.Contains(fieldDelimeter)).ToArray();
-            //            var fieldCharBegin = doc.MainDocumentPart.RootElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Begin).ToArray();
+            var splitter = new[] { ' ', '"' };
+            const string tmergefield = "MERGEFIELD";
+
+            var tmergeFields = doc.MainDocumentPart.HeaderParts.Cast<OpenXmlPart>()
+               .Concat(doc.MainDocumentPart.FooterParts.Cast<OpenXmlPart>())
+               .Concat(new OpenXmlPart[] { doc.MainDocumentPart })
+               .SelectMany(x => x.RootElement.Descendants<SimpleField>().Select(sf => new { text = sf.Instruction.Value, el = (OpenXmlElement)sf })
+                               .Concat(x.RootElement.Descendants<FieldCode>().Select(fc => new { text = fc.Text, el = (OpenXmlElement)fc })))
+               .Select(a => new { words = a.text.Split(splitter, StringSplitOptions.RemoveEmptyEntries), el = a.el })
+               .Where(a => tmergefield.Equals(a.words.FirstOrDefault(), StringComparison.OrdinalIgnoreCase))
+               .ToLookup(k => string.Join(" ", k.words.Skip(1).TakeWhile(i => i != "\\*")), v => v.el);
+
+            return View(tmergeFields);
+                 //            var simpleFields = doc.MainDocumentPart.RootElement.Descendants<SimpleField>().Where(fc => fc.Instruction.HasValue && fc.Instruction.InnerText.Contains(fieldDelimeter)).ToArray();
+                //            var fieldCharBegin = doc.MainDocumentPart.RootElement.Descendants<FieldChar>().Where(fc => fc.FieldCharType == FieldCharValues.Begin).ToArray();
 
 
-            //Dictionary<string, string> mergeFields = new Dictionary<string, string>();
-            doc = doc.MergeFields(data);
-            doc.Dispose();
+                //Dictionary<string, string> mergeFields = new Dictionary<string, string>();
+                //doc = doc.MergeFields(data);
+            //doc.Dispose();
 
-            MainStream.Position = 0;
+            //MainStream.Position = 0;
 
             //Save data into file
-            var documents = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);
-            var targetName = "Results/InspectionSummary/aaatest" + '_' + DateTime.Now.ToString("yyyyMMddHHmmss") + ".docx";
-            var targetblob = documents.GetBlockBlobReference(targetName);
-            targetblob.UploadFromStream(MainStream);
+            //var documents = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);
+            //var targetName = "Results/InspectionSummary/aaatest" + '_' + DateTime.Now.ToString("yyyyMMddHHmmss") + ".docx";
+            //var targetblob = documents.GetBlockBlobReference(targetName);
+            //targetblob.UploadFromStream(MainStream);
 
-            return Redirect(targetblob.Uri.AbsoluteUri);
+            //return Redirect(targetblob.Uri.AbsoluteUri);
 
         }
 
