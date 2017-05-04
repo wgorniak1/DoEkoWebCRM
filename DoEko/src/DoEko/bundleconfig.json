@@ -110,5 +110,11 @@
     "inputFiles": [
       "wwwroot/js/ContractDetails.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/BusinessPartnerPersonList.min.js",
+    "inputFiles": [
+      "wwwroot/js/BusinessPartnerPersonList.js"
+    ]
   }
 ]
