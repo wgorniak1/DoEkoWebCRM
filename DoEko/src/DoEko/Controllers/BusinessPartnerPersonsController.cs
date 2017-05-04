@@ -85,29 +85,30 @@ namespace DoEko.Controllers
 
                 IList<object> model = new List<object>();
 
-                //foreach (var person in persons)
-                //{
-                //    var invowner = invowners.SingleOrDefault(io => io.OwnerId == person.BusinessPartnerId);
-                //    model.Add(new {
-                //        bp.BusinessPartnerId,
-                //        //bp.FirstName,
-                //        //bp.LastName,
-                //        bp.FullName,
-                //        bp.Pesel,
-                //        bp.IdNumber,
-                //        bp.TaxId,
-                //        bp.BirthDate,
-                //        bp.Email,
-                //        bp.PhoneNumber,
-                //        Address = new
-                //        {
-                //            FirstLine = bp.Address.FirstLine,
-                //            SecondLine = bp.Address.SecondLine,
-                //            SingleLine = bp.Address.SingleLine
-                //        },
-                //        bp.DataProcessingConfirmation
-                //    });
-                //}
+                foreach (var person in persons)
+                {
+                    model.Add(new
+                    {
+                        person.BusinessPartnerId,
+                        //bp.FirstName,
+                        //bp.LastName,
+                        person.FullName,
+                        person.Pesel,
+                        person.IdNumber,
+                        person.TaxId,
+                        person.BirthDate,
+                        person.Email,
+                        person.PhoneNumber,
+                        Address = new
+                        {
+                            FirstLine = person.Address.FirstLine,
+                            SecondLine = person.Address.SecondLine,
+                            SingleLine = person.Address.SingleLine
+                        },
+                        person.DataProcessingConfirmation,
+                        Investments = invowners.Where(io => io.OwnerId == person.BusinessPartnerId).ToList()
+                    });
+                }
                 //var model1 = await _context.BPPersons.Select(bp => new
                 //{
                 //    bp.BusinessPartnerId,
