@@ -23,11 +23,15 @@ namespace DoEko.Controllers
         {
             if (HttpContext.Request.IsAjaxRequest())
             {
-                var model = await _context.BPPersons
-                    .Include(bp => bp.Address).ThenInclude(a => a.Commune)
-                    .Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
-                    .Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Contract).ThenInclude(c => c.Project)
-                    .Select(bp => new {
+                //disable change tracking
+                _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+                var persons = _context.BPPersons
+                    .Include(bp => bp.Address)//.ThenInclude(a => a.State)
+                    //.Include(bp => bp.Address).ThenInclude(a => a.District)
+                    //.Include(bp => bp.Address).ThenInclude(a => a.Commune)
+                    .Select(bp => new
+                    {
                         bp.BusinessPartnerId,
                         //bp.FirstName,
                         //bp.LastName,
@@ -38,20 +42,151 @@ namespace DoEko.Controllers
                         bp.BirthDate,
                         bp.Email,
                         bp.PhoneNumber,
-                        bp.Address,
-                        bp.DataProcessingConfirmation,
-                        Investments = bp.InvestmentOwners.Select(io=> new {
-                            io.InvestmentId,
-                            io.OwnershipType,
-                            io.Sponsor,
-                            io.Investment.Address,
-                            Contract = new { io.Investment.Contract.ContractId,
-                                             io.Investment.Contract.ShortDescription,
-                                             io.Investment.Contract.Number },
-                            Project = new {  io.Investment.Contract.Project.ShortDescription,
-                                             io.Investment.Contract.ProjectId }
-                        })
-                    }).ToListAsync();
+                        Address = new
+                        {
+                            FirstLine = bp.Address.FirstLine,
+                            SecondLine = bp.Address.SecondLine,
+                            SingleLine = bp.Address.SingleLine
+                        },
+                        bp.DataProcessingConfirmation
+                    }).ToList();
+
+                 var invowners = _context.InvestmentOwners    
+                    .Include(io => io.Investment).ThenInclude(i => i.Address)//.ThenInclude(a => a.State)
+                                                                             //.Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.District)
+                                                                             //.Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
+
+                    //.Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i=>i.Contract).ThenInclude(c=>c.Project)
+                    //.ToList()
+                    .Select(io => new
+                    {
+                        io.InvestmentId,
+                        io.OwnerId,
+                        io.OwnershipType,
+                        io.Sponsor,
+                        Address = new
+                        {
+                            FirstLine = io.Investment.Address.FirstLine,
+                            SecondLine = io.Investment.Address.SecondLine,
+                            SingleLine = io.Investment.Address.SingleLine
+                        },
+                        //Contract = new
+                        //{
+                        //    io.Investment.Contract.ContractId,
+                        //    io.Investment.Contract.ShortDescription,
+                        //    io.Investment.Contract.Number
+                        //},
+                        //Project = new
+                        //{
+                        //    io.Investment.Contract.Project.ShortDescription,
+                        //    io.Investment.Contract.ProjectId
+                        //}
+                    }).ToList();
+
+                IList<object> model = new List<object>();
+
+                //foreach (var person in persons)
+                //{
+                //    var invowner = invowners.SingleOrDefault(io => io.OwnerId == person.BusinessPartnerId);
+                //    model.Add(new {
+                //        bp.BusinessPartnerId,
+                //        //bp.FirstName,
+                //        //bp.LastName,
+                //        bp.FullName,
+                //        bp.Pesel,
+                //        bp.IdNumber,
+                //        bp.TaxId,
+                //        bp.BirthDate,
+                //        bp.Email,
+                //        bp.PhoneNumber,
+                //        Address = new
+                //        {
+                //            FirstLine = bp.Address.FirstLine,
+                //            SecondLine = bp.Address.SecondLine,
+                //            SingleLine = bp.Address.SingleLine
+                //        },
+                //        bp.DataProcessingConfirmation
+                //    });
+                //}
+                //var model1 = await _context.BPPersons.Select(bp => new
+                //{
+                //    bp.BusinessPartnerId,
+                //    //bp.FirstName,
+                //    //bp.LastName,
+                //    bp.FullName,
+                //    bp.Pesel,
+                //    bp.IdNumber,
+                //    bp.TaxId,
+                //    bp.BirthDate,
+                //    bp.Email,
+                //    bp.PhoneNumber,
+                //    Address = new
+                //    {
+                //        FirstLine = bp.Address.FirstLine,
+                //        SecondLine = bp.Address.SecondLine,
+                //        SingleLine = bp.Address.SingleLine
+                //    },
+                //    bp.DataProcessingConfirmation,
+                //    Investments = bp.InvestmentOwners.Select(io => new
+                //    {
+                //        io.InvestmentId,
+                //        io.OwnershipType,
+                //        io.Sponsor,
+                //        Address = new
+                //        {
+                //            FirstLine = io.Investment.Address.FirstLine,
+                //            SecondLine = io.Investment.Address.SecondLine,
+                //            SingleLine = io.Investment.Address.SingleLine
+                //        },
+                //        Contract = new
+                //        {
+                //            io.Investment.Contract.ContractId,
+                //            io.Investment.Contract.ShortDescription,
+                //            io.Investment.Contract.Number
+                //        },
+                //        Project = new
+                //        {
+                //            io.Investment.Contract.Project.ShortDescription,
+                //            io.Investment.Contract.ProjectId
+                //        }
+                //    })
+                //}).ToListAsync();
+
+                //var model = await _context.BPPersons
+                //    .Include(bp => bp.Address).ThenInclude(a => a.Commune)
+                //    .Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Address)//.ThenInclude(a => a.Commune)
+                //    .Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Contract).ThenInclude(c => c.Project)
+                //    .Select(bp => new {
+                //        bp.BusinessPartnerId,
+                //        //bp.FirstName,
+                //        //bp.LastName,
+                //        bp.FullName,
+                //        bp.Pesel,
+                //        bp.IdNumber,
+                //        bp.TaxId,
+                //        bp.BirthDate,
+                //        bp.Email,
+                //        bp.PhoneNumber,
+                //        Address = new {
+                //            FirstLine = bp.Address.FirstLine,
+                //            SecondLine = bp.Address.SecondLine,
+                //            SingleLine = bp.Address.SingleLine },
+                //        bp.DataProcessingConfirmation,
+                //        Investments = bp.InvestmentOwners.Select(io=> new {
+                //            io.InvestmentId,
+                //            io.OwnershipType,
+                //            io.Sponsor,
+                //            Address = new {
+                //                FirstLine = io.Investment.Address.FirstLine,
+                //                SecondLine = io.Investment.Address.SecondLine,
+                //                SingleLine = io.Investment.Address.SingleLine },
+                //            Contract = new { io.Investment.Contract.ContractId,
+                //                             io.Investment.Contract.ShortDescription,
+                //                             io.Investment.Contract.Number },
+                //            Project = new {  io.Investment.Contract.Project.ShortDescription,
+                //                             io.Investment.Contract.ProjectId }
+                //        })
+                //    }).ToListAsync();
 
                 return Json(new { data = model });
             }
