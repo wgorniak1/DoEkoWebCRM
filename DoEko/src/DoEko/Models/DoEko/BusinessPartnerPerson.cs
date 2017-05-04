@@ -86,5 +86,10 @@ namespace DoEko.Models.DoEko
         [RegularExpression("^[A-Z]{3}( )[0-9]{6}$",ErrorMessage ="Proszę podać nr w formacie 'ABC 123456'")]
         [Display(Description = "", Name = "Nr dowodu osobistego", ShortName = "Dowód os.")]
         public string IdNumber { get; set; }
+
+        [NotMapped]
+        public string FullName { get {
+                return this.LastName + ' ' + this.FirstName;           }
+            private set { } }
     }
 }

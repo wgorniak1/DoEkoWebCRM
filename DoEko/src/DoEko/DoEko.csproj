@@ -27,6 +27,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\js\BusinessPartnerPersonList.js" />
+    <Content Include="wwwroot\js\BusinessPartnerPersonList.min.js" />
+    <Content Include="wwwroot\js\ReportTemplateList - Copy.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="App.config" />
     <None Update="wwwroot\**\*">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

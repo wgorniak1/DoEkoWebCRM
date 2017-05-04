@@ -64,7 +64,7 @@ namespace DoEko.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<ActionResult> OpenXml(FormCollection form)
+        public ActionResult OpenXml(FormCollection form)
         {
 
             //var data = await _context.Investments

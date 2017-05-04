@@ -59,5 +59,10 @@ namespace DoEko.Models.DoEko
 
         public string PartnerName1 { get; set; }
         public string PartnerName2 { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Display(Description = "", Name = "Zgoda na przetw. danych", ShortName = "Zgoda na przetw. d.")]
+        public bool DataProcessingConfirmation { get; set; }
     }
 }

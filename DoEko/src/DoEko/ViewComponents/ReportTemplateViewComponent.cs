@@ -30,9 +30,9 @@ namespace DoEko.ViewComponents
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task<IViewComponentResult> InvokeAsync(ReportTemplateViewModel model)
+        public async Task<IViewComponentResult> Invoke(ReportTemplateViewModel model)
         {
-            return View("Default", model);   
+            return await Task.Factory.StartNew<IViewComponentResult>(() => View("Default", model));
         }
 
     }

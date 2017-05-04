@@ -1,0 +1,42 @@
+﻿@model IEnumerable<DoEko.Models.DoEko.BusinessPartnerPerson>
+
+@{
+    ViewData["Title"] = "Lista właścicieli inwestycji";
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">Właściciele inwestycji</li>
+</ol>
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+<div class="" id="BPPersonListContainer">
+    @section modals{
+        @{await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
+                              new DoEko.ViewModels.SharedViewModels.ModalConfirmationViewModel()
+                              {
+                                  Id = "TemplateDeleteModal",
+                                  Title = "",
+                                  Question = "",
+                                  BtnYes = "Tak",
+                                  BtnYesClass = ""
+                              });}
+    }
+    <table class="table table-striped dt-responsive nowrap dataTable no-footer dtr-inline collapsed" id="BPPersonListTable" style="width:100%;">
+
+    </table>
+</div>
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+
+}
+@section scripts{
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/BusinessPartnerPersonList.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/BusinessPartnerPersonList.min.js"></script>
+    </environment>
+}

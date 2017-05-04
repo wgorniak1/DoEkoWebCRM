@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
+using DoEko.Controllers.Extensions;
 
 namespace DoEko.Controllers
 {
@@ -16,6 +17,70 @@ namespace DoEko.Controllers
         public BusinessPartnerPersonsController(DoEkoContext context)
         {
             _context = context;    
+        }
+
+        public async Task<IActionResult> List()
+        {
+            if (HttpContext.Request.IsAjaxRequest())
+            {
+                var model = await _context.BPPersons
+                    .Include(bp => bp.Address).ThenInclude(a => a.Commune)
+                    .Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
+                    .Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Contract).ThenInclude(c => c.Project)
+                    .Select(bp => new {
+                        bp.BusinessPartnerId,
+                        //bp.FirstName,
+                        //bp.LastName,
+                        bp.FullName,
+                        bp.Pesel,
+                        bp.IdNumber,
+                        bp.TaxId,
+                        bp.BirthDate,
+                        bp.Email,
+                        bp.PhoneNumber,
+                        bp.Address,
+                        bp.DataProcessingConfirmation,
+                        Investments = bp.InvestmentOwners.Select(io=> new {
+                            io.InvestmentId,
+                            io.OwnershipType,
+                            io.Sponsor,
+                            io.Investment.Address,
+                            Contract = new { io.Investment.Contract.ContractId,
+                                             io.Investment.Contract.ShortDescription,
+                                             io.Investment.Contract.Number },
+                            Project = new {  io.Investment.Contract.Project.ShortDescription,
+                                             io.Investment.Contract.ProjectId }
+                        })
+                    }).ToListAsync();
+
+                return Json(new { data = model });
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DataProcessingAllowed(Guid? id, bool allowed )
+        {
+            if (HttpContext.Request.IsAjaxRequest())
+            {
+                try
+                {
+                    var person = _context.BPPersons.Single(bp => bp.BusinessPartnerId == id);
+                    person.DataProcessingConfirmation = allowed;
+                    _context.BPPersons.Update(person);
+                    var result = await _context.SaveChangesAsync();
+
+                    return Ok();
+                }
+                catch (Exception exc)
+                {
+                    return BadRequest(exc);
+                }
+            }
+            else return BadRequest();
         }
 
         // GET: BusinessPartnerPersons
