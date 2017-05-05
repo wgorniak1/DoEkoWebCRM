@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -367,15 +367,51 @@ namespace DoEko.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var businessPartnerPerson = await _context.BPPersons.SingleOrDefaultAsync(m => m.BusinessPartnerId == id);
-            _context.BPPersons.Remove(businessPartnerPerson);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                if (HttpContext.Request.IsAjaxRequest())
+                {
+
+                    var businessPartnerPerson = await _context.BPPersons.Include(p => p.Address).SingleOrDefaultAsync(m => m.BusinessPartnerId == id);
+
+                    if (!_context.Investments.Any(i => i.AddressId == businessPartnerPerson.AddressId))
+                    {
+                        _context.Addresses.Remove(businessPartnerPerson.Address);
+                    }
+
+                    _context.BPPersons.Remove(businessPartnerPerson);
+
+                    var result = await _context.SaveChangesAsync();
+                    if (result != 0)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Błąd podczas usuwania danych");
+                        return BadRequest(ModelState);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Błędny typ żądania");
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception exc)
+            {
+                ModelState.AddModelError("", exc.InnerException == null ? exc.Message : exc.InnerException.Message);
+                return BadRequest(ModelState);
+
+            }
         }
 
         private bool BusinessPartnerPersonExists(Guid id)
         {
             return _context.BPPersons.Any(e => e.BusinessPartnerId == id);
         }
+        #region Helpers
+        #endregion
+
     }
 }

@@ -10,26 +10,35 @@ $(document).ready(function () {
         },
         columns: [
                     {
+                        responsivePriority: 1,
                         data: "fullName",
                         name: "fullName",
                         title: "Nazwisko i Imię",
                     },
                     {
+                        responsivePriority: 8,
+
                         data: "pesel",
                         name: "pesel",
                         title: "Pesel",
                     },
                     {
+                        responsivePriority: 9,
+
                         data: "idNumber",
                         name: "idNumber",
                         title: "Nr dowodu os.",
                     },
                     {
+                        responsivePriority: 10,
+
                         data: "taxId",
                         name: "taxId",
                         title: "NIP",
                     },
                     {
+                        responsivePriority: 11,
+
                         data: "birthDate",
                         name: "birthDate",
                         title: "Data urodz.",
@@ -47,6 +56,8 @@ $(document).ready(function () {
                         }
                     },
                     {
+                        responsivePriority: 6,
+
                         data: "email",
                         name: "email",
                         title: "E-mail",
@@ -64,6 +75,8 @@ $(document).ready(function () {
                         },
                     },
                     {
+                        responsivePriority: 7,
+
                         data: "phoneNumber",
                         name: "phoneNumber",
                         title: "Telefon",
@@ -81,6 +94,8 @@ $(document).ready(function () {
                         }
                     },
                     {
+                        responsivePriority: 4,
+
                         data: "address",
                         data: "address",
                         title: "Adres",
@@ -97,6 +112,8 @@ $(document).ready(function () {
                         }
                     },
                     {
+                        responsivePriority: 3,
+
                         data: "dataProcessingConfirmation",
                         name: "dataProcessingConfirmation",
                         title: "Zgoda na przetw. danych",
@@ -106,7 +123,7 @@ $(document).ready(function () {
                                 case "display":
                                     if (editMode) {
                                         var content = 
-                                        '<input type="checkbox" id="dataProcessingConfirmation['+row.businessPartnerId+']" name="dataProcessingConfirmation" class="form-control checkbox confirmationchange" data-toggle="toggle" data-on="Tak" data-off="Nie" value="' + data + '"';
+                                            '<input type="checkbox" id="dataProcessingConfirmation[' + row.businessPartnerId +']" name="dataProcessingConfirmation" class="form-control checkbox person-confirmationchange" data-onstyle="success" data-size="small" data-toggle="toggle" data-on="Tak" data-off="Nie" value="' + data + '"';
                                         content += !data ? '/>' : 'checked />';
                                         return content;
                                     }
@@ -120,6 +137,8 @@ $(document).ready(function () {
                         }
                     },
                     {
+                        responsivePriority: 12,
+
                         data: "investments",
                         name: "investmentsCount",
                         title: "Liczba inwestycji",
@@ -129,6 +148,8 @@ $(document).ready(function () {
                         }
                     },
                     {
+                        responsivePriority: 5,
+
                         data: "investments",
                         name: "investments",
                         title: "Inwestycje",
@@ -146,41 +167,50 @@ $(document).ready(function () {
                                     return '<table>' + content + '</table>';
                                 case "filter":
                                     data.forEach(function (investment, index, arr) {
-                                        content += investment.address.singleLine + ';';
+                                        content += investment.address.secondLine + ',' + investment.address.firstLine + ',';
                                     });
 
                                     return content;
                                 case "sort":
                                     data.forEach(function (investment, index, arr) {
-                                        content += investment.address.secondLine + ';' + investment.address.firstLine + ';';
+                                        content += investment.address.secondLine + ',' + investment.address.firstLine + ',';
                                     });
-                                    return bdt;
+                                    return content;
                             }
 
                         }
+                    },
+                    {
+                        responsivePriority: 2,
+                        data: null,
+                        name: "actions",
+                        title: "Akcje",
+                        orderable: false,
+                        searchable: false,
+                        type: 'html',
+                        width: "100px",
+                        autoWidth: false,
+                        visible: true,
+                        render: function (data, type, row, meta) {
+                            
+                            var content = "";
+                            content = '<div class="pull-right">';
+                            content += '<button title="Edytuj dane" class="btn btn-default btn-sm person-edit" type="button">' +
+                                '<span class="glyphicon glyphicon-pencil"></span>' +
+                                '</button>';
+
+                            if (data.investments.length === 0) {
+                                content += '<button class="btn btn-default btn-sm person-delete" type="button">' +
+                                    '<span class="glyphicon glyphicon-trash"></span>' +
+                                    '</button>';
+                            }
+                            else {
+                            }
+                            content += '</div>';
+                            return content;
+
+                        }
                     }
-                    //{
-                    //    data: null,
-                    //    name: "Akcja",
-                    //    orderable: false,
-                    //    searchable: false,
-                    //    type: 'html',
-                    //    render: function (data, type, row, meta) {
-                    //        var content = "";
-                    //        if (data.name !== null) {
-
-                    //            return '<button class="btn btn-default btn-sm template-delete" type="button">' +
-                    //                        '<span class="glyphicon glyphicon-trash"></span>' +
-                    //                      '</button>';
-                    //        }
-                    //        else {
-                    //            return '<button class="btn btn-default btn-sm template-upload">' +
-                    //                     '<span class="glyphicon glyphicon-plus"></span>' +
-                    //                   '</button>';
-                    //        }
-
-                    //    }
-                    //}
         ],
 
         stateSave: true,
@@ -218,13 +248,14 @@ $(document).ready(function () {
                 text: '<span class="text-primary glyphicon glyphicon-refresh" title="Odśwież zawartość"></span>',
                 className: 'btn-sm',
                 action: function (e, dt, node, config) {
+                    
                     dt.ajax.reload();
                     
                     dt.rows().cells().invalidate().render();
                 }
             },
             {
-                text: '<span class="text-primary glyphicon glyphicon-pencil" title="Edytuj zgody..."></span>',
+                text: '<span class="text-primary glyphicon glyphicon-check" title="Edytuj zgody..."></span>',
                 className: 'btn-sm',
                 action: function (e, dt, node, config) {
                     editMode = !editMode;
@@ -245,10 +276,10 @@ $(document).ready(function () {
             },
         ],
         select: false,
-        colReorder: true,
-        //{
-        //    fixedColumnsRight: 1
-        //},
+        colReorder: 
+        {
+            fixedColumnsRight: 1
+        },
         //responsive: {
             //breakpoints: [
             //    { name: 'desktop', width: 3000 },
@@ -310,7 +341,11 @@ $(document).ready(function () {
 });
 
 
-$('body').on('change', 'input.confirmationchange', onConfirmationChange);
+$('body').on('change', 'input.person-confirmationchange', onConfirmationChange);
+
+$('body').on('click', 'button.person-edit', function () { $(this).attr("disabled", "disabled"); onPersonEdit($('#BPPersonListTable').DataTable().row($(this).parents('tr'))); $(this).removeAttr("disabled"); });
+$('body').on('click', 'button.person-delete', function () { $(this).attr("disabled", "disabled"); onPersonDelete($('#BPPersonListTable').DataTable().row($(this).parents('tr'))); $(this).removeAttr("disabled"); });
+
 
 function onConfirmationChange() {
     var newValue = $(this).prop('checked');
@@ -344,6 +379,64 @@ function onConfirmationChange() {
         //Notification popup
         WgTools.alert(error, true, 'E');
     });
+
+}
+
+function onPersonDelete(row) {
+    $('body').one('click', 'button.person-delete-submit', { row: row }, onPersonDeleteSubmit);
+    $('#PersonDeleteModal').modal('show');
+}
+
+function onPersonEdit() {
+
+}
+
+function onPersonDeleteCancel() {
+
+}
+
+function onPersonDeleteSubmit(event) {
+    var token = $('input[name="__RequestVerificationToken"]').val();
+
+    var deleteAction = $.ajax({
+        type: "POST",
+        url: "Delete",
+        data: {
+            id: event.data.row.data().businessPartnerId,
+            __RequestVerificationToken: token,
+        }
+    });
+
+    deleteAction.done(function () {
+        //Post was successful
+
+        //close modal
+        //DestroyModal("#MaintainUserModal");
+        //refresh table
+        event.data.row
+            .remove()
+            .draw('full-hold');
+
+        //popup message
+        WgTools.alert("Dane właściciela zostały usunięte.", true, 'S');
+    });
+
+    deleteAction.fail(function (xhr, textStatus, error) {
+
+        $.each(xhr.responseJSON, function (idx, data) {
+            if (data.length > 0) {
+                WgTools.alert(data, false, 'E');
+            }
+
+        });
+    });
+}
+
+function onPersonEditCancel() {
+
+}
+
+function onPersonEditSubmit() {
 
 }
 

@@ -12,15 +12,18 @@
 <h2>@ViewData["Title"]</h2>
 <hr />
 <div class="" id="BPPersonListContainer">
+    <form>
+        @Html.AntiForgeryToken()
+    </form>
     @section modals{
         @{await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
                               new DoEko.ViewModels.SharedViewModels.ModalConfirmationViewModel()
                               {
-                                  Id = "TemplateDeleteModal",
-                                  Title = "",
-                                  Question = "",
-                                  BtnYes = "Tak",
-                                  BtnYesClass = ""
+                                  Id = "PersonDeleteModal",
+                                  Title = "Usuwanie właściciela z bazy danych",
+                                  Question = "Czy jesteś pewien, że chcesz usunąć dane tej osoby z bazy danych?",
+                                  BtnYes = "Tak, Usuń",
+                                  BtnYesClass = "person-delete-submit"
                               });}
     }
     <table class="table table-striped dt-responsive nowrap dataTable no-footer dtr-inline collapsed" id="BPPersonListTable" style="width:100%;">
