@@ -67,9 +67,17 @@ $(document).ready(function () {
                         data: "phoneNumber",
                         name: "phoneNumber",
                         title: "Telefon",
-                        type: "html-num",
+                        type: "num",
                         render: function (data, type, row, meta) {
-                            return data ? '<a href="tel:' + data.replace(/\s+/g, '') + '">' + data + '</a>' : '';
+                            switch (type) {
+                                case 'display':
+                                    return data ? '<a href="tel:' + data.replace(/\s+/g, '') + '">' + data + '</a>' : '';
+                                case 'filter':
+                                    return data.replace(/\s+/g, '');
+                                case 'sort':
+                                    return data.replace(/\s+/g, '');
+                                default:
+                            }
                         }
                     },
                     {
@@ -80,11 +88,11 @@ $(document).ready(function () {
                         render: function (data, type, row, meta) {
                             switch (type) {
                                 case "display":
-                                    return data.firstLine + '<br/>' + data.secondLine;
+                                    return data.singleLine;
                                 case "filter":
-                                    return data.singleLine;
+                                    return data.secondLine + ',' + data.firstLine;
                                 case "sort":
-                                    return data.singleLine;
+                                    return data.secondLine + ',' + data.firstLine;
                             }
                         }
                     },
@@ -144,7 +152,7 @@ $(document).ready(function () {
                                     return content;
                                 case "sort":
                                     data.forEach(function (investment, index, arr) {
-                                        content += investment.address.singleLine + ';';
+                                        content += investment.address.secondLine + ';' + investment.address.firstLine + ';';
                                     });
                                     return bdt;
                             }
@@ -211,9 +219,8 @@ $(document).ready(function () {
                 className: 'btn-sm',
                 action: function (e, dt, node, config) {
                     dt.ajax.reload();
-                    dt.rows().invalidate().render();
-
-                   // $('input[name=GrossNetFundsType]').bootstrapToggle( (editMode) ? '' : 'destroy');
+                    
+                    dt.rows().cells().invalidate().render();
                 }
             },
             {
@@ -221,9 +228,9 @@ $(document).ready(function () {
                 className: 'btn-sm',
                 action: function (e, dt, node, config) {
                     editMode = !editMode;
-                    //dt.ajax.reload();
+
                     dt.column('dataProcessingConfirmation').cells().invalidate().render();
-                    //dt.draw('full-reset');
+                    
 
                     dt.rows().every(function (rowIdx, tableLoop, rowLoop) {
                         if (dt.row(rowIdx).child.isShown()) {
@@ -237,7 +244,7 @@ $(document).ready(function () {
                 }
             },
         ],
-        select: true,
+        select: false,
         colReorder: true,
         //{
         //    fixedColumnsRight: 1
@@ -307,8 +314,7 @@ $('body').on('change', 'input.confirmationchange', onConfirmationChange);
 
 function onConfirmationChange() {
     var newValue = $(this).prop('checked');
-    var rowIndex = $(this).closest('tr').index();
-    var srcData = $('#BPPersonListTable').dataTable().api().row(rowIndex).data();
+    var srcData = $('#BPPersonListTable').DataTable().row(this.closest('tr[role="row"]')).data();
 
     
     var form = new FormData();
