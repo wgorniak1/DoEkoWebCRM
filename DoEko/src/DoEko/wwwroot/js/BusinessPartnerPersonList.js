@@ -229,12 +229,21 @@ $(document).ready(function () {
             {
                 extend: 'copyHtml5',
                 text: '<span class="glyphicon glyphicon-copy"></span>',
-                className: 'btn text-primary'
+                className: 'btn text-primary',
+                copySuccess: {
+                    1: 'Skopiowano 1 rekord do schowka',
+                    _: 'Skopiowano %d rekordów do schowka'
+                },
+                copyTitle: 'Kopiowanie do schowka',
+                copyKeys: 'Naciśnij <i>ctrl</i> lub <i>\u2318</i> + <i>C</i> aby skopiować tabelę<br>do schowka.<br><br>aby anulować, kliknij ten komunikat lub naciśnij ESC.'
+            }
+
             },
             {
                 extend: 'csvHtml5',
                 text: '<span class="glyphicon glyphicon-download-alt" title="Export do CSV"></span>',
-                className: 'btn text-primary'
+                className: 'btn text-primary',
+                fieldSeparator: ';'
             },
             {
                 extend: 'colvis',

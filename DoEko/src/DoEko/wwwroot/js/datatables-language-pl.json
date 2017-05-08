@@ -6,7 +6,7 @@
   "infoEmpty": "Pozycji 0 z 0 dostępnych",
   "infoFiltered": "(filtrowanie spośród _MAX_ dostępnych pozycji)",
   "infoPostFix": "",
-  "loadingRecords": "Wczytywanie...",
+  "loadingRecords": "",
   "zeroRecords": "Nie znaleziono pasujących pozycji",
   "emptyTable": "Brak danych",
   "paginate": {
