@@ -236,8 +236,6 @@ $(document).ready(function () {
                 },
                 copyTitle: 'Kopiowanie do schowka',
                 copyKeys: 'Naciśnij <i>ctrl</i> lub <i>\u2318</i> + <i>C</i> aby skopiować tabelę<br>do schowka.<br><br>aby anulować, kliknij ten komunikat lub naciśnij ESC.'
-            }
-
             },
             {
                 extend: 'csvHtml5',
