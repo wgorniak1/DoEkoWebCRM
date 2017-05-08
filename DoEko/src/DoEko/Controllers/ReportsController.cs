@@ -19,6 +19,8 @@ using DoEko.Controllers.Extensions;
 using DoEko.ViewModels.ReportsViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace DoEko.Controllers
 {
@@ -33,6 +35,249 @@ namespace DoEko.Controllers
             _context = context;
             _userManager = userManager;
             _fileStorage = fileStorage;
+
+            //disable change tracking
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GiodoReport()
+        //{
+        //    ViewData["ProjectId"] = _context.Projects.ToList();
+        //    ViewData["ContractId"] = _context.Contracts.ToList();
+
+        //    return View();
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> GiodoReport(int Id)
+        {
+            //if (!HttpContext.Request.IsAjaxRequest())
+            //{
+            //    return BadRequest();
+            //}
+
+            //disable change tracking
+            //_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            //prepare data
+
+            var iowners = await _context.InvestmentOwners
+                .Include(io => io.Investment.Address.Commune)
+                //.Include(io => io.Investment.Surveys).ThenInclude(s => s.ResultCalculation)
+                .Include(io => io.Owner.Address.Commune)
+                .Where(io => io.Investment.ContractId == Id)
+                .Select(io => new 
+                {
+                    Investment = new {
+                        Address = new {
+                            SingleLine = io.Investment.Address.SingleLine,
+                            Commune = io.Investment.Address.Commune.FullName
+                        },
+                    },
+                    Owner = new BusinessPartner {
+                        Address = io.Owner.Address,
+                        DataProcessingConfirmation = io.Owner.DataProcessingConfirmation,
+                        Email = io.Owner.Email,
+                        PhoneNumber = io.Owner.PhoneNumber,
+                        PartnerName1 = io.Owner.PartnerName1,
+                        PartnerName2 = io.Owner.PartnerName2
+                    },
+                    OwnershipType = io.OwnershipType,
+                    Sponsor = io.Sponsor,
+                    InvestmentId = io.InvestmentId
+                }).ToListAsync();
+
+
+            IList<Survey> surveys = new List<Survey>();
+
+            var surveysCH = _context.SurveysCH
+                .Where(s => s.Status != SurveyStatus.Cancelled && 
+                            iowners.Any(io => io.InvestmentId == s.InvestmentId))
+                .Select(s => new SurveyCentralHeating {InvestmentId = s.InvestmentId, RSEType = s.RSEType, Type = s.Type, ResultCalculation = new SurveyResultCalculations { FinalRSEPower = s.ResultCalculation.FinalRSEPower } })
+                .ToList()
+                ;
+
+            var surveysHW = _context.SurveysHW
+                .Where(s => s.Status != SurveyStatus.Cancelled &&
+                            iowners.Any(io => io.InvestmentId == s.InvestmentId))
+                .Select(s => new SurveyHotWater { InvestmentId = s.InvestmentId, RSEType = s.RSEType, Type = s.Type, ResultCalculation = new SurveyResultCalculations { FinalRSEPower = s.ResultCalculation.FinalRSEPower } })
+                .ToList()
+                ;
+
+            var surveysEN = _context.SurveysEN
+                .Where(s => s.Status != SurveyStatus.Cancelled &&
+                            iowners.Any(io => io.InvestmentId == s.InvestmentId))
+                .Select(s => new SurveyEnergy { InvestmentId = s.InvestmentId, RSEType = s.RSEType, Type = s.Type, ResultCalculation = new SurveyResultCalculations { FinalRSEPower = s.ResultCalculation.FinalRSEPower } })
+                .ToList()
+                ;
+            
+
+            //iowners.SelectMany(io => io.Investment.Surveys.Select(s => new
+            //{
+            //    Address = io.Investment.Address,
+            //    Owner = io.Owner,
+            //    Type = s.Type,
+            //    TypeFullDescription = s.TypeFullDescription(),
+            //    SourcePower = s.ResultCalculation.FinalRSEPower
+            //})).ToList();
+
+            //var model = _context.Surveys
+            //    .Where(s => s.Investment.ContractId == Id && s.Status != SurveyStatus.Cancelled)
+            //    .Include(s => s.ResultCalculation)
+            //    .Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+            //    .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
+            //    .Select(s => new
+            //    {
+            //        Address = new
+            //        {
+            //            SingleLine = s.Investment.Address.SingleLine,
+            //            CommuneName = s.Investment.Address.Commune.FullName
+            //        },
+            //        s.Investment.ContractId,
+            //        s.Investment.InvestmentId,
+            //        Owners = s.Investment.InvestmentOwners.Select(io => new
+            //        {
+            //            Address = new { io.Owner.Address.SingleLine },
+            //            DataProcessingConfirmation = io.Owner.DataProcessingConfirmation ? "Tak" : "Nie",
+            //            io.Owner.Email,
+            //            io.Owner.PhoneNumber,
+            //            FullName = io.Owner.PartnerName1 + ' ' + io.Owner.PartnerName2
+            //        }).ToList(),
+            //        Type = s.Type.DisplayName(),
+            //        TypeFullDescription = s.TypeFullDescription(),
+            //        SourcePower = s.ResultCalculation.FinalRSEPower
+            //    }).ToList();
+
+            //prepare excel
+            var memoryStream = new System.IO.MemoryStream();
+
+            using (SpreadsheetDocument doc = SpreadsheetDocument.Create(stream: memoryStream, type: DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+            {
+                WorkbookPart wbPart = doc.WorkbookPart;
+                if (wbPart == null)
+                {
+                    wbPart = doc.AddWorkbookPart();
+                    wbPart.Workbook = new Workbook();
+                }
+
+                WorksheetPart worksheetPart = wbPart.AddNewPart<WorksheetPart>();
+                var sheetData = new SheetData();
+
+                worksheetPart.Worksheet = new Worksheet(sheetData);
+
+                if (wbPart.Workbook.Sheets == null)
+                {
+                    wbPart.Workbook.AppendChild<Sheets>(new Sheets());
+                }
+
+                var sheet = new Sheet()
+                {
+                    Id = wbPart.GetIdOfPart(worksheetPart),
+                    SheetId = 1,
+                    Name = "GIODO"
+                };
+
+                var workingSheet = ((WorksheetPart)wbPart.GetPartById(sheet.Id)).Worksheet;
+
+                
+                //Header
+                Row header = new Row();
+                header.RowIndex = (UInt32)1;
+                header.AppendChild(AddCellWithText("Adres inwestycji"));
+                header.AppendChild(AddCellWithText("Gmina"));
+                header.AppendChild(AddCellWithText("Rodzaj Źródła"));
+                header.AppendChild(AddCellWithText("Moc"));
+                header.AppendChild(AddCellWithText("Właściciel"));
+                header.AppendChild(AddCellWithText("Adres zamieszkania"));
+                header.AppendChild(AddCellWithText("Telefon"));
+                header.AppendChild(AddCellWithText("e-mail"));
+                header.AppendChild(AddCellWithText("Zgoda na przetw. danych"));
+                sheetData.AppendChild(header);
+                int rowindex = 2;
+
+                foreach (var io in iowners)
+                {
+                    foreach(var srv in surveysCH.Where(s=>s.InvestmentId == io.InvestmentId))
+                    {
+                        Row row = new Row();
+                        row.RowIndex = (UInt32)rowindex;
+
+                        row.AppendChild(AddCellWithText(io.Investment.Address.SingleLine));
+                        row.AppendChild(AddCellWithText(io.Investment.Address.Commune));
+                        row.AppendChild(AddCellWithText(srv.TypeFullDescription()));
+                        row.AppendChild(AddCellWithText(srv.ResultCalculation.FinalRSEPower.ToString()));
+                        row.AppendChild(AddCellWithText(io.Owner.PartnerName1 + ' ' + io.Owner.PartnerName2));
+                        row.AppendChild(AddCellWithText(io.Owner.Address.SingleLine));
+                        row.AppendChild(AddCellWithText(io.Owner.PhoneNumber));
+                        row.AppendChild(AddCellWithText(io.Owner.Email));
+                        row.AppendChild(AddCellWithText(io.Owner.DataProcessingConfirmation ? "Tak" : "Nie"));
+                        sheetData.AppendChild(row);
+                        rowindex++;
+                    };
+
+                    foreach (var srv in surveysHW.Where(s => s.InvestmentId == io.InvestmentId))
+                    {
+                        Row row = new Row();
+                        row.RowIndex = (UInt32)rowindex;
+
+                        row.AppendChild(AddCellWithText(io.Investment.Address.SingleLine));
+                        row.AppendChild(AddCellWithText(io.Investment.Address.Commune));
+                        row.AppendChild(AddCellWithText(srv.TypeFullDescription()));
+                        row.AppendChild(AddCellWithText(srv.ResultCalculation.FinalRSEPower.ToString()));
+                        row.AppendChild(AddCellWithText(io.Owner.PartnerName1 + ' ' + io.Owner.PartnerName2));
+                        row.AppendChild(AddCellWithText(io.Owner.Address.SingleLine));
+                        row.AppendChild(AddCellWithText(io.Owner.PhoneNumber));
+                        row.AppendChild(AddCellWithText(io.Owner.Email));
+                        row.AppendChild(AddCellWithText(io.Owner.DataProcessingConfirmation ? "Tak" : "Nie"));
+                        sheetData.AppendChild(row);
+                        rowindex++;
+                    };
+
+                    foreach (var srv in surveysEN.Where(s => s.InvestmentId == io.InvestmentId))
+                    {
+                        Row row = new Row();
+                        row.RowIndex = (UInt32)rowindex;
+
+                        row.AppendChild(AddCellWithText(io.Investment.Address.SingleLine));
+                        row.AppendChild(AddCellWithText(io.Investment.Address.Commune));
+                        row.AppendChild(AddCellWithText(srv.TypeFullDescription()));
+                        row.AppendChild(AddCellWithText(srv.ResultCalculation.FinalRSEPower.ToString()));
+                        row.AppendChild(AddCellWithText(io.Owner.PartnerName1 + ' ' + io.Owner.PartnerName2));
+                        row.AppendChild(AddCellWithText(io.Owner.Address.SingleLine));
+                        row.AppendChild(AddCellWithText(io.Owner.PhoneNumber));
+                        row.AppendChild(AddCellWithText(io.Owner.Email));
+                        row.AppendChild(AddCellWithText(io.Owner.DataProcessingConfirmation ? "Tak" : "Nie"));
+                        sheetData.AppendChild(row);
+                        rowindex++;
+                    }
+
+                }
+
+                wbPart.Workbook.Sheets.AppendChild(sheet);
+                wbPart.Workbook.Save();
+            }
+
+            //return file from memory stream
+            memoryStream.Position = 0;
+
+            return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","RaportGiodo_"+Id+'_'+DateTime.Now.ToShortDateString()+".xlsx");
+
+        }
+
+        private static Cell AddCellWithText(string text)
+        {
+            Cell c1 = new Cell();
+            c1.DataType = CellValues.InlineString;
+
+            InlineString inlineString = new InlineString();
+            Text t = new Text();
+            t.Text = text;
+            inlineString.AppendChild(t);
+
+            c1.AppendChild(inlineString);
+
+            return c1;
         }
 
         [HttpGet]
