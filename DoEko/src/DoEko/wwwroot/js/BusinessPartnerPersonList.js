@@ -99,11 +99,11 @@ $(document).ready(function () {
                         data: "address",
                         data: "address",
                         title: "Adres",
-                        type: "string",
+                        type: "html",
                         render: function (data, type, row, meta) {
                             switch (type) {
                                 case "display":
-                                    return data.singleLine;
+                                    return data.firstLine + '<br/>' + data.secondLine;
                                 case "filter":
                                     return data.secondLine + ',' + data.firstLine;
                                 case "sort":
@@ -162,7 +162,7 @@ $(document).ready(function () {
                                 case "display":
                                     data.forEach(function (investment, index, arr) {
                                         content += '<tr><td>' +
-                                            '<a href="/Investments/Details/' + investment.investmentId + '" target="_blank">' + investment.address.singleLine + '</a ></td ></tr > ';
+                                            '<a href="/Investments/Details/' + investment.investmentId + '" target="_blank">' + investment.address.firstLine + '<br/>' + investment.address.secondLine + '</a ></td ></tr > ';
                                     });
                                     return '<table>' + content + '</table>';
                                 case "filter":
@@ -214,9 +214,11 @@ $(document).ready(function () {
         ],
 
         stateSave: true,
+
         language: {
             url: "/js/datatables-language-pl.json"
         },
+
         lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],
         order: [[0, "asc"]],
         processing: true,
@@ -227,26 +229,21 @@ $(document).ready(function () {
             {
                 extend: 'copyHtml5',
                 text: '<span class="glyphicon glyphicon-copy"></span>',
-                className: 'btn-sm text-primary'
+                className: 'btn text-primary'
             },
             {
                 extend: 'csvHtml5',
                 text: '<span class="glyphicon glyphicon-download-alt" title="Export do CSV"></span>',
-                className: 'btn-sm text-primary'
+                className: 'btn text-primary'
             },
-        //{
-        //    extend: 'pageLength',
-        //    text: 'page len',
-        //    className: 'btn-sm text-primary'
-        //},
             {
                 extend: 'colvis',
                 text: '<span class="glyphicon glyphicon-th-list" title="Pokaż / Ukryj kolumny"></span>',
-                className: 'btn-sm text-primary'
+                className: 'btn text-primary'
             },
             {
                 text: '<span class="text-primary glyphicon glyphicon-refresh" title="Odśwież zawartość"></span>',
-                className: 'btn-sm',
+                className: 'btn',
                 action: function (e, dt, node, config) {
                     
                     dt.ajax.reload();
@@ -256,7 +253,7 @@ $(document).ready(function () {
             },
             {
                 text: '<span class="text-primary glyphicon glyphicon-check" title="Edytuj zgody..."></span>',
-                className: 'btn-sm',
+                className: 'btn',
                 action: function (e, dt, node, config) {
                     editMode = !editMode;
 
@@ -310,22 +307,22 @@ $(document).ready(function () {
         drawCallback: function (settings, json) {
             $('div#BPPersonListTable_processing').addClass("wg-loader");
 
-            var context = $('div#BPPersonListTable_filter');
-            $('*', context).addClass('small');
+            //var context = $('div#BPPersonListTable_filter');
+            //$('*', context).addClass('small');
 
-            context = $('div#BPPersonListTable_length');
-            $('label', context).addClass('small');
+            //context = $('div#BPPersonListTable_length');
+            //$('label', context).addClass('small');
 
-            $('select', context).addClass('small');
-            //$('select', context).addClass('small btn btn-default btn-sm');
-            // $('select', context).removeClass('form-control');
+            //$('select', context).addClass('small');
+            ////$('select', context).addClass('small btn btn-default btn-sm');
+            //// $('select', context).removeClass('form-control');
 
-            context = $('div#BPPersonListTable_info');
-            context.addClass('small');
-            $('*', context).addClass('small');
+            //context = $('div#BPPersonListTable_info');
+            //context.addClass('small');
+            //$('*', context).addClass('small');
 
-            context = $('div#BPPersonListTable_paginate');
-            $('ul > li > a', context).addClass('small').attr("style", "padding: 5px 10px;");
+            //context = $('div#BPPersonListTable_paginate');
+            //$('ul > li > a', context).addClass('small').attr("style", "padding: 5px 10px;");
             //$('ul > li > a', context).addClass('btn btn-sm small').attr("style", "border-radius: 0;");
 
 

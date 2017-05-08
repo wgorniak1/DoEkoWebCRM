@@ -117,6 +117,15 @@
                                     </a>
                                     <button class="btn btn-default btn-sm"
                                             data-toggle="modal"
+                                            data-target="#SrvCancelModal"
+                                            data-survey-id="@item.SurveyId"
+                                            type="button"
+                                            title="Anuluj Ankietę">
+                                        <span class="glyphicon glyphicon-ban-circle"></span>
+                                    </button>
+
+                                    <button class="btn btn-default btn-sm"
+                                            data-toggle="modal"
                                             data-target="#SrvApprovalModal"
                                             data-survey-id="@item.SurveyId"
                                             type="button"
@@ -139,6 +148,17 @@
                                    class="btn btn-default btn-sm">
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </a>
+                                if (User.IsInRole(Roles.Admin))
+                                {
+                                    <button class="btn btn-default btn-sm"
+                                            data-toggle="modal"
+                                            data-target="#SrvCancelModal"
+                                            data-survey-id="@item.SurveyId"
+                                            type="button"
+                                            title="Anuluj Ankietę">
+                                        <span class="glyphicon glyphicon-ban-circle"></span>
+                                    </button>
+                                }
                                 break;
                             case SurveyStatus.Approved:
                                 if (User.IsInRole(Roles.Admin))
@@ -147,6 +167,14 @@
                                        class="btn btn-default btn-sm">
                                         <span class="glyphicon glyphicon-eye-open"></span>
                                     </a>
+                                    <button class="btn btn-default btn-sm"
+                                            data-toggle="modal"
+                                            data-target="#SrvCancelModal"
+                                            data-survey-id="@item.SurveyId"
+                                            type="button"
+                                            title="Anuluj Ankietę">
+                                        <span class="glyphicon glyphicon-ban-circle"></span>
+                                    </button>
                                 }
                                 break;
                             case SurveyStatus.Cancelled:

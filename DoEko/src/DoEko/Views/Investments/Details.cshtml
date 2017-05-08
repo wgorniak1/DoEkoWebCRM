@@ -179,7 +179,7 @@
 else
 {
     <ol class="breadcrumb">
-        <li><a asp-action="Index" asp-controller="Home">Str. Domowa</a></li>
+        <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
         <li><a asp-action="Index" asp-controller="Projects">Lista Projektów</a></li>
         <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.Contract.ProjectId">Projekt @Html.DisplayFor(model => model.Contract.Project.ShortDescription)</a></li>
         <li><a asp-action="Details" asp-controller="Contracts" asp-route-Id="@Model.ContractId">Umowa @Html.DisplayFor(model => model.Contract.Number)</a></li>
