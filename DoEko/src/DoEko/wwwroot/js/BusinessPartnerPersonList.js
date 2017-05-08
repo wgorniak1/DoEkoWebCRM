@@ -214,7 +214,7 @@ $(document).ready(function () {
         ],
 
         stateSave: true,
-
+        pagingType: "full",
         language: {
             url: "/js/datatables-language-pl.json"
         },
