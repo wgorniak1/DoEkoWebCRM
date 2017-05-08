@@ -11,9 +11,20 @@ $(document).ready(function () {
         columns: [
                     {
                         responsivePriority: 1,
-                        data: "fullName",
-                        name: "fullName",
-                        title: "Nazwisko i Imię",
+                        data: 'fullName',
+                        name: 'fullName',
+                        title: 'Nazwisko i Imię',
+                        type: 'html',
+                        render: function (data, type, row, meta) {
+                            switch (type) {
+                                case "display":
+                                    return (data.length > 30) ? data.replace(' ', '<br/>') : data;
+                                case "filter":
+                                    return data;
+                                case "sort":
+                                    return data;
+                            }
+                        }
                     },
                     {
                         responsivePriority: 8,
