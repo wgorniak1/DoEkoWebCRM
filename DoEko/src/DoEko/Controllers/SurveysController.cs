@@ -1760,7 +1760,8 @@ namespace DoEko.Controllers
                 .Include(i=>i.Surveys)
                 .Single(i => i.InvestmentId == investmentId);
 
-            if (inv.Surveys.Any(s => s.Status == SurveyStatus.Draft))
+            if (inv.Surveys.Any(s => s.Status == SurveyStatus.Draft ||
+                                     s.Status == SurveyStatus.New))
             {
                 //draft
                 inv.InspectionStatus = InspectionStatus.Draft;
