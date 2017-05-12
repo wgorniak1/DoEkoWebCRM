@@ -369,13 +369,22 @@ namespace DoEko.Controllers
 
                 foreach (var srv in surveys)
                 {
+                    try
+                    {
                         var surveyExcel = dt.Rows.OfType<DataRow>().Single(dr => dr.Field<string>(1) == srv.SurveyId.ToString());
-
                         srv.Investment.GeoPortal = surveyExcel.Field<string>(2);
                         srv.ResultCalculation    = new SurveyResultCalculations(srv.Type, srv.GetRSEType(), surveyExcel);
-                    _context.Update(srv.Investment);
+                        _context.Update(srv.Investment);
+                    }
+                    catch (Exception exc)
+                    {
+                        ModelState.AddModelError("Ankieta: " + srv.SurveyId.ToString(), exc.Message);
+                    }
                 }
-
+                if (!ModelState.IsValid)
+                {
+                    return Json(ModelState);
+                }
                 _context.UpdateRange(surveys);
                 var result = _context.SaveChanges();                  
             }

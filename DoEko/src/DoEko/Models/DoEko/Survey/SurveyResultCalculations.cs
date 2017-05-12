@@ -19,82 +19,89 @@ namespace DoEko.Models.DoEko.Survey
         }
         public SurveyResultCalculations(SurveyType type, int rseType, DataRow data)
         {
-            this.CO2DustEquivValue = double.Parse(string.IsNullOrEmpty(data.Field<string>(44))? "0" : data.Field<string>(44));
-            this.CO2DustEquivPercent = double.Parse(string.IsNullOrEmpty(data.Field<string>(45)) ? "0" : data.Field<string>(45));
-            this.CO2EquivValue = double.Parse(string.IsNullOrEmpty(data.Field<string>(46)) ? "0" : data.Field<string>(46));
-            this.CO2Value = double.Parse(string.IsNullOrEmpty(data.Field<string>(47)) ? "0" : data.Field<string>(47));
-            this.CO2Percent = double.Parse(string.IsNullOrEmpty(data.Field<string>(48)) ? "0" : data.Field<string>(48));
-            this.PM10Value = double.Parse(string.IsNullOrEmpty(data.Field<string>(49)) ? "0" : data.Field<string>(49));
-            this.PM10Percent = double.Parse(string.IsNullOrEmpty(data.Field<string>(50)) ? "0" : data.Field<string>(50));
-            this.PM25Value = double.Parse(string.IsNullOrEmpty(data.Field<string>(51)) ? "0" : data.Field<string>(51));
-            this.PM25Percent = double.Parse(string.IsNullOrEmpty(data.Field<string>(52)) ? "0" : data.Field<string>(52));
-            this.BenzoPirenValue = double.Parse(string.IsNullOrEmpty(data.Field<string>(53)) ? "0" : data.Field<string>(53));
-            this.BenzoPirenPercent = double.Parse(string.IsNullOrEmpty(data.Field<string>(54)) ? "0" : data.Field<string>(54));
+            try
+            {
 
-            switch (type)
+                this.CO2DustEquivValue = this.ParseDouble("Kolumna 44", data.Field<string>(44));
+                this.CO2DustEquivPercent = this.ParseDouble("Kolumna 45", data.Field<string>(45));
+                this.CO2EquivValue = this.ParseDouble("Kolumna 46", data.Field<string>(46));
+                this.CO2Value = this.ParseDouble("Kolumna 47", data.Field<string>(47));
+                this.CO2Percent = this.ParseDouble("Kolumna 48", data.Field<string>(48));
+                this.PM10Value = this.ParseDouble("Kolumna 49", data.Field<string>(49));
+                this.PM10Percent = this.ParseDouble("Kolumna 50", data.Field<string>(50));
+                this.PM25Value = this.ParseDouble("Kolumna 51", data.Field<string>(51));
+                this.PM25Percent = this.ParseDouble("Kolumna 52", data.Field<string>(52));
+                this.BenzoPirenValue = this.ParseDouble("Kolumna 53", data.Field<string>(53));
+                this.BenzoPirenPercent = this.ParseDouble("Kolumna 54", data.Field<string>(54));
+
+                switch (type)
             {
                 case SurveyType.CentralHeating:
 
-                    this.HeatLossFactor = double.Parse(string.IsNullOrEmpty(data.Field<string>(30)) ? "0" : data.Field<string>(30));
-                    this.CHRequiredEnFactor = double.Parse(string.IsNullOrEmpty(data.Field<string>(31)) ? "0" : data.Field<string>(31));
-                    this.CHMaxRequiredEn = double.Parse(string.IsNullOrEmpty(data.Field<string>(32)) ? "0" : data.Field<string>(32));
-                    this.CHRequiredEn = double.Parse(string.IsNullOrEmpty(data.Field<string>(33)) ? "0" : data.Field<string>(33));
-                    this.HWRequiredEnYearly = double.Parse(string.IsNullOrEmpty(data.Field<string>(34)) ? "0" : data.Field<string>(34));
-                    this.FinalRSEPower = double.Parse(string.IsNullOrEmpty(data.Field<string>(35)) ? "0" : data.Field<string>(35));
-                    this.CHRSEWorkingTime = double.Parse(string.IsNullOrEmpty(data.Field<string>(36)) ? "0" : data.Field<string>(36));
-                    this.CHRSEYearlyProduction = double.Parse(string.IsNullOrEmpty(data.Field<string>(37)) ? "0" : data.Field<string>(37));
-                    this.HWRSEWorkingTime = double.Parse(string.IsNullOrEmpty(data.Field<string>(38)) ? "0" : data.Field<string>(38));
-                    this.HWRSEYearlyProduction = double.Parse(string.IsNullOrEmpty(data.Field<string>(39)) ? "0" : data.Field<string>(39));
-                    this.RSEEnYearlyConsumption = double.Parse(string.IsNullOrEmpty(data.Field<string>(40)) ? "0" : data.Field<string>(40));
-                    this.RSENetPrice = double.Parse(string.IsNullOrEmpty(data.Field<string>(41)) ? "0" : data.Field<string>(41));
-                    this.RSETax = double.Parse(string.IsNullOrEmpty(data.Field<string>(42)) ? "0" : data.Field<string>(42));
-                    this.RSEGrossPrice = double.Parse(string.IsNullOrEmpty(data.Field<string>(43)) ? "0" : data.Field<string>(43));
-
+                    this.HeatLossFactor = this.ParseDouble("Kolumna 30", data.Field<string>(30));
+                    this.CHRequiredEnFactor = this.ParseDouble("Kolumna 31", data.Field<string>(31));
+                    this.CHMaxRequiredEn = this.ParseDouble("Kolumna 32", data.Field<string>(32));
+                    this.CHRequiredEn = this.ParseDouble("Kolumna 33", data.Field<string>(33));
+                    this.HWRequiredEnYearly = this.ParseDouble("Kolumna 34", data.Field<string>(34));
+                    this.FinalRSEPower = this.ParseDouble("Kolumna 35", data.Field<string>(35));
+                    this.CHRSEWorkingTime = this.ParseDouble("Kolumna 36", data.Field<string>(36));
+                    this.CHRSEYearlyProduction = this.ParseDouble("Kolumna 37", data.Field<string>(37));
+                    this.HWRSEWorkingTime = this.ParseDouble("Kolumna 38", data.Field<string>(38));
+                    this.HWRSEYearlyProduction = this.ParseDouble("Kolumna 39", data.Field<string>(39));
+                    this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 40", data.Field<string>(40));
+                    this.RSENetPrice = this.ParseDouble("Kolumna 41", data.Field<string>(41));
+                    this.RSETax = this.ParseDouble("Kolumna 42", data.Field<string>(42));
+                    this.RSEGrossPrice = this.ParseDouble("Kolumna 43", data.Field<string>(43));
                     break;
                 case SurveyType.HotWater:
 
                     if (rseType == (int)SurveyRSETypeHotWater.HeatPump)
                     {
-                        this.HWRequiredEnYearly = double.Parse(string.IsNullOrEmpty(data.Field<string>(13)) ? "0" : data.Field<string>(13));
-                        this.FinalRSEPower = double.Parse(string.IsNullOrEmpty(data.Field<string>(14)) ? "0" : data.Field<string>(14));
-                        this.RSEYearlyProduction = double.Parse(string.IsNullOrEmpty(data.Field<string>(15)) ? "0" : data.Field<string>(15));
-                        this.RSEWorkingTime = double.Parse(string.IsNullOrEmpty(data.Field<string>(16)) ? "0" : data.Field<string>(16));
-                        this.RSEEnYearlyConsumption = double.Parse(string.IsNullOrEmpty(data.Field<string>(17)) ? "0" : data.Field<string>(17));
-                        this.RSENetPrice = double.Parse(string.IsNullOrEmpty(data.Field<string>(18)) ? "0" : data.Field<string>(18));
-                        this.RSETax = double.Parse(string.IsNullOrEmpty(data.Field<string>(19)) ? "0" : data.Field<string>(19));
-                        this.RSEGrossPrice = double.Parse(string.IsNullOrEmpty(data.Field<string>(20)) ? "0" : data.Field<string>(20));
+                        this.HWRequiredEnYearly = this.ParseDouble("Kolumna 13", data.Field<string>(13));
+                        this.FinalRSEPower = this.ParseDouble("Kolumna 14", data.Field<string>(14));
+                        this.RSEYearlyProduction = this.ParseDouble("Kolumna 15", data.Field<string>(15));
+                        this.RSEWorkingTime = this.ParseDouble("Kolumna 16", data.Field<string>(16));
+                        this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 17", data.Field<string>(17));
+                        this.RSENetPrice = this.ParseDouble("Kolumna 18", data.Field<string>(18));
+                        this.RSETax = this.ParseDouble("Kolumna 19", data.Field<string>(19));
+                        this.RSEGrossPrice = this.ParseDouble("Kolumna 20", data.Field<string>(20));
 
-                    }
+                        }
                     else
                     {
                         this.FinalSOLConfig = data.Field<string>(3);
-                        this.HWRequiredEnYearly = double.Parse(string.IsNullOrEmpty(data.Field<string>(4)) ? "0" : data.Field<string>(4));
-                        this.FinalRSEPower = double.Parse(string.IsNullOrEmpty(data.Field<string>(5)) ? "0" : data.Field<string>(5));
-                        this.RSEEfficiency = double.Parse(string.IsNullOrEmpty(data.Field<string>(6)) ? "0" : data.Field<string>(6));
-                        this.RSEWorkingTime = double.Parse(string.IsNullOrEmpty(data.Field<string>(7)) ? "0" : data.Field<string>(7));
-                        this.RSEYearlyProduction = double.Parse(string.IsNullOrEmpty(data.Field<string>(8)) ? "0" : data.Field<string>(8));
-                        this.RSEEnYearlyConsumption = double.Parse(string.IsNullOrEmpty(data.Field<string>(9)) ? "0" : data.Field<string>(9));
-                        this.RSENetPrice = double.Parse(string.IsNullOrEmpty(data.Field<string>(10)) ? "0" : data.Field<string>(10));
-                        this.RSETax = double.Parse(string.IsNullOrEmpty(data.Field<string>(11)) ? "0" : data.Field<string>(11));
-                        this.RSEGrossPrice = double.Parse(string.IsNullOrEmpty(data.Field<string>(12)) ? "0" : data.Field<string>(12));
-                    }
+                        this.HWRequiredEnYearly = this.ParseDouble("Kolumna 4", data.Field<string>(4));
+                        this.FinalRSEPower = this.ParseDouble("Kolumna 5", data.Field<string>(5));
+                        this.RSEEfficiency = this.ParseDouble("Kolumna 6", data.Field<string>(6));
+                        this.RSEWorkingTime = this.ParseDouble("Kolumna 7", data.Field<string>(7));
+                        this.RSEYearlyProduction = this.ParseDouble("Kolumna 8", data.Field<string>(8));
+                        this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 9", data.Field<string>(9));
+                        this.RSENetPrice = this.ParseDouble("Kolumna 10", data.Field<string>(10));
+                        this.RSETax = this.ParseDouble("Kolumna 11", data.Field<string>(11));
+                        this.RSEGrossPrice = this.ParseDouble("Kolumna 12", data.Field<string>(12));
+                        }
 
                     break;
                 case SurveyType.Energy:
                     
-                    this.FinalPVConfig = double.Parse(string.IsNullOrEmpty(data.Field<string>(21)) ? "0" : data.Field<string>(21));
-                    this.FinalRSEPower = double.Parse(string.IsNullOrEmpty(data.Field<string>(22)) ? "0" : data.Field<string>(22));
-                    this.RSEEfficiency = double.Parse(string.IsNullOrEmpty(data.Field<string>(23)) ? "0" : data.Field<string>(23));
-                    this.RSEYearlyProduction = double.Parse(string.IsNullOrEmpty(data.Field<string>(24)) ? "0" : data.Field<string>(24));
-                    this.RSEEnYearlyConsumption = double.Parse(string.IsNullOrEmpty(data.Field<string>(25)) ? "0" : data.Field<string>(25));
-                    this.RSEWorkingTime = double.Parse(string.IsNullOrEmpty(data.Field<string>(26)) ? "0" : data.Field<string>(26));
-                    this.RSENetPrice = double.Parse(string.IsNullOrEmpty(data.Field<string>(27)) ? "0" : data.Field<string>(27));
-                    this.RSETax = double.Parse(string.IsNullOrEmpty(data.Field<string>(28)) ? "0" : data.Field<string>(28));
-                    this.RSEGrossPrice = double.Parse(string.IsNullOrEmpty(data.Field<string>(29)) ? "0" : data.Field<string>(29));
+                    this.FinalPVConfig = this.ParseDouble("Kolumna 21", data.Field<string>(21));
+                    this.FinalRSEPower = this.ParseDouble("Kolumna 22", data.Field<string>(22));
+                    this.RSEEfficiency = this.ParseDouble("Kolumna 23", data.Field<string>(23));
+                    this.RSEYearlyProduction = this.ParseDouble("Kolumna 24", data.Field<string>(24));
+                    this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 25", data.Field<string>(25));
+                    this.RSEWorkingTime = this.ParseDouble("Kolumna 26", data.Field<string>(26));
+                    this.RSENetPrice = this.ParseDouble("Kolumna 27", data.Field<string>(27));
+                    this.RSETax = this.ParseDouble("Kolumna 28", data.Field<string>(28));
+                    this.RSEGrossPrice = this.ParseDouble("Kolumna 29", data.Field<string>(29));
 
                     break;
                 default:
                     break;
+            }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -180,5 +187,58 @@ namespace DoEko.Models.DoEko.Survey
         public double BenzoPirenPercent { get; set; }
         //
 
+        #region helpers
+        private Double ParseDouble(string name, string s)
+        {
+            try
+            {
+                return Double.Parse(string.IsNullOrEmpty(s) ? "0" : s);
+            }            
+            catch (ArgumentNullException)
+            {
+                //s is null.
+                throw new DoubleParseException(message: "wartość '{1}' w polu '{0}' jest pusta", fieldname: name, fieldvalue: s);
+            } 
+            catch (FormatException) 
+            {
+                //s does not represent a number in a valid format.
+                throw new DoubleParseException(message: "Nie można odczytać wartości '{1}' w polu '{0}' jako liczby.", fieldname: name, fieldvalue: s);
+
+            } 
+            catch (OverflowException) 
+            {
+                //s represents a number that is less than MinValue or greater than MaxValue.
+                throw new DoubleParseException(message: "wartość '{1}' w polu '{0} jest poza dozwolonym zakresem.'", fieldname: name, fieldvalue: s);
+            }
+        }
+        #endregion
+    }
+
+    public class DoubleParseException : SystemException
+    {
+        public DoubleParseException() : base() { }
+
+        public DoubleParseException(string message) : base(message)
+        {
+        }
+
+        public DoubleParseException(string fieldname, string fieldvalue)
+            : this(fieldname, fieldvalue, "Nieprawidłowa wartość '{1}' w polu '{0}'") { }
+
+        public DoubleParseException(string fieldname, string fieldvalue, string message) : base(message)
+        {
+            this.Fieldname = fieldname;
+            this.Fieldvalue = fieldvalue;
+        }
+
+        public string Fieldname { get; }
+        public string Fieldvalue { get; }
+        public override string Message
+        {
+            get
+            {
+                return string.Format(base.Message, Fieldname, Fieldvalue);
+            }
+        }
     }
 }

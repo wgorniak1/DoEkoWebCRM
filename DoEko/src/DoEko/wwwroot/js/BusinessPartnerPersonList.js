@@ -252,7 +252,8 @@ $(document).ready(function () {
                 extend: 'csvHtml5',
                 text: '<span class="glyphicon glyphicon-download-alt" title="Export do CSV"></span>',
                 className: 'btn text-primary',
-                fieldSeparator: ';'
+                fieldSeparator: ';',
+                charset: 'UTF-8'
             },
             {
                 extend: 'colvis',
