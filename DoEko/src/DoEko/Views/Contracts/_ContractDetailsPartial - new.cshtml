@@ -1,0 +1,93 @@
+@using DoEko.Controllers.Extensions
+@model DoEko.Models.DoEko.Contract
+
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="Type" class="control-label"></label>
+            <p class="form-control-static">
+                @Model.Type.DisplayName()
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="Number" class="control-label"></label>
+            <span class="form-control-static">
+                @Html.DisplayFor(model => model.Number)
+            </span>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="ContractDate" class="control-label"></label>
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.ContractDate)
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="FullfilmentDate" class="control-label"></label>
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.FullfilmentDate)
+            </p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="ShortDescription" class="control-label"></label>
+            <span class="form-control-static">
+                @Html.DisplayFor(model => model.ShortDescription)
+            </span>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="Status" class="control-label"></label>
+            <p class="form-control-static">
+                @Model.Status.DisplayName()
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="Project.ProjectId" class="control-label"></label>
+            <p class="form-control-static">
+                <a asp-action="Details" asp-controller="Project" asp-route-id="@Model.ProjectId">
+                    @Html.DisplayFor(model => model.Project.ShortDescription)
+                </a>
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="CompanyId" class="control-label"></label>
+            <p class="form-control-static">
+                @Html.DisplayFor(model => model.Company.Name)
+            </p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="Project.UEFundsLevel" class="control-label"></label>
+            <p class="form-control-static">
+                @Model.Project.UEFundsLevel.ToString() @(Model.Project.GrossNetFundsType ? "Brutto" : "Netto";)
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label asp-for="Project.UEFundsLevel" class="control-label"></label>
+            <p class="form-control-static">
+                @Model.Project.UEFundsLevel.ToString() @(Model.Project.GrossNetFundsType ? "Brutto" : "Netto";)
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3"><div class="form-group"></div></div>
+    <div class="col-sm-3"><div class="form-group"></div></div>
+</div>

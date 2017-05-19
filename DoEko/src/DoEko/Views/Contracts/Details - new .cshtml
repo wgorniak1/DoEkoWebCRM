@@ -1,0 +1,142 @@
+﻿@model DoEko.Models.DoEko.Contract
+@{
+    ViewData["Title"] = "Umowa" + ' ' + Html.DisplayFor(model => model.Number);
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li><a asp-action="Index" asp-controller="Projects">Lista Projektów</a></li>
+    <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.ProjectId">Projekt @Html.DisplayFor(model => model.Project.ShortDescription)</a></li>
+    <li class="active">@ViewData["Title"]</li>
+</ol>
+<!--Title-->
+<h2><small>Umowa nr </small>@Html.DisplayFor(model => model.Number)</h2>
+<!--Panels-->
+<div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-details" data-toggle="collapse" data-parent="#panel-group" data-target="#details">
+            <h4 class="panel-title pull-left wg-panel-title">
+                Dane podstawowe
+            </h4>
+            <div class="btn-toolbar pull-right">
+                <button type="button" class="btn btn-sm btn-primary wg-panel-header-button wg-btn-handle-edit" title="Edytuj">
+                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-primary wg-panel-header-button wg-btn-handle-investycje" title="Importuj inwestycje">
+                    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-primary wg-panel-header-button wg-btn-handle-pko" title="Importuj wyciąg z iPKO">
+                    <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-primary wg-panel-header-button wg-btn-handle-neoenergetyka" title="Importuj wyniki z neoenergetyki">
+                    <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+        <div id="details" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-details">
+            <div class="panel-body">
+                @await Html.PartialAsync("_ContractInfoPartial", Model)
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-investments" data-toggle="collapse" data-parent="#panel-group" data-target="#investments">
+            <h4 class="panel-title pull-left wg-panel-title">
+                Inwestycje
+            </h4>
+            <div class="btn-toolbar pull-right">
+
+                <a asp-action="Create"
+                   asp-controller="Investments"
+                   asp-route-ContractId="@Model.ContractId"
+                   asp-route-ReturnUrl="@Url.Action("Details", "Contracts", new { Id = Model.ContractId }, null, null, "heading-investments")"
+                   class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-plus" title="Dodaj nową Inwestycję"></span>
+                </a>
+
+                <a asp-action="Details"
+                   asp-controller="Contracts"
+                   asp-route-Id="@Model.ContractId"
+                   asp-route-ReturnUrl="@ViewBag.ReturnUrl"
+                   asp-route-EditInspector="true"
+                   class="btn btn-primary btn-sm wg-panel-header-button">
+                    <span class="glyphicon glyphicon-user" title="Przypisz inspektora"></span>
+                </a>
+
+                @if (ViewBag.PaymentsExists)
+                {
+                    <a asp-action="AssignInvestment" asp-controller="Payments"
+                       asp-route-ContractId="@Model.ContractId"
+                       class="btn btn-primary btn-sm wg-panel-header-button"
+                       title="Przypisz wpłaty do inwestycji">
+                        <span class="glyphicon glyphicon-random"></span>
+                    </a>
+                }
+            </div>
+        </div>
+        <div id="investments" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="header-investments">
+            @await Html.PartialAsync("_InvestmentTablePartial", Model.Investments)
+        </div>
+    </div>
+</div>
+<!--forms-->
+<form id="NeoenergetykaForm" hidden>
+      @*method="post" 
+      asp-action="UploadNeoenergetykaResults"
+      asp-controller="Contracts"
+      enctype="multipart/form-data"*@
+        <input id="ContractId" name="contractId" type="hidden" value="@Model.ContractId" />
+        <input id="Neoenergetyka" name="neoenergetyka" type="file" hidden
+                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
+        <input type="submit" hidden/>
+</form>
+<form id="FIForm"
+      hidden>
+      @*class="navbar-form"
+      asp-action="UploadPaymentFile"
+      asp-controller="Payments"
+      method="post"
+      enctype="multipart/form-data"*@ 
+    <input id="FIContract" name="ContractId" type="hidden" value="@Model.ContractId" />
+    <input id="FIFile" name="FIFiles[]" type="file" hidden
+           accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+    <input id="FISubmit" name="FISubmit" type="submit" hidden>
+</form>
+<form id="INFForm"
+      hidden>
+      @*class="navbar-form"
+      asp-action="UploadDataFromFile"
+      asp-controller="Investments"
+      method="post"
+      enctype="multipart/form-data" 
+      accept-charset="UTF-8"*@    
+    <input id="INFUpload" name="INFFiles[]" type="file" hidden class="hidden"
+           accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+    <input id="INFContract" name="ContractId" type="hidden" value="@Model.ContractId" />
+    <input id="INFSubmit"   name="INFSubmit"   type="submit" hidden>
+</form>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <environment names="Development">
+        <script src="~/js/ContractDetails.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/ContractDetails.min.js"></script>
+    </environment>
+@*<script>
+    $("#FIFile").change(function () {
+        var fileUpload = $("#FIFile").get(0);
+        if (fileUpload.files.length == 1) {
+            $("#FIForm").submit();
+        }});
+
+    $("#INFUpload").change(function () {
+        var fileUpload = $("#INFUpload").get(0);
+        if (fileUpload.files.length == 1) {
+            $("#INFForm").submit();
+        }});
+</script>*@
+
+}
+        
