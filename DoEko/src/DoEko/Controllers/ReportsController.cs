@@ -520,6 +520,7 @@ namespace DoEko.Controllers
 
             //DATA
             csv["ID INWESTYCJI"] = "";
+            csv["PRIORYTET"] = "";
             csv["ID ANKIETY"] = "";
             csv["TYP OZE"] = "";
             csv["STATUS ANKIETY"] = "";
@@ -711,6 +712,7 @@ namespace DoEko.Controllers
                 this.AddRow(ref myExport);
 
                 //DATA
+                myExport["PRIORYTET"] = srv.Investment.PriorityIndex.ToString();
                 myExport["ID INWESTYCJI"] = srv.InvestmentId.ToString();
                 myExport["ID ANKIETY"] = srv.SurveyId.ToString();
 
