@@ -386,8 +386,6 @@ namespace DoEko.Controllers
                             srv.ResultCalculation = new SurveyResultCalculations(srv.Type, srv.GetRSEType(), surveyExcel);
                         }
                         
-                        _context.Update(srv.ResultCalculation);
-                        
                     }
                     catch (Exception exc)
                     {
@@ -398,7 +396,7 @@ namespace DoEko.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                //_context.UpdateRange(surveys);
+                _context.UpdateRange(surveys);
                 var result = _context.SaveChanges();                  
             }
             catch (Exception exc)
