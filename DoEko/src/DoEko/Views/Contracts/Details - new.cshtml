@@ -1,6 +1,6 @@
 ﻿@model DoEko.Models.DoEko.Contract
 @{
-    ViewData["Title"] = "Umowa" + ' ' + Html.DisplayFor(model => model.Number);
+    ViewData["Title"] = "Umowa" + ' ' + Model.Number.ToString();
 }
 <!-- Navigation -->
 <ol class="breadcrumb">
@@ -35,7 +35,7 @@
         </div>
         <div id="details" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-details">
             <div class="panel-body">
-                @await Html.PartialAsync("_ContractInfoPartial", Model)
+                @await Html.PartialAsync("_ContractDetailsPartial", Model)
             </div>
         </div>
     </div>

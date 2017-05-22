@@ -19,6 +19,11 @@ namespace DoEko.Models.DoEko.Survey
         }
         public SurveyResultCalculations(SurveyType type, int rseType, DataRow data)
         {
+            FillProperties(type, rseType, data);
+        }
+
+        public void FillProperties(SurveyType type, int rseType, DataRow data)
+        {
             try
             {
 
@@ -35,76 +40,75 @@ namespace DoEko.Models.DoEko.Survey
                 this.BenzoPirenPercent = this.ParseDouble("Kolumna 54", data.Field<string>(54));
 
                 switch (type)
-            {
-                case SurveyType.CentralHeating:
+                {
+                    case SurveyType.CentralHeating:
 
-                    this.HeatLossFactor = this.ParseDouble("Kolumna 30", data.Field<string>(30));
-                    this.CHRequiredEnFactor = this.ParseDouble("Kolumna 31", data.Field<string>(31));
-                    this.CHMaxRequiredEn = this.ParseDouble("Kolumna 32", data.Field<string>(32));
-                    this.CHRequiredEn = this.ParseDouble("Kolumna 33", data.Field<string>(33));
-                    this.HWRequiredEnYearly = this.ParseDouble("Kolumna 34", data.Field<string>(34));
-                    this.FinalRSEPower = this.ParseDouble("Kolumna 35", data.Field<string>(35));
-                    this.CHRSEWorkingTime = this.ParseDouble("Kolumna 36", data.Field<string>(36));
-                    this.CHRSEYearlyProduction = this.ParseDouble("Kolumna 37", data.Field<string>(37));
-                    this.HWRSEWorkingTime = this.ParseDouble("Kolumna 38", data.Field<string>(38));
-                    this.HWRSEYearlyProduction = this.ParseDouble("Kolumna 39", data.Field<string>(39));
-                    this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 40", data.Field<string>(40));
-                    this.RSENetPrice = this.ParseDouble("Kolumna 41", data.Field<string>(41));
-                    this.RSETax = this.ParseDouble("Kolumna 42", data.Field<string>(42));
-                    this.RSEGrossPrice = this.ParseDouble("Kolumna 43", data.Field<string>(43));
-                    break;
-                case SurveyType.HotWater:
+                        this.HeatLossFactor = this.ParseDouble("Kolumna 30", data.Field<string>(30));
+                        this.CHRequiredEnFactor = this.ParseDouble("Kolumna 31", data.Field<string>(31));
+                        this.CHMaxRequiredEn = this.ParseDouble("Kolumna 32", data.Field<string>(32));
+                        this.CHRequiredEn = this.ParseDouble("Kolumna 33", data.Field<string>(33));
+                        this.HWRequiredEnYearly = this.ParseDouble("Kolumna 34", data.Field<string>(34));
+                        this.FinalRSEPower = this.ParseDouble("Kolumna 35", data.Field<string>(35));
+                        this.CHRSEWorkingTime = this.ParseDouble("Kolumna 36", data.Field<string>(36));
+                        this.CHRSEYearlyProduction = this.ParseDouble("Kolumna 37", data.Field<string>(37));
+                        this.HWRSEWorkingTime = this.ParseDouble("Kolumna 38", data.Field<string>(38));
+                        this.HWRSEYearlyProduction = this.ParseDouble("Kolumna 39", data.Field<string>(39));
+                        this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 40", data.Field<string>(40));
+                        this.RSENetPrice = this.ParseDouble("Kolumna 41", data.Field<string>(41));
+                        this.RSETax = this.ParseDouble("Kolumna 42", data.Field<string>(42));
+                        this.RSEGrossPrice = this.ParseDouble("Kolumna 43", data.Field<string>(43));
+                        break;
+                    case SurveyType.HotWater:
 
-                    if (rseType == (int)SurveyRSETypeHotWater.HeatPump)
-                    {
-                        this.HWRequiredEnYearly = this.ParseDouble("Kolumna 13", data.Field<string>(13));
-                        this.FinalRSEPower = this.ParseDouble("Kolumna 14", data.Field<string>(14));
-                        this.RSEYearlyProduction = this.ParseDouble("Kolumna 15", data.Field<string>(15));
-                        this.RSEWorkingTime = this.ParseDouble("Kolumna 16", data.Field<string>(16));
-                        this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 17", data.Field<string>(17));
-                        this.RSENetPrice = this.ParseDouble("Kolumna 18", data.Field<string>(18));
-                        this.RSETax = this.ParseDouble("Kolumna 19", data.Field<string>(19));
-                        this.RSEGrossPrice = this.ParseDouble("Kolumna 20", data.Field<string>(20));
+                        if (rseType == (int)SurveyRSETypeHotWater.HeatPump)
+                        {
+                            this.HWRequiredEnYearly = this.ParseDouble("Kolumna 13", data.Field<string>(13));
+                            this.FinalRSEPower = this.ParseDouble("Kolumna 14", data.Field<string>(14));
+                            this.RSEYearlyProduction = this.ParseDouble("Kolumna 15", data.Field<string>(15));
+                            this.RSEWorkingTime = this.ParseDouble("Kolumna 16", data.Field<string>(16));
+                            this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 17", data.Field<string>(17));
+                            this.RSENetPrice = this.ParseDouble("Kolumna 18", data.Field<string>(18));
+                            this.RSETax = this.ParseDouble("Kolumna 19", data.Field<string>(19));
+                            this.RSEGrossPrice = this.ParseDouble("Kolumna 20", data.Field<string>(20));
 
                         }
-                    else
-                    {
-                        this.FinalSOLConfig = data.Field<string>(3);
-                        this.HWRequiredEnYearly = this.ParseDouble("Kolumna 4", data.Field<string>(4));
-                        this.FinalRSEPower = this.ParseDouble("Kolumna 5", data.Field<string>(5));
-                        this.RSEEfficiency = this.ParseDouble("Kolumna 6", data.Field<string>(6));
-                        this.RSEWorkingTime = this.ParseDouble("Kolumna 7", data.Field<string>(7));
-                        this.RSEYearlyProduction = this.ParseDouble("Kolumna 8", data.Field<string>(8));
-                        this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 9", data.Field<string>(9));
-                        this.RSENetPrice = this.ParseDouble("Kolumna 10", data.Field<string>(10));
-                        this.RSETax = this.ParseDouble("Kolumna 11", data.Field<string>(11));
-                        this.RSEGrossPrice = this.ParseDouble("Kolumna 12", data.Field<string>(12));
+                        else
+                        {
+                            this.FinalSOLConfig = data.Field<string>(3);
+                            this.HWRequiredEnYearly = this.ParseDouble("Kolumna 4", data.Field<string>(4));
+                            this.FinalRSEPower = this.ParseDouble("Kolumna 5", data.Field<string>(5));
+                            this.RSEEfficiency = this.ParseDouble("Kolumna 6", data.Field<string>(6));
+                            this.RSEWorkingTime = this.ParseDouble("Kolumna 7", data.Field<string>(7));
+                            this.RSEYearlyProduction = this.ParseDouble("Kolumna 8", data.Field<string>(8));
+                            this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 9", data.Field<string>(9));
+                            this.RSENetPrice = this.ParseDouble("Kolumna 10", data.Field<string>(10));
+                            this.RSETax = this.ParseDouble("Kolumna 11", data.Field<string>(11));
+                            this.RSEGrossPrice = this.ParseDouble("Kolumna 12", data.Field<string>(12));
                         }
 
-                    break;
-                case SurveyType.Energy:
-                    
-                    this.FinalPVConfig = this.ParseDouble("Kolumna 21", data.Field<string>(21));
-                    this.FinalRSEPower = this.ParseDouble("Kolumna 22", data.Field<string>(22));
-                    this.RSEEfficiency = this.ParseDouble("Kolumna 23", data.Field<string>(23));
-                    this.RSEYearlyProduction = this.ParseDouble("Kolumna 24", data.Field<string>(24));
-                    this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 25", data.Field<string>(25));
-                    this.RSEWorkingTime = this.ParseDouble("Kolumna 26", data.Field<string>(26));
-                    this.RSENetPrice = this.ParseDouble("Kolumna 27", data.Field<string>(27));
-                    this.RSETax = this.ParseDouble("Kolumna 28", data.Field<string>(28));
-                    this.RSEGrossPrice = this.ParseDouble("Kolumna 29", data.Field<string>(29));
+                        break;
+                    case SurveyType.Energy:
 
-                    break;
-                default:
-                    break;
-            }
+                        this.FinalPVConfig = this.ParseDouble("Kolumna 21", data.Field<string>(21));
+                        this.FinalRSEPower = this.ParseDouble("Kolumna 22", data.Field<string>(22));
+                        this.RSEEfficiency = this.ParseDouble("Kolumna 23", data.Field<string>(23));
+                        this.RSEYearlyProduction = this.ParseDouble("Kolumna 24", data.Field<string>(24));
+                        this.RSEEnYearlyConsumption = this.ParseDouble("Kolumna 25", data.Field<string>(25));
+                        this.RSEWorkingTime = this.ParseDouble("Kolumna 26", data.Field<string>(26));
+                        this.RSENetPrice = this.ParseDouble("Kolumna 27", data.Field<string>(27));
+                        this.RSETax = this.ParseDouble("Kolumna 28", data.Field<string>(28));
+                        this.RSEGrossPrice = this.ParseDouble("Kolumna 29", data.Field<string>(29));
+
+                        break;
+                    default:
+                        break;
+                }
             }
             catch (Exception)
             {
                 throw;
             }
         }
-
 
         [Key,ForeignKey("Survey")]
         public Guid SurveyId { get; set; }

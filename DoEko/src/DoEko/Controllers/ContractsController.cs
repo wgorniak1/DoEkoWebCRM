@@ -54,6 +54,8 @@ namespace DoEko.Controllers
                 .Include(c => c.Project)
                 .Include(c => c.Investments).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
                 .Include(c => c.Investments).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .Include(C => C.Investments).ThenInclude(I => I.Surveys).ThenInclude(S=>S.ResultCalculation)
+                .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.ContractId == id);
             if (contract == null)
             {
@@ -325,12 +327,12 @@ namespace DoEko.Controllers
             if (neoenergetyka == null)
             {
                 ModelState.AddModelError(nameof(neoenergetyka), "Nieodnaleziono pliku");
-                return Json(ModelState);
+                return BadRequest(ModelState);
             }
             if (!allowedFileTypes.Any(s => s == neoenergetyka.ContentType))
             {
                 ModelState.AddModelError(nameof(neoenergetyka), "Nieobs³ugiwany format pliku");
-                return Json(ModelState);
+                return BadRequest(ModelState);
             }
 
             //
@@ -351,7 +353,7 @@ namespace DoEko.Controllers
                 if (surveyIds.Count == 0)
                 {
                     ModelState.AddModelError(nameof(neoenergetyka), "B³ad odczytu kolumny z ID ankiety");
-                    return Json(ModelState);
+                    return BadRequest(ModelState);
                 }
 
                 //get all surveys that will be updated.
@@ -364,7 +366,7 @@ namespace DoEko.Controllers
                 if (surveys.Count == 0)
                 {
                     ModelState.AddModelError(nameof(neoenergetyka), "Nie znaleziono w systemie ¿adnej ankiety dla danych z excela");
-                    return Json(ModelState);
+                    return BadRequest(ModelState);
                 }
 
                 foreach (var srv in surveys)
@@ -373,8 +375,19 @@ namespace DoEko.Controllers
                     {
                         var surveyExcel = dt.Rows.OfType<DataRow>().Single(dr => dr.Field<string>(1) == srv.SurveyId.ToString());
                         srv.Investment.GeoPortal = surveyExcel.Field<string>(2);
-                        srv.ResultCalculation    = new SurveyResultCalculations(srv.Type, srv.GetRSEType(), surveyExcel);
                         _context.Update(srv.Investment);
+
+                        if (srv.ResultCalculation != null) 
+                        {
+                            srv.ResultCalculation.FillProperties(srv.Type, srv.GetRSEType(), surveyExcel);
+                        }
+                        else
+                        {
+                            srv.ResultCalculation = new SurveyResultCalculations(srv.Type, srv.GetRSEType(), surveyExcel);
+                        }
+                        
+                        _context.Update(srv.ResultCalculation);
+                        
                     }
                     catch (Exception exc)
                     {
@@ -383,15 +396,15 @@ namespace DoEko.Controllers
                 }
                 if (!ModelState.IsValid)
                 {
-                    return Json(ModelState);
+                    return BadRequest(ModelState);
                 }
-                _context.UpdateRange(surveys);
+                //_context.UpdateRange(surveys);
                 var result = _context.SaveChanges();                  
             }
             catch (Exception exc)
             {
                 ModelState.AddModelError("B³¹d systemu", exc.InnerException != null ? exc.InnerException.Message : exc.Message);
-                return Json(ModelState);
+                return BadRequest(ModelState);
             }
 
 

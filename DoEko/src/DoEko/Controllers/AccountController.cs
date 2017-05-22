@@ -64,37 +64,54 @@ namespace DoEko.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByNameAsync(model.UserName);
-
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, true);// PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                try
                 {
-                    _logger.LogInformation(1, "User logged in.");
+                    //find user
+                    var user = await _userManager.FindByNameAsync(model.UserName);
 
-                    await _userManager.ResetAccessFailedCountAsync(user);
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, true);// PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation( new EventId(), "Użytkownik %1 zalogowany",new object[] { user });
 
-                    //if (user.PasswordExpired)
+                        await _userManager.ResetAccessFailedCountAsync(user);
+
+                        //if (user.PasswordExpired)
+                        //{
+                        //    return RedirectToAction("ChangePassword", "Manage", new { PasswordExpiration = true });
+                        //}
+                        return RedirectToLocal(returnUrl);
+                    }
+                    //if (result.RequiresTwoFactor)
                     //{
-                    //    return RedirectToAction("ChangePassword", "Manage", new { PasswordExpiration = true });
+                    //    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                     //}
-                    return RedirectToLocal(returnUrl);
+                    if (result.IsLockedOut)
+                    {
+                        _logger.LogError(new EventId(), "Zablokowane konto użytkownika: %1",new { user.UserName });
+
+                        _logger.LogWarning(2, "User account locked out.");
+                        return View("Lockout");
+                    }
+                    else
+                    {
+                        _logger.LogError(new EventId(), "Nieudana próba zalogowania użytkownika: %1", new { user.UserName });
+
+                        ModelState.AddModelError(string.Empty, "Nieprawidłowy login lub hasło");
+                        return View(model);
+                    }
                 }
-                //if (result.RequiresTwoFactor)
-                //{
-                //    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                //}
-                if (result.IsLockedOut)
+                catch (Exception exc)
                 {
-                    _logger.LogWarning(2, "User account locked out.");
-                    return View("Lockout");
-                }
-                else
-                {
+                    _logger.LogError(new EventId(), exc, "Nieudana próba zalogowania użytkownika: %1", new { model.UserName });
+
                     ModelState.AddModelError(string.Empty, "Nieprawidłowy login lub hasło");
                     return View(model);
                 }
+
             }
 
             // If we got this far, something failed, redisplay form
