@@ -81,9 +81,13 @@ namespace DoEko.Controllers
             ViewData["EditInspector"] = editInspector;
             ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
             ViewData["ReturnUrl"] = returnUrl;
+
+            //
             IdentityRole inspectorRole = await _roleManager.FindByNameAsync(Roles.Inspector);
 
-            var users = _userManager.Users.Where(u => u.Roles.Select(r => r.RoleId).Contains(inspectorRole.Id)).ToList();
+            var users = _userManager.Users.Include(u => u.Roles).AsNoTracking().ToList();
+
+            users = users.Where(u => u.Roles.Select(r => r.RoleId).Contains(inspectorRole.Id)).ToList();
 
             ViewData["InspectorId"] = new SelectList(users, "Id", "UserName");
             return View(contract);
@@ -404,115 +408,7 @@ namespace DoEko.Controllers
                 ModelState.AddModelError("B³¹d systemu", exc.InnerException != null ? exc.InnerException.Message : exc.Message);
                 return BadRequest(ModelState);
             }
-
-
-            //    i += 1;
-            //    if (!(i > 1))
-            //    {
-            //        continue;
-            //    }
-            //    using (var transaction = _context.Database.BeginTransaction())
-            //    {
-            //        try
-            //        {
-            //            //set line to parse
-            //            uploadhelper.Record = CsvRecord;
-
-            //            //Parse Investment Address - also check if address has already been registered in the db
-            //            InvestmentAddress = uploadhelper.ParseInvestmentAddress();
-
-            //            Investment = uploadhelper.ParseInvestment();
-            //            Investment.Address = InvestmentAddress;
-
-            //            OwnerAddress = uploadhelper.ParseOwnerAddress();
-            //            Owner = (BusinessPartnerPerson)uploadhelper.ParseInvestmentOwner();
-
-            //            if (OwnerAddress.SingleLine == InvestmentAddress.SingleLine)
-            //            {
-            //                Owner.Address = InvestmentAddress;
-            //                OwnerAddress = null;
-            //            }
-            //            else
-            //            {
-            //                Owner.Address = OwnerAddress;
-            //            }
-
-            //            InvestmentOwner = new InvestmentOwner
-            //            {
-            //                Investment = Investment,
-            //                InvestmentId = Investment.InvestmentId,
-            //                Owner = Owner,
-            //                OwnerId = Owner.BusinessPartnerId
-            //            };
-
-            //            Surveys = uploadhelper.ParseSurveys();
-            //            foreach (var Survey in Surveys)
-            //            {
-            //                Survey.Investment = Investment;
-            //                Survey.InvestmentId = Investment.InvestmentId;
-            //            };
-            //            if (InvestmentAddress.AddressId == 0)
-            //            {
-            //                _context.Add(InvestmentAddress);
-            //            }
-            //            //int x = _context.SaveChanges();
-            //            _context.Add(Investment);
-            //            //x = _context.SaveChanges();
-            //            if (OwnerAddress != null && OwnerAddress.AddressId == 0)
-            //            {
-            //                _context.Add(OwnerAddress);
-            //                //x = _context.SaveChanges();
-            //            }
-            //            _context.Add(Owner);
-            //            //x = _context.SaveChanges();
-            //            _context.Add(InvestmentOwner);
-            //            //x = _context.SaveChanges();
-            //            _context.AddRange(Surveys);
-            //            //x = _context.SaveChanges();
-
-            //            int x = _context.SaveChanges();
-
-            //            transaction.Commit();
-            //            //transaction.Dispose();
-            //            success += 1;
-            //        }
-            //        catch (Exception exc)
-            //        {
-            //            transaction.Rollback();
-            //            if (exc.Message.Contains("See the inner exception for details"))
-            //                errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.InnerException.Message.ToString());
-            //            else
-            //                errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
-            //        }
-            //    }
-            //}
-            ////catch (ArgumentOutOfRangeException)
-            ////catch (NullReferenceException)
-            ////catch (ArgumentNullException)
-            ////catch (InvalidOperationException)
-            ////catch (OutOfMemoryException)
-            ////catch (FormatException)
-
-            //sr.Close();
-
-            //if (errMessage.Count != 0)
-            //{
-            //    TempData["FileUploadType"] = "Import Inwestycji";
-            //    TempData["FileUploadResult"] = 8;
-            //    TempData["FileUploadError"] = errMessage;
-            //    if (success != 0)
-            //    {
-            //        TempData["FileUploadResult"] = 4;
-            //        TempData["FileUploadSuccess"] = "Pomyœlnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
-            //    }
-            //}
-            //else
-            //{
-            //    TempData["FileUploadType"] = "Import Inwestycji";
-            //    TempData["FileUploadResult"] = 0;
-            //    TempData["FileUploadSuccess"] = "Pomyœlnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
-            //}
-
+            
             return Json(0);
         }
 

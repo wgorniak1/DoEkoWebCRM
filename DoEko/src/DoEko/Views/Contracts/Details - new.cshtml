@@ -33,7 +33,7 @@
                 </button>
             </div>
         </div>
-        <div id="details" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-details">
+        <div id="details" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-details">
             <div class="panel-body">
                 @await Html.PartialAsync("_ContractDetailsPartial", Model)
             </div>
@@ -74,7 +74,7 @@
                 }
             </div>
         </div>
-        <div id="investments" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="header-investments">
+        <div id="investments" class="panel-collapse collapse" role="tabpanel" aria-labelledby="header-investments">
             @await Html.PartialAsync("_InvestmentTablePartial", Model.Investments)
         </div>
     </div>
@@ -116,27 +116,18 @@
     <input id="INFSubmit"   name="INFSubmit"   type="submit" hidden>
 </form>
 
+
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
 @section Scripts{
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
     <environment names="Development">
         <script src="~/js/ContractDetails.js"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="~/js/ContractDetails.min.js"></script>
     </environment>
-@*<script>
-    $("#FIFile").change(function () {
-        var fileUpload = $("#FIFile").get(0);
-        if (fileUpload.files.length == 1) {
-            $("#FIForm").submit();
-        }});
-
-    $("#INFUpload").change(function () {
-        var fileUpload = $("#INFUpload").get(0);
-        if (fileUpload.files.length == 1) {
-            $("#INFForm").submit();
-        }});
-</script>*@
-
 }
         
