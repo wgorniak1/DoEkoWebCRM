@@ -66,37 +66,27 @@
                 @( Model.Project.UEFundsLevel.ToString() + "% do kwoty " + (Model.Project.GrossNetFundsType ? "brutto" : "netto"))
             </p>
         </div>
-    <div class="form-group col-sm-6 col-md-3">
+        <div class="form-group col-sm-6 col-md-3">
+            <label asp-for="Project.UEFundsLevel" class="control-label"></label>
+            <p class="form-control-static">
+                
+            </p>
+        </div>
+    @*<div class="form-group col-sm-6 col-md-3">
         <label for="Moc OZE" class="control-label"></label>
         <p class="form-control-static">
             @{                 
-                //var allSurveys = Model.Investments
-                //    .SelectMany(i => i.Surveys).GroupBy(s => s.Type)
+//var allSurveys = Model.Investments
+//    .SelectMany(i => i.Surveys);
+//var allneo = allSurveys
+//    .Where(s => s.ResultCalculation != null)
+//    .Select(s => s.ResultCalculation)
+//    .ToList();
 
-                ////var totalPowerPerType = new Lookup<DoEko.Models.DoEko.Survey.SurveyType, double>();
-
-                //foreach(var srvgroup in allSurveys)
-                //{
-                //    var results = srvgroup
-                //    .Where(s => s.ResultCalculation != null)
-                //    .Select(s => s.ResultCalculation)
-                //    .ToList();
-
-                //}
-
-                //
-                var allneo = 
-                    Model.Investments
-                    .SelectMany(i => i.Surveys)
-                    .ToList()
-                    .Where(s => s.ResultCalculation != null)
-                    .Select(s => s.ResultCalculation)
-                    .ToList();
-
-                var totalPower = allneo.Sum(r => r.FinalRSEPower);
+//var totalPower = allneo.Sum(r=>r.FinalRSEPower);
+            //@totalPower.ToString()
             }
-            @totalPower.ToString()
         </p>
-    </div>
+    </div>*@
     <div class="form-group col-sm-6 col-md-3"></div>
 </div>

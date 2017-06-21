@@ -24,9 +24,9 @@ namespace DoEko.Controllers
             if (HttpContext.Request.IsAjaxRequest())
             {
                 //disable change tracking
-                //_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+                _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-                var persons = await _context.BPPersons
+                var persons = _context.BPPersons
                     .Include(bp => bp.Address)//.ThenInclude(a => a.State)
                     //.Include(bp => bp.Address).ThenInclude(a => a.District)
                     //.Include(bp => bp.Address).ThenInclude(a => a.Commune)
@@ -49,11 +49,9 @@ namespace DoEko.Controllers
                             SingleLine = bp.Address.SingleLine
                         },
                         bp.DataProcessingConfirmation
-                    })
-                    .AsNoTracking()
-                    .ToListAsync();
+                    }).ToList();
 
-                 var invowners = await _context.InvestmentOwners    
+                 var invowners = _context.InvestmentOwners    
                     .Include(io => io.Investment).ThenInclude(i => i.Address)//.ThenInclude(a => a.State)
                                                                              //.Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.District)
                                                                              //.Include(bp => bp.InvestmentOwners).ThenInclude(io => io.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
@@ -83,9 +81,7 @@ namespace DoEko.Controllers
                         //    io.Investment.Contract.Project.ShortDescription,
                         //    io.Investment.Contract.ProjectId
                         //}
-                    })
-                    .AsNoTracking()
-                    .ToListAsync();
+                    }).ToList();
 
                 IList<object> model = new List<object>();
 
