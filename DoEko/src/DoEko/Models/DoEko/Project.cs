@@ -26,15 +26,15 @@ namespace DoEko.Models.DoEko
         Closed
     }
 
-    public enum UEFundsLevel
-    {
-        [Display(Name = "Brak")]
-        NoFunds = 0,
-        [Display(Name = "60%")]
-        One = 60,
-        [Display(Name = "85%")]
-        Two = 85,
-    }
+    //public enum UEFundsLevel
+    //{
+    //    [Display(Name = "Brak")]
+    //    NoFunds = 0,
+    //    [Display(Name = "60%")]
+    //    One = 60,
+    //    [Display(Name = "85%")]
+    //    Two = 85,
+    //}
 
     public enum ClimateZone
     {
@@ -113,7 +113,7 @@ namespace DoEko.Models.DoEko
         /// 
         /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
-        [EnumDataType(typeof(UEFundsLevel), ErrorMessage = "Enum Type Error")]
+        //[EnumDataType(typeof(UEFundsLevel), ErrorMessage = "Enum Type Error")]
         [Display(Description = "Poziom dofinansowania określa procentową dopłatę do inwestycji",
                  Name = "Poziom dofinans. [%]",
                  ShortName = "Poziom dofinans.[%]",
