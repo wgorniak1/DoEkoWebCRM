@@ -39,7 +39,7 @@ function onNeoenergetykaFileChange() {
 
     if (file === undefined) {
         WgTools.alert("Proszę wskazać plik do importu!", true, "E");
-        return
+        return;
     }
     else if (!allowedTypes.includes(file.type)) {
         WgTools.alert("Niedozwolony format pliku!", true, "E");
@@ -63,7 +63,7 @@ function onNeoenergetykaFileChange() {
         $('#panel-group').removeClass('wg-loader');
         WgTools.alert("Pomyślnie wczytano dane", true, "S");
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         $('#panel-group').removeClass('wg-loader');
         $.each(xhr.responseJSON, function (idx, data) {
             if (data.length > 0) {
@@ -106,7 +106,7 @@ function onPKOFileChange() {
         $('#panel-group').removeClass('wg-loader');
         WgTools.alert("Pomyślnie wczytano dane", true, "S");
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         $('#panel-group').removeClass('wg-loader');
         $.each(xhr.responseJSON, function (idx, data) {
             if (data.length > 0) {
@@ -124,7 +124,7 @@ function onInvFileChange() {
 
     if (file === undefined) {
         WgTools.alert("Proszę wskazać plik do importu!", true, "E");
-        return
+        return;
     }
     else if (!allowedTypes.includes(file.type)) {
         WgTools.alert("Niedozwolony format pliku!", true, "E");
@@ -148,7 +148,7 @@ function onInvFileChange() {
         $('#panel-group').removeClass('wg-loader');
         WgTools.alert("Pomyślnie wczytano dane", true, "S");
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         $('#panel-group').removeClass('wg-loader');
 
         $.each(xhr.responseJSON, function (idx, data) {

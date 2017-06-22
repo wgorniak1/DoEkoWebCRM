@@ -54,13 +54,13 @@ function onProjectChange() {
                 "projectId": newId
             },
             dataType: 'json',
-            contentType: 'application/json',
+            contentType: 'application/json'
         });
 
         getContracts.done(function (data, success) {
             onAjaxContractsGetCompleted(data, success);
         });
-        getContracts.error(function (xhr, status, error) {
+        getContracts.fail(function (xhr, status, error) {
             onAjaxContractsGetFailed(xhr, status, error);
         });
     }

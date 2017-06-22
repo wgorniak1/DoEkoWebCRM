@@ -33,7 +33,7 @@ function ajaxAssignInvestment(investmentId, InspectorId) {
     ajaxCall.done(function (data, success) {
         onAjaxInvestmentAssignCompleted(investmentId, success);
     });
-    ajaxCall.error(function (xhr, status, error) {
+    ajaxCall.fail(function (xhr, status, error) {
         onAjaxInvestmentAssignFailed(xhr, status, error);
     });
 }

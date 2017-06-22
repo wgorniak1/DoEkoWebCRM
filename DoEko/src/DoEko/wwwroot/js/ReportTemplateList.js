@@ -9,7 +9,7 @@ $(document).ready(function () {
         columns: [
                     {
                         data: "keyText",
-                        name: "Szablon - Sekcja",
+                        name: "Szablon - Sekcja"
                     },
                     {
                         data: null,
@@ -191,7 +191,7 @@ function UploadTemplate(sectionName, docfile) {
         var table = $('#ReportTemplateTable').DataTable();
         table.ajax.reload(null, false);
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         //Notification popup
         WgTools.alert(error, true, 'E');
     });
@@ -285,7 +285,7 @@ function DeleteTemplate(event) {
         table.ajax.reload(null, false);
 
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         //Notification popup
         WgTools.alert(error, true, 'E');
     });

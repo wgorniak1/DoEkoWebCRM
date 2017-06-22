@@ -18,7 +18,7 @@ $(document).ready(function () {
                         render: function (data, type, row, meta) {
                             switch (type) {
                                 case "display":
-                                    return (data.length > 30) ? data.replace(' ', '<br/>') : data;
+                                    return data.length > 30 ? data.replace(' ', '<br/>') : data;
                                 case "filter":
                                     return data;
                                 case "sort":
@@ -31,21 +31,21 @@ $(document).ready(function () {
 
                         data: "pesel",
                         name: "pesel",
-                        title: "Pesel",
+                        title: "Pesel"
                     },
                     {
                         responsivePriority: 9,
 
                         data: "idNumber",
                         name: "idNumber",
-                        title: "Nr dowodu os.",
+                        title: "Nr dowodu os."
                     },
                     {
                         responsivePriority: 10,
 
                         data: "taxId",
                         name: "taxId",
-                        title: "NIP",
+                        title: "NIP"
                     },
                     {
                         responsivePriority: 11,
@@ -58,7 +58,7 @@ $(document).ready(function () {
                             var bdt = new Date(Date.parse(data));
                             switch (type) {
                                 case "display":
-                                    return (bdt > new Date('1900/01/01')) ? bdt.toLocaleDateString() : '';
+                                    return bdt > new Date('1900/01/01') ? bdt.toLocaleDateString() : '';
                                 case "filter":
                                     return bdt;
                                 case "sort":
@@ -83,7 +83,7 @@ $(document).ready(function () {
                                     return data;
                             }
 
-                        },
+                        }
                     },
                     {
                         responsivePriority: 7,
@@ -108,7 +108,7 @@ $(document).ready(function () {
                         responsivePriority: 4,
 
                         data: "address",
-                        data: "address",
+                        name: "address",
                         title: "Adres",
                         type: "html",
                         render: function (data, type, row, meta) {
@@ -215,8 +215,6 @@ $(document).ready(function () {
                                     '<span class="glyphicon glyphicon-trash"></span>' +
                                     '</button>';
                             }
-                            else {
-                            }
                             content += '</div>';
                             return content;
 
@@ -286,10 +284,10 @@ $(document).ready(function () {
                         }
                     });
                     
-                    $('input[name=dataProcessingConfirmation]').bootstrapToggle((editMode) ? '' : 'destroy');
+                    $('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');
 
                 }
-            },
+            }
         ],
         select: false,
         colReorder: 
@@ -345,12 +343,12 @@ $(document).ready(function () {
             //$('ul > li > a', context).addClass('btn btn-sm small').attr("style", "border-radius: 0;");
 
 
-            $('input[name=dataProcessingConfirmation]').bootstrapToggle((editMode) ? '' : 'destroy');
+            $('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');
         }
     });
 
     table.on('responsive-display', function (e, datatable, row, showHide, update) {
-        $('input[name=dataProcessingConfirmation]').bootstrapToggle((editMode) ? '' : 'destroy');  
+        $('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');  
     });
 
 
@@ -391,7 +389,7 @@ function onConfirmationChange() {
         srcData.dataProcessingConfirmation = newValue;
 
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         //Notification popup
         WgTools.alert(error, true, 'E');
     });
@@ -419,7 +417,7 @@ function onPersonDeleteSubmit(event) {
         url: "Delete",
         data: {
             id: event.data.row.data().businessPartnerId,
-            __RequestVerificationToken: token,
+            __RequestVerificationToken: token
         }
     });
 
@@ -537,7 +535,7 @@ function onPersonEditSubmit() {
 //        var table = $('#ReportTemplateTable').DataTable();
 //        table.ajax.reload(null, false);
 //    });
-//    call.error(function (xhr, status, error) {
+//    call.fail(function (xhr, status, error) {
 //        //Notification popup
 //        WgTools.alert(error, true, 'E');
 //    });
@@ -631,7 +629,7 @@ function onPersonEditSubmit() {
 //        table.ajax.reload(null, false);
 
 //    });
-//    call.error(function (xhr, status, error) {
+//    call.fail(function (xhr, status, error) {
 //        //Notification popup
 //        WgTools.alert(error, true, 'E');
 //    });

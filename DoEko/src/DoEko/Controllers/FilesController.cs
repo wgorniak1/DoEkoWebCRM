@@ -54,7 +54,7 @@ namespace DoEko.Controllers
 
 //        [HttpPost]
         public JsonResult Upload(enuAzureStorageContainerType Type, int? Id, Guid? Guid,
-                                 FormCollection Form, string ReturnUrl = null)
+                                 IFormCollection Form, string ReturnUrl = null)
         {
             //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
             CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
