@@ -105,7 +105,7 @@ function ajaxDataTableRefresh(targetPage, targetPageSize, targetSort) {
     getDataTable.done(function (data, success) {
         onAjaxDataTableRefreshCompleted(data, success);
     });
-    getDataTable.error(function (xhr, status, error) {
+    getDataTable.fail(function (xhr, status, error) {
         onAjaxDataTableRefreshFailed(xhr, status, error);
     });
 }

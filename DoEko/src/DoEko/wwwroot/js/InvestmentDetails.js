@@ -67,7 +67,7 @@ function ajaxSurveyRejectPost() {
     call.done(function (data, success) {
         onAjaxSurveyRejectCompleted(data, success);
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         onAjaxSurveyRejectFailed(xhr, status, error);
     });
 }
@@ -142,7 +142,7 @@ function ajaxSurveyApprovePost() {
     call.done(function (data, success) {
         onAjaxSurveyApproveCompleted(data, success);
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         onAjaxSurveyApproveFailed(xhr, status, error);
     });
 }
@@ -217,7 +217,7 @@ function ajaxSurveySubmitPost() {
     call.done(function (data, success) {
         onAjaxSurveySubmitCompleted(data, success);
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         onAjaxSurveySubmitFailed(xhr, status, error);
     });
 }
@@ -325,7 +325,7 @@ function ajaxSurveyCreatePost() {
     call.done(function (data, success) {
         onAjaxSurveyCreateCompleted(data, success);
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         onAjaxSurveyCreateFailed(xhr, status, error);
     });
 }
@@ -461,7 +461,7 @@ function ajaxSurveyCancelPost() {
     call.done(function (data, success) {
         onAjaxSurveyCancelCompleted(data, success);
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         onAjaxSurveyCancelFailed(xhr, status, error);
     });
 }

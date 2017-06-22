@@ -62,7 +62,7 @@ function alertClass() {
             $('#' + idAlertBox).fadeOut(6000,'swing');
         }
     };
-};
+}
 /////
 //function NavBarStepList(stepListId, prevBtnId, nextBtnId) {
 //    "use strict";

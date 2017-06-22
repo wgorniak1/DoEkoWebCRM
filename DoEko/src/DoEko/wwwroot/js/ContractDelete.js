@@ -41,11 +41,11 @@ function onContractDeleteSubmit() {
         }
     });
 
-    deleteRequest.success(function(data,success){
-        onContractDeleteSuccess(data, success)
+    deleteRequest.done(function(data,success){
+        onContractDeleteSuccess(data, success);
     });
     deleteRequest.fail(function (xhr, status, error) {
-        onContractDeleteFail(xhr, status, error)
+        onContractDeleteFail(xhr, status, error);
     });
 }
 //

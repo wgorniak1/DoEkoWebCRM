@@ -17,8 +17,8 @@
                         name: 'Raport',
                         type: 'html',
                         render: function (data, type, row, meta) {
-                            if ((reports.length > 0 && reports[reports.length - 1] !== data) ||
-                                (reports.length === 0)) {
+                            if (reports.length > 0 && reports[reports.length - 1] !== data ||
+                                reports.length === 0) {
                                 reports.push(data);
                             }
                             return '<span class="glyphicon glyphicon-folder-close"></span> ' + data;
@@ -180,7 +180,7 @@ function onReportDownload(row){
             //delete link;
         });
     });
-    getModal.error(function (xhr, status, error) {
+    getModal.fail(function (xhr, status, error) {
         WgTools.alert(error, false, "E");
     });
 }
@@ -216,7 +216,7 @@ function onReportCreate(dt) {
 
 
     });
-    getModal.error(function (xhr, status, error) {
+    getModal.fail(function (xhr, status, error) {
         //onAjaxGetFailure(xhr, status, error);
         WgTools.alert(error, false, "E");
     });
@@ -252,7 +252,7 @@ function onReportCreateSubmit() {
             timeout: 600000
         });
 
-        submit.error(function (error) {
+        submit.fail(function (error) {
             WgTools.alert(error, false, 'E');
             //Process errors
             //var $ul = $('div.validation-summary-valid.text-danger > ul');
@@ -281,7 +281,7 @@ function onReportCreateSubmit() {
         });
 
 
-        submit.success(function () {
+        submit.done(function () {
             //Post was successful
 
             //close modal
@@ -310,7 +310,7 @@ function onProjectChange() {
                 "projectId": newId
             },
             dataType: 'json',
-            contentType: 'application/json',
+            contentType: 'application/json'
         });
 
         getContracts.done(function (data, success) {
@@ -333,7 +333,7 @@ function onProjectChange() {
             });
 
         });
-        getContracts.error(function (xhr, status, error) {
+        getContracts.fail(function (xhr, status, error) {
             WgTools.alert(error, true, 'E');
         });
     }

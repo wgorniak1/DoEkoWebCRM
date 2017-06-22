@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -532,7 +532,7 @@ namespace DoEko.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = Roles.Admin)]
-        public IActionResult UploadDataFromFile(FormCollection Form, int ContractId)
+        public IActionResult UploadDataFromFile(IFormCollection Form, int ContractId)
         {
             IList<string> errMessage = new List<string>();
             int success = 0;
@@ -540,7 +540,7 @@ namespace DoEko.Controllers
             var file = Request.Form.Files.SingleOrDefault(f => f.FileName.ToLower().Contains(".csv"));
             if (file == null)
             {
-                errMessage.Add("B³¹d odczytu pliku");
+                errMessage.Add("BÅ‚Ä…d odczytu pliku");
                 TempData["FileUploadResult"] = 8;
                 TempData["FileUploadType"] = "Import Inwestycji";
                 TempData["FileUploadError"] = errMessage;
@@ -552,10 +552,12 @@ namespace DoEko.Controllers
             //
             StreamReader sr = new StreamReader(file.OpenReadStream(),true);
             //Encoding.GetEncoding(1252)
-            // StreamReader(stream, Encoding.UTF8))  
+            // StreamReader(stream, Encoding.UTF8))Â  
             //Encoding.Default
-            InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context);
-            uploadhelper.ContractId = ContractId;
+            InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context)
+            {
+                ContractId = ContractId
+            };
             //
             ICollection<Survey> Surveys;
             Address InvestmentAddress;
@@ -645,9 +647,9 @@ namespace DoEko.Controllers
                     {
                         transaction.Rollback();
                         if (exc.Message.Contains("See the inner exception for details"))
-                            errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.InnerException.Message.ToString());
+                            errMessage.Add("BÂ³Â¹d w wierszu nr " + i.ToString() + ": " + exc.InnerException.Message.ToString());
                         else
-                            errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
+                            errMessage.Add("BÂ³Â¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
                     }
                 }
             }
@@ -668,14 +670,14 @@ namespace DoEko.Controllers
                 if (success != 0)
                 {
                     TempData["FileUploadResult"] = 4;
-                    TempData["FileUploadSuccess"] = "Pomyœlnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
+                    TempData["FileUploadSuccess"] = "PomyÅ“lnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
                 }
             }
             else
             {
                 TempData["FileUploadType"]  = "Import Inwestycji";
                 TempData["FileUploadResult"]  = 0;
-                TempData["FileUploadSuccess"] = "Pomyœlnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
+                TempData["FileUploadSuccess"] = "PomyÅ“lnie wczytano inwestycje dla " + success.ToString() + " wierszy.";
             }
 
             return RedirectToAction("Details", "Contracts", new { Id = ContractId });

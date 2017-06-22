@@ -70,7 +70,7 @@ function ajaxGetSectionNo() {
     getSect.done(function (data, success) {
         onAjaxGetSuccess(data, success);
     });
-    getSect.error(function (xhr, status, error) {
+    getSect.fail(function (xhr, status, error) {
         onAjaxGetFailure(xhr, status, error);
     });
 }
@@ -179,7 +179,7 @@ function ajaxGetPrevSection() {
     getPrev.done(function (data, success) {
         onAjaxGetSuccess(data, success);
     });
-    getPrev.error(function (xhr, status, error) {
+    getPrev.fail(function (xhr, status, error) {
         onAjaxGetFailure(xhr, status, error);
     });
 }
@@ -197,7 +197,7 @@ function ajaxGetNextSection() {
     getNext.done(function (data, success) {
         onAjaxGetSuccess(data, success);
     });
-    getNext.error(function (xhr, status, error) {
+    getNext.fail(function (xhr, status, error) {
         onAjaxGetFailure(xhr, status, error);
     });
 }
@@ -257,9 +257,9 @@ function ajaxPostCurrentSection(onError, onSuccess) {
             data: form.serialize()
         });
 
-        postCurrent.error(onError);
-        postCurrent.success(onSuccess);
-        postCurrent.success(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
+        postCurrent.fail(onError);
+        postCurrent.done(onSuccess);
+        postCurrent.done(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
         //$.when(postCurrent);
     }
 }
@@ -284,7 +284,7 @@ function btnAddOwner() {
             onAjaxGetSuccess(data, success);
         });
 
-        getNew.error(function (xhr, status, error) {
+        getNew.fail(function (xhr, status, error) {
             onAjaxGetFailure(xhr, status, error);
         });
     });
@@ -344,7 +344,7 @@ function onAddRoof() {
             onAjaxGetSuccess(data, success);
         });
 
-        getNew.error(function (xhr, status, error) {
+        getNew.fail(function (xhr, status, error) {
             onAjaxGetFailure(xhr, status, error);
         });
     });
@@ -614,7 +614,7 @@ function UploadPhoto(type, guid, imageName, image) {
         onUploadPhotoCompleted(data, success, imageName);
         turnPhotoLoader(imageName, false);
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         onUploadPhotoFailed(xhr, status, error);
     });
 
@@ -672,7 +672,7 @@ function DeletePhoto(type, guid, name, filename) {
     call.done(function (data, success) {
         onDeletePhotoCompleted(data, success, name);
     });
-    call.error(function (xhr, status, error) {
+    call.fail(function (xhr, status, error) {
         onDeletePhotoFailed(xhr, status, error);
     });
 }
@@ -720,9 +720,9 @@ function onInspectionDateTimeChange() {
             //    data: form.serialize()
             //});
 
-            //postCurrent.error(onError);
-            //postCurrent.success(onSuccess);
-            //postCurrent.success(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
+            //postCurrent.fail(onError);
+            //postCurrent.done(onSuccess);
+            //postCurrent.done(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
             ////$.when(postCurrent);
         }
     

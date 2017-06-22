@@ -274,7 +274,7 @@ function onUserCreate(dt) {
         $('body').on('click', 'button.user-create-submit', onUserCreateSubmit);
 
     });
-    getModal.error(function (xhr, status, error) {
+    getModal.fail(function (xhr, status, error) {
         //onAjaxGetFailure(xhr, status, error);
         WgTools.alert(error, false, "E");
     });
@@ -309,7 +309,7 @@ function onUserEdit(userId) {
 
     });
 
-    getModal.error(function (xhr, status, error) {
+    getModal.fail(function (xhr, status, error) {
         WgTools.alert(error, false, "E");
     });
 
@@ -328,7 +328,7 @@ function onUserLock(userId) {
         url: "Lock",
         data: {
             Id: userId,
-            __RequestVerificationToken: token,
+            __RequestVerificationToken: token
         }
     });
 
@@ -361,7 +361,7 @@ function onUserUnlock(userId) {
         url: "UnLock",
         data: {
             Id: userId,
-            __RequestVerificationToken: token,
+            __RequestVerificationToken: token
         }
     });
 
@@ -422,7 +422,7 @@ function onUserEditSubmit() {
             data: formData
         });
 
-        submit.error(function (error) {
+        submit.fail(function (error) {
             //Process errors
             var $ul = $('div.validation-summary-valid.text-danger > ul');
 
@@ -449,7 +449,7 @@ function onUserEditSubmit() {
             $submit.text(submitTitle);
         });
 
-        submit.success(function () {
+        submit.done(function () {
             //Post was successful
 
             //close modal
@@ -492,7 +492,7 @@ function onUserCreateSubmit() {
             data: formData
         });
 
-        submit.error(function (error) {
+        submit.fail(function (error) {
             //Process errors
             var $ul = $('div.validation-summary-valid.text-danger > ul');
 
@@ -520,7 +520,7 @@ function onUserCreateSubmit() {
         });
 
 
-        submit.success(function () {
+        submit.done(function () {
             //Post was successful
 
             //close modal
@@ -545,7 +545,8 @@ function onUserDeleteSubmit(event) {
         url: "Delete",
         data: {
             Id: event.data.userId,
-            __RequestVerificationToken: token, }
+            __RequestVerificationToken: token
+        }
     });
 
     deleteAction.done(function () {
