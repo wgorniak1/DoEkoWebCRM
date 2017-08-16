@@ -15,28 +15,26 @@
         <input asp-for="SurveyId" type="hidden" />
         <input asp-for="Type" type="hidden" />
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-6">
                 <div class='form-group-sm'>
                     <label asp-for="FreeCommments" class="control-label"></label>
-                    <textarea class="form-control" asp-for="FreeCommments" rows="4"></textarea>
+                    <textarea class="form-control" asp-for="FreeCommments" rows="5"></textarea>
                     <span class="help-block"></span>
                     <span asp-validation-for="FreeCommments" class="text-danger" />
                 </div>
             </div>
-        </div>
         @if (Model.Status == DoEko.Models.DoEko.Survey.SurveyStatus.Cancelled)
         {
-        <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-6">
                 <div class='form-group-sm'>
                     <label asp-for="CancelComments" class="control-label"></label>
-                    <textarea class="form-control" asp-for="CancelComments" rows="3" readonly></textarea>
+                    <textarea class="form-control" asp-for="CancelComments" rows="5" readonly></textarea>
                     <span class="help-block"></span>
                     <span asp-validation-for="CancelComments" class="text-danger" />
                 </div>
             </div>
-        </div>
         }
+        </div>
     </fieldset>
     
     <input type="submit" hidden/>

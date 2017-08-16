@@ -318,6 +318,9 @@ namespace DoEko.Controllers
         [Authorize(Roles = Roles.Admin)]
         public IActionResult UploadNeoenergetykaResults(IFormFile neoenergetyka, int contractId)
         {
+
+            _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
             //fields validation
             string[] allowedFileTypes = {
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

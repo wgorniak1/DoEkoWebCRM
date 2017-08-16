@@ -139,7 +139,7 @@ namespace DoEko.Models.DoEko.Survey
         [Display(Description = "", Name = "Powód anulowania", ShortName = "Powód anulowania")]
         public SurveyCancelType? CancelType { get; set; }
         //cancellation_comments
-        [Display(Description = "", Name = "Uwagi", ShortName = "Uwagi")]
+        [Display(Description = "", Name = "Komentarz do powodu anulowania", ShortName = "Uwagi")]
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         public string CancelComments { get; set; }
 
@@ -172,7 +172,7 @@ namespace DoEko.Models.DoEko.Survey
 
         public SurveyResultCalculations ResultCalculation { get; set; }
 
-        [Display(Description = "", Name = "Uwagi", ShortName = "Uwagi")]
+        [Display(Description = "", Name = "Komentarz Inspektora", ShortName = "Komentarz Inspektora")]
         public string FreeCommments { get; set; }
 
         public string TypeFullDescription()
