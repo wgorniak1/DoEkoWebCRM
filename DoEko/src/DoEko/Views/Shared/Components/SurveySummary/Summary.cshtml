@@ -24,6 +24,19 @@
                 </div>
             </div>
         </div>
+        @if (Model.Status == DoEko.Models.DoEko.Survey.SurveyStatus.Cancelled)
+        {
+        <div class="row">
+            <div class="col-sm-12">
+                <div class='form-group-sm'>
+                    <label asp-for="CancelComments" class="control-label"></label>
+                    <textarea class="form-control" asp-for="CancelComments" rows="3" readonly></textarea>
+                    <span class="help-block"></span>
+                    <span asp-validation-for="CancelComments" class="text-danger" />
+                </div>
+            </div>
+        </div>
+        }
     </fieldset>
     
     <input type="submit" hidden/>
