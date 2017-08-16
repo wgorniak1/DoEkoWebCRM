@@ -32,13 +32,13 @@
     <Content Remove="wwwroot/js\s4au55tz.zr4~" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <Content Include="wwwroot\js\BusinessPartnerPersonList.js" />
     <Content Include="wwwroot\js\BusinessPartnerPersonList.min.js" />
     <Content Include="wwwroot\js\ContractDetails - Copy.js">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <None Include="App.config" />
