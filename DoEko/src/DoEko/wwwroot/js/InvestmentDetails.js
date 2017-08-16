@@ -3,6 +3,88 @@
 
 //---------------------------------------------------------------------------//
 // SurveyCreate Modal -> Show modal
+function onSurveyRevertModalShowButtonClick() {
+    //var modal = $("#SurveyCreateModal");
+    //modal.modal('show');
+    var surveyId = $(this).data('survey-id');
+    var form = $("#SurveyRevertModalForm");
+    var srv = $("#SurveyId", form);
+    srv.val(surveyId);
+}
+$('body').on('click', 'button[data-target="#SrvRevertModal"]', onSurveyRevertModalShowButtonClick);
+
+//---------------------------------------------------------------------------//
+// SurveyCreate Modal -> Close/Cancel modal
+function onSurveyRevertModalCancelButtonClick() {
+    var form = document.getElementById("SurveyRevertModalForm");
+    form.reset();
+}
+$('body').on('click', 'button.srvrevertmodal-btn-cancel', onSurveyRevertModalCancelButtonClick);
+
+//---------------------------------------------------------------------------//
+// SurveyCreate Modal -> Submit
+function onSurveyRevertModalSubmitButtonClick() {
+    ajaxSurveyRevertPost();
+}
+$('body').on('click', 'button.srvrevertmodal-btn-submit', onSurveyRevertModalSubmitButtonClick);
+
+//---------------------------------------------------------------------------//
+// SurveyCreate Modal - after Ajax is completed
+function onAjaxSurveyRevertCompleted(data, status) {
+    //var modal = $("#SurveyCreateModal");
+    //modal.modal('hide');
+
+    //var form = document.getElementById("SurveyCreateModalForm");
+    //form.reset();
+
+    window.location.reload();
+}
+//---------------------------------------------------------------------------//
+//
+function onAjaxSurveyRevertFailed(xhr, status, error) {
+    //var modal = $("#SurveyCreateModal");
+    //modal.modal('hide');
+
+    //var form = document.getElementById("SurveyCreateModalForm");
+    //form.reset();
+    //
+    alert(error);
+}
+//---------------------------------------------------------------------------//
+//
+function ajaxSurveyRevertPost() {
+    var form = $("#SurveyRevertModalForm");
+    var srv = $("#SurveyId", form);
+
+    var call = $.ajax({
+        type: "POST",
+        url: "/Surveys/RevertAjax",
+        data: {
+            "surveyId": srv.val()
+        }
+    });
+
+    call.done(function (data, success) {
+        onAjaxSurveyRevertCompleted(data, success);
+    });
+    call.fail(function (xhr, status, error) {
+        onAjaxSurveyRevertFailed(xhr, status, error);
+    });
+}
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// SURVEY Reject MODAL CONTROLS
+
+//---------------------------------------------------------------------------//
+// SurveyCreate Modal -> Show modal
 function onSurveyRejectModalShowButtonClick() {
     //var modal = $("#SurveyCreateModal");
     //modal.modal('show');

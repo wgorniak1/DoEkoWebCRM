@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -1260,7 +1260,7 @@ namespace DoEko.Controllers
 
                 if (Result == 0)
                 {
-                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    ModelState.AddModelError(nameof(Survey.Status), "NieprawidÂ³owy status ankiety");
                     return BadRequest(ModelState);
                 }
 
@@ -1289,7 +1289,7 @@ namespace DoEko.Controllers
 
                 if (Result == 0)
                 {
-                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    ModelState.AddModelError(nameof(Survey.Status), "NieprawidÂ³owy status ankiety");
                     return BadRequest(ModelState);
                 }
 
@@ -1315,7 +1315,7 @@ namespace DoEko.Controllers
 
                 if (Result == 0)
                 {
-                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    ModelState.AddModelError(nameof(Survey.Status), "NieprawidÂ³owy status ankiety");
                     return BadRequest(ModelState);
                 }
 
@@ -1329,7 +1329,31 @@ namespace DoEko.Controllers
                 return BadRequest(exc);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> RevertAjax(Guid surveyId)
+        {
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
+                int Result = this.SetDraftStatus(surveyId, true,true);
+
+                if (Result == 0)
+                {
+                    ModelState.AddModelError(nameof(Survey.Status), "NieprawidÅ‚owy status ankiety");
+                    return BadRequest(ModelState);
+                }
+
+                //UPDATE INVESTMENT STATUS
+                await this.updateInvestmentStatus(_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.InvestmentId).First());
+
+                return Ok();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
         public async Task<IActionResult> CreateAjax(SurveyCreateViewModel model)
         {
             try
@@ -1527,7 +1551,7 @@ namespace DoEko.Controllers
             }
             return 0;
         }
-        private int SetDraftStatus (Guid surveyId, bool commit = false)
+        private int SetDraftStatus (Guid surveyId, bool commit = false, bool force = false)
         {
             try
             {
@@ -1535,19 +1559,25 @@ namespace DoEko.Controllers
                 {
                     case SurveyType.CentralHeating:
                         SurveyCentralHeating srvCH = _context.SurveysCH.Single(s => s.SurveyId == surveyId);
-                        if (srvCH.Status == SurveyStatus.New || srvCH.Status == SurveyStatus.Rejected)
+                        if (srvCH.Status == SurveyStatus.New || 
+                            srvCH.Status == SurveyStatus.Rejected || 
+                            (srvCH.Status == SurveyStatus.Cancelled && force))
                             srvCH.Status = SurveyStatus.Draft;
                         _context.Update(srvCH);
                         break;
                     case SurveyType.HotWater:
                         SurveyHotWater srvHW = _context.SurveysHW.Single(s => s.SurveyId == surveyId);
-                        if (srvHW.Status == SurveyStatus.New || srvHW.Status == SurveyStatus.Rejected)
+                        if (srvHW.Status == SurveyStatus.New || 
+                            srvHW.Status == SurveyStatus.Rejected ||
+                            (srvHW.Status == SurveyStatus.Cancelled && force))
                             srvHW.Status = SurveyStatus.Draft;
                         _context.Update(srvHW);
                         break;
                     case SurveyType.Energy:
                         SurveyEnergy srvEN = _context.SurveysEN.Single(s => s.SurveyId == surveyId);
-                        if (srvEN.Status == SurveyStatus.New || srvEN.Status == SurveyStatus.Rejected)
+                        if (srvEN.Status == SurveyStatus.New || 
+                            srvEN.Status == SurveyStatus.Rejected ||
+                           (srvEN.Status == SurveyStatus.Cancelled && force))
                             srvEN.Status = SurveyStatus.Draft;
                         _context.Update(srvEN);
                         break;

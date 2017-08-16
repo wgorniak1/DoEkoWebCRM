@@ -167,6 +167,41 @@
         </div>
     </div>
 </div>
+<!--Modal 6-->
+@{
+//modal main div    #SrvRevertModal
+//modal form btns   .SrvRevertModal-btn-submit
+//                  .SrvRevertModal-btn-cancel
+}
+@if (User.IsInRole(Roles.Admin))
+{
+<div class="modal fade" id="SrvRevertModal" tabindex="-2" role="dialog" aria-labelledby="SrvRevertModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close srvrevertmodal-btn-cancel" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="SrvRevertModalTitle">Przywrócenie ankiety</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Przywracając ankietę, ustawisz jej status ponownie "Nowa" oraz status inwestycji (jeśli była zakończona) na "w trakcie realizacji"
+                </p>
+                <form id="SurveyRevertModalForm">
+                    <fieldset>
+                        <input Id="SurveyId" type="hidden" />
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger  srvrevertmodal-btn-cancel" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-success srvrevertmodal-btn-submit" title="Potwierdź przywrócenie ankiety">Potwierdź</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
 <!-- Navigation -->
 @if (User.IsInRole(Roles.Inspector))
 {
