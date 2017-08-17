@@ -14,7 +14,7 @@
         <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
         <li><a asp-action="List" asp-controller="Investments">Moje inspekcje</a></li>
         <li><a asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Inwestycja @Model.Investment.Address.SingleLine</a></li>
-        <li class="active">@Model.RSEType.DisplayName() + " (" + @Model.Type.DisplayShortName() + ')'</li>
+        <li class="active">@Model.RSEType.DisplayName() (@Model.Type.DisplayShortName())</li>
         <li class="active"></li>
     </ol>
 }
@@ -26,7 +26,7 @@ else
         <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.Investment.Contract.ProjectId">Projekt @Html.DisplayFor(model => model.Investment.Contract.Project.ShortDescription)</a></li>
         <li><a asp-action="Details" asp-controller="Contracts" asp-route-Id="@Model.Investment.ContractId">Umowa @Html.DisplayFor(model => model.Investment.Contract.Number)</a></li>
         <li><a asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Inwestycja @Model.Investment.Address.SingleLine</a></li>
-        <li class="active">@Model.RSEType.DisplayName() + " (" + @Model.Type.DisplayShortName() + ')'</li>
+        <li class="active">@Model.RSEType.DisplayName() (@Model.Type.DisplayShortName())</li>
     </ol>
 }
 <!--Static Survey Header-->
@@ -46,12 +46,12 @@ else
                 <label class="control-label">
                     <i class="fa fa-map-marker" aria-hidden="true"></i> Adres inwestycji
                 </label>
-            @{ string MapsUrl = "https://google.com/maps/search/" + @Html.UrlEncoder.Encode(Model.Investment.Address.SingleLine); }
-            <p class="form-control-static">
-                <a href="@MapsUrl">
-                    @Html.DisplayFor(model => model.Investment.Address.SingleLine)
-                </a>
-            </p>
+            @{ string MapsUrl = "https://google.com/maps/search/" + Html.UrlEncoder.Encode(Model.Investment.Address.SingleLine); }
+            
+            <a href="@MapsUrl" target="_blank" class="form-control-static">
+                @Html.DisplayFor(model => model.Investment.Address.SingleLine)
+            </a>
+            
         </div>
     </div>
     <div class="col-sm-3">
