@@ -51,6 +51,8 @@ namespace DoEko.Controllers
                         .ThenInclude(i => i.Address)
                         .Include(s=>s.Investment)
                         .ThenInclude(i => i.InvestmentOwners)
+                        .Include(s=>s.Investment)
+                        .ThenInclude(i=>i.Contract).ThenInclude(c=>c.Project)
                         .SingleAsync(s => s.SurveyId == Id);
 
                     if (srvch.InspectionDateTime <= DateTime.MinValue)
@@ -65,6 +67,8 @@ namespace DoEko.Controllers
                         .ThenInclude(i => i.Address)
                         .Include(s => s.Investment)
                         .ThenInclude(i => i.InvestmentOwners)
+                        .Include(s => s.Investment)
+                        .ThenInclude(i => i.Contract).ThenInclude(c => c.Project)
                         .SingleAsync(s => s.SurveyId == Id);
                     if (srvhw.InspectionDateTime <= DateTime.MinValue)
                     {
@@ -77,6 +81,8 @@ namespace DoEko.Controllers
                         .ThenInclude(i => i.Address)
                         .Include(s => s.Investment)
                         .ThenInclude(i => i.InvestmentOwners)
+                        .Include(s => s.Investment)
+                        .ThenInclude(i => i.Contract).ThenInclude(c => c.Project)
                         .SingleAsync(s => s.SurveyId == Id);
                     if (srven.InspectionDateTime <= DateTime.MinValue)
                     {
