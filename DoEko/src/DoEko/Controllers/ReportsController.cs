@@ -856,7 +856,7 @@ namespace DoEko.Controllers
                 //GENERAL
                 myExport["ANULOWANA - KOMENTARZ"] = srv.CancelComments != null ? srv.CancelComments.ToString() : "";
                 myExport["ANULOWANA - POWÓD"] = srv.CancelType.HasValue ? srv.CancelType.DisplayName() : "";
-                myExport["OST.ZM. - DATA"] = string.Format("{0:yyyy-M-dd hh:mm:ss}", srv.ChangedAt);
+                myExport["OST.ZM. - DATA"] = string.Format("{0:yyyy-M-dd hh:mm:ss}", srv.ChangedAt.ToLocalTime());
                 if (srv.ChangedBy != Guid.Empty)
                 {
                     var usr = await _userManager.FindByIdAsync(srv.ChangedBy.ToString());

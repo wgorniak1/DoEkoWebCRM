@@ -64,5 +64,8 @@ namespace DoEko.Models.DoEko
         /// </summary>
         [Display(Description = "", Name = "Zgoda na przetw. danych", ShortName = "Zgoda na przetw. d.")]
         public bool DataProcessingConfirmation { get; set; }
+
+        [NotMapped]
+        public string FullName { get { return PartnerName1 + ' ' + PartnerName2; } private set { } }
     }
 }

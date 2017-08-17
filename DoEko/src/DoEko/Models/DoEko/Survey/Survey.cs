@@ -15,19 +15,19 @@ namespace DoEko.Models.DoEko.Survey
         /// Pompa ciepła gruntowa / kocioł na pellet
         /// Przeznaczenie: Centralne Ogrzewanie
         /// </summary>
-        [Display(Name = "Centralne Ogrzewanie")]
+        [Display(Name = "Centralne Ogrzewanie", ShortName ="C.O.")]
         CentralHeating,
         /// <summary>
         /// Instalacja Solarna = Kolektory płaskie / próżniowe lub Pompa ciepła
         /// Przeznaczenie: Ciepła woda użytkowa
         /// </summary>
-        [Display(Name = "Ciepła Woda Użytk.")]
+        [Display(Name = "Ciepła Woda Użytk.", ShortName = "C.W.U")]
         HotWater,
         /// <summary>
         /// Instalacja fotowoltaiczna
         /// Przeznaczenie: Energia Elektryczna
         /// </summary>
-        [Display(Name = "Energia Elektr.")]
+        [Display(Name = "Energia Elektr.", ShortName = "E.E.")]
         Energy
     }
     public enum SurveyRSETypeCentralHeating

@@ -410,41 +410,82 @@ function onRoofTypeChange() {
 $('body').on('change', '.roof-type', onRoofTypeChange);
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
-function NavigationPrev() {
+function NavigationPrev(event) {
+
+    //DateTime validation
+    var inspectionDateTimeForm = $("#SurveyInspectionDateTime");
+    if (inspectionDateTimeForm.length !== 0) {
+
+        inspectionDateTimeForm.validate({ lang: 'pl' });
+
+        if (!inspectionDateTimeForm.valid())
+            return;
+    }
+
     var section = $("#Dynamic form").attr('id');
 
     if (section === 'SurveyPhoto') {
         ajaxGetPrevSection();
-    } else {
+        return;
+    }
+
+    //prev or prev & save
+    var save = event.data.save || false;
+    if (save) {
         ajaxPostCurrentSection(onAjaxPostError, ajaxGetPrevSection);
     }
-}
-function NavigationNext() {
-    //DateTime validation
+    else {
+        ajaxGetPrevSection();
+    }
     
+}
+function NavigationNext(event) {
+
+    //DateTime validation
     var inspectionDateTimeForm = $("#SurveyInspectionDateTime");
+    if (inspectionDateTimeForm.length !== 0) {
 
-    inspectionDateTimeForm.validate({
-        lang: 'pl'
-    });
+        inspectionDateTimeForm.validate({ lang: 'pl' });
 
-    if (inspectionDateTimeForm.valid()) {
+        if (!inspectionDateTimeForm.valid())
+            return;
+    }
+    //next or next & save
+    var save = event.data.save || false;
+    if (save) {
         ajaxPostCurrentSection(onAjaxPostError, ajaxGetNextSection);
     }
+    else {
+        ajaxGetNextSection();
+    }
 }
-function NavigationLast() {
-    var $form = $("#Dynamic form").first();
-    $form.validate({
-        lang: 'pl'
-    });
-    if ($form.valid()) {
-        $form.submit();
+
+function NavigationSave() {
+    ajaxPostCurrentSection(onAjaxPostError, null);
+}
+
+function NavigationLast(event) {
+
+    var save = event.data.save || false;
+    if (save) {
+        var $form = $("#Dynamic form").first();
+        $form.validate({ lang: 'pl' });
+        if ($form.valid())
+            $form.submit();
+    }
+    else {
+        $("#stepCancel").click();
     }
 }
 
 $('body').on('click', '#stepNext', NavigationNext);
 $('body').on('click', '#stepPrev', NavigationPrev);
 $('body').on('click', '#stepLast', NavigationLast);
+$('body').on('click', '#stepSave', NavigationSave);
+
+$('body').on('click', '#stepNextSave', { save: true }, NavigationNext);
+$('body').on('click', '#stepPrevSave', { save: true }, NavigationPrev);
+$('body').on('click', '#stepLastSave', { save: true }, NavigationLast);
 
 //<script type="text/javascript" title="Checkboxes driven by option buttons">
 function optionBtnTrue() {
@@ -703,29 +744,12 @@ function onInspectionDateTimeChange() {
 
     var form = $("#SurveyInspectionDateTime");
 
-        form.validate({
-            lang: 'pl'
-        });
-
-        if (form.valid()) {
-            form.submit();
-            //var url = form.attr("action"),
-            //    method = form.attr('data-ajax-method'),
-            //    ajaxTrue = form.attr('data-ajax');
-
-            ////1st
-            //var postCurrent = $.ajax({
-            //    type: method || "POST",
-            //    url: url,
-            //    data: form.serialize()
-            //});
-
-            //postCurrent.fail(onError);
-            //postCurrent.done(onSuccess);
-            //postCurrent.done(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
-            ////$.when(postCurrent);
-        }
+    if (form.length == 0) return;
     
+    form.validate({ lang: 'pl' });
+
+    if (form.valid()) form.submit();
+
 }
 
 function InspectionDateTimePostFailure(xhr, status, error) {

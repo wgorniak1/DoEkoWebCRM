@@ -52,7 +52,10 @@
                                                     <td>
                                                         @(bp.LastName + ' ' + bp.FirstName)
                                                     </td>
+                                                    @if (!String.IsNullOrEmpty(bp.Pesel))
+                                                    {
                                                     <td>@('(' + bp.Pesel + ')')</td>
+                                                    }
                                                 </tr>
                                             }
 

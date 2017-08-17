@@ -3,7 +3,7 @@
 @using DoEko.Models.DoEko.Survey
 @using DoEko.Models.Identity
 @{
-    ViewData["Title"] = "Ankieta: Ciepła Woda | " + Model.RSEType.DisplayName();
+    ViewData["Title"] = "Ankieta: " + Model.RSEType.DisplayName() + " (" + Model.Type.DisplayShortName() + ')';
 }
 
 <!-- Navigation -->
@@ -12,7 +12,8 @@
     <ol class="breadcrumb">
         <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
         <li><a asp-action="List" asp-controller="Investments">Moje inspekcje</a></li>
-        <li><a asp-action="Details" asp-controller="Investments">Inwestycja @Model.Investment.Address.SingleLine</a></li>
+        <li><a asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Inwestycja @Model.Investment.Address.SingleLine</a></li>
+        <li class="active">Model.RSEType.DisplayName() + " (" + Model.Type.DisplayShortName() + ')'</li>
         <li class="active"></li>
     </ol>
 }
@@ -20,18 +21,12 @@ else
 {
     <ol class="breadcrumb">
         <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
-        <li><a asp-action="List" asp-controller="Investments">Moje inspekcje</a></li>
-        <li><a asp-action="Details" asp-controller="Investments" asp-route-id="@Model.InvestmentId">Inwestycja @Model.Investment.Address.SingleLine</a></li>
-        <li class="active">@Model.Type.DisplayName() | @Model.RSEType.DisplayName()</li>
-    </ol>
-
-    @*<ol class="breadcrumb">
-        <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
         <li><a asp-action="Index" asp-controller="Projects">Lista Projektów</a></li>
-        <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.Contract.ProjectId">Projekt @Html.DisplayFor(model => model.Contract.Project.ShortDescription)</a></li>
-        <li><a asp-action="Details" asp-controller="Contracts" asp-route-Id="@Model.ContractId">Umowa @Html.DisplayFor(model => model.Contract.Number)</a></li>
-        <li class="active">Inwestycja @(Model.Address.FirstLine + " " + Model.Address.SecondLine)</li>
-    </ol>*@
+        <li><a asp-action="Details" asp-controller="Projects" asp-route-Id="@Model.Investment.Contract.ProjectId">Projekt @Html.DisplayFor(model => model.Investment.Contract.Project.ShortDescription)</a></li>
+        <li><a asp-action="Details" asp-controller="Contracts" asp-route-Id="@Model.Investment.ContractId">Umowa @Html.DisplayFor(model => model.Investment.Contract.Number)</a></li>
+        <li><a asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Inwestycja @Model.Investment.Address.SingleLine</a></li>
+        <li class="active">Model.RSEType.DisplayName() + " (" + Model.Type.DisplayShortName() + ')'</li>
+    </ol>
 }
 <!--Static Survey Header-->
 <div class="row">
@@ -41,7 +36,7 @@ else
                 <i class="fa fa-plug" aria-hidden="true"></i> OZE
             </label>
             <p class="form-control-static">
-                @Model.Type.DisplayName() | @Model.RSEType.DisplayName()
+                @Html.DisplayFor(model => model.RSEType.DisplayName() + " (" + model.Type.DisplayShortName() + ')')
             </p>
         </div>
     </div>
@@ -51,28 +46,42 @@ else
                 <i class="fa fa-map-marker" aria-hidden="true"></i> Adres inwestycji
             </label>
             <p class="form-control-static">
-                @Model.Investment.Address.SingleLine
+                <a href="@Html.UrlEncoder.Encode("https://google.com/maps/search/" + Model.Investment.Address.SingleLine)">
+                    @Html.DisplayFor(model => model.Investment.Address.SingleLine)
+                </a>
             </p>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="form-group-sm">
-            <form id="SurveyInspectionDateTime"
-                  asp-action="UpdateInspectionDateAjax"
-                  asp-controller="Surveys"
-                  data-ajax="true"
-                  data-ajax-method="POST"
-                  data-ajax-mode="UPDATE"
-                  data-ajax-update=""
-                  data-ajax-failure="InspectionDateTimePostFailure"
-                  data-ajax-success="InspectionDateTimePostSuccess">
-                <input asp-for="SurveyId" type="hidden" />
+            @if (User.IsInRole(Roles.Admin))
+            {
                 <label class="control-label">
                     <i class="fa fa-calendar" aria-hidden="true"></i> Data i czas inspekcji
                 </label>
-                <input asp-for="InspectionDateTime" class="form-control inspectiondatetime" />
-                <span asp-validation-for="InspectionDateTime" class="text-danger" />
-            </form>
+                <p class="form-control-static">
+                    @Html.DisplayFor(model => model.InspectionDateTime)
+                </p>
+            }
+            else
+            {
+                <form id="SurveyInspectionDateTime"
+                      asp-action="UpdateInspectionDateAjax"
+                      asp-controller="Surveys"
+                      data-ajax="true"
+                      data-ajax-method="POST"
+                      data-ajax-mode="UPDATE"
+                      data-ajax-update=""
+                      data-ajax-failure="InspectionDateTimePostFailure"
+                      data-ajax-success="InspectionDateTimePostSuccess">
+                    <input asp-for="SurveyId" type="hidden" />
+                    <label class="control-label">
+                        <i class="fa fa-calendar" aria-hidden="true"></i> Data i czas inspekcji
+                    </label>
+                    <input asp-for="InspectionDateTime" class="form-control inspectiondatetime" />
+                    <span asp-validation-for="InspectionDateTime" class="text-danger" />
+                </form>
+            }
         </div>
     </div>
     <div class="col-sm-3">
@@ -80,9 +89,23 @@ else
             <label class="control-label">
                 <i class="fa fa-cogs" aria-hidden="true"></i> Status inspekcji
             </label>
-            <p class="form-control-static">
-                @Model.Status.DisplayName()
-            </p>
+            @if (Model.Status == SurveyStatus.Cancelled)
+            {
+                @*@{ApplicationUser user = await UserManager.FindByIdAsync(Model.Investment.InspectorId.ToString());}
+            @if (user != null)
+            {
+            @user.UserName
+            }*@
+                <p class="form-control-static" title="@Html.DisplayFor(model => model.CancelComments)">
+                    @Html.DisplayFor(model => model.Status.DisplayName() + " (" + model.CancelType.DisplayName() + ')'))
+                </p>
+            }
+            else
+            {
+                <p class="form-control-static">
+                    @Html.DisplayFor(model => model.Status.DisplayName())
+                </p>
+            }
         </div>
     </div>
 </div>
@@ -108,21 +131,42 @@ else
             <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
         </div>
     </div>*@
-    <div class="col-md-6 col-sm-6 col-xs-4">
+@if (User.IsInRole(Roles.Admin))
+{
+    <div class="col-md-6 col-sm-6 col-xs-3">
         <div class="form-group">
-            <a class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">
+            <a id="stepCancel" class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">
                 Anuluj
             </a>
         </div>
     </div>
-    <div class="col-md-6 col-sm-6 col-xs-8">
-        <div class="form-group pull-right">
-            <button type="button" id="stepPrev" class="btn btn-default" disabled>Wstecz</button>
-            <button type="button" id="stepNext" class="btn btn-success">Dalej</button>
-            <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
+        <div class="col-md-6 col-sm-6 col-xs-9">
+            <div class="form-group pull-right">
+                <button type="button" id="stepPrev" class="btn btn-default" disabled>Wstecz</button>
+                <button type="button" id="stepNext" class="btn btn-success">Dalej</button>
+                <button type="button" id="stepSave" class="btn btn-danger hidden">Zapisz</button>
+                <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
+            </div>
+        </div>
+
+}
+else
+{
+    <div class="col-md-6 col-sm-6 col-xs-4">
+        <div class="form-group">
+            <a id="stepCancel" class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">
+                Anuluj
+            </a>
         </div>
     </div>
-</div>
+        <div class="col-md-6 col-sm-6 col-xs-8">
+            <div class="form-group pull-right">
+                <button type="button" id="stepPrevSave" class="btn btn-default" disabled>Wstecz</button>
+                <button type="button" id="stepNextSave" class="btn btn-success">Dalej</button>
+                <button type="button" id="stepLastSave" class="btn btn-success hidden">Zakończ</button>
+            </div>
+        </div>
+}</div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     @{await Html.RenderPartialAsync("../Shared/Address/_AddressScriptPartial");}

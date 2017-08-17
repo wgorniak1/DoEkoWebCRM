@@ -16,6 +16,8 @@ namespace DoEko.Controllers.Helpers
 {
     public class InspectionSummaryBuilder
     {
+        public const string ReportName = "InspectionSummary";
+
         //public DoEkoContext _context;
         public IFileStorage _fileStorage;
 
@@ -47,7 +49,7 @@ namespace DoEko.Controllers.Helpers
             inv.ReadPictures(_fileStorage);
 
             //1. Title section is always populated
-            Stream MainStream = this.GetTemplate("InspectionSummary", OfficeTemplateType.Title);
+            Stream MainStream = this.GetTemplate(ReportName, OfficeTemplateType.Title);
 
             WordprocessingDocument doc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(stream: MainStream, isEditable: true);
             doc = doc.MergeFields(inv).MergePictures(inv);
@@ -74,12 +76,23 @@ namespace DoEko.Controllers.Helpers
 
             //Save data into file
 
+            
             var blob = _fileStorage
                 .GetBlobContainer(enuAzureStorageContainerType.ReportResults)
-                .GetBlockBlobReference("InspectionSummary/" + resultsFolder + '/' + inv.InvestmentId + ".docm");
+                .GetBlockBlobReference(CreateFileName(resultsFolder, inv));
 
             MainStream.Position = 0;
             return blob.UploadFromStreamAsync(MainStream);
+        }
+
+        public string CreateFileName( string folder, InvestmentViewModel inv)
+        {
+            return string.Join("/", ReportName, folder, 
+                string.Join("_",inv.FirstOwner.FullName,
+                                inv.Address.City,
+                                inv.Address.Street,
+                                inv.Address.BuildingNo,
+                                inv.Address.ApartmentNo)) + ".docm";
         }
 
         private Stream GetTemplate(string templateType, OfficeTemplateType templateSection)

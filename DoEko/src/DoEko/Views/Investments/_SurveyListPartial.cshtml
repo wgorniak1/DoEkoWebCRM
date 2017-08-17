@@ -47,7 +47,7 @@
                 <td>
                     @item.Status.DisplayName()
                 </td>
-                <td>@Html.DisplayFor(modelitem => item.ChangedAt)</td>
+                <td>@Html.DisplayFor(modelitem => item.ChangedAt.ToLocalTime())</td>
                 <td>
                     @if (item.IsPaid)
                     {
