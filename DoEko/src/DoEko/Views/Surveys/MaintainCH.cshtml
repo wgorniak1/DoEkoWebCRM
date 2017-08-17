@@ -37,7 +37,7 @@ else
                 <i class="fa fa-plug" aria-hidden="true"></i> OZE
             </label>
             <p class="form-control-static">
-                @Html.DisplayFor(model => model.RSEType.DisplayName() + " (" + model.Type.DisplayShortName() + ')' )
+                @Model.RSEType.DisplayName() (@Model.Type.DisplayShortName())
             </p>
         </div>
     </div>
@@ -99,7 +99,7 @@ else
             @user.UserName
             }*@
             <p class="form-control-static" title="@Html.DisplayFor(model => model.CancelComments)">
-                @Html.DisplayFor(model => model.Status.DisplayName()+" (" + model.CancelType.DisplayName() + ')' ))
+                @Model.Status.DisplayName() (@Model.CancelType.DisplayName())
             </p>
             }
             else
