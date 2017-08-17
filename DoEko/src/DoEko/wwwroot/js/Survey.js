@@ -430,7 +430,7 @@ function NavigationPrev(event) {
     }
 
     //prev or prev & save
-    var save = event.data.save || false;
+    var save = event.data.save;
     if (save) {
         ajaxPostCurrentSection(onAjaxPostError, ajaxGetPrevSection);
     }
@@ -451,7 +451,7 @@ function NavigationNext(event) {
             return;
     }
     //next or next & save
-    var save = event.data.save || false;
+    var save = event.data.save;
     if (save) {
         ajaxPostCurrentSection(onAjaxPostError, ajaxGetNextSection);
     }
@@ -466,7 +466,7 @@ function NavigationSave() {
 
 function NavigationLast(event) {
 
-    var save = event.data.save || false;
+    var save = event.data.save;
     if (save) {
         var $form = $("#Dynamic form").first();
         $form.validate({ lang: 'pl' });
@@ -478,9 +478,9 @@ function NavigationLast(event) {
     }
 }
 
-$('body').on('click', '#stepNext', NavigationNext);
-$('body').on('click', '#stepPrev', NavigationPrev);
-$('body').on('click', '#stepLast', NavigationLast);
+$('body').on('click', '#stepNext', { save: false }, NavigationNext);
+$('body').on('click', '#stepPrev', { save: false }, NavigationPrev);
+$('body').on('click', '#stepLast', { save: false }, NavigationLast);
 $('body').on('click', '#stepSave', NavigationSave);
 
 $('body').on('click', '#stepNextSave', { save: true }, NavigationNext);
