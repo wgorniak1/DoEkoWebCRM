@@ -7,9 +7,9 @@
             asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
             asp-fallback-test="window.jQuery && window.jQuery.validator && window.jQuery.validator.unobtrusive">
     </script>
-    <script type="text/javascript" src="~/lib/jquery-validation/src/localization/messages_pl.js"></script>
-    <script src="~/js/CustomValidationWithDataAnnotation.js"></script>
-    <script type="text/javascript" src="~/js/ValidationFixes.js"></script>
+    <script src="~/lib/jquery-validation/src/localization/messages_pl.js" asp-append-version="false" type="text/javascript"></script>
+    <script src="~/js/CustomValidationWithDataAnnotation.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/ValidationFixes.js" asp-append-version="true" type="text/javascript"></script>
 
 </environment>
 <environment names="Staging,Production">
@@ -21,7 +21,7 @@
             asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
             asp-fallback-test="window.jQuery && window.jQuery.validator && window.jQuery.validator.unobtrusive">
     </script>
-    <script type="text/javascript" src="~/lib/jquery-validation/src/localization/messages_pl.js"></script>
-    <script src="~/js/CustomValidationWithDataAnnotation.min.js"></script>
-    <script type="text/javascript" src="~/js/ValidationFixes.js"></script>
+    <script src="~/lib/jquery-validation/src/localization/messages_pl.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/CustomValidationWithDataAnnotation.min.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/ValidationFixes.js" asp-append-version="true" type="text/javascript"></script>
 </environment>

@@ -87,12 +87,15 @@ namespace DoEko.Controllers.Helpers
 
         public string CreateFileName( string folder, InvestmentViewModel inv)
         {
-            return string.Join("/", ReportName, folder, 
-                string.Join("_",inv.FirstOwner.FullName,
-                                inv.Address.City,
-                                inv.Address.Street,
-                                inv.Address.BuildingNo,
-                                inv.Address.ApartmentNo)) + ".docm";
+            return string.Join("/", ReportName, folder,
+                                string.Join("_", inv.FirstOwner.FullName,
+                                inv.InvestmentId.ToString())) + ".docm";
+
+            //string.Join("_",inv.FirstOwner.FullName,
+            //                inv.Address.City,
+            //                inv.Address.Street,
+            //                inv.Address.BuildingNo,
+            //                inv.Address.ApartmentNo)) + ".docm";
         }
 
         private Stream GetTemplate(string templateType, OfficeTemplateType templateSection)

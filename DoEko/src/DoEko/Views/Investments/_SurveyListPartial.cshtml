@@ -63,13 +63,16 @@
                 </td>
                 <td>
                     <div class="pull-right">
-                        @*<a asp-action="Edit"    asp-controller="Surveys" asp-route-id="@item.SurveyId"
-                            class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-pencil"></span> 
-                        </a>*@
-                        @*<a asp-action="Cancel"  asp-controller="Surveys" asp-route-id="@item.SurveyId"
-                            class="btn btn-default btn-sm">
-                        </a>*@
+                        @if (User.IsInRole(Roles.Admin))
+	                    {
+                        <button class="btn btn-default btn-sm"
+                                data-toggle="modal"
+                                data-target="#SrvMoveModal"
+                                data-survey-id="@item.SurveyId"
+                                type="button">
+                            <span class="glyphicon glyphicon-transfer"></span>
+                        </button>
+	                    }
                         @switch (item.Status)
                         {
                             case SurveyStatus.New:

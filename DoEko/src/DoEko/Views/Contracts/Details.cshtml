@@ -269,10 +269,10 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 <environment names="Development">
-    <script src="~/js/ContractDetails.js"></script>
+    <script src="~/js/ContractDetails.js" asp-append-version="true" type="text/javascript"></script>
 </environment>
 <environment names="Staging,Production">
-    <script src="~/js/ContractDetails.min.js"></script>
+    <script src="~/js/ContractDetails.min.js" asp-append-version="true" type="text/javascript"></script>
 </environment>
 
 <script>

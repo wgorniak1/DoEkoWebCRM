@@ -224,7 +224,7 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = Roles.Admin)]
+        //[Authorize(Roles = Roles.Admin)]
         public IActionResult EditAjax(Guid id)
         {
             return ViewComponent("InvestmentDetails", new { investmentId = id, viewmode = ViewMode.Maintain });
@@ -233,36 +233,54 @@ namespace DoEko.Controllers
         [HttpPost]
         public async Task<IActionResult> PutInvestment(Guid id, Investment investment)
         {
-            //ModelState.Remove("BusinessActivity");
-            //ModelState.Remove("CentralHeatingFuel");
-            //ModelState.Remove("CentralHeatingType");
-            //ModelState.Remove("CentralHeatingTypeOther");
-            //ModelState.Remove("CompletionYear");
-            //ModelState.Remove("GeoPortal");
-            //ModelState.Remove("HeatedArea");
-            //ModelState.Remove("HotWaterFuel");
-            //ModelState.Remove("HotWaterType");
-            //ModelState.Remove("InternetAvailable");
-            //ModelState.Remove("NumberOfOccupants");
-            //ModelState.Remove("Stage");
-            //ModelState.Remove("TotalArea");
-            //ModelState.Remove("Type");
-            //ModelState.Remove("UsableArea");
-            //ModelState.Remove("Address");
+            ModelState.Remove("BusinessActivity");
+            ModelState.Remove("CentralHeatingFuel");
+            ModelState.Remove("CentralHeatingType");
+            ModelState.Remove("CentralHeatingTypeOther");
+            ModelState.Remove("CompletionYear");
+            ModelState.Remove("GeoPortal");
+            ModelState.Remove("HeatedArea");
+            ModelState.Remove("HotWaterFuel");
+            ModelState.Remove("HotWaterType");
+            ModelState.Remove("InternetAvailable");
+            ModelState.Remove("NumberOfOccupants");
+            ModelState.Remove("Stage");
+            ModelState.Remove("TotalArea");
+            ModelState.Remove("Type");
+            ModelState.Remove("UsableArea");
+            ModelState.Remove("Address");
 
-            //if (!ModelState.IsValid)
-            //{
-            //    //return BadRequest(ModelState);
-            //}
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            //if (id != investment.InvestmentId)
-            //{
-            //    return BadRequest();
-            //}
+            if (id != investment.InvestmentId)
+            {
+                return BadRequest();
+            }
 
-            _context.Entry(investment).
-                .State = EntityState.Modified;
+            try
+            {
+                var inv = _context.Investments.Single(i => i.InvestmentId == id);
 
+                if (User.IsInRole(Roles.Admin))
+                {
+                    inv.ContractId = investment.ContractId;
+                    inv.InspectorId = investment.InspectorId;
+                }
+                inv.LandRegisterNo = investment.LandRegisterNo;
+                inv.PlotNumber = investment.PlotNumber;
+                inv.PriorityIndex = investment.PriorityIndex;
+                _context.Update(inv);
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            
             try
             {
                 await _context.SaveChangesAsync();
@@ -301,6 +319,22 @@ namespace DoEko.Controllers
             {
                 return NotFound();
             }
+
+            
+            var investmentList = _context.Investments
+                .Include(i => i.Address).ThenInclude(a => a.Commune)
+                .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
+                .Where(i => i.ContractId   == investment.ContractId && 
+                            i.InvestmentId != investment.InvestmentId )
+                .AsNoTracking()
+                .ToList()
+                .Select(i=> new
+                {
+                    Text = string.Join(" ", i.InvestmentOwners.Count != 0 ? i.InvestmentOwners.FirstOrDefault().Owner.FullName : string.Empty, i.Address.SingleLine),
+                    Value = i.InvestmentId
+                });
+
+            ViewData["InvestmentId"] = new SelectList(investmentList, "Value", "Text", null);
 
             return View(investment);
         }

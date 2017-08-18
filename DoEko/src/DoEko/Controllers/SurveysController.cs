@@ -18,10 +18,24 @@ using Microsoft.AspNetCore.Http;
 using DoEko.Services;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.IO;
+using System.ComponentModel.DataAnnotations;
+using DoEko.Controllers.Extensions;
 
 namespace DoEko.Controllers
 {
-
+    public enum SurveyMoveResult
+    {
+        [Display(Name ="Ankieta nie została przeniesiona.")]
+        NotMoved = 0,
+        [Display(Name = "Ankieta została przeniesiona. Statusy inwestycji pozostały bez zmian.")]
+        Moved = 1,
+        [Display(Name = "Ankieta została przeniesiona. Zaktualizowano status bierzącej inwestycji.")]
+        MovedAndStatusChangeFirst = 3,
+        [Display(Name = "Ankieta została przeniesiona. Zaktualizowano status nowej inwestycji.")]
+        MovedAndStatusChangeSecond = 5,
+        [Display(Name ="Ankieta została przeniesiona. Zaktualizowano statusy obu inwestycji.")]
+        MovedAndStatuschangeBoth = 7
+    }
     [Authorize()]
     public class SurveysController : Controller
     {
@@ -1188,7 +1202,67 @@ namespace DoEko.Controllers
             }
         }
 
-    [HttpPost]
+        [HttpPost]
+        [Authorize(Roles =Roles.Admin)]
+        public async Task<IActionResult> Move(Guid surveyId, Guid investmentId)
+        {
+            Guid CurrentInvestmentId = Guid.Empty;
+
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+
+                SurveyType SurveyType = _context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).Single();
+
+                switch (SurveyType)
+                {
+                    case SurveyType.CentralHeating:
+                        var SrvCH = _context.SurveysCH.Single(s => s.SurveyId == surveyId);
+                        CurrentInvestmentId = SrvCH.InvestmentId;
+                        SrvCH.InvestmentId = investmentId;
+                        _context.SurveysCH.Update(SrvCH);
+                        break;
+                    case SurveyType.HotWater:
+                        var SrvHW = _context.SurveysHW.Single(s => s.SurveyId == surveyId);
+                        CurrentInvestmentId = SrvHW.InvestmentId;
+                        SrvHW.InvestmentId = investmentId;
+                        _context.SurveysHW.Update(SrvHW);
+                        break;
+                    case SurveyType.Energy:
+                        var SrvEN = _context.SurveysEN.Single(s => s.SurveyId == surveyId);
+                        CurrentInvestmentId = SrvEN.InvestmentId;
+                        SrvEN.InvestmentId = investmentId;
+                        _context.SurveysEN.Update(SrvEN);
+                        break;
+                    default:
+                        return BadRequest();
+                }
+
+                int Result = await _context.SaveChangesAsync();
+
+                if (Result != 0)
+                {
+                    Result += 2 * await this.updateInvestmentStatus(CurrentInvestmentId);
+                    Result += 4 * await this.updateInvestmentStatus(investmentId);
+
+                    SurveyMoveResult r = (SurveyMoveResult)Enum.Parse(typeof(SurveyMoveResult), Result.ToString());
+
+                    return Ok(r.DisplayName());
+                }
+                else
+                {
+                    SurveyMoveResult r = (SurveyMoveResult)Enum.Parse(typeof(SurveyMoveResult), Result.ToString());
+                    return BadRequest(r.DisplayName());
+                }
+
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CancelAjax(SurveyCancelViewModel model)
         {
             try
@@ -1788,7 +1862,7 @@ namespace DoEko.Controllers
 
         }
 
-        private async Task<int> updateInvestmentStatus( Guid investmentId)
+        private async Task<int> updateInvestmentStatus(Guid investmentId)
         {
             int Result = 0;
 
@@ -1797,7 +1871,7 @@ namespace DoEko.Controllers
                 .Single(i => i.InvestmentId == investmentId);
 
             if (inv.Surveys.Any(s => s.Status == SurveyStatus.Draft ||
-                                     s.Status == SurveyStatus.New))
+                                     s.Status == SurveyStatus.New   ))
             {
                 //draft
                 inv.InspectionStatus = InspectionStatus.Draft;
@@ -1835,6 +1909,15 @@ namespace DoEko.Controllers
             {
                 //submitted
                 inv.InspectionStatus = InspectionStatus.Submitted;
+                inv.Status = InvestmentStatus.Initial;
+                _context.Investments.Update(inv);
+                Result = await _context.SaveChangesAsync();
+            }
+            else if (inv.Surveys.Any(s => s.Status == SurveyStatus.Approval ||
+                                          s.Status == SurveyStatus.Rejected ))
+            {
+                //Draft because one is rejected or in approval and rest is approved or cancelled
+                inv.InspectionStatus = InspectionStatus.Draft;
                 inv.Status = InvestmentStatus.Initial;
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();

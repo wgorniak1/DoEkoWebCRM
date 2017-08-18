@@ -41,6 +41,17 @@
         </div>
         <div class="row">
             <div class="form-group col-xs-12 col-sm-4 col-md-4">
+                <label asp-for="Address" class="control-label"></label>
+                @{ string MapsUrl = "https://google.com/maps/search/" + Html.UrlEncoder.Encode(Model.Address.SingleLine); }
+                <p class="form-control-static">
+                    <a href="@MapsUrl" target="_blank" class="wg-link-default">
+                        @Html.DisplayFor(model => model.Address.SingleLine)
+                    </a>
+                    @if (!string.IsNullOrEmpty(Model.GeoPortal))
+            {
+                        <a href="@Model.GeoPortal" title="widok na stronie geoportalu" target="_blank">(Geoportal)</a>
+                    }
+                </p>
             </div>
             <div class="form-group col-xs-6 col-sm-4 col-md-4">
                 <label asp-for="LandRegisterNo" class="control-label"></label>

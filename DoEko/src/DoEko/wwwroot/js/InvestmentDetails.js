@@ -1,4 +1,69 @@
-﻿///
+﻿///////////////////////////////////////////////////////////////////////////////
+// SURVEY Move MODAL CONTROLS
+
+//---------------------------------------------------------------------------//
+// SurveyMove Modal -> Show modal
+function onSurveyMoveModalShowButtonClick() {
+    //var modal = $("#SurveyCreateModal");
+    //modal.modal('show');
+    var surveyId = $(this).data('survey-id');
+    var form = $("#SurveyMoveModalForm");
+    var srv = $("#SurveyId", form);
+    srv.val(surveyId);
+}
+$('body').on('click', 'button[data-target="#SrvMoveModal"]', onSurveyMoveModalShowButtonClick);
+
+//---------------------------------------------------------------------------//
+// SurveyMove Modal -> Close/Cancel modal
+function onSurveyMoveModalCancelButtonClick() {
+    var form = document.getElementById("SurveyMoveModalForm");
+    form.reset();
+}
+$('body').on('click', 'button.srvmovemodal-btn-cancel', onSurveyMoveModalCancelButtonClick);
+
+//---------------------------------------------------------------------------//
+// SurveyCreate Modal -> Submit
+function onSurveyMoveModalSubmitButtonClick() {
+    ajaxSurveyMovePost();
+}
+$('body').on('click', 'button.srvmovemodal-btn-submit', onSurveyMoveModalSubmitButtonClick);
+
+//---------------------------------------------------------------------------//
+// SurveyCreate Modal - after Ajax is completed
+function onAjaxSurveyMoveCompleted(data, status) {
+    WgTools.alert(data, true, 'S');
+    setTimeout(window.location.reload(), 4000);
+}
+//---------------------------------------------------------------------------//
+//
+function onAjaxSurveyMoveFailed(xhr, status, error) {
+    WgTools.alert(error,false,'E')
+}
+//---------------------------------------------------------------------------//
+//
+function ajaxSurveyMovePost() {
+    var form = $("#SurveyMoveModalForm");
+    var srv = $("#SurveyId", form);
+    var inv = $("#InvestmentId", form);
+    var call = $.ajax({
+        type: "POST",
+        url: "/Surveys/Move",
+        data: form.serialize()
+    });
+
+    call.done(function (data, success) {
+        onAjaxSurveyMoveCompleted(data, success);
+    });
+    call.fail(function (xhr, status, error) {
+        onAjaxSurveyMoveFailed(xhr, status, error);
+    });
+}
+
+
+
+
+
+///
 function onInvestmentDetailsSave() {
     //use WebApi()
     var $form = $("#InvestmentDetailsForm");
@@ -20,7 +85,7 @@ function onInvestmentDetailsSave() {
     });
 
     call.fail(function () { WgTools.alert("Wystąpił problem podczas zapisu", false, 'E');  });
-    call.done(function () { onInvestmentDetailsCancel });
+    call.done(function () { onInvestmentDetailsCancel(); });
     call.done(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
 
 }
@@ -45,7 +110,6 @@ function onInvestmentDetailsCancel() {
         
     });
 }
-
 function onInvestmentDetailsEdit(event) {
     var investmentId = $(this).attr('data-investmentid');
 
@@ -80,7 +144,7 @@ $('body').on('click', 'form#InvestmentDetailsForm button.cancel', onInvestmentDe
 ///
 
 ///////////////////////////////////////////////////////////////////////////////
-// SURVEY Reject MODAL CONTROLS
+// SURVEY Revert MODAL CONTROLS
 
 //---------------------------------------------------------------------------//
 // SurveyCreate Modal -> Show modal

@@ -147,7 +147,7 @@
                 </p>
                 <form id="SurveyRejectModalForm">
                     <fieldset>
-                        <input Id="SurveyId" type="hidden" />
+                        <input id="SurveyId" name="SurveyId" type="hidden" value="">
                         <div class="form-group">
                             <label class="control-label col-sm-4">Uwagi</label>
                             <div class="col-sm-8">
@@ -197,6 +197,46 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger  srvrevertmodal-btn-cancel" data-dismiss="modal">Anuluj</button>
                 <button type="button" class="btn btn-success srvrevertmodal-btn-submit" title="Potwierdź przywrócenie ankiety">Potwierdź</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+@*//modal main div    #SrvRevertModal
+//modal form btns   .SrvRevertModal-btn-submit
+//                  .SrvRevertModal-btn-cancel
+*@
+@if (User.IsInRole(Roles.Admin))
+{
+<div class="modal fade" id="SrvMoveModal" tabindex="-2" role="dialog" aria-labelledby="SrvMoveModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close srvMovemodal-btn-cancel" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="SrvMoveModalTitle">Przeniesienie ankiety</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Przenosząc ankietę pamiętaj, że część danych jest zapisana na poziomie inwestycji (np. powierzchnia budynku)
+                </p>
+                <form id="SurveyMoveModalForm" class="form-horizontal">
+                    <fieldset>
+                        <input id="SurveyId" name="SurveyId" type="hidden" value="">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">Nowa Inwestycja</label>
+                            <div class="col-sm-8">
+                                <select asp-for="InvestmentId" class="form-control" asp-items="@ViewBag.InvestmentId"></select>
+                                <span asp-validation-for="InvestmentId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger  srvmovemodal-btn-cancel" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-success srvmovemodal-btn-submit" title="Potwierdź Przeniesienie ankiety">Zapisz</button>
             </div>
         </div>
     </div>
