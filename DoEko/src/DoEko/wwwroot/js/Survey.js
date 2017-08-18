@@ -483,7 +483,7 @@ function NavigationLast(event) {
             $form.submit();
     }
     else {
-        $("#stepCancel").click();
+        document.getElementById("stepCancel").click();
     }
 }
 
