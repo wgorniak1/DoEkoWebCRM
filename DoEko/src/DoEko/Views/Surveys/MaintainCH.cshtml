@@ -15,7 +15,6 @@
         <li><a asp-action="List" asp-controller="Investments">Moje inspekcje</a></li>
         <li><a asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">Inwestycja @Model.Investment.Address.SingleLine</a></li>
         <li class="active">@Model.RSEType.DisplayName() (@Model.Type.DisplayShortName())</li>
-        <li class="active"></li>
     </ol>
 }
 else
@@ -47,10 +46,11 @@ else
                     <i class="fa fa-map-marker" aria-hidden="true"></i> Adres inwestycji
                 </label>
             @{ string MapsUrl = "https://google.com/maps/search/" + Html.UrlEncoder.Encode(Model.Investment.Address.SingleLine); }
-            
-            <a href="@MapsUrl" target="_blank" class="form-control-static">
-                @Html.DisplayFor(model => model.Investment.Address.SingleLine)
-            </a>
+            <p class="form-control-static">
+                <a href="@MapsUrl" target="_blank">
+                    @Html.DisplayFor(model => model.Investment.Address.SingleLine)
+                </a>
+            </p>
             
         </div>
     </div>
@@ -132,13 +132,13 @@ else
                 <a id="stepCancel" class="btn btn-danger" asp-action="Details" asp-controller="Investments" asp-route-Id="@Model.InvestmentId">
                     Anuluj
                 </a>
+                <button type="button" id="stepSave" class="btn btn-warning hidden">Zapisz</button>
             </div>
         </div>
         <div class="col-md-6 col-sm-6 col-xs-9">
             <div class="form-group pull-right">
                 <button type="button" id="stepPrev" class="btn btn-default" disabled>Wstecz</button>
                 <button type="button" id="stepNext" class="btn btn-success">Dalej</button>
-                <button type="button" id="stepSave" class="btn btn-danger hidden">Zapisz</button>
                 <button type="button" id="stepLast" class="btn btn-success hidden">Zakończ</button>
             </div>
         </div>

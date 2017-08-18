@@ -1,0 +1,63 @@
+@model DoEko.Models.DoEko.Investment
+@using DoEko.Controllers.Extensions
+@using DoEko.Models.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@*<div class="container">*@
+<form id="InvestmentDetailsForm" class="">
+        <div class="row">
+            <div class="form-group col-xs-6 col-sm-4 col-md-4">
+                <label asp-for="ContractId" class="control-label"></label>
+                <select asp-for="ContractId" asp-items="@ViewBag.ContractId" class="form-control">
+                </select>
+                <span asp-validation-for="ContractId" class="text-danger"></span>
+            </div>
+            <div class="form-group col-xs-6 col-sm-4 col-md-4">
+                <label asp-for="PriorityIndex" class="control-label"></label>
+                <input asp-for="PriorityIndex" class="form-control"/>
+                <span asp-validation-for="PriorityIndex" class="text-danger"></span>
+            </div>
+            <div class="form-group col-xs-12 col-sm-4 col-md-4"></div>
+        </div>
+        <div class="row">
+            <div class="form-group col-xs-6 col-sm-4 col-md-4">
+                <label asp-for="Status" class="control-label"></label>
+                <p class="form-control-static">
+                    @Model.Status.DisplayName()
+                </p>
+            </div>
+            <div class="form-group col-xs-6 col-sm-4 col-md-4">
+                <label asp-for="InspectionStatus" class="control-label"></label>
+                <p class="form-control-static">
+                    @Model.InspectionStatus.DisplayName()
+                </p>
+            </div>
+            <div class="form-group col-xs-12 col-sm-4 col-md-4">
+                <label asp-for="InspectorId" class="control-label"></label>
+                <select asp-for="InspectorId" class="form-control" asp-items="@ViewBag.InspectorId">
+                    <option value="">Wybierz inspektora</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-xs-12 col-sm-4 col-md-4">
+            </div>
+            <div class="form-group col-xs-6 col-sm-4 col-md-4">
+                <label asp-for="LandRegisterNo" class="control-label"></label>
+                <input asp-for="LandRegisterNo" class="form-control"/>
+                <span asp-validation-for="LandRegisterNo" class="text-danger"></span>
+            </div>
+            <div class="form-group col-xs-6 col-sm-4 col-md-4">
+                <label asp-for="PlotNumber" class="control-label"></label>
+                <input asp-for="PlotNumber" class="form-control" />
+                <span asp-validation-for="PlotNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-xs-12">
+                <input asp-for="InvestmentId" type="hidden"/>
+                <button type="button" class="cancel btn btn-default">Anuluj</button>
+                <button type="button" class="submit btn btn-success">Zapisz</button>
+            </div>
+        </div>
+</form>

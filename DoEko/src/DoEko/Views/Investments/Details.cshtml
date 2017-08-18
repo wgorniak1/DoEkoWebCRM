@@ -1,5 +1,5 @@
 ﻿@using DoEko.Models.Identity
-
+@using DoEko.Controllers.Helpers
 @model DoEko.Models.DoEko.Investment
  
 @{
@@ -239,7 +239,7 @@ else
                 Dane podstawowe
             </h4>       
             @{ 
-                string LinkClasses = "btn btn-primary btn-sm pull-right wg-panel-header-button";
+                string LinkClasses = "btn btn-primary btn-sm pull-right wg-panel-header-button investment-details-edit";
                 if (Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Approved ||
                     Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Completed ||
                     Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted)
@@ -248,17 +248,19 @@ else
                     ViewBag.ViewMode = true;
                 }
             }     
-            <a asp-action="Edit" asp-controller="Investments"
+            @*<a asp-action="Edit" asp-controller="Investments"
                asp-route-Id="@Model.InvestmentId"
                asp-route-ReturnUrl="@Url.Action("Details","Investments", new { Id = Model.InvestmentId }, null,null,"heading-details")"
                class="@LinkClasses"
                title="Edytuj">
+            </a>*@     
+            <button type="button" class="@LinkClasses" data-investmentid="@Model.InvestmentId" title="Edytuj">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-            </a>                       
+            </button>
         </div>
         <div id="details" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-details">
-            <div class="panel-body">
-                @Html.Partial("_InvestmentDetailsPartial", Model)                
+            <div class="panel-body">   
+                @await Component.InvokeAsync("InvestmentDetails", new { investmentId = Model.InvestmentId, viewMode = ViewMode.Display })
             </div>
         </div>
     </div>

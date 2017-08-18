@@ -216,6 +216,72 @@ namespace DoEko.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult DetailsAjax(Guid id)
+        {
+            return ViewComponent("InvestmentDetails", new { investmentId = id, viewmode = ViewMode.Display });
+        }
+
+        [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
+        public IActionResult EditAjax(Guid id)
+        {
+            return ViewComponent("InvestmentDetails", new { investmentId = id, viewmode = ViewMode.Maintain });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PutInvestment(Guid id, Investment investment)
+        {
+            //ModelState.Remove("BusinessActivity");
+            //ModelState.Remove("CentralHeatingFuel");
+            //ModelState.Remove("CentralHeatingType");
+            //ModelState.Remove("CentralHeatingTypeOther");
+            //ModelState.Remove("CompletionYear");
+            //ModelState.Remove("GeoPortal");
+            //ModelState.Remove("HeatedArea");
+            //ModelState.Remove("HotWaterFuel");
+            //ModelState.Remove("HotWaterType");
+            //ModelState.Remove("InternetAvailable");
+            //ModelState.Remove("NumberOfOccupants");
+            //ModelState.Remove("Stage");
+            //ModelState.Remove("TotalArea");
+            //ModelState.Remove("Type");
+            //ModelState.Remove("UsableArea");
+            //ModelState.Remove("Address");
+
+            //if (!ModelState.IsValid)
+            //{
+            //    //return BadRequest(ModelState);
+            //}
+
+            //if (id != investment.InvestmentId)
+            //{
+            //    return BadRequest();
+            //}
+
+            _context.Entry(investment).
+                .State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!InvestmentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
         // GET: Investments/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
@@ -229,6 +295,7 @@ namespace DoEko.Controllers
                 .Include( i => i.Address).ThenInclude(a=>a.Commune)
                 .Include( i => i.InvestmentOwners).ThenInclude(io=>io.Owner).ThenInclude(o=>o.Address).ThenInclude(a=>a.Commune)
                 .Include( i => i.Surveys)
+                .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.InvestmentId == id);
             if (investment == null)
             {
@@ -647,9 +714,9 @@ namespace DoEko.Controllers
                     {
                         transaction.Rollback();
                         if (exc.Message.Contains("See the inner exception for details"))
-                            errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.InnerException.Message.ToString());
+                            errMessage.Add("Błąd w wierszu nr " + i.ToString() + ": " + exc.InnerException.Message.ToString());
                         else
-                            errMessage.Add("B³¹d w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
+                            errMessage.Add("Błąd w wierszu nr " + i.ToString() + ": " + exc.Message.ToString());
                     }
                 }
             }

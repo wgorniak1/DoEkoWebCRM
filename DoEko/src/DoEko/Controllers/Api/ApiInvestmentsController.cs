@@ -10,12 +10,12 @@ using DoEko.Models.DoEko;
 namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
-    [Route("api/ApiInvestments")]
-    public class ApiInvestmentsController : Controller
+    [Route("api/Investments")]
+    public class InvestmentsController : Controller
     {
         private readonly DoEkoContext _context;
 
-        public ApiInvestmentsController(DoEkoContext context)
+        public InvestmentsController(DoEkoContext context)
         {
             _context = context;
         }

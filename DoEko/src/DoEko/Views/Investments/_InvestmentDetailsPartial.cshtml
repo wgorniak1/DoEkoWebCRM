@@ -34,13 +34,11 @@
         <label asp-for="InspectorId" class="col-md-2 control-label"></label>
         <div class="col-md-10">
             <span class="form-control-static">
-                @{
-                 ApplicationUser inspector = await UserManager.FindByIdAsync(Model.InspectorId.ToString());
-                 }
+                @{ ApplicationUser inspector = await UserManager.FindByIdAsync(Model.InspectorId.ToString()); }
                 @if (inspector != null)
                 {
-                    <p>ddd</p>
-                    @Html.Display(inspector.UserName)
+                    <p>@inspector.UserName.ToString()</p>
+                    
                 }    
                 else
                 {

@@ -87,9 +87,5 @@ namespace DoEko.Models.DoEko
         [Display(Description = "", Name = "Nr dowodu osobistego", ShortName = "Dowód os.")]
         public string IdNumber { get; set; }
 
-        [NotMapped]
-        public string FullName { get {
-                return this.LastName + ' ' + this.FirstName;           }
-            private set { } }
     }
 }

@@ -4,6 +4,11 @@ using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Controllers.Helpers
 {
+    public enum ViewMode
+    {
+        Maintain,
+        Display
+    }
     public enum SurveyViewMode
     {
         Maintain,

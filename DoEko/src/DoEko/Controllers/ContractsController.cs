@@ -542,6 +542,19 @@ namespace DoEko.Controllers
             return Json(result);
         }
 
+        public static SelectList GetOpenContracts(DoEkoContext context, int contractId)
+        {
+            var list = context.Contracts
+                .Include(c=>c.Project)
+                .Where(c => c.Status != ContractStatus.Completed)
+                .Select(c => new { Text = c.Number + " " + c.Project.ShortDescription, Value = c.ContractId })
+                .OrderBy(c => c.Text)
+                .ToList();
+
+            return new SelectList(list, "Value", "Text", contractId);
+
+        }
+
         [HttpGet]
         public IActionResult CalculateNewNumberAjax(ContractType type, DateTime contractDate)
         {

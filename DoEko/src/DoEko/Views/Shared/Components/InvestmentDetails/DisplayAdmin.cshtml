@@ -1,0 +1,85 @@
+@model DoEko.Models.DoEko.Investment
+@using DoEko.Controllers.Extensions
+@using DoEko.Models.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="row">
+    <div class="form-group col-xs-6 col-sm-4 col-md-4">
+        <label asp-for="Contract.Number" class="control-label"></label>
+        <p class="form-control-static">
+            @Html.DisplayFor(model => model.Contract.Number)
+        </p>
+    </div>
+    <div class="form-group col-xs-6 col-sm-4 col-md-4">
+        <label asp-for="PriorityIndex" class="control-label"></label>
+        <p class="form-control-static">
+            @Model.PriorityIndex
+        </p>
+    </div>
+    <div class="form-group col-xs-12 col-sm-4 col-md-4"></div>
+</div>
+<div class="row">
+    <div class="form-group col-xs-6 col-sm-4 col-md-4">
+        <label asp-for="Status" class="control-label"></label>
+        <p class="form-control-static">
+            @Model.Status.DisplayName()
+        </p>
+    </div>
+    <div class="form-group col-xs-6 col-sm-4 col-md-4">
+        <label asp-for="InspectionStatus" class="control-label"></label>
+        <p class="form-control-static">
+            @Model.InspectionStatus.DisplayName()
+        </p>
+    </div>
+    <div class="form-group col-xs-12 col-sm-4 col-md-4">
+        <label asp-for="InspectorId" class="control-label"></label>
+        @{ 
+            var inspectorName = "Nie przypisano";
+            if (Model.InspectorId.HasValue)
+            {
+                try
+                {
+                    inspectorName = (await UserManager.FindByIdAsync(Model.InspectorId.Value.ToString())).FullName;
+                }
+                catch (Exception)
+                {
+                    inspectorName = "Nie znaleziono";
+                }
+            }
+        }
+        <p class="form-control-static">@inspectorName</p>
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-xs-12 col-sm-4 col-md-4">
+        <label asp-for="Address" class="control-label"></label>
+        @{ string MapsUrl = "https://google.com/maps/search/" + Html.UrlEncoder.Encode(Model.Address.SingleLine); }
+        <p class="form-control-static">
+            <a href="@MapsUrl" target="_blank" class="wg-link-default">
+                @Html.DisplayFor(model => model.Address.SingleLine)
+            </a>
+            @if (!string.IsNullOrEmpty(Model.GeoPortal))
+            { 
+                <a href="Model.GeoPortal" title="widok na stronie geoportalu" target="_blank">(Geoportal)</a>
+            }
+        </p>
+    </div>
+    <div class="form-group col-xs-6 col-sm-4 col-md-4">
+        <label asp-for="LandRegisterNo" class="control-label"></label>
+        <p class="form-control-static">
+            @Model.LandRegisterNo
+        </p>
+    </div>
+    @*<div class="form-group col-sm-4 col-md-4">
+        <label asp-for="PlotAreaNumber" class="control-label"></label>
+        <p class="form-control-static">
+            @Model.PlotAreaNumber
+        </p>
+    </div>*@
+    <div class="form-group col-xs-6 col-sm-4 col-md-4">
+        <label asp-for="PlotNumber" class="control-label"></label>
+        <p class="form-control-static">
+            @Model.PlotNumber
+        </p>
+    </div>
+</div>

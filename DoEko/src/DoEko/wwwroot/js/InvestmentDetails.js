@@ -1,4 +1,85 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+﻿///
+function onInvestmentDetailsSave() {
+    //use WebApi()
+    var $form = $("#InvestmentDetailsForm");
+    var invId = $("#InvestmentId", $form);
+
+    $form.validate({
+        lang: 'pl'
+    });
+
+    if (!$form.valid())
+        return;
+    var url = "/Investments/PutInvestment/" + invId.val(); 
+    var formData = $form.serialize();
+
+    var call = $.ajax({
+        url: url,
+        type: "POST",
+        data: formData //{ "id": invId.val() },
+    });
+
+    call.fail(function () { WgTools.alert("Wystąpił problem podczas zapisu", false, 'E');  });
+    call.done(function () { onInvestmentDetailsCancel });
+    call.done(function () { WgTools.alert("Pomyślnie zapisano dane sekcji", true, 'S'); });
+
+}
+function onInvestmentDetailsCancel() {
+    var form = $("#InvestmentDetailsForm");
+    var invId = $("#InvestmentId", form);
+
+    var call = $.ajax({
+        type: "GET",
+        url: "/Investments/DetailsAjax",
+        data: { "id": invId.val() },
+        dataType: "html"
+    });
+
+    call.done(function (data, success) {
+        $('#details .panel-body').html(data);
+
+        $('button.investment-details-edit').removeAttr('disabled');
+        
+    });
+    call.fail(function (xhr, status, error) {
+        
+    });
+}
+
+function onInvestmentDetailsEdit(event) {
+    var investmentId = $(this).attr('data-investmentid');
+
+    var call = $.ajax({
+        type: "GET",
+        url: "/Investments/EditAjax",
+        data: { "id": investmentId },
+        dataType: "html"
+    });
+
+    call.done(function (data, success) {
+        $('#details .panel-body').html(data);
+
+        var $form = $("#InvestmentDetailsForm");
+
+        $form.removeData("validator");
+        $form.removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($form);
+        $form.data("validator").settings.ignore = ".data-val-ignore, :hidden, :disabled";
+
+        $('button.investment-details-edit').attr('disabled', 'disabled');
+    });
+
+    call.fail(function (xhr, status, error) {
+        //
+    });
+}
+$('button.investment-details-edit').on('click', onInvestmentDetailsEdit);
+$('body').on('click', 'form#InvestmentDetailsForm button.submit', onInvestmentDetailsSave);
+$('body').on('click', 'form#InvestmentDetailsForm button.cancel', onInvestmentDetailsCancel);
+
+///
+
+///////////////////////////////////////////////////////////////////////////////
 // SURVEY Reject MODAL CONTROLS
 
 //---------------------------------------------------------------------------//

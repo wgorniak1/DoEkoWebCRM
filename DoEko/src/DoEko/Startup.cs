@@ -66,7 +66,8 @@ namespace DoEko
                     .RequireAuthenticatedUser()
                     .Build();
 
-            services.AddMvc(options => {
+            services.AddMvc(options =>
+            {
                 options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));
                 //options.ModelBinderProviders.Insert(0,new Models.DoubleModelBinderProvider());
                 //options.OutputFormatters.Insert(0, new Models.DoubleFormatProvider());

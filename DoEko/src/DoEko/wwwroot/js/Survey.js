@@ -147,18 +147,24 @@ function onAjaxGetSuccess(data, status) {
 
     if (section === 'InvestmentGeneralInfo') {
         $("#stepPrev").attr('disabled', 'disabled');
+        $("#stepPrevSave").attr('disabled', 'disabled');
     }
     else {
         $("#stepPrev").removeAttr('disabled');
+        $("#stepPrevSave").removeAttr('disabled');
     }
 
     if (section === 'SurveyPhoto') {
         $("#stepNext").attr('disabled', 'disabled');
+        $("#stepNextSave").attr('disabled', 'disabled');
         $("#stepLast").removeClass('hidden');
+        $("#stepLastSave").removeClass('hidden');
     }
     else {
         $("#stepNext").removeAttr('disabled');
+        $("#stepNextSave").removeAttr('disabled');
         $("#stepLast").addClass('hidden');
+        $("#stepLastSave").addClass('hidden');
     }
 }
 
@@ -436,6 +442,7 @@ function NavigationPrev(event) {
     }
     else {
         ajaxGetPrevSection();
+        $("#stepSave").addClass('hidden');
     }
     
 }
@@ -457,11 +464,13 @@ function NavigationNext(event) {
     }
     else {
         ajaxGetNextSection();
+        $("#stepSave").addClass('hidden');
     }
 }
 
 function NavigationSave() {
-    ajaxPostCurrentSection(onAjaxPostError, null);
+    ajaxPostCurrentSection(onAjaxPostError, function () { $("#stepSave").addClass('hidden'); });
+    
 }
 
 function NavigationLast(event) {
@@ -477,6 +486,16 @@ function NavigationLast(event) {
         $("#stepCancel").click();
     }
 }
+
+function onFormChanged(event) {
+    var btnSave = $("#stepSave");
+
+    if (btnSave.length !== 0) {
+        btnSave.removeClass('hidden');
+    }
+}
+
+$('body').on('change', '#Dynamic form :input', onFormChanged);
 
 $('body').on('click', '#stepNext', { save: false }, NavigationNext);
 $('body').on('click', '#stepPrev', { save: false }, NavigationPrev);
