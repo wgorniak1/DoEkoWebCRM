@@ -93,73 +93,40 @@ namespace DoEko.Models.DoEko.Survey
         {
             InspectionDateTime = DateTime.MinValue;
         }
-        /// <summary>
-        /// 
-        /// </summary>
         [Key]
         public Guid SurveyId { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [EnumDataType(typeof(SurveyType), ErrorMessage = "Błąd model")]
         [Display(Description = "Rodzaj Energii", Name = "Rodzaj Energii", ShortName = "Rodzaj Energii")]
         public SurveyType Type { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [EnumDataType(typeof(SurveyStatus), ErrorMessage = "Błąd model")]
         [Display(Description = "Status inspekcji", Name = "Status inspekcji", ShortName = "Status ins.")]
         public SurveyStatus Status { get; set; }
         [Display(Description = "Pole może służyć do przekazania dodatkowych informacji przy odrzucaniu ankiety", Name = "Uwagi", ShortName = "Uwagi")]
         public string RejectComments { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         [Display(Description = "Zaksięgowano wpłatę", Name = "Zapłacona", ShortName = "Zapłacona")]
         public bool IsPaid { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [Display(Description = "Inwestycja", Name = "Inwestycja", ShortName = "Inwestycja")]
         public Guid InvestmentId { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
         [Display(Description = "Inwestycja", Name = "Inwestycja", ShortName = "Inwestycja")]
         public Investment Investment { get; set; }
-
-        //**************************************************************************************************
-        /// <summary>
-        /// 
-        /// </summary>
         [Display(Description = "", Name = "Powód anulowania", ShortName = "Powód anulowania")]
         public SurveyCancelType? CancelType { get; set; }
-        //cancellation_comments
         [Display(Description = "", Name = "Komentarz do powodu anulowania", ShortName = "Uwagi")]
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         public string CancelComments { get; set; }
-
         public DateTime CreatedAt { get; set; }
         public Guid CreatedBy { get; set; }
-
         public DateTime ChangedAt { get; set; }
         public Guid ChangedBy { get; set; }
-
         public DateTime FirstEditAt { get; set; }
         public Guid FirstEditBy { get; set; }
-
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
         [DataType("datetime-local",ErrorMessage = "Data inspekcji jest obowiązkowa")]
         [Display(Description = "Data przeprowadzenia inspekcji", Name = "Data inspekcji", ShortName = "Data inspekcji")]
         public DateTime? InspectionDateTime { get; set; }
-
-        //***********************************************
-        //nr obrębu (jeśli nie ma w nr ks lub działki)
-
         public SurveyDetBuilding Building { get; set; }
         public SurveyDetPlannedInstall PlannedInstall { get; set; }
         public SurveyDetBoilerRoom BoilerRoom { get; set; }
@@ -169,9 +136,7 @@ namespace DoEko.Models.DoEko.Survey
         public SurveyDetWall Wall { get; set; }
         public SurveyDetGround Ground { get; set; }
         public SurveyDetEnergyAudit Audit { get; set; }
-
         public SurveyResultCalculations ResultCalculation { get; set; }
-
         [Display(Description = "", Name = "Komentarz Inspektora", ShortName = "Komentarz Inspektora")]
         public string FreeCommments { get; set; }
 

@@ -74,12 +74,20 @@ function ajaxGetSectionNo() {
         onAjaxGetFailure(xhr, status, error);
     });
 }
-function onNavigationBarClick() {
+function onNavigationBarClick(event) {
     stepNo = $(this).attr('data-step-number');
 
-    ajaxPostCurrentSection(onAjaxPostError, ajaxGetSectionNo);
+    var save = event.data.save;
+    if (save) {
+        ajaxPostCurrentSection(onAjaxPostError, ajaxGetSectionNo);
+    }
+    else {
+        ajaxGetSectionNo();
+    }
 }
-$('body').on('click', '.navigation-bar-link', onNavigationBarClick);
+$('body').on('click', '.navigation-bar-link', { save: false }, onNavigationBarClick);
+$('body').on('click', '.navigation-bar-link-save', { save: true }, onNavigationBarClick);
+
 //Wall area
 function onWallSizeChange() {
     var form = $("#Dynamic form");

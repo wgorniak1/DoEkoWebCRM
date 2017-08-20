@@ -1,4 +1,13 @@
 ﻿@using DoEko.Models.DoEko.Survey
+@using DoEko.Models.Identity
+
+@{
+    string className = "navigation-bar-link-save";
+    if (User.IsInRole(Roles.Admin))
+    {
+        className = "navigation-bar-link";
+    }
+}
 
 @if (Model.Status == SurveyStatus.New)
 {
@@ -26,19 +35,19 @@ else
 {
     <nav>
         <ul id="stepList" class="nav nav-tabs nav-justified">
-            <li class="active navigation-bar-link" data-step-number="1" >
+            <li class="@string.Join(" ","active",className)" data-step-number="1" >
                 <a href="#" data-step-number="1" data-toggle="tab">Inwestycja<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
             </li>
-            <li class="navigation-bar-link" data-step-number="2">
+            <li class="@className" data-step-number="2">
                 <a href="#" data-step-number="2" data-toggle="tab">Budynek<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
             </li>
-            <li class="navigation-bar-link" data-step-number="3">
+            <li class="@className" data-step-number="3">
                 <a href="#" data-step-number="3" data-toggle="tab">Budynek c.d.<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
             </li>
-            <li class="navigation-bar-link" data-step-number="4">
+            <li class="@className" data-step-number="4">
                 <a href="#" data-step-number="4" data-toggle="tab">Audyt Energetyczny<span class="pull-right glyphicon glyphicon-chevron-right"></span></a>
             </li>
-            <li class="navigation-bar-link" data-step-number="5">
+            <li class="@className" data-step-number="5">
                 <a href="#" data-step-number="5" data-toggle="tab">Zdjęcia</a>
             </li>
         </ul>

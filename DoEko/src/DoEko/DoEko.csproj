@@ -14,6 +14,7 @@
     <SignAssembly>False</SignAssembly>
     <Company>DoEko</Company>
     <DelaySign>False</DelaySign>
+    <ApplicationIcon>wwwroot\images\favicon_doekogroup.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
