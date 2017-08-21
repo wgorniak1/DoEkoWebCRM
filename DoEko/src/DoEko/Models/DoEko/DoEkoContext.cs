@@ -33,6 +33,8 @@ namespace DoEko.Models.DoEko
         public DbSet<SurveyCentralHeating> SurveysCH { get; set; }
         public DbSet<SurveyEnergy> SurveysEN { get; set; }
 
+        public DbSet<SurveyStatusHistory> SurveyStatusHistory { get; set; }
+
         public DbSet<PriceList> PriceLists { get; set; }
 
         public DbSet<Address> Addresses { get; set; }
@@ -101,6 +103,10 @@ namespace DoEko.Models.DoEko
 
             //modelBuilder.Entity<Payment>().Property(p => p.CreatedAt).ValueGeneratedOnAdd();
             //modelBuilder.Entity<Payment>().Property(p => p.ChangedAt).ValueGeneratedOnAddOrUpdate();
+
+
+            //
+            modelBuilder.Entity<SurveyStatusHistory>().HasKey(d => new { d.SurveyId, d.Start});
 
         }
 

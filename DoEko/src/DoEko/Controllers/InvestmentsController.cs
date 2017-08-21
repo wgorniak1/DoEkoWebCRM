@@ -397,6 +397,7 @@ namespace DoEko.Controllers
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
+                    SurveysController.UpdateStatusHistory(_context, Survey.SurveyId, Survey.Status, DateTime.Now, false);
                 }
 
                 if (InvestmentVM.SurveyCH)
@@ -410,6 +411,8 @@ namespace DoEko.Controllers
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
+                    SurveysController.UpdateStatusHistory(_context, Survey.SurveyId, Survey.Status, DateTime.Now, false);
+
                 }
 
                 if (InvestmentVM.SurveyHW)
@@ -423,6 +426,8 @@ namespace DoEko.Controllers
                         Status = SurveyStatus.New
                     };
                     _context.Add(Survey);
+                    SurveysController.UpdateStatusHistory(_context, Survey.SurveyId, Survey.Status, DateTime.Now, false);
+
                 }
 
                 try
@@ -718,6 +723,7 @@ namespace DoEko.Controllers
                         {
                             Survey.Investment = Investment;
                             Survey.InvestmentId = Investment.InvestmentId;
+
                         };
                         if (InvestmentAddress.AddressId == 0)
                         {
@@ -737,7 +743,10 @@ namespace DoEko.Controllers
                         //x = _context.SaveChanges();
                         _context.AddRange(Surveys);
                         //x = _context.SaveChanges();
-
+                        foreach (var srv in Surveys)
+                        {
+                            SurveysController.UpdateStatusHistory(_context, srv.SurveyId, srv.Status, DateTime.Now, false);
+                        }
                         int x = _context.SaveChanges();
 
                         transaction.Commit();

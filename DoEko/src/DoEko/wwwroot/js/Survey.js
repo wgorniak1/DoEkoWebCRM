@@ -82,6 +82,7 @@ function onNavigationBarClick(event) {
         ajaxPostCurrentSection(onAjaxPostError, ajaxGetSectionNo);
     }
     else {
+        $("#stepSave").addClass('hidden');
         ajaxGetSectionNo();
     }
 }

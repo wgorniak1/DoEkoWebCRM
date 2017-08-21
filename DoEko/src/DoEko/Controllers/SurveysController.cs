@@ -1277,7 +1277,7 @@ namespace DoEko.Controllers
                 srv.CancelComments = model.CancelComments;
                 srv.Status = SurveyStatus.Cancelled;
                 _context.Update(srv);
-
+                UpdateStatusHistory(_context, model.SurveyId, SurveyStatus.Cancelled, DateTime.Now, false);
                 //
                 if (model.ReplaceWithType != null)
                 {
@@ -1285,31 +1285,36 @@ namespace DoEko.Controllers
                     {
                         case SurveyType.CentralHeating:
                             SurveyCentralHeating srvCH = new SurveyCentralHeating() {
+                                SurveyId = Guid.NewGuid(),
                                 InvestmentId = srv.InvestmentId,
                                 Status = SurveyStatus.New,
                                 RSEType = model.ReplaceWithRSECH.Value,
                                 Type = model.ReplaceWithType.Value
                             };
-
                             _context.Add(srvCH);
+                            UpdateStatusHistory(_context, srvCH.SurveyId, SurveyStatus.New, DateTime.Now, false);
                             break;
                         case SurveyType.Energy:
                             SurveyEnergy srvEN = new SurveyEnergy() {
+                                SurveyId = Guid.NewGuid(),
                                 InvestmentId = srv.InvestmentId,
                                 Status = SurveyStatus.New,
                                 RSEType = model.ReplaceWithRSEEN.Value,
                                 Type = model.ReplaceWithType.Value
                             };
                             _context.Add(srvEN);
+                            UpdateStatusHistory(_context, srvEN.SurveyId, SurveyStatus.New, DateTime.Now, false);
                             break;
                         case SurveyType.HotWater:
                             SurveyHotWater srvHW = new SurveyHotWater() {
+                                SurveyId = Guid.NewGuid(),
                                 InvestmentId = srv.InvestmentId,
                                 Status = SurveyStatus.New,
                                 RSEType = model.ReplaceWithRSEHW.Value,
                                 Type = model.ReplaceWithType.Value
                             };
                             _context.Add(srvHW);
+                            UpdateStatusHistory(_context, srvHW.SurveyId, SurveyStatus.New, DateTime.Now, false);
                             break;
                         default:
                             break;
@@ -1444,23 +1449,25 @@ namespace DoEko.Controllers
                 {
                     return BadRequest(ModelState);
                 }
+                var surveyId = Guid.NewGuid();
 
                 switch (model.SurveyType)
                 {
                     case SurveyType.CentralHeating:
                         SurveyCentralHeating srvCH = new SurveyCentralHeating()
                         {
+                            SurveyId = surveyId,
                             InvestmentId = model.InvestmentId,
                             Status = SurveyStatus.New,
                             RSEType = model.RSETypeCH.Value,
                             Type = model.SurveyType
                         };
-
                         _context.Add(srvCH);
                         break;
                     case SurveyType.Energy:
                         SurveyEnergy srvEN = new SurveyEnergy()
                         {
+                            SurveyId = surveyId,
                             InvestmentId = model.InvestmentId,
                             Status = SurveyStatus.New,
                             RSEType = model.RSETypeEN.Value,
@@ -1471,6 +1478,7 @@ namespace DoEko.Controllers
                     case SurveyType.HotWater:
                         SurveyHotWater srvHW = new SurveyHotWater()
                         {
+                            SurveyId = surveyId,
                             InvestmentId = model.InvestmentId,
                             Status = SurveyStatus.New,
                             RSEType = model.RSETypeHW.Value,
@@ -1479,9 +1487,10 @@ namespace DoEko.Controllers
                         _context.Add(srvHW);
                         break;
                     default:
-                        break;
+                        return BadRequest();
                 }
 
+                UpdateStatusHistory(_context, surveyId, SurveyStatus.New, DateTime.Now, false);
 
                 int Result = await _context.SaveChangesAsync();
                 return Ok();
@@ -1635,6 +1644,12 @@ namespace DoEko.Controllers
         {
             try
             {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+            }
+            catch (Exception) { }
+
+            try
+            {
                 switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).First())
                 {
                     case SurveyType.CentralHeating:
@@ -1642,24 +1657,33 @@ namespace DoEko.Controllers
                         if (srvCH.Status == SurveyStatus.New || 
                             srvCH.Status == SurveyStatus.Rejected || 
                             (srvCH.Status == SurveyStatus.Cancelled && force))
+                        {
                             srvCH.Status = SurveyStatus.Draft;
-                        _context.Update(srvCH);
+                            _context.Update(srvCH);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Draft, DateTime.Now, false);
+                        }
                         break;
                     case SurveyType.HotWater:
                         SurveyHotWater srvHW = _context.SurveysHW.Single(s => s.SurveyId == surveyId);
                         if (srvHW.Status == SurveyStatus.New || 
                             srvHW.Status == SurveyStatus.Rejected ||
                             (srvHW.Status == SurveyStatus.Cancelled && force))
+                        {
                             srvHW.Status = SurveyStatus.Draft;
-                        _context.Update(srvHW);
+                            _context.Update(srvHW);
+                            UpdateStatusHistory(_context,surveyId, SurveyStatus.Draft, DateTime.Now, false);
+                        }
                         break;
                     case SurveyType.Energy:
                         SurveyEnergy srvEN = _context.SurveysEN.Single(s => s.SurveyId == surveyId);
                         if (srvEN.Status == SurveyStatus.New || 
                             srvEN.Status == SurveyStatus.Rejected ||
                            (srvEN.Status == SurveyStatus.Cancelled && force))
+                        {
                             srvEN.Status = SurveyStatus.Draft;
-                        _context.Update(srvEN);
+                            _context.Update(srvEN);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Draft, DateTime.Now, false);
+                        }
                         break;
                     default:
                         return 0;
@@ -1690,6 +1714,11 @@ namespace DoEko.Controllers
         {
             try
             {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+            }
+            catch (Exception) { }
+            try
+            {
                 switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).First())
                 {
                     case SurveyType.CentralHeating:
@@ -1700,6 +1729,7 @@ namespace DoEko.Controllers
                         {
                             srvCH.Status = SurveyStatus.Approval;
                             _context.Update(srvCH);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Approval, DateTime.Now, false);
                         }
                         break;
                     case SurveyType.HotWater:
@@ -1710,6 +1740,7 @@ namespace DoEko.Controllers
                         {
                             srvHW.Status = SurveyStatus.Approval;
                             _context.Update(srvHW);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Approval, DateTime.Now, false);
                         }
                         break;
                     case SurveyType.Energy:
@@ -1720,6 +1751,7 @@ namespace DoEko.Controllers
                         {
                             srvEN.Status = SurveyStatus.Approval;
                             _context.Update(srvEN);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Approval, DateTime.Now, false);
                         }
                         break;
                     default:
@@ -1750,6 +1782,11 @@ namespace DoEko.Controllers
         {
             try
             {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+            }
+            catch (Exception) { }
+            try
+            {
                 switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).First())
                 {
                     case SurveyType.CentralHeating:
@@ -1760,6 +1797,7 @@ namespace DoEko.Controllers
                         {
                             srvCH.Status = SurveyStatus.Approved;
                             _context.Update(srvCH);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Approved, DateTime.Now, false);
                         }
                         break;
                     case SurveyType.HotWater:
@@ -1770,6 +1808,7 @@ namespace DoEko.Controllers
                         {
                             srvHW.Status = SurveyStatus.Approved;
                             _context.Update(srvHW);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Approved, DateTime.Now, false);
                         }
                         break;
                     case SurveyType.Energy:
@@ -1780,6 +1819,7 @@ namespace DoEko.Controllers
                         {
                             srvEN.Status = SurveyStatus.Approved;
                             _context.Update(srvEN);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Approved, DateTime.Now, false);
                         }
                         break;
                     default:
@@ -1811,6 +1851,11 @@ namespace DoEko.Controllers
         {
             try
             {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+            }
+            catch (Exception) { }
+            try
+            {
                 switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Type).First())
                 {
                     case SurveyType.CentralHeating:
@@ -1821,6 +1866,7 @@ namespace DoEko.Controllers
                         {
                             srvCH.Status = SurveyStatus.Rejected;
                             _context.Update(srvCH);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Rejected, DateTime.Now, false);
                         }
                         break;
                     case SurveyType.HotWater:
@@ -1831,6 +1877,7 @@ namespace DoEko.Controllers
                         {
                             srvHW.Status = SurveyStatus.Rejected;
                             _context.Update(srvHW);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Rejected, DateTime.Now, false);
                         }
                         break;
                     case SurveyType.Energy:
@@ -1841,6 +1888,7 @@ namespace DoEko.Controllers
                         {
                             srvEN.Status = SurveyStatus.Rejected;
                             _context.Update(srvEN);
+                            UpdateStatusHistory(_context, surveyId, SurveyStatus.Rejected, DateTime.Now, false);
                         }
                         break;
                     default:
@@ -1924,6 +1972,44 @@ namespace DoEko.Controllers
             }
 
             return Result;
+        }
+
+        public static int UpdateStatusHistory(DoEkoContext context, Guid surveyId, SurveyStatus status, DateTime start, bool commit = false)
+        {
+            //update old status record
+            try
+            {
+                var oldStatus = context.SurveyStatusHistory.Single(s => s.SurveyId == surveyId && 
+                                                                         s.End == DateTime.MaxValue );
+                oldStatus.End = start.Subtract(TimeSpan.FromSeconds(1));
+
+                //new status is same as old, no need to update
+                if (oldStatus.Status == status)
+                {
+                    return 0;
+                }
+                context.SurveyStatusHistory.Update(oldStatus);
+            }
+            catch (Exception exc)
+            {
+                Console.Out.WriteLine(exc.Message);
+                Console.Out.WriteLine(exc.ToString());
+            }
+            try
+            {
+                var newStatus = new SurveyStatusHistory(surveyId, start, context.CurrentUserId, status);
+                context.SurveyStatusHistory.Add(newStatus);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            if (commit)
+                return context.SaveChanges();
+            else
+                return 1;
         }
 
         public bool isSurveyType( int type, Guid surveyId)

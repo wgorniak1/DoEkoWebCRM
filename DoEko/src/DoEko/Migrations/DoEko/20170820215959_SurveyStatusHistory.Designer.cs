@@ -10,9 +10,10 @@ using DoEko.Models.DoEko.Survey;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20170820215959_SurveyStatusHistory")]
+    partial class SurveyStatusHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -864,15 +865,15 @@ namespace DoEko.Migrations.DoEko
                 {
                     b.Property<Guid>("SurveyId");
 
-                    b.Property<DateTime>("Start");
-
                     b.Property<DateTime>("End");
+
+                    b.Property<DateTime>("Start");
 
                     b.Property<int>("Status");
 
                     b.Property<Guid>("UserId");
 
-                    b.HasKey("SurveyId", "Start");
+                    b.HasKey("SurveyId");
 
                     b.ToTable("SurveyStatusHistory");
                 });
