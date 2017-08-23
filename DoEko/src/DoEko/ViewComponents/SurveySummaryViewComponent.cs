@@ -24,6 +24,7 @@ namespace DoEko.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync(Guid surveyId, SurveyViewMode viewMode)
         {
             Survey srv = await _context.Surveys
+                .Include(s=>s.ResultCalculation)
                 .SingleAsync(s => s.SurveyId == surveyId);
 
             return View("Summary", srv);
