@@ -1,5 +1,6 @@
 ﻿@model DoEko.Models.DoEko.Survey.Survey
 @using DoEko.Models.DoEko
+@using DoEko.Models.DoEko.Survey
 
 <form id="SurveySummary"
       asp-action="EditSummaryAjax"
@@ -15,7 +16,7 @@
         <input asp-for="SurveyId" type="hidden" />
         <input asp-for="Type" type="hidden" />
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-md-4 col-sm-6 col-xs-12">
                 <div class='form-group-sm'>
                     <label asp-for="FreeCommments" class="control-label"></label>
                     <textarea class="form-control" asp-for="FreeCommments" rows="5"></textarea>
@@ -23,17 +24,89 @@
                     <span asp-validation-for="FreeCommments" class="text-danger" />
                 </div>
             </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
         @if (Model.Status == DoEko.Models.DoEko.Survey.SurveyStatus.Cancelled)
         {
-            <div class="col-sm-6">
                 <div class='form-group-sm'>
                     <label asp-for="CancelComments" class="control-label"></label>
                     <textarea class="form-control" asp-for="CancelComments" rows="5" readonly></textarea>
                     <span class="help-block"></span>
                     <span asp-validation-for="CancelComments" class="text-danger" />
                 </div>
-            </div>
         }
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+        @if (Model.ResultCalculation != null)
+        {
+                <div class='form-group-sm'>
+                    <label class="control-label"></label>
+                    @switch (Model.Type)
+                    {
+                        case DoEko.Models.DoEko.Survey.SurveyType.CentralHeating:
+
+                            @switch (((SurveyCentralHeating)Model).RSEType)
+                            {
+                                case SurveyRSETypeCentralHeating.HeatPump:
+                                    <input asp-for="ResultCalculation.FinalRSEPower" class="form-control" />
+                                    <span class="help-block"></span>
+                                    <span asp-validation-for="ResultCalculation.FinalRSEPower" class="text-danger" />
+
+                                    break;
+                                case SurveyRSETypeCentralHeating.PelletBoiler:
+                                    <input asp-for="ResultCalculation.FinalRSEPower" class="form-control" />
+                                    <span class="help-block"></span>
+                                    <span asp-validation-for="ResultCalculation.FinalRSEPower" class="text-danger" />
+
+                                    break;
+                                case SurveyRSETypeCentralHeating.HeatPumpAir:
+                                    <input asp-for="ResultCalculation.FinalRSEPower" class="form-control" />
+                                    <span class="help-block"></span>
+                                    <span asp-validation-for="ResultCalculation.FinalRSEPower" class="text-danger" />
+
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case DoEko.Models.DoEko.Survey.SurveyType.HotWater:
+
+                            @switch (((SurveyHotWater)Model).RSEType)
+                            {
+                                case SurveyRSETypeHotWater.Solar:
+                                    <input asp-for="ResultCalculation.FinalSOLConfig" class="form-control" />
+                                    <span class="help-block"></span>
+                                    <span asp-validation-for="ResultCalculation.FinalSOLConfig" class="text-danger" />
+                                    break;
+                                case SurveyRSETypeHotWater.HeatPump:
+                                    <input asp-for="ResultCalculation.FinalRSEPower" class="form-control"/>
+                                    <span class="help-block"></span>
+                                    <span asp-validation-for="ResultCalculation.FinalRSEPower" class="text-danger" />
+
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            break;
+                        case DoEko.Models.DoEko.Survey.SurveyType.Energy:
+                            @switch (((SurveyEnergy)Model).RSEType)
+                            {
+                                case SurveyRSETypeEnergy.PhotoVoltaic:
+                                    <input asp-for="ResultCalculation.FinalRSEPower" class="form-control" />
+                                    <span class="help-block"></span>
+                                    <span asp-validation-for="ResultCalculation.FinalRSEPower" class="text-danger" />
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                </div>
+        }
+            </div>
+
         </div>
     </fieldset>
     

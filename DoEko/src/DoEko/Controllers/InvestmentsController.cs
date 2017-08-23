@@ -756,6 +756,10 @@ namespace DoEko.Controllers
                     catch (Exception exc)
                     {
                         transaction.Rollback();
+                        //!!!!!!!!!!!!!!!!!!!!! this is to set fake "ok" status of entities that failed during db update
+                        //!!!!!!!!!!!!!!!!!!!!! and let the loop continue creation of other data
+                        _context.ChangeTracker.AcceptAllChanges();
+                        
                         if (exc.Message.Contains("See the inner exception for details"))
                             errMessage.Add("Błąd w wierszu nr " + i.ToString() + ": " + exc.InnerException.Message.ToString());
                         else

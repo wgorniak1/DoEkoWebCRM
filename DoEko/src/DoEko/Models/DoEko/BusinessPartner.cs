@@ -57,8 +57,8 @@ namespace DoEko.Models.DoEko
         [Display(Description = "", Name = "Właściciel", ShortName = "Właściciel")]
         public virtual ICollection<InvestmentOwner> InvestmentOwners { get; set; }
 
-        public string PartnerName1 { get; set; }
-        public string PartnerName2 { get; set; }
+        public virtual string PartnerName1 { get; set; }
+        public virtual string PartnerName2 { get; set; }
         /// <summary>
         /// 
         /// </summary>

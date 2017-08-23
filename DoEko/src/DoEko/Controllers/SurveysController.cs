@@ -1098,32 +1098,60 @@ namespace DoEko.Controllers
                 switch (survey.Type)
                 {
                     case SurveyType.CentralHeating:
-                        var SrvCH = _context.SurveysCH.Single(s => s.SurveyId == survey.SurveyId);
+                        var SrvCH = _context.SurveysCH
+                            .Include(s=>s.ResultCalculation)
+                            .Single(s => s.SurveyId == survey.SurveyId);
                         SrvCH.FreeCommments = survey.FreeCommments;
                         if (SrvCH.FirstEditAt == null)
                         {
                             SrvCH.FirstEditAt = DateTime.Now;
                             SrvCH.FirstEditBy = _context.CurrentUserId;
                         }
+                        if (SrvCH.ResultCalculation != null && 
+                            User.IsInRole(Roles.Admin))
+                        {
+                            SrvCH.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
+                        }
+
                         _context.SurveysCH.Update(SrvCH);
                         break;
                     case SurveyType.HotWater:
-                        var SrvHW = _context.SurveysHW.Single(s => s.SurveyId == survey.SurveyId);
+                        var SrvHW = _context.SurveysHW
+                            .Include(s=>s.ResultCalculation)
+                            .Single(s => s.SurveyId == survey.SurveyId);
                         SrvHW.FreeCommments = survey.FreeCommments;
                         if (SrvHW.FirstEditAt == null)
                         {
                             SrvHW.FirstEditAt = DateTime.Now;
                             SrvHW.FirstEditBy = _context.CurrentUserId;
                         }
+                        if (SrvHW.ResultCalculation != null && User.IsInRole(Roles.Admin))
+                        {
+                            switch (SrvHW.RSEType)
+                            {
+                                case SurveyRSETypeHotWater.Solar:
+                                    SrvHW.ResultCalculation.FinalSOLConfig = survey.ResultCalculation.FinalSOLConfig;
+                                    break;
+                                default:
+                                    SrvHW.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
+                                    break;
+                            }
+                        }
                         _context.SurveysHW.Update(SrvHW);
                         break;
                     case SurveyType.Energy:
-                        var SrvEN = _context.SurveysEN.Single(s => s.SurveyId == survey.SurveyId);
+                        var SrvEN = _context.SurveysEN
+                            .Include(s=>s.ResultCalculation)
+                            .Single(s => s.SurveyId == survey.SurveyId);
                         SrvEN.FreeCommments = survey.FreeCommments;
                         if (SrvEN.FirstEditAt == null)
                         {
                             SrvEN.FirstEditAt = DateTime.Now;
                             SrvEN.FirstEditBy = _context.CurrentUserId;
+                        }
+                        if (SrvEN.ResultCalculation != null && User.IsInRole(Roles.Admin))
+                        {
+                            SrvEN.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
                         }
                         _context.SurveysEN.Update(SrvEN);
                         break;
