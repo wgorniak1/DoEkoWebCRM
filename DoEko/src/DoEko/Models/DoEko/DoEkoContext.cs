@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DoEko.Models.DoEko.Survey;
 using Microsoft.EntityFrameworkCore.Metadata;
+using DoEko.Models.Payroll;
 
 namespace DoEko.Models.DoEko
 {
@@ -45,6 +46,14 @@ namespace DoEko.Models.DoEko
         public DbSet<District> Districts { get; set; }
         public DbSet<Commune> Communes { get; set; }
         public DbSet<File> File { get; set; }
+
+        //PAYROLL
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<EmployeeBasicPay> EmployeesBasicPay { get; set; }
+        public DbSet<EmployeeUser> EmployeesUsers { get; set; }
+        public DbSet<WageTypeDefinition> WageTypeCatalog { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,6 +117,9 @@ namespace DoEko.Models.DoEko
             //
             modelBuilder.Entity<SurveyStatusHistory>().HasKey(d => new { d.SurveyId, d.Start});
 
+            //PAYROLL
+            modelBuilder.Entity<Payroll.EmployeeBasicPay>().HasKey(bp => new { bp.EmployeeId, bp.Start, bp.End, bp.Code });
+            modelBuilder.Entity<Payroll.EmployeeUser>().HasKey(eu => new { eu.EmployeeId, eu.Start, eu.End, eu.UserId });
         }
 
         public override int SaveChanges()
