@@ -55,6 +55,7 @@ namespace DoEko.Controllers
                 .Include(c => c.Investments).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
                 .Include(c => c.Investments).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
                 .Include(C => C.Investments).ThenInclude(I => I.Surveys).ThenInclude(S=>S.ResultCalculation)
+                .Include(c => c.ClusterDetails).ThenInclude(cd=>cd.Commune)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.ContractId == id);
             if (contract == null)
