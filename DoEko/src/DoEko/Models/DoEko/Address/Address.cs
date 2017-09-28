@@ -7,6 +7,11 @@ namespace DoEko.Models.DoEko.Addresses
     [Table(nameof(Address))]
     public class Address
     {   
+        public Address()
+        {
+            //Polish address by default
+            CountryId = 11;
+        }
         /// <summary>
         /// 
         /// </summary>

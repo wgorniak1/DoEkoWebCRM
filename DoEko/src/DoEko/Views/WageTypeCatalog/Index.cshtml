@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Katalog Składników";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li><a href="#">Payroll</a></li>
+    <li class="active">@ViewData["Title"]</li>
+</ol>
+<h2>@ViewData["Title"]</h2>
+<hr />
+<div class="" id="WTCContainer">
+    <table class="table table-striped dt-responsive dataTable nowrap no-footer dtr-inline collapsed" id="WTCTable" style="width:100%;"></table>
+</div>
+@section modals{
+    <div id="ModalSection"></div>
+}
+@section stylesheets{
+@{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
+@section scripts{
+@{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<environment names="Development">
+    <script type="text/javascript" src="~/js/WageTypeCatalogList.js" asp-append-version="true"></script>
+</environment>
+<environment names="Staging,Production">
+    <script type="text/javascript" src="~/js/WageTypeCatalogList.min.js" asp-append-version="true"></script>
+</environment>
+}
+
+
+
+

@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Addresses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers.Api
 {
+
+    [Authorize()]
     [Produces("application/json")]
-    [Route("api/Address")]
+    [Route("api/v1/Address")]
     public class ApiAddressController : Controller
     {
         private readonly DoEkoContext _context;
@@ -117,6 +120,34 @@ namespace DoEko.Controllers.Api
 
             return Ok(address);
         }
+        #region StatesDictionary
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("States")]
+        public async Task<IActionResult> States()
+        {
+            return Ok(await _context.States.Select(s => new { id = s.StateId, text = s.Text }).ToListAsync());
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("States/{stateId:int}/Districts")]
+        public async Task<IActionResult> GetDistrictsAsync([FromRoute] int stateId)
+        {
+            return Ok(await _context
+                .Districts.Where(d => d.StateId == stateId)
+                .Select(d => new { id = d.DistrictId, text = d.Text }).ToListAsync());
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("States/{stateId:int}/Districts/{districtId:int}/Communes")]
+        public async Task<IActionResult> GetCommunesAsync([FromRoute][FromQuery] int stateId,int districtId)
+        {
+            return Ok(await _context
+                .Communes
+                .Where(c => c.StateId == stateId && c.DistrictId == districtId)
+                .Select(d => new { id = d.CommuneId * 10 + (int)d.Type, text = d.FullName }).ToListAsync());
+        }
+        #endregion
 
         private bool AddressExists(int id)
         {

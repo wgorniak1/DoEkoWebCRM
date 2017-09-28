@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
+    public enum CompanySize
+    {
+        micro = 1,
+        small = 2,
+        medium,
+        large
+    }
     public class BusinessPartnerEntity : BusinessPartner
     {
         [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
@@ -24,5 +31,8 @@ namespace DoEko.Models.DoEko
             set {
                 PartnerName2 = value;
             } }
+
+        [Display(Description = "", Name = "Wielkość", ShortName = "Wielkość")]
+        public CompanySize CompanySize { get; set; }
     }
 }

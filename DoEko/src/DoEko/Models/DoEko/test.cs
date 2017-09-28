@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
 {
-    public class test
+    public class Test
     {
         [Key]
         public Guid PaymentId { get; set; }
@@ -17,7 +17,7 @@ namespace DoEko.Models.DoEko
         public bool checkme { get; set; }
         public string dfg { get; set; }
     }
-    public class test1
+    public class Test1
     {
         [Key]
         public int PaymentId { get; set; }

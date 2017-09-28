@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DoEko.Models.DoEko.Addresses;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,6 +14,8 @@ namespace DoEko.Models.DoEko
         WithCommune,
         [Display(Name = "Umowa z osobą prywatną")]
         WithPerson,
+        [Display(Name = "Klaster")]
+        Cluster,
         [Display(Name = "Inne")]
         Other
     }
@@ -111,5 +114,39 @@ namespace DoEko.Models.DoEko
         //id wpłaty
         //status_wykonania
         //data zakonczenia prac(do inspekcji)
+        [Display(Description = "", Name = "Gmina", ShortName = "Gmina")]
+        public virtual ClusterDetails ClusterDetails { get; set; }
+    }
+
+    [ComplexType()]
+    public class ClusterDetails
+    {
+        [Key, ForeignKey("Contract")]
+        public int ContractId { get; set; }
+
+        public Contract Contract { get; set; }
+
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
+        [Display(Description = "", Name = "Województwo", ShortName = "Wojew.")]
+        public int StateId { get; set; }
+
+        [ForeignKey("StateId")]
+        public State State { get; set;}
+
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
+        [Display(Description = "", Name = "Powiat", ShortName = "Powiat")]
+        public int DistrictId { get; set; }
+
+        [ForeignKey("StateId,DistrictId")]
+        public District District { get; set; }
+
+        [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]
+        [Display(Description = "", Name = "Gmina", ShortName = "Gmina")]
+        public int CommuneId { get; set; }
+        public CommuneType CommuneType { get; set; }
+
+        [ForeignKey("StateId,DistrictId,CommuneId,CommuneType")]
+        public Commune Commune { get; set; }
+
     }
 }

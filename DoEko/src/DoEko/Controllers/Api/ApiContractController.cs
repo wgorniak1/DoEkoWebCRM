@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
     [Route("api/ApiContract")]
+    [Authorize]
     public class ApiContractController : Controller
     {
         private readonly DoEkoContext _context;
@@ -18,6 +20,17 @@ namespace DoEko.Controllers.Api
         public ApiContractController(DoEkoContext context)
         {
             _context = context;
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetClusterContracts()
+        {
+            return Ok(await _context.Contracts
+                .Where(c => c.Type == ContractType.Cluster)
+                .Select(c => new { id = c.ContractId, text = c.ClusterDetails.Commune.Text})
+                .OrderBy(c => c.text)
+                .ToListAsync());
         }
 
         // GET: api/ApiContract
@@ -90,7 +103,7 @@ namespace DoEko.Controllers.Api
                 return BadRequest(ModelState);
             }
 
-            _context.Contracts.Add(contract);
+            //_context.
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetContract", new { id = contract.ContractId }, contract);

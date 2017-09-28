@@ -90,8 +90,8 @@ namespace DoEko.Controllers
         }
 
         // GET: Contracts/Create
-
-        public IActionResult Create(int? ProjectId, string ReturnUrl = null)
+        [HttpGet]
+        public async Task<IActionResult> Create(int? ProjectId, string ReturnUrl = null)
         {
 
             Contract model = new Contract
@@ -126,6 +126,10 @@ namespace DoEko.Controllers
             }
             model.Number = CalculateNewNumber(model.Type, model.ContractDate);
 
+            ViewData["StateId"] = AddressesController.GetStates(_context, 0);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, 0, 0);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, 0, 0, 0, 0);
+
             return View(model);
         }
         // POST: Contracts/Create
@@ -133,23 +137,29 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ContractDate,FullfilmentDate,Number,ProjectId,ShortDescription,Type, CompanyId")] Contract contract, string ReturnUrl = null)
+        public async Task<IActionResult> Create(Contract contract, string ReturnUrl = null)
         {
+            if (contract.Type != ContractType.Cluster)
+            {
+                foreach (var item in ModelState.FindKeysWithPrefix(nameof(ClusterDetails)))
+                {
+                    ModelState.Remove(item.Key);
+                }
+
+                contract.ClusterDetails = null;
+            }
+            else
+            {
+                contract.ClusterDetails.CommuneId = contract.ClusterDetails.CommuneId / 10;
+            }
+
             if (ModelState.IsValid)
             {
                 contract.Status = ContractStatus.Draft;
                 _context.Add(contract);
                 int result = await _context.SaveChangesAsync();
 
-                //if (ReturnUrl != null)
-                //{
-                //    return Redirect(ReturnUrl);
-                //}
-                //else
-                //{
                 return RedirectToAction("Details", "Projects", new { Id = contract.ProjectId });
-                //}
-                //contract = await _context.Contracts.Include(c => c.Investments).SingleOrDefaultAsync(c => c.ContractId == contract.ContractId);
             }
 
             if (contract.ProjectId != 0)
@@ -169,6 +179,10 @@ namespace DoEko.Controllers
             }
 
             ViewData["ReturnUrl"] = ReturnUrl;
+            
+            ViewData["StateId"] = AddressesController.GetStates(_context, contract.ClusterDetails.StateId);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, contract.ClusterDetails.StateId, contract.ClusterDetails.DistrictId);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, contract.ClusterDetails.StateId, contract.ClusterDetails.DistrictId, contract.ClusterDetails.CommuneId, contract.ClusterDetails.CommuneType);
 
             return View(contract);
         }
@@ -193,6 +207,12 @@ namespace DoEko.Controllers
             ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", contract.ProjectId);
             ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
+
+            
+            ViewData["StateId"] = AddressesController.GetStates(_context, 0);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, 0, 0);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, 0, 0, 0, 0);
+
             return View(contract);
         }
 
@@ -238,6 +258,11 @@ namespace DoEko.Controllers
             ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", contract.ProjectId);
             ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
+
+            ViewData["StateId"] = AddressesController.GetStates(_context, contract.ClusterDetails.StateId);
+            ViewData["DistrictId"] = AddressesController.GetDistricts(_context, contract.ClusterDetails.StateId, contract.ClusterDetails.DistrictId);
+            ViewData["CommuneId"] = AddressesController.GetCommunes(_context, contract.ClusterDetails.StateId, contract.ClusterDetails.DistrictId, contract.ClusterDetails.CommuneId, contract.ClusterDetails.CommuneType);
+
 
             return View(contract);
         }
@@ -580,6 +605,9 @@ namespace DoEko.Controllers
                     break;
                 case ContractType.Other:
                     category = "I";
+                    break;
+                case ContractType.Cluster:
+                    category = "K";
                     break;
                 default:
                     category = "X";

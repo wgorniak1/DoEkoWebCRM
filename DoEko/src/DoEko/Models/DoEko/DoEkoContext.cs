@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DoEko.Models.DoEko.Survey;
 using Microsoft.EntityFrameworkCore.Metadata;
 using DoEko.Models.Payroll;
+using DoEko.Models.DoEko.ClusterImport;
 
 namespace DoEko.Models.DoEko
 {
@@ -17,8 +18,8 @@ namespace DoEko.Models.DoEko
             : base(options)
         { }
 
-        public DbSet<test> tests { get; set; }
-        public DbSet<test1> tests1 { get; set; }
+        public DbSet<Test> Tests { get; set; }
+        public DbSet<Test1> Tests1 { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<ControlParameter> Settings { get; set; }
         public DbSet<Company> Companies { get; set; }
@@ -53,7 +54,8 @@ namespace DoEko.Models.DoEko
         public DbSet<EmployeeUser> EmployeesUsers { get; set; }
         public DbSet<WageTypeDefinition> WageTypeCatalog { get; set; }
 
-
+        //CLUSTER INVESTMENTS
+        public DbSet<ClusterInvestment> ClusterInvestments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -120,6 +122,13 @@ namespace DoEko.Models.DoEko
             //PAYROLL
             modelBuilder.Entity<Payroll.EmployeeBasicPay>().HasKey(bp => new { bp.EmployeeId, bp.Start, bp.End, bp.Code });
             modelBuilder.Entity<Payroll.EmployeeUser>().HasKey(eu => new { eu.EmployeeId, eu.Start, eu.End, eu.UserId });
+
+            //CLUSTER INVESTMENT
+            
+            //modelBuilder.Entity<ClusterInvestment>().HasOne(a => a.State).WithMany().HasForeignKey(a => a.StateId).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+            //modelBuilder.Entity<ClusterInvestment>().HasOne(a => a.District).WithMany().HasForeignKey(d => new { d.StateId, d.DistrictId }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+            //modelBuilder.Entity<ClusterInvestment>().HasOne(a => a.Commune).WithMany().HasForeignKey(c => new { c.StateId, c.DistrictId, c.CommuneId, c.CommuneType }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+
         }
 
         public override int SaveChanges()

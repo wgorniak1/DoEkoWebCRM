@@ -12,9 +12,10 @@ using DoEko.Models.Payroll;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20170927093146_ClusterInvestment4")]
+    partial class ClusterInvestment4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -174,25 +175,6 @@ namespace DoEko.Migrations.DoEko
                     b.ToTable("BusinessPartners");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("BusinessPartner");
-                });
-
-            modelBuilder.Entity("DoEko.Models.DoEko.ClusterDetails", b =>
-                {
-                    b.Property<int>("ContractId");
-
-                    b.Property<int>("CommuneId");
-
-                    b.Property<int>("CommuneType");
-
-                    b.Property<int>("DistrictId");
-
-                    b.Property<int>("StateId");
-
-                    b.HasKey("ContractId");
-
-                    b.HasIndex("StateId", "DistrictId", "CommuneId", "CommuneType");
-
-                    b.ToTable("ClusterDetails");
                 });
 
             modelBuilder.Entity("DoEko.Models.DoEko.ClusterImport.ClusterInvestment", b =>
@@ -1186,29 +1168,6 @@ namespace DoEko.Migrations.DoEko
                     b.HasOne("DoEko.Models.DoEko.Addresses.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("DoEko.Models.DoEko.ClusterDetails", b =>
-                {
-                    b.HasOne("DoEko.Models.DoEko.Contract", "Contract")
-                        .WithOne("ClusterDetails")
-                        .HasForeignKey("DoEko.Models.DoEko.ClusterDetails", "ContractId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DoEko.Models.DoEko.Addresses.State", "State")
-                        .WithMany()
-                        .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DoEko.Models.DoEko.Addresses.District", "District")
-                        .WithMany()
-                        .HasForeignKey("StateId", "DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DoEko.Models.DoEko.Addresses.Commune", "Commune")
-                        .WithMany()
-                        .HasForeignKey("StateId", "DistrictId", "CommuneId", "CommuneType")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

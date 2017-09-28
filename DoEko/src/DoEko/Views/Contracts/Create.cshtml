@@ -17,7 +17,7 @@
             <label asp-for="ProjectId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
 
-                @if (ViewBag.ProjectId != null)
+                @if (Model.Project != null)
                 {
                     <input hidden asp-for="ProjectId" />
 
@@ -47,6 +47,36 @@
                     <option value="">Rodzaj umowy</option>
                 </select>
                 <span asp-validation-for="Type" class="text-danger" />
+            </div>
+        </div>
+        <div id="addressPart" style="display: none;">
+        <div class="form-group">
+            <label asp-for="ClusterDetails" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="ClusterDetails.StateId" class="form-control" data-address="state" data-address-id="1" asp-items="ViewBag.StateId">
+                    <option value="">Wybierz</option>
+                </select>
+                <span asp-validation-for="ClusterDetails.StateId" class="text-danger" />
+            </div>
+        </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <select asp-for="ClusterDetails.DistrictId" class="form-control" data-address="district" data-address-id="1" asp-items="ViewBag.DistrictId">
+                        <option value="">Wybierz</option>
+                    </select>
+                    <span asp-validation-for="ClusterDetails.DistrictId" class="text-danger" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="ClusterDetails.CommuneType" class="form-control" data-address="communeType" data-address-id="1" type="hidden" />
+                    <select asp-for="ClusterDetails.CommuneId" class="form-control" data-address="commune" data-address-id="1" asp-items="ViewBag.CommuneId">
+                        <option value="">Wybierz</option>
+                    </select>
+                    <span asp-validation-for="ClusterDetails.CommuneId" class="text-danger" />
+                </div>
             </div>
         </div>
         <div class="form-group">
@@ -95,6 +125,12 @@
 </form>
 
 @section Scripts {
+    <environment names="Development">
+        <script src="~/js/AddressDropDown.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/AddressDropDown.min.js" asp-append-version="true"></script>
+    </environment>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script title="ContractNumber" type="text/javascript">
@@ -113,8 +149,24 @@
                 }
             });
         }
-        
+        function ClusterSwitch() {
+            var $address = $('#addressPart');
+            var $form = $('#createContractForm');
+
+            if ($(this).val() == '2') {
+                $address.show();
+                //$address.children('select').removeClass('.data-val-ignore');
+                //$form.data("validator").settings.ignore = ".data-val-ignore, :hidden, :disabled";
+
+            }
+            else {
+                $address.hide();
+                
+            }
+        }
         $('body').on('change', '.contract-number-rel', UpdateNumber);
+        $('body').on('change', '.contract-number-rel', ClusterSwitch);
+
     </script>
 
 }

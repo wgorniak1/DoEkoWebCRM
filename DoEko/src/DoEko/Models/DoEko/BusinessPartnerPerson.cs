@@ -10,6 +10,11 @@ namespace DoEko.Models.DoEko
 {
     public class BusinessPartnerPerson : BusinessPartner
     {
+        public BusinessPartnerPerson()
+        {
+            this.Type = BusinessPartnerType.Person;
+        }
+
         [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
         [StringLength(30)]
         [Display(Description = "", Name = "Imię", ShortName = "Imię")]

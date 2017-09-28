@@ -17,6 +17,9 @@ using System.Globalization;
 using DoEko.Controllers.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace DoEko
 {
@@ -59,6 +62,30 @@ namespace DoEko
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+            //
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // Cookie settings
+                options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromMinutes(2);
+                options.Cookies.ApplicationCookie.LoginPath = "/Account/LogIn";
+                options.Cookies.ApplicationCookie.LogoutPath = "/Account/LogOut";
+
+                // User settings
+                options.User.RequireUniqueEmail = true;
+            });
+
 
             //Authorization & authentication
             AuthorizationPolicy requireAuthenticatedUser = new 
@@ -66,12 +93,21 @@ namespace DoEko
                     .RequireAuthenticatedUser()
                     .Build();
 
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));
+            services.AddMvc();// options =>
+            //{
+              //  options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));
+                //options.RequireHttpsPermanent = true;
                 //options.ModelBinderProviders.Insert(0,new Models.DoubleModelBinderProvider());
                 //options.OutputFormatters.Insert(0, new Models.DoubleFormatProvider());
+            //});
+
+            services.Configure<MvcOptions>(options => 
+            {
+                options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));
+                options.Filters.Add(new RequireHttpsAttribute());
             });
+
+            services.AddCors();
 
             //Session
             services.AddMemoryCache();
@@ -89,6 +125,9 @@ namespace DoEko
 
             //Options mapped to class
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+            //
+            services.AddLogging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -97,17 +136,17 @@ namespace DoEko
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            //if (env.IsDevelopment())
-            //{
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             
                 app.UseBrowserLink();
-            //}
-            //else
-            //{
-            //app.UseExceptionHandler("/Home/Error");
-            //}
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
 
@@ -124,14 +163,33 @@ namespace DoEko
             app.UseSession();
 
             //
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "Cookie",
+                LoginPath = new PathString("/Account/Login/"),
+                AccessDeniedPath = new PathString("/Account/Forbidden/"),
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = false,
+                CookieName = "TokenAuth",
+                LogoutPath="/Account/Logout",
+                SlidingExpiration = true,
+                ExpireTimeSpan = TimeSpan.FromMinutes(2)
+            });
+
             //app.UseCookieAuthentication(new CookieAuthenticationOptions
             //{
-            //    AuthenticationScheme = "Cookie",
-            //    LoginPath = new PathString("/Account/Login/"),
-            //    AccessDeniedPath = new PathString("/Account/Forbidden/"),
-            //    AutomaticAuthenticate = true,
-            //    AutomaticChallenge = true,
-            //    ExpireTimeSpan = TimeSpan.FromMinutes(2)
+            //    AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+            //    LoginPath = new PathString("/Account/Login"),
+            //    Provider = new CookieAuthenticationProvider
+            //    {
+            //        OnApplyRedirect = ctx =>
+            //        {
+            //            if (!IsAjaxRequest(ctx.Request))
+            //            {
+            //                ctx.Response.Redirect(ctx.RedirectUri);
+            //            }
+            //        }
+            //    }
             //});
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
@@ -142,6 +200,14 @@ namespace DoEko
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseCors(b => b.AllowAnyHeader());
+            
+            //force https
+            var options = new RewriteOptions()
+                .AddRedirectToHttps();
+
+            app.UseRewriter(options);
 
             // Seed Address initial catalog
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())

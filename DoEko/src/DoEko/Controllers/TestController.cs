@@ -823,7 +823,7 @@ namespace DoEko.Controllers
             try
             {
                 // TODO: Add insert logic here
-                test model = new Models.DoEko.test { checkme = true, PaymentId = Guid.NewGuid() };
+                Test model = new Models.DoEko.Test { checkme = true, PaymentId = Guid.NewGuid() };
                 _context.Add(model);
                 int result = await _context.SaveChangesAsync();
 

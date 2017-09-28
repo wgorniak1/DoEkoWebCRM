@@ -218,7 +218,6 @@ namespace DoEko.Controllers
             else
             {
                 districts = new List<District>();
-
             }
 
             return new SelectList(districts, "DistrictId", "Text", currentDistrictId);

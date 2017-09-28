@@ -73,16 +73,16 @@ namespace DoEko.Controllers
                 {
                     City = city,
                     CommuneId = communeId,
-                    ContractId = contractId.HasValue ? contractId.Value : 0,
+                    ContractId = contractId ?? 0,
                     FreeText = freeSearch,
-                    ProjectId = projectId.HasValue ? projectId.Value : 0,
+                    ProjectId = projectId ?? 0,
                     Status = status.HasValue ? (InspectionStatus)status.Value : 0,
-                    UserId = userId.HasValue ? userId.Value : Guid.Empty,
+                    UserId = userId ?? Guid.Empty,
                     FilterByInspector = filterByInspector
                 },
                 Paging = new InvestmentListPaging
                 {
-                    CurrentNumber = page.HasValue ? page.Value : 1,
+                    CurrentNumber = page ?? 1,
                     PageSize = pageSize.HasValue ? (PageSize)pageSize.Value : PageSize.ps_25
                 },
                 Sorting = new InvestmentListSorting

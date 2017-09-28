@@ -60,7 +60,7 @@ namespace DoEko.Models.Validation
         {
             if (string.IsNullOrEmpty(this.ErrorMessageString))
             {
-                return "NIP jest nieprawidłowy";
+                return "nr NIP jest nieprawidłowy";
             }
             else
             {
