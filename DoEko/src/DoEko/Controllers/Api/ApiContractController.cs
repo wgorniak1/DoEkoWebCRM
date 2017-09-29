@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
-    [Route("api/ApiContract")]
+    [Route("api/v1/Contract")]
     [Authorize]
     public class ApiContractController : Controller
     {
@@ -24,6 +24,7 @@ namespace DoEko.Controllers.Api
 
         [AllowAnonymous]
         [HttpGet]
+        [Route("Clusters")]
         public async Task<IActionResult> GetClusterContracts()
         {
             return Ok(await _context.Contracts
