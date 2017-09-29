@@ -117,7 +117,6 @@ namespace DoEko
                 //options.ModelBinderProviders.Insert(0,new Models.DoubleModelBinderProvider());
                 //options.OutputFormatters.Insert(0, new Models.DoubleFormatProvider());
             //});
-
             services.Configure<MvcOptions>(options => 
             {
                 options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));

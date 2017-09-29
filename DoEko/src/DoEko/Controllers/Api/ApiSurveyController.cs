@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Survey;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
     [Route("api/Survey")]
+    [Authorize]
     public class ApiSurveyController : Controller
     {
         private readonly DoEkoContext _context;

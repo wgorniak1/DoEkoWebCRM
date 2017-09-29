@@ -13,6 +13,7 @@ namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
     [Route("api/WageTypeDefinitions")]
+    [Authorize]
     public class WageTypeDefinitionsController : Controller
     {
         private readonly DoEkoContext _context;

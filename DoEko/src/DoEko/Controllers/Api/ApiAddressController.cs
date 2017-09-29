@@ -13,6 +13,7 @@ namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
     [Route("api/v1/Address")]
+    [Authorize]
     public class ApiAddressController : Controller
     {
         private readonly DoEkoContext _context;

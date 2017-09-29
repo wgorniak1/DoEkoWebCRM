@@ -12,6 +12,7 @@ namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
     [Route("api/v1/Contract")]
+    [Authorize]
     public class ApiContractController : Controller
     {
         private readonly DoEkoContext _context;

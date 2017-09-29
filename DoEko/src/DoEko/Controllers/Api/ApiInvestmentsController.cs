@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
     [Route("api/Investments")]
+    [Authorize]
     public class InvestmentsController : Controller
     {
         private readonly DoEkoContext _context;

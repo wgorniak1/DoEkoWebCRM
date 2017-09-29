@@ -14,6 +14,7 @@ using DoEko.Controllers.Helpers;
 
 namespace DoEko.Controllers.Api
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("api/v1/ClusterInvestments")]
     public class ApiClusterInvestmentsController : Controller
