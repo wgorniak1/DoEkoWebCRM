@@ -11,6 +11,13 @@ namespace DoEko.Controllers.Settings
         public AzureStorageOptions AzureStorageOptions { get; set; }
         public SendGridOptions SendGridOptions { get; set; }
         public MailTemplatesOptions MailTemplatesOptions { get; set; }
+        public TokenOptions TokenOptions { get; set; }
+    }
+
+    public class TokenOptions
+    {
+        public string SiteUrl { get; set; }
+        public string Key { get; set; }
     }
 
     public class AzureStorageOptions

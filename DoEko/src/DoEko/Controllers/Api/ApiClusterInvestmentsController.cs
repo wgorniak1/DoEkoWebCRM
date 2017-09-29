@@ -14,7 +14,6 @@ using DoEko.Controllers.Helpers;
 
 namespace DoEko.Controllers.Api
 {
-    [AllowAnonymous]
     [Produces("application/json")]
     [Route("api/v1/ClusterInvestments")]
     public class ApiClusterInvestmentsController : Controller
@@ -26,13 +25,20 @@ namespace DoEko.Controllers.Api
         {
             _context = context;
         }
-        // POST: api/ApiClusterInvestments
+        
+        // POST: api/ApiClusterInvestments/Create
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> Create([FromBody] ClusterInvestmentVM investment)
         {
-            if (investment == null)
+            if (investment == null ||
+                (investment.Person == null && 
+                 investment.Organization == null) ||
+                 (investment.ExistingInstallation == null &&
+                  investment.NewInstallationFarm == null &&
+                  investment.NewInstallationPros == null))
             {
+                ModelState.AddModelError("formularz", "Błędna struktura formularza");
                 //something went really wrong
                 return BadRequest(ModelState);
             }

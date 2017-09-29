@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DoEko.Controllers.Api
 {
-    [Authorize]
     [Produces("application/json")]
     [Route("api/WageTypeDefinitions")]
     public class WageTypeDefinitionsController : Controller

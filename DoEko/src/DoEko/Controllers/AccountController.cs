@@ -12,6 +12,7 @@ using DoEko.Models.Identity;
 using DoEko.ViewModels.AccountViewModels;
 using DoEko.Services;
 using DoEko.Controllers.Extensions;
+using Microsoft.Extensions.Configuration;
 
 namespace DoEko.Controllers
 {

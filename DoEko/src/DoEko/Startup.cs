@@ -20,6 +20,10 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading.Tasks;
 
 namespace DoEko
 {
@@ -78,10 +82,23 @@ namespace DoEko
                 options.Lockout.AllowedForNewUsers = true;
 
                 // Cookie settings
-                options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromMinutes(2);
+                options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromMinutes(10);
                 options.Cookies.ApplicationCookie.LoginPath = "/Account/LogIn";
                 options.Cookies.ApplicationCookie.LogoutPath = "/Account/LogOut";
-
+                options.Cookies.ApplicationCookie.Events =
+                    new CookieAuthenticationEvents
+                    {
+                        OnRedirectToLogin = ctx =>
+                        {
+                            if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                            {
+                                ctx.Response.StatusCode = 401;
+                                return Task.FromResult<object>(null);
+                            }
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                            return Task.FromResult<object>(null);
+                        }
+                    };
                 // User settings
                 options.User.RequireUniqueEmail = true;
             });
@@ -159,7 +176,23 @@ namespace DoEko
 
             ////
             app.UseStaticFiles();
+            //
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:TokenOptions:Key").Value)),
+                    ValidAudience = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value
+                }
+            });
+            //
             app.UseIdentity();
+            //
             app.UseSession();
 
             //
