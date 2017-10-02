@@ -12,9 +12,10 @@ using DoEko.Models.Payroll;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20171002073735_Payroll_2nd")]
+    partial class Payroll_2nd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -999,13 +1000,9 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<double>("Amount");
 
-                    b.Property<int?>("ContractId");
-
                     b.Property<string>("Currency");
 
                     b.Property<double>("Number");
-
-                    b.Property<int?>("ProjectId");
 
                     b.Property<double>("Rate");
 
@@ -1031,64 +1028,6 @@ namespace DoEko.Migrations.DoEko
                     b.HasKey("EmployeeId", "Start", "End", "UserId");
 
                     b.ToTable("EmployeesUsers");
-                });
-
-            modelBuilder.Entity("DoEko.Models.Payroll.PayrollCluster", b =>
-                {
-                    b.Property<Guid>("PayrollClusterId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("ChangedAt");
-
-                    b.Property<Guid>("ChangedBy");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<Guid>("CreatedBy");
-
-                    b.Property<Guid>("EmployeeId");
-
-                    b.Property<DateTime>("PeriodFor");
-
-                    b.Property<DateTime>("PeriodIn");
-
-                    b.Property<short>("SequenceNo");
-
-                    b.HasKey("PayrollClusterId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("PayrollCluster");
-                });
-
-            modelBuilder.Entity("DoEko.Models.Payroll.PayrollResult", b =>
-                {
-                    b.Property<Guid>("PayrollResultId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<double>("Amount");
-
-                    b.Property<string>("Code");
-
-                    b.Property<string>("Currency");
-
-                    b.Property<double>("Number");
-
-                    b.Property<Guid>("PayrollClusterId");
-
-                    b.Property<double>("Rate");
-
-                    b.Property<string>("ShortDescription");
-
-                    b.Property<Guid>("SurveyId");
-
-                    b.Property<int>("Unit");
-
-                    b.HasKey("PayrollResultId");
-
-                    b.HasIndex("PayrollClusterId");
-
-                    b.ToTable("PayrollResult");
                 });
 
             modelBuilder.Entity("DoEko.Models.Payroll.WageTypeDefinition", b =>
@@ -1467,22 +1406,6 @@ namespace DoEko.Migrations.DoEko
                     b.HasOne("DoEko.Models.Payroll.Employee", "Employee")
                         .WithMany("Users")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("DoEko.Models.Payroll.PayrollCluster", b =>
-                {
-                    b.HasOne("DoEko.Models.Payroll.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("DoEko.Models.Payroll.PayrollResult", b =>
-                {
-                    b.HasOne("DoEko.Models.Payroll.PayrollCluster", "PayrollCluster")
-                        .WithMany("Results")
-                        .HasForeignKey("PayrollClusterId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }

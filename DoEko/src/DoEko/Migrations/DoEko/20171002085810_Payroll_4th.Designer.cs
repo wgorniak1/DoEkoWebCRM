@@ -12,9 +12,10 @@ using DoEko.Models.Payroll;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20171002085810_Payroll_4th")]
+    partial class Payroll_4th
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -999,13 +1000,9 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<double>("Amount");
 
-                    b.Property<int?>("ContractId");
-
                     b.Property<string>("Currency");
 
                     b.Property<double>("Number");
-
-                    b.Property<int?>("ProjectId");
 
                     b.Property<double>("Rate");
 

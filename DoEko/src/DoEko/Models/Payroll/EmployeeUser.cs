@@ -19,6 +19,7 @@ namespace DoEko.Models.Payroll
 
         [ForeignKey("EmployeeId")]
         public virtual Employee Employee { get; set; }
+        //[ForeignKey("UserId")]
         //public virtual ApplicationUser User { get; set; }
 
         public EmployeeUser()

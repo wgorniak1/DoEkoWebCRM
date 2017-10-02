@@ -20,9 +20,9 @@ using System.Security.Claims;
 
 namespace DoEko.Controllers.Api
 {
+    [AllowAnonymous]
     [Produces("application/json")]
     [Route("api/v1/Account")]
-    [AllowAnonymous]
     public class ApiAccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

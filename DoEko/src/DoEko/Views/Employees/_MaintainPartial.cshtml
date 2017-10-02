@@ -1,0 +1,93 @@
+﻿@model DoEko.Models.Payroll.WageTypeDefinition
+
+@{
+    if (Model.WageTypeDefinitionId != 0)
+    {
+        ViewData["Title"] = "Składnik" + Model.Code;
+    }
+    else
+    {
+        ViewData["Title"] = "Nowy Składnik wynagrodzenia";
+    }
+}
+<div class="modal fade" id="WTCModal" tabindex="-1" role="dialog" aria-labelledby="WTCModalTitle">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close wtc-btn-cancel" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="WTCModalTitle">@ViewData["Title"]</h4>
+            </div>
+            <div class="modal-body" role="form">
+                <form id="CreateWTCForm"
+                      action="/api/WageTypeDefinitions"
+                      method="post"
+                      data-ajax="true"
+                      data-ajax-method="post"
+                      data-ajax-mode="UPDATE"
+                      data-ajax-update=""
+                      data-ajax-failure="WTCCreateFailed"
+                      data-ajax-success="WTCCreateCompleted">
+                    <div class="form-horizontal">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input asp-for="WageTypeDefinitionId" type="hidden" />
+                        <div class="form-group">
+                            <label asp-for="Code" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <input asp-for="Code" class="form-control" />
+                                <span asp-validation-for="Code" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ShortDescription" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <input asp-for="ShortDescription" class="form-control" />
+                                <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Number" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <input asp-for="Number" class="form-control" />
+                                <span asp-validation-for="Number" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Unit" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <select asp-for="Unit" class="form-control" asp-items="@Html.GetEnumSelectList<DoEko.Models.Payroll.WageTypeUnit>()"></select>
+                                <span asp-validation-for="Unit" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Rate" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <input asp-for="Rate" class="form-control" />
+                                <span asp-validation-for="Rate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Amount" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <input asp-for="Amount" class="form-control" />
+                                <span asp-validation-for="Amount" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Currency" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <select asp-for="Currency">
+                                    <option value="PLN" selected="selected">PLN</option>
+                                </select>
+                                <span asp-validation-for="Currency" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger wtc-btn-cancel" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-success wtc-btn-submit" data-dismiss="modal">Zapisz</button>
+            </div>
+        </div>
+    </div>
+</div>

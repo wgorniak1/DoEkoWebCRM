@@ -11,7 +11,7 @@ namespace DoEko.Models.Identity
     // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
-        public string name { get; set; }
+        public string Name { get; set; }
 
         [Required(ErrorMessage = "Pole {0} jest obowiązkowe")]
         [StringLength(30)]
@@ -23,6 +23,14 @@ namespace DoEko.Models.Identity
         public string LastName { get; set; }
 
         public DateTime PasswordChangedOn { get; set; }
+
+        public static ApplicationUser DummyUser() => new ApplicationUser
+        {
+            Email = "brak",
+            UserName = "brak",
+            FirstName = "Nieustawiono",
+            LastName = ""
+        };
 
         [NotMapped]
         public bool PasswordExpired {
@@ -42,5 +50,7 @@ namespace DoEko.Models.Identity
             }
             private set { }
         }
+
+        
     }
 }

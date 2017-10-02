@@ -12,6 +12,16 @@
             <li><a asp-area="" asp-controller="Projects" asp-action="Index">Projekty</a></li>
             <li><a asp-area="" asp-controller="Contracts" asp-action="Index">Umowy</a></li>
             <li><a asp-area="" asp-controller="BusinessPartnerPersons" asp-action="List">Właściciele</a></li>            
+            @{ 
+                var curruser = await UserManager.GetUserAsync(User);
+            }
+
+            @if (curruser.UserName == "Admin" ||
+                 curruser.UserName == "root")
+            {
+                <li><a asp-area="" asp-controller="Payroll" asp-action="Index">Rozliczenia</a></li> 
+            }
+
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="">
                     Raporty

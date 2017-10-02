@@ -13,7 +13,6 @@ namespace DoEko.Models.Payroll
         public Guid EmployeeId { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        //        public WageType WageType { get; set; }
         public string Code { get; set; }
         public string ShortDescription { get; set; }
         public double Number { get; set; }
@@ -21,6 +20,9 @@ namespace DoEko.Models.Payroll
         public double Rate { get; set; }
         public double Amount { get; set; }
         public string Currency { get; set; }
+
+        public int? ProjectId { get; set; }
+        public int? ContractId { get; set; }
 
         [ForeignKey("EmployeeId")]
         public virtual Employee Employee { get; set; }

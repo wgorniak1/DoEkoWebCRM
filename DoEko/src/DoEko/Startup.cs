@@ -205,7 +205,7 @@ namespace DoEko
                 CookieName = "TokenAuth",
                 LogoutPath="/Account/Logout",
                 SlidingExpiration = true,
-                ExpireTimeSpan = TimeSpan.FromMinutes(2)
+                ExpireTimeSpan = TimeSpan.FromMinutes(10)
             });
 
             //app.UseCookieAuthentication(new CookieAuthenticationOptions

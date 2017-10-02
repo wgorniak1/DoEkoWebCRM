@@ -53,6 +53,7 @@ namespace DoEko.Models.DoEko
         public DbSet<EmployeeBasicPay> EmployeesBasicPay { get; set; }
         public DbSet<EmployeeUser> EmployeesUsers { get; set; }
         public DbSet<WageTypeDefinition> WageTypeCatalog { get; set; }
+        public DbSet<PayrollCluster> PayrollCluster { get; set; }
 
         //CLUSTER INVESTMENTS
         public DbSet<ClusterInvestment> ClusterInvestments { get; set; }
