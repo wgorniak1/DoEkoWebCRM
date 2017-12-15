@@ -92,7 +92,7 @@ namespace DoEko.Controllers
 
         // GET: Contracts/Create
         [HttpGet]
-        public async Task<IActionResult> Create(int? ProjectId, string ReturnUrl = null)
+        public IActionResult Create(int? ProjectId, string ReturnUrl = null)
         {
 
             Contract model = new Contract
@@ -107,7 +107,6 @@ namespace DoEko.Controllers
                 if (!ProjectExists(ProjectId.Value))
                 {
                     return RedirectToAction("Index", new { StatusMessage = 1 });
-                    //return NotFound();
                 }
                 model.Project = _context.Projects.Include(p => p.Company).SingleOrDefault(p => p.ProjectId == ProjectId);
                 model.ProjectId = model.Project.ProjectId;

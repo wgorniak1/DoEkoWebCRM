@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
-    [Route("api/Investments")]
-    [Authorize]
+    [Route("api/v1/Investments")]
+    [Authorize()]
     public class InvestmentsController : Controller
     {
         private readonly DoEkoContext _context;
@@ -91,11 +91,19 @@ namespace DoEko.Controllers.Api
             {
                 return BadRequest(ModelState);
             }
+            try
+            {
+                _context.Investments.Add(investment);
+                await _context.SaveChangesAsync();
 
-            _context.Investments.Add(investment);
-            await _context.SaveChangesAsync();
+            }
+            catch (Exception exc)
+            {
+                ModelState.AddModelError("SAVE", exc.InnerException != null ? exc.InnerException.Message : exc.Message);
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction("GetInvestment", new { id = investment.InvestmentId }, investment);
+            return CreatedAtAction("PostInvestment", new { id = investment.InvestmentId }, investment);
         }
 
         // DELETE: api/ApiInvestments/5

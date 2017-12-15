@@ -61,11 +61,25 @@ namespace DoEko.Controllers.Api
             //check duplicated entries
             CheckDuplicates(model);
 
-            _context.ClusterInvestments.Add(model);
-            int result = await _context.SaveChangesAsync();
-            investment.ClusterInvestmentId = model.ClustInvestmentId;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                _context.ClusterInvestments.Add(model);
+                int result = await _context.SaveChangesAsync();
+                investment.ClusterInvestmentId = model.ClustInvestmentId;
 
-            return CreatedAtAction("Create", new { id = model.ClustInvestmentId}, investment);
+                return CreatedAtAction("Create", new { id = model.ClustInvestmentId});
+
+            }
+            catch (Exception exc)
+            {
+                ModelState.Clear();
+                ModelState.AddModelError("General", exc.InnerException != null ? exc.InnerException.Message : exc.Message);
+                return BadRequest(ModelState);
+            }
         }
 
         private void CheckContract(int contractId)

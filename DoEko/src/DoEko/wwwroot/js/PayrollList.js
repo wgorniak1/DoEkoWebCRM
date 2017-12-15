@@ -138,18 +138,16 @@ function SetPYPeriod(e, dt, node, config) {
 }
 function StartPY(e, dt, node, config) {
 
-    var period = new Date("2017", "09", "01");
+    var period = new Date("2017", "08", "01").toISOString();
     var form = new FormData();
     form.append("Period", period.toISOString);
 
     $.ajax({
         url: "api/v1/Payroll/Start",
         type: "POST",
-        data: form,
-        processData: false,
-        contentType: false
-        //contentType: "application/json; charset=utf-8",
-        //dataType: "json"
+        data: period,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json"
     });
 
 }

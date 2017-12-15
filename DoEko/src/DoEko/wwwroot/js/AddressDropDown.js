@@ -93,7 +93,6 @@
             }
         }
     }
-
     class DropDownState extends DropDown {
 
         get api() {
@@ -104,7 +103,6 @@
             super(keyId, DropDown.TYPE().state, null);
         }
     }
-
     class DropDownDistrict extends DropDown {
         get api() {
             var value = DropDown.API()
@@ -148,14 +146,13 @@
         }
 
     }
-
     class Address {
         constructor(keyId) {
             this.state = new DropDownState(keyId);
             this.district = new DropDownDistrict(keyId, this.state);
             this.commune = new DropDownCommune(keyId, this.district);
         }
-
+   
         static createColletion() {
 
             var uniqueObjects = {};
@@ -179,130 +176,3 @@ var addrCollection = Address.createColletion();
 //data-address='district' data-address-id='1'
 //data-address='commune' data-address-id='1'
 //data-address='communeType' data-address-id='1'
-
-
-//$('body').on('change', '.address-state', function () { trigger('address:state:change', $(this).val, $(this).data('address-key')); });
-//$('body').on('change', '.address-district', function () { trigger('address:district:change', $(this).val, $(this).data('address-key')); });
-//$('body').on('change', '.address-commune', function () { trigger('address:commune:change', $(this).val, $(this).data('address-key')); });
-
-//function onStateChange() {
-//    var addressKey = $(this).data("address-key");
-
-//    var selectedItemValue = $(this).val();
-//    var ddlDistricts = $('.address-district[data-address-key="' + addressKey + '"]');
-//    var ddlCommunes = $('.address-commune[data-address-key="' + addressKey + '"]');
-
-//    if (selectedItemValue === '') {
-//        ddlDistricts.html("<option value=''>Wybierz województwo</option>").show;
-//    }
-//    else
-//        $.ajax({
-//            cache: false,
-//            type: "GET",
-//            url: '/Addresses/GetDistrictsAJAX',
-//            data: { "id": selectedItemValue },
-//            success: function (data) {
-//                ddlDistricts.html('');
-//                ddlDistricts.append($('<option></option>').val('').html('Wybierz'));
-//                $.each(data, function (id, option) {
-//                    ddlDistricts.append($('<option></option>').val(option.id).html(option.name));
-//                });
-
-
-//            },
-//            error: function (xhr, ajaxOptions, thrownError) {
-//                alert('Błąd przy aktualizacji listy powiatów!');
-//            }
-//        });
-//    ddlCommunes.html("<option value=''>Wybierz powiat</option>").show();
-
-//}
-
-//$(function () {
-
-//    $(".address-state").change(function () {
-//        var addressKey = $(this).data("address-key");
-
-//        var selectedItemValue = $(this).val();
-//        var ddlDistricts = $('.address-district[data-address-key="' + addressKey + '"]');
-//        var ddlCommunes = $('.address-commune[data-address-key="' + addressKey + '"]');
-
-//        if (selectedItemValue === '') {
-//            ddlDistricts.html("<option value=''>Wybierz województwo</option>").show;
-//        }
-//        else
-//            $.ajax({
-//                cache: false,
-//                type: "GET",
-//                url: '/Addresses/GetDistrictsAJAX',
-//                data: { "id": selectedItemValue },
-//                success: function (data) {
-//                    ddlDistricts.html('');
-//                    ddlDistricts.append($('<option></option>').val('').html('Wybierz'));
-//                    $.each(data, function (id, option) {
-//                        ddlDistricts.append($('<option></option>').val(option.id).html(option.name));
-//                    });
-
-
-//                },
-//                error: function (xhr, ajaxOptions, thrownError) {
-//                    alert('Błąd przy aktualizacji listy powiatów!');
-//                }
-//            });
-//        ddlCommunes.html("<option value=''>Wybierz powiat</option>").show();
-//    });
-
-//    $(".address-district").change(function () {
-//        var addressKey = $(this).attr("data-address-key");
-        
-//        var selectedItemValue = $(this).val();
-//        var selectedStateId = $('.address-state[data-address-key="' + addressKey + '"]').val();
-//        var ddlCommune = $('.address-commune[data-address-key="' + addressKey + '"]');
-
-//        if (selectedItemValue === '') {
-//            ddlCommune.html("<option value=''>Wybierz Powiat</option>").show;
-//        }
-//        else
-//            $.ajax({
-//                cache: false,
-//                type: "GET",
-//                url: '/Addresses/GetCommunesAJAX',
-//                data: {
-//                    "stateId": selectedStateId,
-//                    "districtId": selectedItemValue
-//                },
-//                success: function (data) {
-//                    ddlCommune.html('');
-//                    ddlCommune.append($('<option></option>').val('').html('Wybierz'));
-
-//                    $.each(data, function (id, option) {
-//                        ddlCommune.append($('<option></option>').val(option.id).html(option.name));
-//                    });
-//                },
-//                error: function (xhr, ajaxOptions, thrownError) {
-//                    alert('Błąd przy aktualizacji listy gmin!');
-//                }
-//            });
-
-//    });
-
-//    $(".address-commune").change(function () {
-//        var addressKey = $(this).attr("data-address-key");
-//        var selectedItem = $(this).val();
-//        var communeType = $('.address-communetype[data-address-key="' + addressKey + '"]');
-
-//        $.ajax({
-//            cache: false,
-//            type: "GET",
-//            url: '/Addresses/GetCommuneTypeAJAX',
-//            data: { "communeId": selectedItem },
-//            success: function (data) {
-//                communeType.val(data);
-//            },
-//            error: function (xhr, ajaxOptions, thrownError) {
-//                alert('Błąd przy zapisywaniu rodzaju gminy!');
-//            }
-//        });
-//    });
-
-//});

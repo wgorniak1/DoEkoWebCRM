@@ -122,7 +122,7 @@ namespace DoEko
                 options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));
                 options.Filters.Add(new RequireHttpsAttribute());
             });
-
+            //services.AddSignalR();
             services.AddCors();
 
             //Session
@@ -198,8 +198,8 @@ namespace DoEko
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationScheme = "Cookie",
-                LoginPath = new PathString("/Account/Login/"),
-                AccessDeniedPath = new PathString("/Account/Forbidden/"),
+                LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login/"),
+                AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/"),
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = false,
                 CookieName = "TokenAuth",

@@ -116,5 +116,11 @@
     "inputFiles": [
       "wwwroot/js/BusinessPartnerPersonList.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/PayrollList.min.js",
+    "inputFiles": [
+      "wwwroot/js/PayrollList.js"
+    ]
   }
 ]

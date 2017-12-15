@@ -75,6 +75,8 @@ namespace DoEko.Controllers.Api
             }
             catch (Exception exc)
             {
+                ModelState.AddModelError("", exc.Message);
+                return BadRequest(ModelState);
             }
 
             return CreatedAtAction("CreateEmployee", new { id = employee.EmployeeId }, employee);

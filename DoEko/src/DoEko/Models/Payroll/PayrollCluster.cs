@@ -55,5 +55,20 @@ namespace DoEko.Models.Payroll
         public string ShortDescription { get; set; }
         public WageTypeUnit Unit { get; set; }
         public Guid SurveyId { get; set; }
+
+        public ICollection<PayrollComment> Comments { get; set; }
+    }
+
+    [ComplexType]
+    public class PayrollComment
+    {
+        public Guid PayrollCommentId { get; set; }
+
+        public Guid PayrollResultId { get; set; }
+        [ForeignKey("PayrollResultId")]
+        public virtual PayrollResult PayrollResult { get; set; }
+
+        public string Text { get; set; }
+
     }
 }

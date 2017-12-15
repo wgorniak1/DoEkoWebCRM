@@ -24,20 +24,13 @@ namespace DoEko.Models.Payroll
             {
                 try
                 {
-                    var user = Users
-                        .FirstOrDefault(u => u.Start <= DateTime.Now &&
-                                               u.End >= DateTime.Now);
-                    if (user != null)
-                    {
-                        return user.UserId;
-                    }
-                    else
-                    {
-                        return Guid.Empty;
-                    }
+                    var userId = Users.Where(u => u.Start <= DateTime.Now &&
+                                                u.End >= DateTime.Now)
+                                                .Select(u => u.UserId).FirstOrDefault();
+                    return userId;
 
                 }
-                catch (Exception exc)
+                catch (Exception)
                 {
                     return Guid.Empty;
                 }

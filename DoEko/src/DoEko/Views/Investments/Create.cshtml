@@ -7,20 +7,13 @@
 <h2>Nowa</h2>
 
 <form asp-action="Create" asp-route-ReturnUrl="@ViewBag.ReturnUrl">
-    <div class="form-horizontal">
+    <div class="form">
         <h4>Inwestycja | Adres</h4>
         <hr />
         <div asp-validation-summary="All" class="text-danger"></div>
         
         @Html.Partial("../Shared/Address/_AddressFormPartial", Model)
 
-        @*<div class="form-group">
-            <label asp-for="InspectionStatus" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="InspectionStatus" class="form-control"></select>
-                <span asp-validation-for="InspectionStatus" class="text-danger" />
-            </div>
-        </div>*@
         <input asp-for="ContractId" hidden/>
 
         <div class="form-group">
@@ -38,40 +31,26 @@
             </div>
         </div>
 
+
         <div class="form-group">
             <label asp-for="SurveyHW" class="col-md-2 control-label"></label>
-            
-            <div class="col-md-2">
-                <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-default">
-                        <input asp-for="SurveyHW" type="radio" autocomplete="off" value="true" />
-                        Tak
-                    </label>
-                    <label class="btn btn-default active">
-                        <input asp-for="SurveyHW" type="radio" autocomplete="off" checked value="false" />
-                        Nie
-                    </label>
-                    <span asp-validation-for="SurveyHW" class="text-danger" />
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="checkbox" asp-for="SurveyHW">
+                    </div>
+                    <div class="col-md-8">
+                        <select asp-for="RSETypeHW" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeHotWater))"></select>
+                        <span asp-validation-for="RSETypeHW" class="text-danger" />
+                    </div>
                 </div>
             </div>
-            <div id="RSETypeHW" class="col-md-8" hidden>
-                <select asp-for="RSETypeHW" class="form-control" asp-items="Html.GetEnumSelectList(typeof(SurveyRSETypeHotWater))"></select>
-                <span asp-validation-for="RSETypeHW" class="text-danger" />
-            </div>
         </div>
+
         <div class="form-group">
             <label asp-for="SurveyCH" class="col-md-2 control-label"></label>
             <div class="col-md-2">
-                <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-default">
-                        <input asp-for="SurveyCH" type="radio" autocomplete="off" value="true" />
-                        Tak
-                    </label>
-                    <label class="btn btn-default active">
-                        <input asp-for="SurveyCH" type="radio" autocomplete="off" checked value="false" />
-                        Nie
-                    </label>
-                </div>
+                <input asp-for="SurveyCH" class="form-control checkbox" data-toggle="toggle" data-on="Tak" data-off="Nie" />
                 <span asp-validation-for="SurveyCH" class="text-danger" />
             </div>
             <div id="RSETypeCH" class="col-md-8" hidden>
@@ -82,16 +61,7 @@
         <div class="form-group">
             <label asp-for="SurveyEE" class="col-md-2 control-label"></label>
             <div class="col-md-2">
-                <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-default">
-                        <input asp-for="SurveyEE" type="radio" autocomplete="off" value="true" />
-                        Tak
-                    </label>
-                    <label class="btn btn-default active">
-                        <input asp-for="SurveyEE" type="radio" autocomplete="off" checked value="false" />
-                        Nie
-                    </label>
-                </div>
+                <input asp-for="SurveyEE" class="form-control checkbox" data-toggle="toggle" data-on="Tak" data-off="Nie" />
                 <span asp-validation-for="SurveyEE" class="text-danger" />
             </div>
             <div id="RSETypeEE" class="col-md-8" hidden>
@@ -102,14 +72,13 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Dalej" class="btn btn-primary" />
-
                 @if (!String.IsNullOrEmpty(ViewBag.ReturnUrl))
-            {
-                    <a href="@ViewBag.ReturnUrl" class="btn btn-default" asp->Anuluj</a>
+                {
+                    <a href="@ViewBag.ReturnUrl" class="btn btn-default">Anuluj</a>
                 }
                 else
                 {
-                    <a asp-action="Index" class="btn btn-default" asp->Anuluj</a>
+                    <a asp-action="Index" class="btn btn-default">Anuluj</a>
                 }
             </div>
         </div>

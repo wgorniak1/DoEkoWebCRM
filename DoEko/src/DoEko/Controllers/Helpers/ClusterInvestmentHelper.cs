@@ -21,7 +21,8 @@ namespace DoEko.Controllers.Helpers
             ClusterInvestment model = new ClusterInvestment();
 
             model.ClustInvestmentId = vm.ClusterInvestmentId;
-
+            model.ContractId = vm.ContractId;
+           
             if (vm.Person != null)
             {
                 model.MemberType = BusinessPartnerType.Person;
