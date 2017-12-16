@@ -98,7 +98,7 @@ namespace DoEko.Models.DoEko.Addresses
         /// 
         /// </summary>
         [Column(Order = 12)]
-        [StringLength(5, ErrorMessage = "Proszę", MinimumLength = 1)]
+        [StringLength(5, ErrorMessage = "Nr mieszkania nie może przekroczyć 5 znaków", MinimumLength = 0)]
         [Display(Description = "", Name = "Nr Mieszkania", ShortName = "Nr Mieszk.")]
         public string ApartmentNo { get; set; }
         /// <summary>

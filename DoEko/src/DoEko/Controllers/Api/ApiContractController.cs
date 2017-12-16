@@ -25,11 +25,11 @@ namespace DoEko.Controllers.Api
         [AllowAnonymous]
         [HttpGet]
         [Route("Clusters")]
-        public async Task<IActionResult> GetClusterContracts()
+        public async Task<IActionResult> GetClusterContracts([FromQuery] string cluster)
         {
             return Ok(await _context.Contracts
-                .Where(c => c.Type == ContractType.Cluster)
-                .Select(c => new { id = c.ContractId, text = c.ClusterDetails.Commune.Text})
+                .Where(c => c.Type == ContractType.Cluster && c.Project.ShortDescription == cluster)
+                .Select(c => new { id = c.ContractId, text = c.ClusterDetails.Commune.Text })
                 .OrderBy(c => c.text)
                 .ToListAsync());
         }
