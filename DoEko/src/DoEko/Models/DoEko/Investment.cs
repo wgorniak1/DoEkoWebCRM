@@ -15,6 +15,9 @@ namespace DoEko.Models.DoEko
         ValueToDelete = 0,
         [Display(Name = "Inicjalny")]
         Initial = 1,
+        [Display(Name = "Pobrana", Description ="Analizowana przez Neoenergetykę")]
+        InReview = 2,
+
         [Display(Name = "Zakończona")]
         Completed,
         [Display(Name = "Zamknięta")]
@@ -275,7 +278,11 @@ namespace DoEko.Models.DoEko
         [Display(Description = "", Name = "Link do geoportalu", ShortName = "Geoportal")]
         [DataType(DataType.Url)]
         public string GeoPortal { get; set; }
-        
+
+        [Display(Description = "Do przeliczenia przez Neoenergetykę", Name = "Do zweryfikowania", ShortName = "Do zweryfikowania")]
+        public bool Calculate { get; set; }
+
+
         #region Metody
         [NotMapped]
         public string PlotFullNumber

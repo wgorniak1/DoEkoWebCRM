@@ -12,9 +12,10 @@ using DoEko.Models.Payroll;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20171216010116_Neo2")]
+    partial class Neo2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -894,8 +895,6 @@ namespace DoEko.Migrations.DoEko
                     b.Property<double>("CO2Percent");
 
                     b.Property<double>("CO2Value");
-
-                    b.Property<bool>("Completed");
 
                     b.Property<double>("FinalPVConfig");
 

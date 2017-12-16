@@ -190,7 +190,7 @@ namespace DoEko.Models.DoEko.Survey
         [Display(Name = "ΔBENZO(A)PIREN")]
         public double BenzoPirenPercent { get; set; }
         //
-
+        public bool Completed { get; set; }
         #region helpers
         private Double ParseDouble(string name, string s)
         {
