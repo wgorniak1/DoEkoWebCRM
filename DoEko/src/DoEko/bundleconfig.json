@@ -122,5 +122,17 @@
     "inputFiles": [
       "wwwroot/js/PayrollList.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ContractListNeo.min.js",
+    "inputFiles": [
+      "wwwroot/js/ContractListNeo.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ContractDetailsNeo.min.js",
+    "inputFiles": [
+      "wwwroot/js/ContractDetailsNeo.js"
+    ]
   }
 ]

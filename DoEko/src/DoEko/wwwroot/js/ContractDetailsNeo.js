@@ -147,7 +147,16 @@ $(document).ready(function () {
                     
                     dt.rows().cells().invalidate().render();
                 }
-            }
+            },
+        {
+        text: '<span class="text-primary glyphicon glyphicon-download" title="Pobierz do weryfikacji"></span>',
+        className: 'btn',
+        action: function (e, dt, node, config) {
+            var url = "/Reports/SurveyToCSV?contractId=" + $("#ContractId").val();
+            window.open(url, '_blank');
+        }
+    }
+
         ],
         select: false,
         colReorder: 
