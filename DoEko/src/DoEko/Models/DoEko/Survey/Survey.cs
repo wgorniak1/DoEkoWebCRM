@@ -179,6 +179,21 @@ namespace DoEko.Models.DoEko.Survey
             }
         }
 
+        public string GetRSETypeName()
+        {
+            switch (Type)
+            {
+                case DoEko.Survey.SurveyType.CentralHeating:
+                    return ((SurveyCentralHeating)this).RSEType.DisplayName();
+                case DoEko.Survey.SurveyType.HotWater:
+                    return ((SurveyHotWater)this).RSEType.DisplayName();
+                case DoEko.Survey.SurveyType.Energy:
+                    return ((SurveyEnergy)this).RSEType.DisplayName();
+                default:
+                    return string.Empty;
+            }
+        }
+
 
     }
 }

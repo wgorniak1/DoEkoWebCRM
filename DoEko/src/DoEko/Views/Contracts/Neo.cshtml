@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Projekty";
+}
+<!--Navigation-->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">Lista projektów</li>
+</ol>
+<!--Title-->
+<h2>@ViewData["Title"]</h2>
+<hr />
+<div class="" id="ContractsContainer">
+    <form>
+        @Html.AntiForgeryToken()
+    </form>
+    @*@section modals{
+        @{await Html.RenderPartialAsync("_ModalConfirmationPopupPartial",
+                                          new DoEko.ViewModels.SharedViewModels.ModalConfirmationViewModel()
+                                          {
+                                              Id = "PersonDeleteModal",
+                                              Title = "Usuwanie właściciela z bazy danych",
+                                              Question = "Czy jesteś pewien, że chcesz usunąć dane tej osoby z bazy danych?",
+                                              BtnYes = "Tak, Usuń",
+                                              BtnYesClass = "person-delete-submit"
+                                          });}
+    }*@
+    <table class="table table-striped dt-responsive dataTable nowrap no-footer dtr-inline collapsed" 
+           id="ContractListTable" 
+           style="width:100%;"></table>
+</div>
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
+@section scripts{
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/ContractListNeo.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/ContractListNeo.min.js" asp-append-version="true"></script>
+    </environment>
+}

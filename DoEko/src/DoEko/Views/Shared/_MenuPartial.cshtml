@@ -66,5 +66,11 @@
             <li><a asp-area="" asp-controller="Investments" asp-action="ListUnassigned">Inspekcje</a></li>
         </ul>
     }
+    else if (User.IsInRole(Roles.Neo))
+    {
+        <ul class="nav navbar-nav">
+            <li><a asp-area="" asp-controller="Contracts" asp-action="Index">Projekty</a></li>
+        </ul>
+    }
 
 }

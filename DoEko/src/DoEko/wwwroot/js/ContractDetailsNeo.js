@@ -1,0 +1,224 @@
+﻿//
+$(document).ready(function () {
+    var ajaxUrl = "/api/v1/Investments/Neo?contractId=" + $("#ContractId").val();
+    var table = $('#InvestmentListTable').DataTable({
+        ajax: {
+            url: ajaxUrl,
+            dataSrc: "",
+            rowId: "investmentId"
+        },
+        columns: [
+                    {
+                        data: 'address',
+                        name: 'address',
+                        title: 'Adres'
+                    },
+                    {
+                        data: "plotNumber",
+                        name: "plotNumber",
+                        title: "Nr działki"
+                    },
+                    {
+                        data: "status",
+                        name: "status",
+                        title: "Status"
+                    },
+                    {
+                        className: "none",
+                        data: "inspectionStatus",
+                        name: "inspectionStatus",
+                        title: "Status inspekcji"
+                    },
+
+                    {
+                        data: "calculate",
+                        name: "calculate",
+                        title: "Do weryfikacji"
+                    },
+                    {
+                        className: "none",
+                        data: "surveys",
+                        name: "surveys",
+                        title: "Źródła",
+                        render: function (data, type, row, meta) {
+                            // Order, search and type get the original data
+                            if (type !== 'display') {
+                                return data;
+                            }
+
+                            var arrayLength = data.length;
+                            var content = "";
+
+                            if (arrayLength > 0) {
+                                content = '<div class="row">';
+                                content += '<div class="col-sm-3"><p class="control-label">Typ OZE<p></div>';
+                                content += '<div class="col-sm-4">Status</div>';
+                                content += '<div class="col-sm-3">Moc</div>';
+                                content += '<div class="col-sm-2">Policzone</div>';
+                                content += '</div>';
+                                for (var i = 0; i < arrayLength; i++) {
+
+                                    var power = data[i].finalPower;
+
+                                    content += '<div class="row">';
+                                    content += '<div class="col-sm-3">' + data[i].rseType + '</div>';
+                                    var status = data[i].status;
+                                    var status = status.length > 10 ? status.substring(0, 9) + '...' : status;
+                                    content += '<div class="col-sm-4" title="' + data[i].status + '">' + status + '</div>';
+                                    content += '<div class="col-sm-3">' + power.toFixed(2) + '</div>';
+                                    content += '<div class="col-sm-2">' + data[i].isCompleted ? "Tak" : "Nie" + '</div>';
+                                    content += '</div>';
+                                }
+
+                            }
+                            
+                            return content;
+                        }
+                    },
+                    {
+                        data: null,
+                        className: 'all',
+                        name: "actions",
+                        title: "Akcje",
+                        orderable: false,
+                        searchable: false,
+                        type: 'html',
+                        width: "100px",
+                        autoWidth: false,
+                        visible: true,
+                        render: function (data, type, row, meta) {
+                            var id = row.investmentId;
+
+                            var content = "";
+
+                            content = '<div class="pull-right">';
+                            content += '<a class="btn btn-sm btn-default" href="/Investment/Details/' + id + '">';
+                            content += '<span class="glyphicon glyphicon-eye-open"></span>';
+                            content += '</a>';
+                            content += '</div>';
+
+                            return content;
+                        }
+                    }
+        ],
+
+        stateSave: true,
+        pagingType: "full",
+        language: {
+            url: "/js/datatables-language-pl.json"
+        },
+
+        lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],
+        order: [[0, "asc"]],
+        processing: true,
+        dom: "<'row'<'col-sm-6'B><'col-sm-6'f>>" +
+             "<'row'<'col-sm-12'tr>>" +
+             "<'row'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
+        buttons: [
+            {
+                extend: 'copyHtml5',
+                text: '<span class="glyphicon glyphicon-copy"></span>',
+                className: 'btn text-primary',
+                copySuccess: {
+                    1: 'Skopiowano 1 rekord do schowka',
+                    _: 'Skopiowano %d rekordów do schowka'
+                },
+                copyTitle: 'Kopiowanie do schowka',
+                copyKeys: 'Naciśnij <i>ctrl</i> lub <i>\u2318</i> + <i>C</i> aby skopiować tabelę<br>do schowka.<br><br>aby anulować, kliknij ten komunikat lub naciśnij ESC.'
+            },
+            {
+                extend: 'csvHtml5',
+                text: '<span class="glyphicon glyphicon-download-alt" title="Export do CSV"></span>',
+                className: 'btn text-primary',
+                fieldSeparator: ';',
+                charset: 'UTF-8'
+            },
+            {
+                extend: 'colvis',
+                text: '<span class="glyphicon glyphicon-th-list" title="Pokaż / Ukryj kolumny"></span>',
+                className: 'btn text-primary'
+            },
+            {
+                text: '<span class="text-primary glyphicon glyphicon-refresh" title="Odśwież zawartość"></span>',
+                className: 'btn',
+                action: function (e, dt, node, config) {
+                    
+                    dt.ajax.reload();
+                    
+                    dt.rows().cells().invalidate().render();
+                }
+            }
+        ],
+        select: false,
+        colReorder: 
+        {
+            fixedColumnsRight: 1
+        },
+        responsive: {
+            //breakpoints: [
+            //    { name: 'desktop', width: 3000 },
+            //    //{ name: 'tablet', width: 1 },
+            //   //{ name: 'fablet', width: 1024 },
+            //  //  { name: 'phone', width: 768 }
+            //],
+            details: {
+            //    type: 'column',
+                renderer: function (api, rowIdx, columns) {
+                    var data = $.map(columns, function (col, i) {
+                        return col.hidden ? 
+                       // '<tr><td>' + 
+                            '<div class="row" data-dt-row="' + col.rowIndex + '" data-dt-column="' + col.columnIndex + '">' +
+                            '<div class="col-sm-2">' + col.title + ':' + '</div> ' +
+                            '<div class="col-sm-10">' + col.data + '</div>' +
+                            '</div>' //+
+                        //'</td></tr>'
+                            : '';
+
+                        //'<tr data-dt-row="' + col.rowIndex + '" data-dt-column="' + col.columnIndex + '">' +
+                        //    '<td>' + col.title + ':' + '</td> ' +
+                        //    '<td>' + col.data + '</td>' +
+                        //'</tr>' : '';
+                    }).join('');
+
+                    return data ?
+                        data : 
+                        //$('<table/>').append(data) :
+                        false;
+                }
+            }
+        },
+        fixedHeader: {
+            headerOffset: $('#NavBarMain').outerHeight()
+        },
+        drawCallback: function (settings, json) {
+            $('div#ContractListTable_processing').addClass("wg-loader");
+
+            //var context = $('div#BPPersonListTable_filter');
+            //$('*', context).addClass('small');
+
+            //context = $('div#BPPersonListTable_length');
+            //$('label', context).addClass('small');
+
+            //$('select', context).addClass('small');
+            ////$('select', context).addClass('small btn btn-default btn-sm');
+            //// $('select', context).removeClass('form-control');
+
+            //context = $('div#BPPersonListTable_info');
+            //context.addClass('small');
+            //$('*', context).addClass('small');
+
+            //context = $('div#BPPersonListTable_paginate');
+            //$('ul > li > a', context).addClass('small').attr("style", "padding: 5px 10px;");
+            //$('ul > li > a', context).addClass('btn btn-sm small').attr("style", "border-radius: 0;");
+
+
+            //$('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');
+        }
+    });
+
+    //table.on('responsive-display', function (e, datatable, row, showHide, update) {
+    //    $('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');  
+    //});
+
+
+});

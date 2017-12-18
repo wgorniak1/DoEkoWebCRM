@@ -1,0 +1,58 @@
+﻿@model DoEko.Models.DoEko.Contract
+@{
+    ViewData["Title"] = "Szczegóły Projektu";
+}
+<!-- Navigation -->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li><a asp-action="Index" asp-controller="Contracts">Lista Projektów</a></li>
+    <li class="active">Projekt @Html.DisplayFor(model => model.Number)</li>
+</ol>
+<!--Title-->
+<h2><small>Projekt </small>@Html.DisplayFor(model => model.Number)</h2>
+<hr />
+
+<!--Panels-->
+<div class="panel-group" id="panel-group" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-details" data-toggle="collapse" data-parent="#panel-group" data-target="#details">
+            <h4 class="panel-title pull-left wg-panel-title">
+                Dane Podstawowe
+            </h4>
+            <div class="btn-toolbar pull-right">
+            </div>
+        </div>
+        <div id="details" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-details">
+            <div class="panel-body">
+                <input asp-for="ContractId" type="hidden" />
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix wg-panel-heading" role="tab" id="heading-investments" data-toggle="collapse" data-parent="#panel-group" data-target="#investments">
+            <h4 class="panel-title pull-left wg-panel-title">
+                Inwestycje
+            </h4>
+            <div class="btn-toolbar pull-right">
+            </div>
+        </div>
+        <div id="investments" class="panel-collapse collapse" role="tabpanel" aria-labelledby="header-investments">
+            <table class="table table-striped dt-responsive dataTable nowrap no-footer dtr-inline collapsed"
+                   id="InvestmentListTable"
+                   style="width:100%;">
+            </table>
+        </div>
+    </div>
+</div>
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
+@section scripts{
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/ContractDetailsNeo.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/ContractDetailsNeo.min.js" asp-append-version="true"></script>
+    </environment>
+}

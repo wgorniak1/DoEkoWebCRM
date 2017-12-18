@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using Microsoft.AspNetCore.Authorization;
+using DoEko.Models.Identity;
 
 namespace DoEko.Controllers.Api
 {
@@ -39,6 +40,30 @@ namespace DoEko.Controllers.Api
         public IEnumerable<Contract> GetContracts()
         {
             return _context.Contracts;
+        }
+
+        [HttpGet]
+        [Route("Neo")]
+        public IEnumerable<object> GetContractsNeo()
+        {
+            var model = new List<object>();
+
+            var contracts = _context.Contracts
+                .Include(c => c.Project)
+                .Include(c => c.Investments);
+
+            foreach (var c in contracts)
+            {
+                model.Add(new
+                {
+                    Project = c.Project.ShortDescription,
+                    Number = c.Number,
+                    ContractId = c.ContractId,
+                    InvestmentNo = c.Investments.Count()
+                });
+            }
+
+            return model;
         }
 
         // GET: api/ApiContract/5

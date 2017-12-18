@@ -119,4 +119,10 @@
     <Folder Include="Views\Payroll\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\js\ContractDetailsNeo.min.js">
+      <DependentUpon>ContractDetailsNeo.js</DependentUpon>
+    </Content>
+  </ItemGroup>
+
 </Project>

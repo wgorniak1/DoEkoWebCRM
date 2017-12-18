@@ -20,7 +20,7 @@ using DoEko.Models.DoEko.Survey;
 
 namespace DoEko.Controllers
 {
-    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
+    [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.Neo)]
     public class ContractsController : Controller
     {
         private readonly DoEkoContext _context;
@@ -37,8 +37,17 @@ namespace DoEko.Controllers
         // GET: Contracts
         public async Task<IActionResult> Index()
         {
-            var doEkoContext = _context.Contracts.Include(c => c.Project);
-            return View(await doEkoContext.ToListAsync());
+            var contracts = _context.Contracts.Include(c => c.Project);
+
+            if (User.IsInRole(Roles.Neo))
+            {
+                return View("Neo");
+            }
+            else
+            {
+                return View(await contracts.ToListAsync());
+            }
+
         }
 
         // GET: Contracts/Details/5
@@ -48,7 +57,6 @@ namespace DoEko.Controllers
             {
                 return NotFound();
             }
-
             var contract = await _context.Contracts
                 .Include(c => c.Company)
                 .Include(c => c.Project)
@@ -62,6 +70,12 @@ namespace DoEko.Controllers
             {
                 return NotFound();
             }
+
+            if (User.IsInRole(Roles.Neo))
+            {
+                return View("NeoDetails", contract);
+            }
+
             if (TempData.ContainsKey("FileUploadResult"))
             {
                 ViewData["FileUploadType"] = TempData["FileUploadType"];
@@ -87,11 +101,14 @@ namespace DoEko.Controllers
             var users = _userManager.Users.Where(u => u.Roles.Select(r => r.RoleId).Contains(inspectorRole.Id)).ToList();
 
             ViewData["InspectorId"] = new SelectList(users, "Id", "UserName");
+
+
             return View(contract);
         }
 
         // GET: Contracts/Create
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public IActionResult Create(int? ProjectId, string ReturnUrl = null)
         {
 
@@ -137,6 +154,7 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Create(Contract contract, string ReturnUrl = null)
         {
             if (contract.Type != ContractType.Cluster)
@@ -188,6 +206,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Contracts/Edit/5
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int? id, string ReturnUrl = null)
         {
             if (id == null)
@@ -221,6 +240,7 @@ namespace DoEko.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int id, Contract contract, string ReturnUrl = null)
         {
             if (id != contract.ContractId)
@@ -268,6 +288,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Contracts/Delete/5
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -287,6 +308,7 @@ namespace DoEko.Controllers
         // POST: Contracts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             int result;
