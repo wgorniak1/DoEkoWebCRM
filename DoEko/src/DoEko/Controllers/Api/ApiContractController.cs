@@ -50,7 +50,8 @@ namespace DoEko.Controllers.Api
 
             var contracts = _context.Contracts
                 .Include(c => c.Project)
-                .Include(c => c.Investments);
+                .Include(c => c.Investments)
+                .Where(c => c.Project.Status != ProjectStatus.Closed);
 
             foreach (var c in contracts)
             {
