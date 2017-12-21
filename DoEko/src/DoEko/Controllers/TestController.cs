@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DoEko.Controllers.Extensions;
 using DoEko.Controllers.Helpers;
@@ -882,6 +883,34 @@ namespace DoEko.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult excel()
+        {
+            var xls = new ExcelExportHelper();
+
+            var sheet = xls.InsertWorksheet("Wojtek");
+
+            var row = new Row();
+
+            row.RowIndex = 1;
+            row.Append(ExcelExportHelper.AddCellWithText("test"));
+            row.Append(ExcelExportHelper.AddCellWithText("test2"));
+            row.Append(ExcelExportHelper.AddCellWithText("test3"));
+
+            sheet.AppendChild<Row>(row);
+
+            Worksheet wks = (Worksheet) sheet.Parent;
+
+            wks.AppendChild<AutoFilter>(new AutoFilter() { Reference = "A1:G5" });
+
+            xls.FinalizeDocument();
+
+            var stream = (MemoryStream) xls.Stream;
+            
+            return File(stream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "test.xlsx");
+
         }
 
         public ActionResult csvTest()

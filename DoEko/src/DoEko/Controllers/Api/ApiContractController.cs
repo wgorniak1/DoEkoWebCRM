@@ -85,6 +85,38 @@ namespace DoEko.Controllers.Api
             return Ok(contract);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> SetStatus([FromRoute] int id, [FromBody] Contract contract)
+        {
+            if (!ContractExists(id))
+            {
+                return BadRequest();
+            }
+            if (id != contract.ContractId)
+            {
+                return BadRequest();
+            }
+
+            Contract c = _context.Contracts.Single(co => co.ContractId == id);
+
+            if (contract.Status != c.Status)
+            {
+                if (contract.Status == ContractStatus.Completed)
+                {
+                    //cascade udpate of status of all investments and surveys
+                    var surveys = _context.Surveys.Where(s => s.Investment.ContractId == c.ContractId);
+
+                    foreach (var item in await surveys.ToListAsync())
+                    {
+                        //
+                    }
+                }
+            }
+
+            return NoContent();
+
+        }
+
         // PUT: api/ApiContract/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutContract([FromRoute] int id, [FromBody] Contract contract)

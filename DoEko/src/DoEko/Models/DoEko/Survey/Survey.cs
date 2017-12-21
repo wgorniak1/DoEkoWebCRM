@@ -1,4 +1,6 @@
 ﻿using DoEko.Controllers.Extensions;
+using DoEko.Services;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -192,6 +194,78 @@ namespace DoEko.Models.DoEko.Survey
                 default:
                     return string.Empty;
             }
+        }
+
+        //public Dictionary<string,string> Photos(IFileStorage iFileStorage)
+        //{
+        //    CloudBlobContainer Container = iFileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+        //    var SurveyBlockBlobs = Container.ListBlobs(prefix: this.SurveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+        //    Dictionary<string, string> FileList = new Dictionary<string, string>();
+
+        //    foreach (var BlockBlob in SurveyBlockBlobs)
+        //    {
+        //        try
+        //        {
+        //            FileList.Add(BlockBlob.Name.Split('/').Reverse().ToArray().ElementAt(1), BlockBlob.Uri.ToString());
+        //        }
+        //        catch (Exception) { }
+        //    };
+
+        //    //
+        //    CloudBlobContainer ContainerInv = iFileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+        //    var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: this.InvestmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+        //    foreach (var BlockBlob in InvestmentBlockBlobs)
+        //    {
+        //        var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
+        //        if (partNames[1].Contains("Picture"))
+        //        {
+        //            try
+        //            {
+        //                FileList.Add(partNames[1], BlockBlob.Uri.ToString());
+        //            }
+        //            catch (Exception) { }
+        //        }
+        //    };
+
+        //    return FileList;
+        //}
+
+        public Dictionary<string, Uri> Photos(IFileStorage iFileStorage)
+        {
+            CloudBlobContainer Container = iFileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+            var SurveyBlockBlobs = Container.ListBlobs(prefix: this.SurveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+            Dictionary<string, Uri> FileList = new Dictionary<string, Uri>();
+
+            foreach (var BlockBlob in SurveyBlockBlobs)
+            {
+                try
+                {
+                    FileList.Add(BlockBlob.Name.Split('/').Reverse().ToArray().ElementAt(1), BlockBlob.Uri);
+                }
+                catch (Exception) { }
+            };
+
+            //
+            CloudBlobContainer ContainerInv = iFileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+            var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: this.InvestmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+
+            foreach (var BlockBlob in InvestmentBlockBlobs)
+            {
+                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
+                if (partNames[1].Contains("Picture"))
+                {
+                    try
+                    {
+                        FileList.Add(partNames[1], BlockBlob.Uri);
+                    }
+                    catch (Exception) { }
+                }
+            };
+
+            return FileList;
         }
 
 

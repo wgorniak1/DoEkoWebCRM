@@ -63,7 +63,7 @@ $(document).ready(function () {
                                     content += '<div class="row">';
                                     content += '<div class="col-sm-3">' + data[i].rseType + '</div>';
                                     var status = data[i].status;
-                                    var status = status.length > 10 ? status.substring(0, 9) + '...' : status;
+                                    status = status.length > 10 ? status.substring(0, 9) + '...' : status;
                                     content += '<div class="col-sm-4" title="' + data[i].status + '">' + status + '</div>';
                                     content += '<div class="col-sm-3">' + power.toFixed(2) + '</div>';
                                     content += '<div class="col-sm-2">' + data[i].isCompleted ? "Tak" : "Nie" + '</div>';
@@ -152,7 +152,7 @@ $(document).ready(function () {
         text: '<span class="text-primary glyphicon glyphicon-download" title="Pobierz do weryfikacji"></span>',
         className: 'btn',
         action: function (e, dt, node, config) {
-            var url = "/Reports/SurveyToCSV?contractId=" + $("#ContractId").val();
+            var url = "/api/v1/Survey/Neo?contractId=" + $("#ContractId").val();
             window.open(url, '_blank');
         }
     }

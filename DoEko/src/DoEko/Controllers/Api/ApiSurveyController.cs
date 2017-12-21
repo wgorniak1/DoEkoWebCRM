@@ -8,19 +8,26 @@ using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Survey;
 using Microsoft.AspNetCore.Authorization;
+using DoEko.Models.Identity;
+using DoEko.Controllers.Helpers;
+using DoEko.Services;
+using System.IO;
+using DoEko.ViewModels.API.SurveyViewModels;
 
 namespace DoEko.Controllers.Api
 {
     [Produces("application/json")]
-    [Route("api/Survey")]
+    [Route("api/v1/Survey")]
     [Authorize]
     public class ApiSurveyController : Controller
     {
         private readonly DoEkoContext _context;
+        private readonly IFileStorage _fileStorage;
 
-        public ApiSurveyController(DoEkoContext context)
+        public ApiSurveyController(DoEkoContext context, IFileStorage fileStorage)
         {
             _context = context;
+            _fileStorage = fileStorage;
         }
 
         // GET: api/ApiSurvey
@@ -28,6 +35,63 @@ namespace DoEko.Controllers.Api
         public IEnumerable<Survey> GetSurveys()
         {
             return _context.Surveys;
+        }
+
+        [HttpGet]
+        [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+        [Route("Neo")]
+        [Authorize(Roles = Roles.Neo)]
+        public async Task<IActionResult> GetSurveysNeo(int contractId, Guid? investmentId)
+        {
+            //number of investments to download per day
+            int maxHits = 50;
+            //
+            var sl = _context.Surveys.AsQueryable();
+
+            sl = sl.Where(s => s.Investment.ContractId == contractId && 
+                               s.Investment.Status == InvestmentStatus.Initial &&
+                               s.Investment.Calculate == true );
+
+            sl = investmentId.HasValue ? sl.Where(s => s.InvestmentId == investmentId) : sl;
+
+            sl = sl.OrderBy(s => s.InvestmentId);
+            
+            sl = sl.Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.State)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.District)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
+                   .Include(s => s.AirCondition)
+                   .Include(s => s.Audit)
+                   .Include(s => s.BathRoom)
+                   .Include(s => s.BoilerRoom)
+                   .Include(s => s.Building)
+                   .Include(s => s.Ground)
+                   .Include(s => s.PlannedInstall)
+                   .Include(s => s.RoofPlanes)
+                   .Include(s => s.Wall);
+
+            var result = await sl.ToListAsync();
+
+            var investments = result.Select(s => s.Investment).Distinct().Take(maxHits).ToList();
+
+            var surveys = investments.SelectMany(i => i.Surveys).ToList();
+            IList<SurveyNeoVM> model = new List<SurveyNeoVM>();
+            foreach (var srv in surveys)
+            {
+                model.Add(new SurveyNeoVM(srv, _fileStorage));
+            }
+            var extract = NeoExtractHelper.CreateDataTable<SurveyNeoVM>(model);
+
+            var xls = new ExcelExportHelper();
+
+            xls.Add(extract);
+            xls.FinalizeDocument();
+
+            var stream = (MemoryStream)xls.Stream;
+
+            return File(stream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "test.xlsx");
+
         }
 
         // GET: api/ApiSurvey/5
@@ -98,6 +162,7 @@ namespace DoEko.Controllers.Api
 
             return CreatedAtAction("GetSurvey", new { id = survey.SurveyId }, survey);
         }
+
 
         // DELETE: api/ApiSurvey/5
         [HttpDelete("{id}")]
