@@ -80,8 +80,8 @@ namespace DoEko.Controllers.Helpers
                 {
                     try
                     {                        
-                        var value = tr[item.ColumnName];
-                        row.Append(ExcelExportHelper.AddValue(value));
+                        var value = ExcelExportHelper.AddValue(tr[item.ColumnName]);
+                        row.Append(value);
                     }
                     catch (Exception)
                     {   
@@ -214,13 +214,14 @@ namespace DoEko.Controllers.Helpers
             }
             else
             {
+
                 Cell c = new Cell();
 
                 c.DataType = CellValues.InlineString;
                 InlineString inlineString = new InlineString();
                 Text t = new Text
                 {
-                    Text = (string)value
+                    Text = (string)value.ToString()
                 };
                 inlineString.AppendChild(t);
                 c.AppendChild(inlineString);

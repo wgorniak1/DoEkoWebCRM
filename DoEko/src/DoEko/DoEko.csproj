@@ -28,6 +28,11 @@
     <DefineConstants>TRACE;DEBUG;NET461;</DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

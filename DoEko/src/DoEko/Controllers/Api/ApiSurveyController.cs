@@ -13,6 +13,7 @@ using DoEko.Controllers.Helpers;
 using DoEko.Services;
 using System.IO;
 using DoEko.ViewModels.API.SurveyViewModels;
+using DoEko.Controllers.Extensions;
 
 namespace DoEko.Controllers.Api
 {
@@ -71,26 +72,22 @@ namespace DoEko.Controllers.Api
                    .Include(s => s.Wall);
 
             var result = await sl.ToListAsync();
+            var investments = result
+                .Select(s => s.Investment)
+                .Distinct()
+                .Take(maxHits);
 
-            var investments = result.Select(s => s.Investment).Distinct().Take(maxHits).ToList();
+            MemoryStream report = investments 
+                .SelectMany(i => i.Surveys)
+                .Select(s => new SurveyNeoVM(s, _fileStorage))
+                .ToList()
+                .AsDataTable()
+                .AsExcel();
+            
+            string fileName = "OZEDoAnalizy_" + DateTime.Now.ToLongDateString() + ".xlsx";
 
-            var surveys = investments.SelectMany(i => i.Surveys).ToList();
-            IList<SurveyNeoVM> model = new List<SurveyNeoVM>();
-            foreach (var srv in surveys)
-            {
-                model.Add(new SurveyNeoVM(srv, _fileStorage));
-            }
-            var extract = NeoExtractHelper.CreateDataTable<SurveyNeoVM>(model);
-
-            var xls = new ExcelExportHelper();
-
-            xls.Add(extract);
-            xls.FinalizeDocument();
-
-            var stream = (MemoryStream)xls.Stream;
-
-            return File(stream.ToArray(),
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "test.xlsx");
+            return File(report.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
 
         }
 

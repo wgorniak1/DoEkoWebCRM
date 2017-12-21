@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -76,6 +78,36 @@ namespace DoEko.Controllers.Extensions
 
             // throws InvalidCastException if types are incompatible
             return (T)retval;
+        }
+
+        public static DataTable AsDataTable<T>(this IEnumerable<T> list)
+        {
+            Type type = typeof(T);
+            var properties = type.GetProperties();
+            //Table definition
+            DataTable dataTable = new DataTable();
+            foreach (PropertyInfo info in properties)
+            {
+                dataTable.Columns.Add(new DataColumn()
+                {
+                    ColumnName = info.Name,
+                    DataType = Nullable.GetUnderlyingType(info.PropertyType) ?? info.PropertyType,
+                    Caption = info.GetCustomAttribute<DisplayAttribute>() is null ? "" : info.GetCustomAttribute<DisplayAttribute>().Name
+                });
+            }
+            //Table Data
+            foreach (T entity in list)
+            {
+                object[] values = new object[properties.Length];
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    values[i] = properties[i].GetValue(entity);
+                }
+
+                dataTable.Rows.Add(values);
+            }
+
+            return dataTable;
         }
     }
 }
