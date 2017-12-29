@@ -162,6 +162,8 @@ $(document).ready(function () {
                     var ajax = new $.get(url);
 
                     ajax.fail(function (result) {
+                        $loading.hide();
+                        dt.table().buttons().enable();
                         WgTools.alert(result.responseJSON.error, false, 'E');
                     });
 
@@ -171,13 +173,11 @@ $(document).ready(function () {
                         document.body.appendChild(link);
                         link.click();
 
+                        $loading.hide();
+                        dt.table().buttons().enable();
                         WgTools.alert('Pomyślnie wygenerowano plik', true, 'S');
                     });
 
-                    ajax.always(function () {
-                        $loading.hide();
-                        dt.table().buttons().enable();
-                    });
                 }
             },
             {

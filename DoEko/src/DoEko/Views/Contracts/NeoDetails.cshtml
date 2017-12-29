@@ -20,11 +20,42 @@
                 Dane Podstawowe
             </h4>
             <div class="btn-toolbar pull-right">
+                
             </div>
         </div>
         <div id="details" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-details">
             <div class="panel-body">
                 <input asp-for="ContractId" type="hidden" />
+                <div class="row">
+                    <div class="form-group col-xs-6 col-sm-4 col-md-3">
+                        <label class="control-label" for="Total_Count">Inwestycji w sumie</label>
+                        <p class="form-control-static">
+                            @Model.Investments.Count
+                        </p>
+                    </div>
+                    <div class="form-group col-xs-6 col-sm-4 col-md-3">
+                        <label class="control-label" for="Calculated_Count">Policzonych</label>
+                        <p class="form-control-static">
+                            @Model.Investments.Where(i => i.Calculate == false && (i.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted ||
+                                                                                  i.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Approved)).Count()
+                        </p>
+                    </div>
+                    <div class="form-group col-xs-6 col-sm-4 col-md-3">
+                        <label class="control-label" for="ToCalc_Count">Niepoliczonych</label>
+                        <p class="form-control-static">
+                            @Model.Investments.Where(i => i.Calculate == true && (i.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted ||
+                                                                                  i.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Approved)).Count()
+                        </p>
+                    </div>
+                    <div class="form-group col-xs-6 col-sm-4 col-md-3">
+                        <label class="control-label" for="InDraft_Count">W trakcie realizacji</label>
+                        <p class="form-control-static">
+                            @Model.Investments.Where(i => i.Calculate == false && (i.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Draft ||
+                                                                                   i.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Rejected ||
+                                                                                  i.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.NotExists)).Count()
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
