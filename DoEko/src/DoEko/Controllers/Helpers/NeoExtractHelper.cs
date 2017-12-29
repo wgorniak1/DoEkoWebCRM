@@ -58,7 +58,7 @@ namespace DoEko.Controllers.Helpers
                    .Include(s => s.RoofPlanes)
                    .Include(s => s.Wall);
 
-            this.query = sl.Select(s => s.Investment).Distinct().Take(maxHits);
+            this.query = sl.ToList().Select(s => s.Investment).Distinct().Take(maxHits).AsQueryable();
 
             return this.query;
 
@@ -76,7 +76,7 @@ namespace DoEko.Controllers.Helpers
 
 
             //Create file on AzureStorage
-            string fileName = "OZEDoAnalizy_" + DateTime.Now.ToString() + ".xlsx";
+            string fileName = "OZEDoAnalizy_" + DateTime.Now.ToFileTime() + ".xlsx";
             
             var blob = _fileStorage
                 .GetBlobContainer(enuAzureStorageContainerType.NeoDownloads)

@@ -169,7 +169,7 @@ $(document).ready(function () {
 
                     ajax.done(function (result) {
 
-                        var link = WgTools.createLink(result.ResponseJSON.url);
+                        var link = WgTools.createLink(result.url);
                         document.body.appendChild(link);
                         link.click();
 
