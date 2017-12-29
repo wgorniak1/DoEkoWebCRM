@@ -62,10 +62,17 @@
                     ...
                 </td>
                 <td>
+                    @{ 
+                        string linkClass = "btn btn-default btn-sm";
+                        if (item.Investment.Status == InvestmentStatus.InReview)
+                        {
+                            linkClass = linkClass + " disabled";
+                        }
+                    }
                     <div class="pull-right">
                         @if (User.IsInRole(Roles.Admin))
 	                    {
-                        <button class="btn btn-default btn-sm"
+                        <button class="@linkClass"
                                 data-toggle="modal"
                                 data-target="#SrvMoveModal"
                                 data-survey-id="@item.SurveyId"
@@ -80,7 +87,7 @@
                                    class="btn btn-default btn-sm">
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </a>
-                                <button class="btn btn-default btn-sm"
+                                <button class="@linkClass"
                                         data-toggle="modal"
                                         data-target="#SrvCancelModal"
                                         data-survey-id="@item.SurveyId"
@@ -90,10 +97,10 @@
                                 break;
                             case SurveyStatus.Draft:
                                 <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
-                                   class="btn btn-default btn-sm" title="Edytuj ankietę">
+                                   class="@linkClass" title="Edytuj ankietę">
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </a>
-                                <button class="btn btn-default btn-sm"
+                                <button class="@linkClass"
                                         data-toggle="modal"
                                         data-target="#SrvCancelModal"
                                         data-survey-id="@item.SurveyId"
@@ -101,7 +108,7 @@
                                         title="Anuluj Ankietę">
                                     <span class="glyphicon glyphicon-ban-circle"></span>
                                 </button>
-                                <button class="btn btn-default btn-sm"
+                                <button class="@linkClass"
                                         data-toggle="modal"
                                         data-target="#SrvSubmitModal"
                                         data-survey-id="@item.SurveyId"
@@ -115,10 +122,10 @@
                                 if (User.IsInRole(Roles.Admin))
                                 {
                                     <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
-                                       class="btn btn-default btn-sm">
+                                       class="@linkClass">
                                         <span class="glyphicon glyphicon-eye-open"></span>
                                     </a>
-                                    <button class="btn btn-default btn-sm"
+                                    <button class="@linkClass"
                                             data-toggle="modal"
                                             data-target="#SrvCancelModal"
                                             data-survey-id="@item.SurveyId"
@@ -127,7 +134,7 @@
                                         <span class="glyphicon glyphicon-ban-circle"></span>
                                     </button>
 
-                                    <button class="btn btn-default btn-sm"
+                                    <button class="@linkClass"
                                             data-toggle="modal"
                                             data-target="#SrvApprovalModal"
                                             data-survey-id="@item.SurveyId"
@@ -135,7 +142,7 @@
                                             title="Zatwierdź ankietę">
                                         <span class="glyphicon glyphicon-ok-circle"></span>
                                     </button>
-                                    <button class="btn btn-default btn-sm"
+                                    <button class="@linkClass"
                                             data-toggle="modal"
                                             data-target="#SrvRejectModal"
                                             data-survey-id="@item.SurveyId"
@@ -148,12 +155,12 @@
                                 break;
                             case SurveyStatus.Rejected:
                                 <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
-                                   class="btn btn-default btn-sm">
+                                   class="@linkClass">
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </a>
                                 if (User.IsInRole(Roles.Admin))
                                 {
-                                    <button class="btn btn-default btn-sm"
+                                    <button class="@linkClass"
                                             data-toggle="modal"
                                             data-target="#SrvCancelModal"
                                             data-survey-id="@item.SurveyId"
@@ -167,10 +174,10 @@
                                 if (User.IsInRole(Roles.Admin))
                                 {
                                     <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
-                                       class="btn btn-default btn-sm">
+                                       class="@linkClass">
                                         <span class="glyphicon glyphicon-eye-open"></span>
                                     </a>
-                                    <button class="btn btn-default btn-sm"
+                                    <button class="@linkClass"
                                             data-toggle="modal"
                                             data-target="#SrvCancelModal"
                                             data-survey-id="@item.SurveyId"
@@ -184,10 +191,10 @@
                                 if (User.IsInRole(Roles.Admin))
                                 {
                                     <a asp-action="Maintain" asp-controller="Surveys" asp-route-id="@item.SurveyId"
-                                       class="btn btn-default btn-sm">
+                                       class="@linkClass">
                                         <span class="glyphicon glyphicon-eye-open"></span>
                                     </a>
-                                    <button class="btn btn-default btn-sm"
+                                    <button class="@linkClass"
                                             data-toggle="modal"
                                             data-target="#SrvRevertModal"
                                             data-survey-id="@item.SurveyId"

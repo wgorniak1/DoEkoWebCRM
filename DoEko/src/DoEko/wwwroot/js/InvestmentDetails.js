@@ -1,6 +1,12 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
 // SURVEY Move MODAL CONTROLS
-
+//---------------------------------------------------------------------------//
+$('body').on('click', '.btn[data-target]', function (event) {
+    if ($(this).hasClass('disabled'))
+    {
+        event.stopPropagation();
+    }
+});
 //---------------------------------------------------------------------------//
 // SurveyMove Modal -> Show modal
 function onSurveyMoveModalShowButtonClick() {
@@ -111,6 +117,8 @@ function onInvestmentDetailsCancel() {
     });
 }
 function onInvestmentDetailsEdit(event) {
+    if ($(this).hasClass('disabled')) return;
+
     var investmentId = $(this).attr('data-investmentid');
 
     var call = $.ajax({

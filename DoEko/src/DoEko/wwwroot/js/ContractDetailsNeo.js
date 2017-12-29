@@ -66,7 +66,7 @@ $(document).ready(function () {
                                     status = status.length > 10 ? status.substring(0, 9) + '...' : status;
                                     content += '<div class="col-sm-4" title="' + data[i].status + '">' + status + '</div>';
                                     content += '<div class="col-sm-3">' + power.toFixed(2) + ' kW </div>';
-                                    content += '<div class="col-sm-2">' + data[i].isCompleted === true ? "Tak" : "Nie" + '</div>';
+                                    content += '<div class="col-sm-2">' + (data[i].isCompleted === true ? 'Tak' : 'Nie') + '</div>';
                                     content += '</div>';
                                 }
 
@@ -104,16 +104,14 @@ $(document).ready(function () {
 
         stateSave: false,
         pagingType: "full",
-        language: {
-            url: "/js/datatables-language-pl.json"
-        },
+        language: WgLanguage,
 
         lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],
         order: [[0, "asc"]],
         processing: true,
-        dom: "<'row'<'col-sm-6'B><'col-sm-6'f>>" +
+        dom: "<'row wg-dt-padding'<'col-sm-6'B><'col-sm-6'f>>" +
              "<'row'<'col-sm-12'tr>>" +
-             "<'row'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
+             "<'row wg-dt-padding'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
         buttons: [
             //{
             //    extend: 'copyHtml5',
@@ -155,22 +153,31 @@ $(document).ready(function () {
                 className: 'btn',
                 action: function (e, dt, node, config) {
 
-                    var $body = $(dt.body());
+                    dt.table().buttons().disable();
 
-                    $body.addClass('loading');
+                    var $loading = $('div#InvestmentListTable_processing');
+                    $loading.show();
 
                     var url = "/api/v1/Survey/Neo?contractId=" + $("#ContractId").val();
                     var ajax = new $.get(url);
 
                     ajax.fail(function (result) {
-                        WgTools.alert(result.responseJSON.error, true, 'E');
+                        WgTools.alert(result.responseJSON.error, false, 'E');
                     });
 
                     ajax.done(function (result) {
-                        WgTools.alert(result.ResponseJSON.url, true, 'S');
+
+                        var link = WgTools.createLink(result.ResponseJSON.url);
+                        document.body.appendChild(link);
+                        link.click();
+
+                        WgTools.alert('Pomyślnie wygenerowano plik', true, 'S');
                     });
 
-                    ajax.always(function () { $body.removeClass('loading'); });
+                    ajax.always(function () {
+                        $loading.hide();
+                        dt.table().buttons().enable();
+                    });
                 }
             },
             {
@@ -179,8 +186,10 @@ $(document).ready(function () {
                 className: 'btn',
                 action: function (e, dt, node, config) {
 
-                    var $body = $(dt.body());
-                    //$body.addClass('loading');
+                    dt.table().buttons().disable();
+                    var $loading = $('div#InvestmentListTable_processing');
+                    $loading.show();
+
 
                     var neoenergetykaFile = $('input#Neoenergetyka', $('form#NeoenergetykaForm'));
 
@@ -307,10 +316,17 @@ function onNeoenergetykaFileChange(event) {
 
     if (file === undefined) {
         WgTools.alert("Proszę wskazać plik do importu!", true, "E");
+
+        event.data.dt.table().buttons().enable();
+        var $loading = $('div#InvestmentListTable_processing');
+        $loading.hide();
         return;
     }
     else if (!allowedTypes.includes(file.type)) {
         $(this).val('');
+        event.data.dt.table().buttons().enable();
+        var $loading = $('div#InvestmentListTable_processing');
+        $loading.hide();
         WgTools.alert("Niedozwolony format pliku!", true, "E");
         return;
     }
@@ -318,7 +334,6 @@ function onNeoenergetykaFileChange(event) {
     var form = new FormData($('form#NeoenergetykaForm')[0]);
     //clear input value and 
     $(this).val('');
-    $(event.data.dt.body()).addClass("loading");
 
     var call = $.ajax({
         type: "POST",
@@ -335,18 +350,17 @@ function onNeoenergetykaFileChange(event) {
         //notification popup
         WgTools.alert("Pomyślnie wczytano dane", true, "S");
         //refresh table content
-        $(event.data.dt.body()).removeClass("loading");
+        event.data.dt.table().buttons().enable();
         event.data.dt.ajax.reload();
         event.data.dt.rows().cells().invalidate().render();
-
-        //var table = $('#ReportTemplateTable').DataTable();
-        //table.ajax.reload(null, false);
     });
     call.fail(function (xhr, status, error) {
         //Notification popup
         //xhr.responsejson np. "neoenergetyka" : ["Nie odnaleziono pliku"]
         //
-        $(event.data.dt.body()).removeClass("loading");
+        event.data.dt.table().buttons().enable();
+        var $loading = $('div#InvestmentListTable_processing');
+        $loading.hide();
 
         json = xhr.responseJSON;
         if (json.neoenergetyka !== null) {
@@ -356,12 +370,4 @@ function onNeoenergetykaFileChange(event) {
             WgTools.alert(json, false, 'E');
     });
 
-}
-//---------------------------------------------------------//
-function onNeoenergetykaPostSuccess() {
-    WgTools.alert('Pomyślnie zapisano dane sekcji.', true, 'S');
-}
-//---------------------------------------------------------//
-function onNeoenergetykaPostFailure(xhr, error, status) {
-    WgTools.alert(error, true, 'E');
 }

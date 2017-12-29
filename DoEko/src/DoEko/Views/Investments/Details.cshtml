@@ -282,7 +282,8 @@ else
                 string LinkClasses = "btn btn-primary btn-sm pull-right wg-panel-header-button investment-details-edit";
                 if (Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Approved ||
                     Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Completed ||
-                    Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted)
+                    Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted ||
+                    Model.Status == DoEko.Models.DoEko.InvestmentStatus.InReview)
                 {
                     LinkClasses = LinkClasses + " disabled";
                     ViewBag.ViewMode = true;
@@ -351,7 +352,8 @@ else
             </h4>
             <div class="btn-group pull-right">
                 @if (Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Submitted ||
-                     Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Completed)
+                     Model.InspectionStatus == DoEko.Models.DoEko.InspectionStatus.Completed ||
+                     Model.Status == DoEko.Models.DoEko.InvestmentStatus.InReview)
                 {
                     <button class="btn btn-primary btn-sm disabled"
                             type="button"
