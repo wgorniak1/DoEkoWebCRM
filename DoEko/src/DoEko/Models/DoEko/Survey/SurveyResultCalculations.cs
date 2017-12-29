@@ -26,6 +26,7 @@ namespace DoEko.Models.DoEko.Survey
         {
             try
             {
+                this.Completed = data.Field<string>(55) == "TAK" ? true : false;
 
                 this.CO2DustEquivValue = this.ParseDouble("Kolumna 44", data.Field<string>(44));
                 this.CO2DustEquivPercent = this.ParseDouble("Kolumna 45", data.Field<string>(45));

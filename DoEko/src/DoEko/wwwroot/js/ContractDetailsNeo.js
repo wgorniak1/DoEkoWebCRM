@@ -51,7 +51,7 @@ $(document).ready(function () {
 
                             if (arrayLength > 0) {
                                 content = '<div class="row">';
-                                content += '<div class="col-sm-3"><p class="control-label">Typ OZE<p></div>';
+                                content += '<div class="col-sm-3"><span class="control-label">Typ OZE</span></div>';
                                 content += '<div class="col-sm-4">Status</div>';
                                 content += '<div class="col-sm-3">Moc</div>';
                                 content += '<div class="col-sm-2">Policzone</div>';
@@ -65,8 +65,8 @@ $(document).ready(function () {
                                     var status = data[i].status;
                                     status = status.length > 10 ? status.substring(0, 9) + '...' : status;
                                     content += '<div class="col-sm-4" title="' + data[i].status + '">' + status + '</div>';
-                                    content += '<div class="col-sm-3">' + power.toFixed(2) + '</div>';
-                                    content += '<div class="col-sm-2">' + data[i].isCompleted ? "Tak" : "Nie" + '</div>';
+                                    content += '<div class="col-sm-3">' + power.toFixed(2) + ' kW </div>';
+                                    content += '<div class="col-sm-2">' + data[i].isCompleted === true ? "Tak" : "Nie" + '</div>';
                                     content += '</div>';
                                 }
 
@@ -102,7 +102,7 @@ $(document).ready(function () {
                     }
         ],
 
-        stateSave: true,
+        stateSave: false,
         pagingType: "full",
         language: {
             url: "/js/datatables-language-pl.json"
@@ -115,31 +115,32 @@ $(document).ready(function () {
              "<'row'<'col-sm-12'tr>>" +
              "<'row'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
         buttons: [
-            {
-                extend: 'copyHtml5',
-                text: '<span class="glyphicon glyphicon-copy"></span>',
-                className: 'btn text-primary',
-                copySuccess: {
-                    1: 'Skopiowano 1 rekord do schowka',
-                    _: 'Skopiowano %d rekordów do schowka'
-                },
-                copyTitle: 'Kopiowanie do schowka',
-                copyKeys: 'Naciśnij <i>ctrl</i> lub <i>\u2318</i> + <i>C</i> aby skopiować tabelę<br>do schowka.<br><br>aby anulować, kliknij ten komunikat lub naciśnij ESC.'
-            },
-            {
-                extend: 'csvHtml5',
-                text: '<span class="glyphicon glyphicon-download-alt" title="Export do CSV"></span>',
-                className: 'btn text-primary',
-                fieldSeparator: ';',
-                charset: 'UTF-8'
-            },
+            //{
+            //    extend: 'copyHtml5',
+            //    text: '<span class="glyphicon glyphicon-copy"></span>',
+            //    className: 'btn text-primary',
+            //    copySuccess: {
+            //        1: 'Skopiowano 1 rekord do schowka',
+            //        _: 'Skopiowano %d rekordów do schowka'
+            //    },
+            //    copyTitle: 'Kopiowanie do schowka',
+            //    copyKeys: 'Naciśnij <i>ctrl</i> lub <i>\u2318</i> + <i>C</i> aby skopiować tabelę<br>do schowka.<br><br>aby anulować, kliknij ten komunikat lub naciśnij ESC.'
+            //},
+            //{
+            //    extend: 'csvHtml5',
+            //    text: '<span class="glyphicon glyphicon-download-alt" title="Export do CSV"></span>',
+            //    className: 'btn text-primary',
+            //    fieldSeparator: ';',
+            //    charset: 'UTF-8'
+            //},
             {
                 extend: 'colvis',
                 text: '<span class="glyphicon glyphicon-th-list" title="Pokaż / Ukryj kolumny"></span>',
                 className: 'btn text-primary'
             },
             {
-                text: '<span class="text-primary glyphicon glyphicon-refresh" title="Odśwież zawartość"></span>',
+                text: '<span class="text-primary glyphicon glyphicon-refresh"></span>',
+                titleAttr: 'Odśwież zawartość',
                 className: 'btn',
                 action: function (e, dt, node, config) {
                     
@@ -148,14 +149,82 @@ $(document).ready(function () {
                     dt.rows().cells().invalidate().render();
                 }
             },
-        {
-        text: '<span class="text-primary glyphicon glyphicon-download" title="Pobierz do weryfikacji"></span>',
-        className: 'btn',
-        action: function (e, dt, node, config) {
-            var url = "/api/v1/Survey/Neo?contractId=" + $("#ContractId").val();
-            window.open(url, '_blank');
-        }
-    }
+            {
+                text: '<span class="text-primary glyphicon glyphicon-download"></span> Pobierz',
+                titleAttr: 'Pobierz do weryfikacji kolejne 50 inwestycji',
+                className: 'btn',
+                action: function (e, dt, node, config) {
+
+                    var $body = $(dt.body());
+
+                    $body.addClass('loading');
+
+                    var url = "/api/v1/Survey/Neo?contractId=" + $("#ContractId").val();
+                    var ajax = new $.get(url);
+
+                    ajax.fail(function (result) {
+                        WgTools.alert(result.responseJSON.error, true, 'E');
+                    });
+
+                    ajax.done(function (result) {
+                        WgTools.alert(result.ResponseJSON.url, true, 'S');
+                    });
+
+                    ajax.always(function () { $body.removeClass('loading'); });
+                }
+            },
+            {
+                text: '<span class="text-primary glyphicon glyphicon-upload"></span> Zapisz',
+                titleAttr: 'Zapisz wyniki (dobory)',
+                className: 'btn',
+                action: function (e, dt, node, config) {
+
+                    var $body = $(dt.body());
+                    //$body.addClass('loading');
+
+                    var neoenergetykaFile = $('input#Neoenergetyka', $('form#NeoenergetykaForm'));
+
+                    neoenergetykaFile.one('change', { dt: dt } , onNeoenergetykaFileChange);
+
+                    neoenergetykaFile.focus().trigger('click');            
+                }
+            },
+            {
+                text: '<span class="text-primary glyphicon glyphicon-filter"></span>Filtruj',
+                titleAttr: 'Pokaż tylko do wykonania',
+                className: 'btn',
+                action: function (e, dt, node, config) {
+
+                    var currentSearch = dt.table().column('calculate:name')
+                    .search();
+
+                    if (currentSearch != '') {
+                        //clear filter
+                        dt.table()
+                        .column('calculate:name')
+                        .search('')
+                        .draw();
+
+                        node.html(node.html().replace("Pokaż wszystko", "Filtruj"));
+
+                    }
+                    else {
+                        //set filter
+                        dt.table()
+                        .column('calculate:name')
+                        .search('Tak').draw();
+
+                        node.html(node.html().replace("Filtruj", "Pokaż wszystko"));
+                    }
+                    //if (node.hasClass('filtered')) {
+                    //    node.removeClass('filtered');
+                    //}
+                    //else {
+                    //    node.addClass('filtered');
+                    //}
+
+                }
+            },
 
         ],
         select: false,
@@ -199,8 +268,8 @@ $(document).ready(function () {
         fixedHeader: {
             headerOffset: $('#NavBarMain').outerHeight()
         },
-        drawCallback: function (settings, json) {
-            $('div#ContractListTable_processing').addClass("wg-loader");
+       // drawCallback: function (settings, json) {
+            //$('div#InvestmentListTable_processing').addClass("wg-loader");
 
             //var context = $('div#BPPersonListTable_filter');
             //$('*', context).addClass('small');
@@ -222,12 +291,77 @@ $(document).ready(function () {
 
 
             //$('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');
-        }
+        //}
     });
 
     //table.on('responsive-display', function (e, datatable, row, showHide, update) {
     //    $('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');  
     //});
-
-
 });
+//---------------------------------------------------------//
+function onNeoenergetykaFileChange(event) {
+    const allowedTypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                          "application/vnd.ms-excel"];
+
+    var file = $(this)[0].files[0];
+
+    if (file === undefined) {
+        WgTools.alert("Proszę wskazać plik do importu!", true, "E");
+        return;
+    }
+    else if (!allowedTypes.includes(file.type)) {
+        $(this).val('');
+        WgTools.alert("Niedozwolony format pliku!", true, "E");
+        return;
+    }
+    //Post File:
+    var form = new FormData($('form#NeoenergetykaForm')[0]);
+    //clear input value and 
+    $(this).val('');
+    $(event.data.dt.body()).addClass("loading");
+
+    var call = $.ajax({
+        type: "POST",
+        url: "/Contracts/UploadNeoenergetykaResults",
+        contentType: false,
+        processData: false,
+        data: form,
+        beforeSend: function () {
+            
+        }
+    });
+
+    call.done(function (data, success) {
+        //notification popup
+        WgTools.alert("Pomyślnie wczytano dane", true, "S");
+        //refresh table content
+        $(event.data.dt.body()).removeClass("loading");
+        event.data.dt.ajax.reload();
+        event.data.dt.rows().cells().invalidate().render();
+
+        //var table = $('#ReportTemplateTable').DataTable();
+        //table.ajax.reload(null, false);
+    });
+    call.fail(function (xhr, status, error) {
+        //Notification popup
+        //xhr.responsejson np. "neoenergetyka" : ["Nie odnaleziono pliku"]
+        //
+        $(event.data.dt.body()).removeClass("loading");
+
+        json = xhr.responseJSON;
+        if (json.neoenergetyka !== null) {
+            WgTools.alert(json.neoenergetyka, false, 'E');
+        }
+        else 
+            WgTools.alert(json, false, 'E');
+    });
+
+}
+//---------------------------------------------------------//
+function onNeoenergetykaPostSuccess() {
+    WgTools.alert('Pomyślnie zapisano dane sekcji.', true, 'S');
+}
+//---------------------------------------------------------//
+function onNeoenergetykaPostFailure(xhr, error, status) {
+    WgTools.alert(error, true, 'E');
+}

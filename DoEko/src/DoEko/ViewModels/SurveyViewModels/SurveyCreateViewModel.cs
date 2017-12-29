@@ -18,5 +18,14 @@ namespace DoEko.ViewModels.SurveyViewModels
         public SurveyRSETypeEnergy? RSETypeEN { get; set; }
         public SurveyRSETypeHotWater? RSETypeHW { get; set; }
         public SurveyRSETypeCentralHeating? RSETypeCH { get; set; }
+        public int RSEType {
+            get
+            {
+                return (int?)RSETypeEN ?? 
+                       (int?)RSETypeCH ?? 
+                       (int?)RSETypeHW ?? 0;
+            }
+            private set { }
+        }
     }
 }

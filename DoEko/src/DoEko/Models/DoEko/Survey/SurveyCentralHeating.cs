@@ -10,7 +10,16 @@ namespace DoEko.Models.DoEko.Survey
     [Table(nameof(SurveyCentralHeating))]
     public class SurveyCentralHeating : Survey
     {
-        public SurveyRSETypeCentralHeating RSEType { get; set; }
-        
+        public SurveyCentralHeating() : base(SurveyType.CentralHeating)
+        {
+        }
+
+        public SurveyCentralHeating(Guid investmentId, SurveyRSETypeCentralHeating rseType) : this()
+        {
+            this.InvestmentId = investmentId;
+            this.RSEType = rseType;
+        }
+
+        public SurveyRSETypeCentralHeating RSEType { get; set; }   
     }
 }

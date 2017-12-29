@@ -63,7 +63,7 @@ $(document).ready(function () {
         stateSave: true,
         pagingType: "full",
         language: {
-            url: "/js/datatables-language-pl.json"
+            url: "js/datatables-language-pl.json"
         },
 
         lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],

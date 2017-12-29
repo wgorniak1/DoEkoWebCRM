@@ -11,6 +11,16 @@ namespace DoEko.Models.DoEko.Survey
     [Table(nameof(SurveyHotWater))]
     public class SurveyHotWater : Survey
     {
+        public SurveyHotWater() : base(SurveyType.HotWater)
+        {
+        }
+
+        public SurveyHotWater(Guid investmentId, SurveyRSETypeHotWater rseType) : this()
+        {
+            this.InvestmentId = investmentId;
+            this.RSEType = rseType;
+        }
+
         public SurveyRSETypeHotWater RSEType { get; set; }
     }
 }

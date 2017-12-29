@@ -1231,7 +1231,7 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles =Roles.Admin)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Move(Guid surveyId, Guid investmentId)
         {
             Guid CurrentInvestmentId = Guid.Empty;
@@ -1270,8 +1270,11 @@ namespace DoEko.Controllers
 
                 if (Result != 0)
                 {
-                    Result += 2 * await this.updateInvestmentStatus(CurrentInvestmentId);
-                    Result += 4 * await this.updateInvestmentStatus(investmentId);
+                    Investment ci = _context.Investments.Single(i => i.InvestmentId == CurrentInvestmentId);
+                    Investment ni = _context.Investments.Single(i => i.InvestmentId == investmentId); 
+
+                    Result += 2 * await this.UpdateInvestmentStatus(ci,true);
+                    Result += 4 * await this.UpdateInvestmentStatus(ni,true);
 
                     SurveyMoveResult r = (SurveyMoveResult)Enum.Parse(typeof(SurveyMoveResult), Result.ToString());
 
@@ -1312,35 +1315,17 @@ namespace DoEko.Controllers
                     switch (model.ReplaceWithType)
                     {
                         case SurveyType.CentralHeating:
-                            SurveyCentralHeating srvCH = new SurveyCentralHeating() {
-                                SurveyId = Guid.NewGuid(),
-                                InvestmentId = srv.InvestmentId,
-                                Status = SurveyStatus.New,
-                                RSEType = model.ReplaceWithRSECH.Value,
-                                Type = model.ReplaceWithType.Value
-                            };
+                            SurveyCentralHeating srvCH = new SurveyCentralHeating(srv.InvestmentId, model.ReplaceWithRSECH.Value);
                             _context.Add(srvCH);
                             UpdateStatusHistory(_context, srvCH.SurveyId, SurveyStatus.New, DateTime.Now, false);
                             break;
                         case SurveyType.Energy:
-                            SurveyEnergy srvEN = new SurveyEnergy() {
-                                SurveyId = Guid.NewGuid(),
-                                InvestmentId = srv.InvestmentId,
-                                Status = SurveyStatus.New,
-                                RSEType = model.ReplaceWithRSEEN.Value,
-                                Type = model.ReplaceWithType.Value
-                            };
+                            SurveyEnergy srvEN = new SurveyEnergy(srv.InvestmentId, model.ReplaceWithRSEEN.Value);
                             _context.Add(srvEN);
                             UpdateStatusHistory(_context, srvEN.SurveyId, SurveyStatus.New, DateTime.Now, false);
                             break;
                         case SurveyType.HotWater:
-                            SurveyHotWater srvHW = new SurveyHotWater() {
-                                SurveyId = Guid.NewGuid(),
-                                InvestmentId = srv.InvestmentId,
-                                Status = SurveyStatus.New,
-                                RSEType = model.ReplaceWithRSEHW.Value,
-                                Type = model.ReplaceWithType.Value
-                            };
+                            SurveyHotWater srvHW = new SurveyHotWater(srv.InvestmentId, model.ReplaceWithRSEHW.Value);
                             _context.Add(srvHW);
                             UpdateStatusHistory(_context, srvHW.SurveyId, SurveyStatus.New, DateTime.Now, false);
                             break;
@@ -1353,7 +1338,7 @@ namespace DoEko.Controllers
                 int Result = await _context.SaveChangesAsync();
 
                 //UPDATE INVESTMENT STATUS
-                await this.updateInvestmentStatus(srv.InvestmentId);
+                await this.UpdateInvestmentStatus(srv.Investment,true);
 
                 return Ok();
             }
@@ -1373,14 +1358,17 @@ namespace DoEko.Controllers
 
                 if (Result == 0)
                 {
-                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawidłowy status ankiety");
                     return BadRequest(ModelState);
                 }
 
                 if (submitInvestment)
                 {
+                    Investment i = _context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Investment).First();
                     //UPDATE INVESTMENT STATUS
-                    await this.updateInvestmentStatus(_context.Surveys.Where(s=>s.SurveyId == surveyId).Select(s=>s.InvestmentId).First());
+                    await this.UpdateInvestmentStatus(i,true);
+
+
                 }
                 
                 return Ok();
@@ -1402,12 +1390,13 @@ namespace DoEko.Controllers
 
                 if (Result == 0)
                 {
-                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawidłowy status ankiety");
                     return BadRequest(ModelState);
                 }
 
                 //UPDATE INVESTMENT STATUS
-                await this.updateInvestmentStatus(_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.InvestmentId).First());
+                Investment i = _context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Investment).First();
+                await this.UpdateInvestmentStatus(i,false);
 
                 return Ok();
             }
@@ -1428,13 +1417,13 @@ namespace DoEko.Controllers
 
                 if (Result == 0)
                 {
-                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawid³owy status ankiety");
+                    ModelState.AddModelError(nameof(Survey.Status), "Nieprawidłowy status ankiety");
                     return BadRequest(ModelState);
                 }
 
                 //UPDATE INVESTMENT STATUS
-                await this.updateInvestmentStatus(_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.InvestmentId).First());
-
+                Investment i = _context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Investment).First();
+                await this.UpdateInvestmentStatus(i,false);
                 return Ok();
             }
             catch (Exception exc)
@@ -1458,7 +1447,8 @@ namespace DoEko.Controllers
                 }
 
                 //UPDATE INVESTMENT STATUS
-                await this.updateInvestmentStatus(_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.InvestmentId).First());
+                Investment i = _context.Surveys.Where(s => s.SurveyId == surveyId).Select(s => s.Investment).First();
+                await this.UpdateInvestmentStatus(i,false);
 
                 return Ok();
             }
@@ -1469,63 +1459,25 @@ namespace DoEko.Controllers
         }
         public async Task<IActionResult> CreateAjax(SurveyCreateViewModel model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+                
             try
             {
                 _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
 
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var surveyId = Guid.NewGuid();
+                var srv = Survey.CreateSurvey(model.SurveyType, model.InvestmentId, model.RSEType);
 
-                switch (model.SurveyType)
-                {
-                    case SurveyType.CentralHeating:
-                        SurveyCentralHeating srvCH = new SurveyCentralHeating()
-                        {
-                            SurveyId = surveyId,
-                            InvestmentId = model.InvestmentId,
-                            Status = SurveyStatus.New,
-                            RSEType = model.RSETypeCH.Value,
-                            Type = model.SurveyType
-                        };
-                        _context.Add(srvCH);
-                        break;
-                    case SurveyType.Energy:
-                        SurveyEnergy srvEN = new SurveyEnergy()
-                        {
-                            SurveyId = surveyId,
-                            InvestmentId = model.InvestmentId,
-                            Status = SurveyStatus.New,
-                            RSEType = model.RSETypeEN.Value,
-                            Type = model.SurveyType
-                        };
-                        _context.Add(srvEN);
-                        break;
-                    case SurveyType.HotWater:
-                        SurveyHotWater srvHW = new SurveyHotWater()
-                        {
-                            SurveyId = surveyId,
-                            InvestmentId = model.InvestmentId,
-                            Status = SurveyStatus.New,
-                            RSEType = model.RSETypeHW.Value,
-                            Type = model.SurveyType
-                        };
-                        _context.Add(srvHW);
-                        break;
-                    default:
-                        return BadRequest();
-                }
+                _context.Add(srv);
 
-                UpdateStatusHistory(_context, surveyId, SurveyStatus.New, DateTime.Now, false);
+                UpdateStatusHistory(_context, srv.SurveyId, SurveyStatus.New, DateTime.Now, false);
 
                 int Result = await _context.SaveChangesAsync();
                 return Ok();
             }
-            catch (Exception exc)
+            catch (Exception e)
             {
-                return BadRequest(exc);
+                return BadRequest(e);
             }
         }
 
@@ -1938,13 +1890,11 @@ namespace DoEko.Controllers
 
         }
 
-        private async Task<int> updateInvestmentStatus(Guid investmentId)
+        private async Task<int> UpdateInvestmentStatus(Investment inv, bool NeoCalculate)
         {
             int Result = 0;
-
-            Investment inv = _context.Investments
-                .Include(i=>i.Surveys)
-                .Single(i => i.InvestmentId == investmentId);
+            //
+            _context.Entry(inv).Collection(i => i.Surveys).Load();
 
             if (inv.Surveys.Any(s => s.Status == SurveyStatus.Draft ||
                                      s.Status == SurveyStatus.New   ))
@@ -1986,6 +1936,8 @@ namespace DoEko.Controllers
                 //submitted
                 inv.InspectionStatus = InspectionStatus.Submitted;
                 inv.Status = InvestmentStatus.Initial;
+                inv.Calculate = true;
+
                 _context.Investments.Update(inv);
                 Result = await _context.SaveChangesAsync();
             }

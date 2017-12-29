@@ -6,10 +6,10 @@
 <ol class="breadcrumb">
     <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
     <li><a asp-action="Index" asp-controller="Contracts">Lista Projektów</a></li>
-    <li class="active">Projekt @Html.DisplayFor(model => model.Number)</li>
+    <li class="active">Projekt @Html.DisplayFor(model => model.Project.ShortDescription)</li>
 </ol>
 <!--Title-->
-<h2><small>Projekt </small>@Html.DisplayFor(model => model.Number)</h2>
+<h2><small>Projekt </small>@Html.DisplayFor(model => model.Project.ShortDescription)</h2>
 <hr />
 
 <!--Panels-->
@@ -44,6 +44,18 @@
         </div>
     </div>
 </div>
+
+<form id="NeoenergetykaForm" method="post"
+      asp-action="UploadNeoenergetykaResults"
+      asp-controller="Contracts"
+      enctype="multipart/form-data" hidden>
+    <input id="ContractId" name="contractId" type="hidden" value="@Model.ContractId" />
+    <input id="Neoenergetyka" name="neoenergetyka" type="file" hidden
+           accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
+    <input type="submit" hidden />
+</form>
+
+
 @section stylesheets{
     @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
 }

@@ -91,10 +91,36 @@ namespace DoEko.Models.DoEko.Survey
     [Table(nameof(Survey))]
     public class Survey
     {
+
         public Survey()
         {
+            SurveyId = Guid.NewGuid();
+            Status = SurveyStatus.New;
             InspectionDateTime = DateTime.MinValue;
         }
+
+        public Survey(SurveyType type) : this()
+        {
+            this.Type = type;
+        }
+
+
+        public static Survey CreateSurvey(SurveyType type, Guid? investmentId, int? rseType)
+        {
+            switch (type)
+            {
+                case SurveyType.CentralHeating:
+                    return new SurveyCentralHeating(investmentId.Value, (SurveyRSETypeCentralHeating)rseType.Value);
+                case SurveyType.Energy:
+                    return new SurveyEnergy(investmentId.Value, (SurveyRSETypeEnergy)rseType.Value);
+                case SurveyType.HotWater:
+                    return new SurveyHotWater(investmentId.Value, (SurveyRSETypeHotWater)rseType.Value);
+                default:
+                    throw new ArgumentOutOfRangeException("SurveyType");
+            }
+
+        }
+
         [Key]
         public Guid SurveyId { get; set; }
         [Required(ErrorMessage = "{0} jest polem obowiązkowym.")]

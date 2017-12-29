@@ -362,7 +362,7 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = "Administrator, NeoEnergetyka")]
         public IActionResult UploadNeoenergetykaResults(IFormFile neoenergetyka, int contractId)
         {
 
@@ -409,7 +409,7 @@ namespace DoEko.Controllers
                 //get all surveys that will be updated.
                 var surveys = _context.Surveys
                     .Where(s => surveyIds.Contains<Guid>(s.SurveyId))
-                    .Include(s => s.Investment)
+                    .Include(s => s.Investment).ThenInclude(i=>i.Surveys)
                     .Include(s => s.ResultCalculation)
                     .ToList();
 
@@ -423,9 +423,9 @@ namespace DoEko.Controllers
                 {
                     try
                     {
+
                         var surveyExcel = dt.Rows.OfType<DataRow>().Single(dr => dr.Field<string>(1) == srv.SurveyId.ToString());
                         srv.Investment.GeoPortal = surveyExcel.Field<string>(2);
-                        _context.Update(srv.Investment);
 
                         if (srv.ResultCalculation != null) 
                         {
@@ -435,7 +435,18 @@ namespace DoEko.Controllers
                         {
                             srv.ResultCalculation = new SurveyResultCalculations(srv.Type, srv.GetRSEType(), surveyExcel);
                         }
-                        
+                        //overall investment
+                        if (srv.Investment.Surveys.All(s => s.ResultCalculation.Completed == true))
+                        {
+                            srv.Investment.Calculate = false;
+                        }
+
+                        if (srv.Investment.Status == InvestmentStatus.InReview)
+                        {
+                            srv.Investment.Status = InvestmentStatus.Initial;
+                        }
+
+                        _context.Update(srv.Investment);
                     }
                     catch (Exception exc)
                     {

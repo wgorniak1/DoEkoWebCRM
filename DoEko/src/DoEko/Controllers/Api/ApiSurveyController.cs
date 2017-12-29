@@ -14,6 +14,7 @@ using DoEko.Services;
 using System.IO;
 using DoEko.ViewModels.API.SurveyViewModels;
 using DoEko.Controllers.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace DoEko.Controllers.Api
 {
@@ -22,13 +23,15 @@ namespace DoEko.Controllers.Api
     [Authorize]
     public class ApiSurveyController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly DoEkoContext _context;
         private readonly IFileStorage _fileStorage;
 
-        public ApiSurveyController(DoEkoContext context, IFileStorage fileStorage)
+        public ApiSurveyController(DoEkoContext context, IFileStorage fileStorage, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _fileStorage = fileStorage;
+            _userManager = userManager;
         }
 
         // GET: api/ApiSurvey
@@ -39,56 +42,30 @@ namespace DoEko.Controllers.Api
         }
 
         [HttpGet]
-        [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+        //[Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
         [Route("Neo")]
         [Authorize(Roles = Roles.Neo)]
-        public async Task<IActionResult> GetSurveysNeo(int contractId, Guid? investmentId)
+        public async Task<IActionResult> GetSurveysNeo(int contractId, Guid? investmentId, int maxHits = 50)
         {
-            //number of investments to download per day
-            int maxHits = 50;
+            try
+            {
+                _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
+            }
+            catch (Exception)
+            {
+            }
+
             //
-            var sl = _context.Surveys.AsQueryable();
+            NeoExtractHelper extract = new NeoExtractHelper(_context,_fileStorage);
+            //
+            extract.PrepareQuery(contractId, investmentId, maxHits);
+            //
+            int number = await extract.UpdateStatus();
 
-            sl = sl.Where(s => s.Investment.ContractId == contractId && 
-                               s.Investment.Status == InvestmentStatus.Initial &&
-                               s.Investment.Calculate == true );
-
-            sl = investmentId.HasValue ? sl.Where(s => s.InvestmentId == investmentId) : sl;
-
-            sl = sl.OrderBy(s => s.InvestmentId);
-            
-            sl = sl.Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
-                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.State)
-                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.District)
-                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
-                   .Include(s => s.AirCondition)
-                   .Include(s => s.Audit)
-                   .Include(s => s.BathRoom)
-                   .Include(s => s.BoilerRoom)
-                   .Include(s => s.Building)
-                   .Include(s => s.Ground)
-                   .Include(s => s.PlannedInstall)
-                   .Include(s => s.RoofPlanes)
-                   .Include(s => s.Wall);
-
-            var result = await sl.ToListAsync();
-            var investments = result
-                .Select(s => s.Investment)
-                .Distinct()
-                .Take(maxHits);
-
-            MemoryStream report = investments 
-                .SelectMany(i => i.Surveys)
-                .Select(s => new SurveyNeoVM(s, _fileStorage))
-                .ToList()
-                .AsDataTable()
-                .AsExcel();
-            
-            string fileName = "OZEDoAnalizy_" + DateTime.Now.ToLongDateString() + ".xlsx";
-
-            return File(report.ToArray(),
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-
+            if (number > 0)
+                return Ok(new { url = await extract.CreateFile() });
+            else
+                return BadRequest(new { error = "Brak nowych inwestycji do przeliczenia." });            
         }
 
         // GET: api/ApiSurvey/5
