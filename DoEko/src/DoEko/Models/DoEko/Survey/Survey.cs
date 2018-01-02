@@ -260,7 +260,7 @@ namespace DoEko.Models.DoEko.Survey
 
         public Dictionary<string, Uri> Photos(IFileStorage iFileStorage)
         {
-            CloudBlobContainer Container = iFileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+            CloudBlobContainer Container = iFileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
             var SurveyBlockBlobs = Container.ListBlobs(prefix: this.SurveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             Dictionary<string, Uri> FileList = new Dictionary<string, Uri>();
@@ -275,7 +275,7 @@ namespace DoEko.Models.DoEko.Survey
             };
 
             //
-            CloudBlobContainer ContainerInv = iFileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+            CloudBlobContainer ContainerInv = iFileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
             var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: this.InvestmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             foreach (var BlockBlob in InvestmentBlockBlobs)

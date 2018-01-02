@@ -362,10 +362,10 @@ namespace DoEko.Controllers
                 //delete contract's attachments
                 foreach (var contract in project.Contracts)
                 {
-                    result = _fileStorage.DeleteFolderAsync(enuAzureStorageContainerType.Contract, contract.ContractId.ToString());
+                    result = _fileStorage.DeleteFolderAsync(EnuAzureStorageContainerType.Contract, contract.ContractId.ToString());
                 }
                 //delete project's attachments
-                result = _fileStorage.DeleteFolderAsync(enuAzureStorageContainerType.Project, project.ProjectId.ToString());
+                result = _fileStorage.DeleteFolderAsync(EnuAzureStorageContainerType.Project, project.ProjectId.ToString());
 
 
             }
@@ -401,7 +401,7 @@ namespace DoEko.Controllers
         {
             //AzureStorage account = new AzureStorage(_configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
 
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Project);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Project);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
             var ContainerBlockBlobs = Container.ListBlobs(prefix: id.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             List<File> FileList = new List<File>(10); //each row represent different picture type

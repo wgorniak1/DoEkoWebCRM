@@ -73,7 +73,7 @@ namespace DoEko.ViewModels.ReportsViewModels
             //Investment
             try
             {
-                var cont = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+                var cont = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
                 var files = cont.ListBlobs(prefix: this.InvestmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
                 Dictionary<string, Uri> tmpList = new Dictionary<string, Uri>();
@@ -104,7 +104,7 @@ namespace DoEko.ViewModels.ReportsViewModels
             {
                 try
                 {
-                    var cont = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+                    var cont = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
                     var files = cont.ListBlobs(prefix: srv.SurveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
                     Dictionary<string, Uri> tmpList = new Dictionary<string, Uri>();

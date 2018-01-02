@@ -78,7 +78,7 @@ namespace DoEko.Controllers.Helpers
 
             
             var blob = _fileStorage
-                .GetBlobContainer(enuAzureStorageContainerType.ReportResults)
+                .GetBlobContainer(EnuAzureStorageContainerType.ReportResults)
                 .GetBlockBlobReference(CreateFileName(resultsFolder, inv));
 
             MainStream.Position = 0;
@@ -102,7 +102,7 @@ namespace DoEko.Controllers.Helpers
         {
             try
             {
-                var templates = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);
+                var templates = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Templates);
                 var template = templates.GetDirectoryReference(templateType);
                 var templateDoc = template.GetDirectoryReference(templateSection.ToString()).ListBlobs().OfType<CloudBlockBlob>().First();
 

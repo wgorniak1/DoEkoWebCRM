@@ -167,7 +167,7 @@ namespace DoEko.Controllers
         {
             try
             {
-                var templates = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);            
+                var templates = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Templates);            
                 var template = templates.GetDirectoryReference(templateType);
                 var templateDoc = template.GetDirectoryReference(templateSection.ToString()).ListBlobs().OfType<CloudBlockBlob>().First();
             
@@ -190,12 +190,12 @@ namespace DoEko.Controllers
                 CloudBlobDirectory directory;
                 if (investmentId.HasValue)
                 {
-                    container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+                    container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
                     directory = container.GetDirectoryReference(investmentId.ToString());
                 }
                 else
                 {
-                    container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+                    container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
                     directory = container.GetDirectoryReference(surveyId.ToString());
                 }
 
@@ -362,8 +362,8 @@ namespace DoEko.Controllers
             ListPhotosViewModel modelItem;
 
             //read photos from azurestorage
-            CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
-            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+            CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
+            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
             var SurveyBlockBlobs = ContainerSrv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
             var InvestBlockBlobs = ContainerInv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
@@ -782,8 +782,8 @@ namespace DoEko.Controllers
         [HttpGet]
         public async Task<ActionResult> PhotosAdjust()
         {
-            CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
-            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+            CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
+            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
             var SurveyBlockBlobs = ContainerSrv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             foreach (var BlockBlob in SurveyBlockBlobs)

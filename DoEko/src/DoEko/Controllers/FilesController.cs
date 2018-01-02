@@ -29,7 +29,7 @@ namespace DoEko.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult Upload(enuAzureStorageContainerType Type, int? ID, Guid? Guid, string ReturnUrl = null)
+        public IActionResult Upload(EnuAzureStorageContainerType Type, int? ID, Guid? Guid, string ReturnUrl = null)
         {
             
             //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
@@ -53,7 +53,7 @@ namespace DoEko.Controllers
         }
 
 //        [HttpPost]
-        public JsonResult Upload(enuAzureStorageContainerType Type, int? Id, Guid? Guid,
+        public JsonResult Upload(EnuAzureStorageContainerType Type, int? Id, Guid? Guid,
                                  IFormCollection Form, string ReturnUrl = null)
         {
             //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
@@ -89,7 +89,7 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        public IActionResult UploadPhoto(enuAzureStorageContainerType type, Guid guid)
+        public IActionResult UploadPhoto(EnuAzureStorageContainerType type, Guid guid)
         {
             string TargetUrl = "";
 
@@ -176,7 +176,7 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeletePhoto(enuAzureStorageContainerType type, Guid guid, string pictureId, string fileName)
+        public IActionResult DeletePhoto(EnuAzureStorageContainerType type, Guid guid, string pictureId, string fileName)
         {
             CloudBlobContainer Container = _fileStorage.GetBlobContainer(type);
             string RootKey = guid.ToString();
@@ -197,7 +197,7 @@ namespace DoEko.Controllers
 
         }
 
-        public JsonResult Delete(enuAzureStorageContainerType Type, int? Id, Guid? Guid,
+        public JsonResult Delete(EnuAzureStorageContainerType Type, int? Id, Guid? Guid,
                                          string Name, string ReturnUrl = null)
         {
             //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
@@ -226,7 +226,7 @@ namespace DoEko.Controllers
             }
         }
 
-        private IList<Models.DoEko.File> Files(enuAzureStorageContainerType Type, string Key)
+        private IList<Models.DoEko.File> Files(EnuAzureStorageContainerType Type, string Key)
         {
             //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
             CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);

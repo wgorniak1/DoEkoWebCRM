@@ -224,10 +224,7 @@ $(document).ready(function () {
 
         stateSave: true,
         pagingType: "full",
-        language: {
-            url: "/js/datatables-language-pl.json"
-        },
-
+        language: WgLanguage,
         lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],
         order: [[0, "asc"]],
         processing: true,
@@ -322,7 +319,7 @@ $(document).ready(function () {
             headerOffset: $('#NavBarMain').outerHeight()
         },
         drawCallback: function (settings, json) {
-            $('div#BPPersonListTable_processing').addClass("wg-loader");
+            
 
             //var context = $('div#BPPersonListTable_filter');
             //$('*', context).addClass('small');

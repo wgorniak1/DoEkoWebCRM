@@ -102,7 +102,13 @@ $(document).ready(function () {
                     }
         ],
 
-        stateSave: false,
+        stateSave: true,
+        stateLoadParams: function (settings, data) {
+            data.search.search = "";
+            for (var i = 0, len = data.columns.length; i < len; i++) {
+                data.columns[i].search.search = "";
+            }
+        },
         pagingType: "full",
         language: WgLanguage,
 
@@ -113,6 +119,50 @@ $(document).ready(function () {
              "<'row'<'col-sm-12'tr>>" +
              "<'row wg-dt-padding'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
         buttons: [
+                        {
+                            text: '<span class="text-primary glyphicon glyphicon-paperclip"></span> Szablon',
+                            titleAttr: 'Pobierz szablonu pliku do importu',
+                            className: 'btn',
+                            action: function (e, dt, node, config) {
+
+                                dt.table().buttons().disable();
+
+                                var $loading = $('div#InvestmentListTable_processing');
+                                $loading.show();
+
+                                var url = "/api/v1/Files/Templates?Type=NeoImport";
+                                var ajax = new $.get(url);
+
+                                ajax.fail(function (result) {
+                                    $loading.hide();
+                                    dt.table().buttons().enable();
+                                    switch (result.status) {
+                                        case 401:
+                                            WgTools.alert("Sesja wygasła. Proszę odświeżyć stronę", false, 'E');
+                                            break;
+                                        case 404:
+                                            WgTools.alert("Nie znaleziono pliku. Proszę skontaktować się z administratorem strony.", false, 'E');
+                                            break;
+                                        default:
+                                            WgTools.alert("Wystąpił nieokreślony błąd. Proszę powiadomić administtratora strony.", false, 'E');
+                                            break;
+                                    }
+                                });
+
+                                ajax.done(function (result) {
+
+                                    var link = WgTools.createLink(result.url);
+                                    document.body.appendChild(link);
+                                    link.click();
+
+                                    $loading.hide();
+                                    dt.table().buttons().enable();
+                                    //WgTools.alert('Pomyślnie wygenerowano plik', true, 'S');
+                                });
+
+                            }
+                        },
+
             //{
             //    extend: 'copyHtml5',
             //    text: '<span class="glyphicon glyphicon-copy"></span>',
@@ -164,7 +214,15 @@ $(document).ready(function () {
                     ajax.fail(function (result) {
                         $loading.hide();
                         dt.table().buttons().enable();
-                        WgTools.alert(result.responseJSON.error, false, 'E');
+                        switch (result.status) {
+                            case 401:
+                                WgTools.alert("Sesja wygasła. Proszę odświeżyć stronę", false, 'E');
+                                break;
+                            default:
+                                WgTools.alert(result.responseJSON.error, false, 'E');
+                                break;
+                        }
+
                     });
 
                     ajax.done(function (result) {
@@ -185,11 +243,6 @@ $(document).ready(function () {
                 titleAttr: 'Zapisz wyniki (dobory)',
                 className: 'btn',
                 action: function (e, dt, node, config) {
-
-                    dt.table().buttons().disable();
-                    var $loading = $('div#InvestmentListTable_processing');
-                    $loading.show();
-
 
                     var neoenergetykaFile = $('input#Neoenergetyka', $('form#NeoenergetykaForm'));
 
@@ -312,22 +365,26 @@ function onNeoenergetykaFileChange(event) {
     const allowedTypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                           "application/vnd.ms-excel"];
 
+    event.data.dt.table().buttons().disable();
+    var $loading = $('div#InvestmentListTable_processing');
+    $loading.show();
+
+
+
     var file = $(this)[0].files[0];
 
     if (file === undefined) {
-        WgTools.alert("Proszę wskazać plik do importu!", true, "E");
+        WgTools.alert("Proszę wskazać plik do importu!", false, "E");
 
         event.data.dt.table().buttons().enable();
-        var $loading = $('div#InvestmentListTable_processing');
         $loading.hide();
         return;
     }
     else if (!allowedTypes.includes(file.type)) {
         $(this).val('');
         event.data.dt.table().buttons().enable();
-        var $loading = $('div#InvestmentListTable_processing');
         $loading.hide();
-        WgTools.alert("Niedozwolony format pliku!", true, "E");
+        WgTools.alert("Niedozwolony format pliku!", false, "E");
         return;
     }
     //Post File:
@@ -359,15 +416,20 @@ function onNeoenergetykaFileChange(event) {
         //xhr.responsejson np. "neoenergetyka" : ["Nie odnaleziono pliku"]
         //
         event.data.dt.table().buttons().enable();
-        var $loading = $('div#InvestmentListTable_processing');
         $loading.hide();
 
-        json = xhr.responseJSON;
-        if (json.neoenergetyka !== null) {
-            WgTools.alert(json.neoenergetyka, false, 'E');
+        switch (result.status) {
+            case 401:
+                WgTools.alert("Sesja wygasła. Proszę odświeżyć stronę", false, 'E');
+                break;
+            default:
+                json = xhr.responseJSON;
+                if (json.neoenergetyka !== undefined) {
+                    WgTools.alert(json.neoenergetyka, false, 'E');
+                }
+                else 
+                    WgTools.alert(json, false, 'E');
         }
-        else 
-            WgTools.alert(json, false, 'E');
     });
 
 }

@@ -354,7 +354,7 @@ namespace DoEko.Controllers
                 await docBuilder.BuildAsync(new InvestmentViewModel(inv),resultsFolder);
                 //return single doc
                 //return PhysicalFile(docUrl,"");
-                var doc = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary/" + resultsFolder).ListBlobs(true).OfType<CloudBlockBlob>().First();
+                var doc = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary/" + resultsFolder).ListBlobs(true).OfType<CloudBlockBlob>().First();
 
                 return Redirect(doc.Uri.AbsoluteUri);
             }
@@ -1042,7 +1042,7 @@ namespace DoEko.Controllers
 
         private Dictionary<string,string> SurveyPhotos(Guid surveyId, Guid investmentId)
         {
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
             var SurveyBlockBlobs = Container.ListBlobs(prefix: surveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             Dictionary<string, string> FileList = new Dictionary<string, string>();
@@ -1057,7 +1057,7 @@ namespace DoEko.Controllers
             };
 
             //
-            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);
+            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
             var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: investmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             foreach (var BlockBlob in InvestmentBlockBlobs)
@@ -1086,7 +1086,7 @@ namespace DoEko.Controllers
 
             List<Object> files = new List<Object>();
 
-            var rootDir = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
+            var rootDir = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
 
             if (singleDocuments)
             {

@@ -12,7 +12,7 @@ using DoEko.Controllers.Settings;
 
 namespace DoEko.Services
 {
-    public enum enuAzureStorageContainerType
+    public enum EnuAzureStorageContainerType
     {
         Project,
         Contract,
@@ -31,7 +31,7 @@ namespace DoEko.Services
             Account = CloudStorageAccount.Parse(options.Value.AzureStorageOptions.ConnectionString);
         }
 
-        public CloudBlobContainer GetBlobContainer(enuAzureStorageContainerType ContainerType)
+        public CloudBlobContainer GetBlobContainer(EnuAzureStorageContainerType ContainerType)
         {
             string ContainerName = ContainerType.ToString().ToLower();// + "/" + Id.ToString();
 
@@ -43,7 +43,7 @@ namespace DoEko.Services
             
         }
 
-        public void Upload(IFormFile File, enuAzureStorageContainerType Type, string Key = "Not assigned")
+        public void Upload(IFormFile File, EnuAzureStorageContainerType Type, string Key = "Not assigned")
         {
             CloudBlobContainer Container = GetBlobContainer(Type);
             if (File.Length > 0)
@@ -64,7 +64,7 @@ namespace DoEko.Services
                 //return false;
         }
 
-        public async Task<bool> DeleteFolderAsync(enuAzureStorageContainerType ContainerType, string FolderName)
+        public async Task<bool> DeleteFolderAsync(EnuAzureStorageContainerType ContainerType, string FolderName)
         {
             CloudBlobContainer container = GetBlobContainer(ContainerType);
             

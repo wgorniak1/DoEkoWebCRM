@@ -33,7 +33,7 @@ namespace DoEko.Controllers
             try
             {
                 string TargetUrl = "";
-                enuAzureStorageContainerType containerType = enuAzureStorageContainerType.Templates;
+                EnuAzureStorageContainerType containerType = EnuAzureStorageContainerType.Templates;
 
                 if (Request.Form.Files.Count == 0)
                     return BadRequest();
@@ -69,7 +69,7 @@ namespace DoEko.Controllers
         {
             try
             {
-                enuAzureStorageContainerType containerType = enuAzureStorageContainerType.Templates;
+                EnuAzureStorageContainerType containerType = EnuAzureStorageContainerType.Templates;
 
                 CloudBlobContainer Container = _fileStorage.GetBlobContainer(containerType);
 
@@ -116,7 +116,7 @@ namespace DoEko.Controllers
 
         private Dictionary<OfficeTemplateType, OfficeTemplate> GetTemplates(string templateCategory = null)
         {
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Templates);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Templates);
             var TemplateBlockBlobs = Container.ListBlobs(prefix: templateCategory, useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             Dictionary<OfficeTemplateType, OfficeTemplate> TemplateList = new Dictionary<OfficeTemplateType, OfficeTemplate>();

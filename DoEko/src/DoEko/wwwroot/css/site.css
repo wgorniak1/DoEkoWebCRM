@@ -233,12 +233,31 @@ a.wg-link-default::before{
 .wg-dt-padding {
     padding: 3px;
 }
+
 /*CSS for loading gif*/
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;
     -ms-animation: spin .7s infinite linear;
     -webkit-animation: spinw .7s infinite linear;
     -moz-animation: spinm .7s infinite linear;
+}
+
+div.dataTables_processing {
+    font-size: xx-large;
+    /*z-index: 99999;*/
+    /*top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;*/
+    background-color: rgba(255,255,255,0);
+    /*background-image: url("../images/ajax-loader.gif");
+    background-repeat: no-repeat;
+    background-position: center center;*/
+    border: none;
+    border-width: 0;
+    box-shadow: none;
+    /*width: 55px;*/
+    /*height: 55px;*/
 }
 
 @keyframes spin {

@@ -183,7 +183,7 @@ namespace DoEko.Controllers
 
             //_azure.Upload(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
             
-            _fileStorage.Upload(file, enuAzureStorageContainerType.Contract, ContractId.ToString());
+            _fileStorage.Upload(file, EnuAzureStorageContainerType.Contract, ContractId.ToString());
 
             StreamReader sr = new StreamReader(file.OpenReadStream());
             string CsvRecord;

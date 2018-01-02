@@ -69,8 +69,8 @@ namespace DoEko.ViewComponents
 
         private Dictionary<string,SurveyPhoto> GetAttachments(Guid surveyId, Guid investmentId)
         {
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Survey);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
-            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(enuAzureStorageContainerType.Investment);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
+            CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
+            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
             var SurveyBlockBlobs     = Container.ListBlobs(prefix: surveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             Dictionary<string,SurveyPhoto> FileList = new Dictionary<string, SurveyPhoto>();

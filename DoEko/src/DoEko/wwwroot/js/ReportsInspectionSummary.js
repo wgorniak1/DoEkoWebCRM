@@ -61,9 +61,7 @@
                     }
         ],
         stateSave: true,
-        language: {
-            url: "/js/datatables-language-pl.json"
-        },
+        language: WgLanguage,
         lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],
         order: [[0, "asc"]],
         processing: true,
@@ -118,7 +116,7 @@
             headerOffset: $('#NavBarMain').outerHeight()
         },
         drawCallback: function (settings, json) {
-            $('div#InspectionSummaryTable_processing').addClass("wg-loader");
+            
 
             var context = $('div#InspectionSummaryTable_filter');
             $('*', context).addClass('small');

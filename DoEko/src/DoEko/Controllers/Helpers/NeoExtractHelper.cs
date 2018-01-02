@@ -79,7 +79,7 @@ namespace DoEko.Controllers.Helpers
             string fileName = "OZEDoAnalizy_" + DateTime.Now.ToFileTime() + ".xlsx";
             
             var blob = _fileStorage
-                .GetBlobContainer(enuAzureStorageContainerType.NeoDownloads)
+                .GetBlobContainer(EnuAzureStorageContainerType.NeoDownloads)
                 .GetDirectoryReference(this.contractId.ToString() + "/")
                 .GetBlockBlobReference(fileName);
             
