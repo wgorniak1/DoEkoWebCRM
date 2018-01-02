@@ -436,7 +436,8 @@ namespace DoEko.Controllers
                             srv.ResultCalculation = new SurveyResultCalculations(srv.Type, srv.GetRSEType(), surveyExcel);
                         }
                         //overall investment
-                        if (srv.Investment.Surveys.All(s => s.ResultCalculation.Completed == true))
+                        if (srv.Investment.Surveys.All(s => s.ResultCalculation != null && 
+                                                            s.ResultCalculation.Completed == true))
                         {
                             srv.Investment.Calculate = false;
                         }
