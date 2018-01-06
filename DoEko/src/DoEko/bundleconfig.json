@@ -134,5 +134,11 @@
     "inputFiles": [
       "wwwroot/js/ContractDetailsNeo.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/RSEPriceSettings.min.js",
+    "inputFiles": [
+      "wwwroot/js/RSEPriceSettings.js"
+    ]
   }
 ]
