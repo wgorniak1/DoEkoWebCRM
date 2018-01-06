@@ -274,7 +274,7 @@ function InitializeSurveyListTab(investmentId) {
 
                             switch (row.status) {
                                 case 0://new
-                                    content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                    content += '<a href="/Surveys/Maintain/' + row.surveyId + '"';
                                     content += ' class="btn btn-default btn-sm">';
                                     content += '<span class="glyphicon glyphicon-eye-open"></span>';
                                     content += '</a>';
@@ -288,7 +288,7 @@ function InitializeSurveyListTab(investmentId) {
 
                                     break;
                                 case 1://draft
-                                    content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                    content += '<a href="/Surveys/Maintain/' + row.surveyId + '"';
                                     content += ' class="' + linkClass + '" title="Edytuj ankietę">';
                                     content += ' <span class="glyphicon glyphicon-eye-open"></span>';
                                     content += '</a>';
@@ -314,7 +314,7 @@ function InitializeSurveyListTab(investmentId) {
                                 case 2://submitted
                                     if (isAdmin)
                                     {
-                                        content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                        content += '<a href="/Surveys/Maintain/' + row.surveyId + '"';
                                         content += ' class="' + linkClass + '">';
                                         content += '<span class="glyphicon glyphicon-eye-open"></span>';
                                         content += '</a>';
@@ -347,7 +347,7 @@ function InitializeSurveyListTab(investmentId) {
 
                                     break;
                                 case 3://rejected
-                                    content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                    content += '<a href="/Surveys/Maintain/' + row.surveyId + '"';
                                     content += ' class="' + linkClass + '">';
                                     content += '<span class="glyphicon glyphicon-eye-open"></span>';
                                     content += '</a>';
@@ -366,7 +366,7 @@ function InitializeSurveyListTab(investmentId) {
                                 case 4://approved
                                     if (isAdmin)
                                     {
-                                        content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                        content += '<a href="/Surveys/Maintain/' + row.surveyId + '"';
                                         content += ' class="' + linkClass + '" title="Edytuj ankietę">';
                                         content += ' <span class="glyphicon glyphicon-eye-open"></span>';
                                         content += '</a>';
@@ -383,7 +383,7 @@ function InitializeSurveyListTab(investmentId) {
                                 case 5://cancelled
                                     if (isAdmin)
                                     {
-                                        content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                        content += '<a href="/Surveys/Maintain/' + row.surveyId + '"';
                                         content += ' class="' + linkClass + '" title="Edytuj ankietę">';
                                         content += '<span class="glyphicon glyphicon-eye-open"></span>';
                                         content += '</a>';
