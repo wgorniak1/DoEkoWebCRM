@@ -772,7 +772,7 @@ function onInspectionDateTimeChange() {
 
     var form = $("#SurveyInspectionDateTime");
 
-    if (form.length == 0) return;
+    if (form.length === 0) return;
     
     form.validate({ lang: 'pl' });
 

@@ -150,7 +150,7 @@ namespace DoEko.ViewModels.API.SurveyViewModels
                 GroundArea = srv.Ground.Area;
                 GroundFormerMilitary = srv.Ground.FormerMilitary.AsYesNo();
                 GroundOtherInstallation = srv.Ground.OtherInstallation.AsYesNo();
-                GroundOtherInstallationType = srv.Ground.OtherInstallationType != null ? srv.Ground.OtherInstallationType : "";
+                GroundOtherInstallationType = srv.Ground.OtherInstallationType ?? "";
                 GroundRocks = srv.Ground.Rocks.AsYesNo();
                 GroundSlopeTerrain = srv.Ground.SlopeTerrain.DisplayName();
                 GroundWetLand = srv.Ground.WetLand.AsYesNo();

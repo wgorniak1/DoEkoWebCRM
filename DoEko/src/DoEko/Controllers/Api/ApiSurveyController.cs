@@ -34,11 +34,48 @@ namespace DoEko.Controllers.Api
             _userManager = userManager;
         }
 
-        // GET: api/ApiSurvey
+        // GET: api/v1/Survey
         [HttpGet]
-        public IEnumerable<Survey> GetSurveys()
+        public IEnumerable<Survey> GetSurveys([FromQuery] Guid? investmentId)
         {
-            return _context.Surveys;
+
+            var qry = investmentId.HasValue ? _context.Surveys.Where(s => s.InvestmentId == investmentId) : _context.Surveys.AsQueryable(); 
+
+            qry = qry
+                .Include(s => s.Investment).ThenInclude(i => i.Contract).ThenInclude(c => c.Project)
+                .Include(s => s.PlannedInstall)
+                .Include(s => s.ResultCalculation);
+
+            var result = qry.ToList();
+            //TO JEST DO ZMIANY!!!
+            foreach (var s in result)
+            {
+                if (s.ResultCalculation == null)
+                {
+                    s.ResultCalculation = new SurveyResultCalculations();
+                }
+                if (s.PlannedInstall == null)
+                {
+                    s.PlannedInstall = new SurveyDetPlannedInstall();
+                }
+
+                RSEPriceHelper r = new RSEPriceHelper(_context, s);
+
+                s.ResultCalculation.RSENetPrice = Convert.ToDouble(r.Net);
+                s.ResultCalculation.RSETax = Convert.ToDouble(r.Tax);
+                s.ResultCalculation.RSEGrossPrice = Convert.ToDouble(r.Gross);
+                s.ResultCalculation.RSEOwnerContrib = Convert.ToDouble(r.OwnerContribution);
+            }
+            foreach (var s in result)
+            {
+                s.PlannedInstall.Survey = null;
+                s.ResultCalculation.Survey = null;
+                s.Investment.Surveys = null;
+                s.Investment.Contract.Investments = null;
+                s.Investment.Contract.Project.Contracts = null;
+            }
+
+            return result;
         }
 
         [HttpGet]

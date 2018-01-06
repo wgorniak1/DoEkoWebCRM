@@ -18,11 +18,12 @@ namespace DoEko.Controllers.Helpers
 
         public static ClusterInvestment ToModel( ClusterInvestmentVM vm)
         {
-            ClusterInvestment model = new ClusterInvestment();
+            ClusterInvestment model = new ClusterInvestment
+            {
+                ClustInvestmentId = vm.ClusterInvestmentId,
+                ContractId = vm.ContractId
+            };
 
-            model.ClustInvestmentId = vm.ClusterInvestmentId;
-            model.ContractId = vm.ContractId;
-           
             if (vm.Person != null)
             {
                 model.MemberType = BusinessPartnerType.Person;

@@ -30,7 +30,7 @@ namespace DoEko.ViewModels.ReportsViewModels
 
         private void Initialize(DoEkoContext _context)
         {
-            ProjectList = new SelectList(_context.Projects.Select(p => new SelectListItem()
+            ProjectList = new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).Select(p => new SelectListItem()
             {
                 Value = p.ProjectId.ToString(),
                 Text = p.ShortDescription + " (" +

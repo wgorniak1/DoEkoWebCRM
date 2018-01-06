@@ -102,7 +102,7 @@ $(document).ready(function () {
                     
                     dt.rows().cells().invalidate().render();
                 }
-            },
+            }
         ],
         select: false,
         colReorder: 

@@ -137,7 +137,7 @@ namespace DoEko.Controllers
         {
             //Source data
 
-            var id = investmentId.HasValue ? investmentId.Value : Guid.Parse("74f3e0bf-6d3d-40c5-981f-dba25056d1e8");
+            var id = investmentId ?? Guid.Parse("74f3e0bf-6d3d-40c5-981f-dba25056d1e8");
 
             InvestmentViewModel inv = (InvestmentViewModel)_context.Investments
                 .Include(i => i.Address).ThenInclude(a=>a.State)
@@ -885,15 +885,16 @@ namespace DoEko.Controllers
             }
         }
 
-        public ActionResult excel()
+        public ActionResult Excel()
         {
             var xls = new ExcelExportHelper();
 
             var sheet = xls.InsertWorksheet("Wojtek");
 
-            var row = new Row();
-
-            row.RowIndex = 1;
+            var row = new Row
+            {
+                RowIndex = 1
+            };
             row.Append(ExcelExportHelper.AddCellWithText("test"));
             row.Append(ExcelExportHelper.AddCellWithText("test2"));
             row.Append(ExcelExportHelper.AddCellWithText("test3"));
@@ -913,13 +914,15 @@ namespace DoEko.Controllers
 
         }
 
-        public ActionResult csvTest()
+        public ActionResult CsvTest()
         {
             _context.CurrentUserId = Guid.Parse(_userManager.GetUserId(User));
             string line = "1; 98,40 zł ; 80,00 zł ;Kocioł na Pellet;;;Lubelskie;Janowski;Chrzanów (Gmina W.);37-500; Tuczempy ;Mickiewicza;44;;Ryszard;Trelka;Podlaskie;Białostocki;Choroszcz (Gmina M-W);37-500;Tuczempy;Mickiewicza;3A;1;266;30621;661 111 760;;;";
 
-            InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context);
-            uploadhelper.ContractId = _context.Contracts.First().ContractId;
+            InvestmentUploadHelper uploadhelper = new InvestmentUploadHelper(_context)
+            {
+                ContractId = _context.Contracts.First().ContractId
+            };
 
             try
             {   

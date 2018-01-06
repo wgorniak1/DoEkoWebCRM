@@ -58,7 +58,7 @@ namespace DoEko.Controllers
                 ViewData["ProjectDeleteFinished"] = false;
             }
 
-            var doEkoContext = _context.Projects.Include(p => p.ParentProject);
+            var doEkoContext = _context.Projects.Where(p=> p.ProjectId != 1).Include(p => p.ParentProject);
             return View(await doEkoContext.ToListAsync());
         }
 
@@ -98,7 +98,7 @@ namespace DoEko.Controllers
                     return NotFound();
                 }
 
-                ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", ParentId.Value);
+                ViewData["ParentProjectIdDL"] = new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).ToList(), "ProjectId", "ShortDescription", ParentId.Value);
                 ViewData["ParentProjectId"]   = ParentId.Value;
             }
 
@@ -127,7 +127,7 @@ namespace DoEko.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewData["ParentProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", project.ParentProjectId);
+                ViewData["ParentProjectId"] = new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).ToList(), "ProjectId", "ShortDescription", project.ParentProjectId);
                 ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", project.CompanyId);
 
                 return View(project);                
@@ -169,7 +169,7 @@ namespace DoEko.Controllers
                 return NotFound();
             }
             ViewData["ReturnUrl"] = ReturnUrl;
-            ViewData["ParentProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", project.ParentProjectId);
+            ViewData["ParentProjectId"] = new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).ToList(), "ProjectId", "ShortDescription", project.ParentProjectId);
 
             //ViewData["Status"] = new SelectList(from ProjectStatus e in Enum.GetValues(typeof(ProjectStatus)) select new { Id = e, Name = e.ToString() }, "Id", "Name", project.Status);
             //ViewData["UEFundsLevel"] = new SelectList(from UEFundsLevel e in Enum.GetValues(typeof(UEFundsLevel)) select new { Id = e, Name = e.ToString() }, "Id", "Name", project.UEFundsLevel);
@@ -221,7 +221,7 @@ namespace DoEko.Controllers
                 }
             }
             ViewData["ReturnUrl"] = ReturnUrl;
-            ViewData["ParentProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", project.ParentProjectId);
+            ViewData["ParentProjectId"] = new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).ToList(), "ProjectId", "ShortDescription", project.ParentProjectId);
             return View(project);
         }
 
@@ -383,7 +383,7 @@ namespace DoEko.Controllers
         [HttpGet]
         public JsonResult GetProjectsAjax()
         {
-            return Json(new SelectList(_context.Projects.Select(p => new SelectListItem()
+            return Json(new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).Select(p => new SelectListItem()
             {
                 Value = p.ProjectId.ToString(),
                 Text = p.ShortDescription + " (" +

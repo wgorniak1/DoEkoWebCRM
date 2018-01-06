@@ -58,6 +58,10 @@ namespace DoEko.Models.DoEko
         //CLUSTER INVESTMENTS
         public DbSet<ClusterInvestment> ClusterInvestments { get; set; }
 
+        //RSE PRICE CALCULATION
+        public DbSet<RSEPriceTaxRule> RSEPriceTaxRules { get; set; }
+        public DbSet<RSEPriceRule> RSEPriceRules { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -125,11 +129,29 @@ namespace DoEko.Models.DoEko
             modelBuilder.Entity<Payroll.EmployeeUser>().HasKey(eu => new { eu.EmployeeId, eu.Start, eu.End, eu.UserId });
 
             //CLUSTER INVESTMENT
-            
+
             //modelBuilder.Entity<ClusterInvestment>().HasOne(a => a.State).WithMany().HasForeignKey(a => a.StateId).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
             //modelBuilder.Entity<ClusterInvestment>().HasOne(a => a.District).WithMany().HasForeignKey(d => new { d.StateId, d.DistrictId }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
             //modelBuilder.Entity<ClusterInvestment>().HasOne(a => a.Commune).WithMany().HasForeignKey(c => new { c.StateId, c.DistrictId, c.CommuneId, c.CommuneType }).OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
 
+            //RSE PRICE CALCULATION
+            modelBuilder.Entity<RSEPriceRule>()
+                .HasKey( s => new { s.ProjectId,
+                                    s.SurveyType,
+                                    s.RSEType,
+                                    s.Unit,
+                                    s.NumberMin,
+                                    s.NumberMax });
+            modelBuilder.Entity<RSEPriceTaxRule>().HasKey(s => new
+            {
+                s.ProjectId,
+                s.SurveyType,
+                s.RSEType,
+                s.InstallationLocalization,
+                s.BuildingPurpose,
+                s.UsableAreaMin,
+                s.UsableAreaMax
+            });
         }
 
         public override int SaveChanges()
@@ -195,7 +217,7 @@ namespace DoEko.Models.DoEko
             }
             return base.SaveChanges();
         }
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             this.ChangeTracker.DetectChanges();
             var newEntries = this.ChangeTracker.Entries()

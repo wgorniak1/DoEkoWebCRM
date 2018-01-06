@@ -260,7 +260,7 @@ $(document).ready(function () {
                     var currentSearch = dt.table().column('calculate:name')
                     .search();
 
-                    if (currentSearch != '') {
+                    if (currentSearch !== '') {
                         //clear filter
                         dt.table()
                         .column('calculate:name')
@@ -286,7 +286,7 @@ $(document).ready(function () {
                     //}
 
                 }
-            },
+            }
 
         ],
         select: false,
@@ -329,7 +329,7 @@ $(document).ready(function () {
         },
         fixedHeader: {
             headerOffset: $('#NavBarMain').outerHeight()
-        },
+        }
        // drawCallback: function (settings, json) {
             //$('div#InvestmentListTable_processing').addClass("wg-loader");
 

@@ -29,6 +29,14 @@
                    class="btn btn-primary btn-sm wg-panel-header-button">
                    <span class="glyphicon glyphicon-edit"></span>
                 </a>
+                <a asp-action="Edit"
+                   asp-controller="RSEPriceSettings"
+                   asp-route-Id="@Model.ProjectId"
+                   asp-route-ReturnUrl="@Url.Action("Details","Projects", new { Id = Model.ProjectId }, null,null,"details")"
+                   class="btn btn-primary btn-sm wg-panel-header-button"
+                   title="Ustawienia wyceny sprzętu">
+                    <span class="glyphicon glyphicon-euro"></span>
+                </a>
             </div>
         </div>
         <div id="details" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-details">

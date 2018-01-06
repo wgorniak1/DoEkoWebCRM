@@ -1,4 +1,447 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+﻿'use strict';
+/////////////////////////////////////////////////////////////
+class WgRSEEnum {
+
+    constructor() {
+        this.surveyType = ["CO", "CWU", "EE"];
+        this.rseType = [["", "Pompa Ciepła Grunt.", "Kocioł na Pellet", "Pompa Ciepła Powietrzna"], ["", "", "", "Solary", "Pompa Ciepła"], ["", "", "", "", "", "Panele Fotowolt."]];
+    }
+
+    getText(type, rseType, single) {
+        if (rseType === undefined)
+            return this.surveyType[type];
+        else if (single)
+            return this.rseType[type][rseType]
+        else
+            return this.rseType[type][rseType] + ' (' + this.surveyType[type] + ')';
+    }
+
+
+    getId(typeText, rseTypeText) {
+        var type = -1;
+        var rseType = -1;
+
+        for (var i = 0; i < this.surveyType.length; i++) {
+            if (this.surveyType[i] === typeText) type = i;
+        }
+
+        if (rseTypeText === undefined) {
+            return type;
+        }
+
+        if (type >= 0) {
+            for (var j = 0; j < this.rseType[type].length; j++) {
+                if (this.surveyType[type][i] === typeText) rseType = i;
+            }
+        }
+
+        return rseType;
+
+    }
+}
+class WgLocEnum {
+    constructor() {
+        this._array = ["Dach", "Grunt", "Elewacja"]
+    }
+    getText(value) {
+        return this._array[value];
+    }
+    getValue(text) {
+        for (var i = 0; i < this._array.length; i++) {
+            if (this._array[i] === text)
+                return i;
+        }
+    }
+}
+class WgBdgEnum {
+    constructor() {
+        this._array = ["Gospodarczy", "Mieszkalny"]
+    }
+    getText(value) {
+        return this._array[value];
+    }
+    getValue(text) {
+        for (var i = 0; i < this._array.length; i++) {
+            if (this._array[i] === text)
+                return i;
+        }
+    }
+}
+class WgEnuSrvCancelStatus {
+    constructor() {
+        this._array = ["Przed inspekcją", "Po inspekcji", "Instalacja niemożliwa", "Brak kontaktu z właścicielem", "Błąd - niezamawiane źródło"];
+}
+    getText(value) {
+        return this._array[value];
+    }
+    getValue(text) {
+        for (var i = 0; i < this._array.length; i++) {
+            if (this._array[i] === text)
+                return i;
+        }
+    }
+}
+class WgEnuSrvStatus {
+    constructor() {
+        this._array = ["Nowa", "W trakcie realizacji", "W trakcie weryfikacji", "Do poprawy", "Zatwierdzona", "Anulowana"];
+    }
+    getText(value) {
+        return this._array[value];
+    }
+    getValue(text) {
+        for (var i = 0; i < this._array.length; i++) {
+            if (this._array[i] === text)
+                return i;
+        }
+    }
+}
+
+var WgEnums = {
+    rse: new WgRSEEnum(), localization: new WgLocEnum(), building: new WgBdgEnum(),
+    status: new WgEnuSrvStatus(), cancel: new WgEnuSrvCancelStatus()
+};
+
+$(document).ready(function () {
+    var InvestmentId = $("#SurveyListTable").data('investmentid');
+    var isAdmin = $("#SurveyListTable").data('admin');
+    InitializeSurveyListTab(InvestmentId);
+});
+
+function InitializeSurveyListTab(investmentId) {
+    var ajaxUrl = "/api/v1/Survey?investmentId=" + investmentId;
+
+    var table = $('#SurveyListTable').DataTable({
+        ajax: {
+            url: ajaxUrl,
+            dataSrc: "",
+            rowId: "surveyId"
+        },
+        columns: [
+                    {
+                        data: null,
+                        name: 'rseType',
+                        title: 'Typ OZE',
+                        //type: 'html',
+                        render: function (data, type, row, meta) {
+                            return WgEnums.rse.getText(data.type, data.rseType);
+                        }
+                    },
+                    {
+                        data: "status",
+                        name: "status",
+                        title: "Status inspekcji",
+                        type: "html",
+                        render: function (data, type, row, meta) {
+                            return '<span title="' + ((data === 5) ? WgEnums.cancel.getText(row.cancelType) : '' ) + '">' + WgEnums.status.getText(data) + '</span>';
+                        }
+                    },
+                    {
+                        data: "changedAt",
+                        name: "changedAt",
+                        title: "Ost.Zmiana",
+                        type: "datetime",
+                        render: function (data, type, row, meta) {
+                            var date = new Date(data);
+                            switch (type) {
+                                case 'display':
+                                    return date.toLocaleString();
+                                default:
+                                    return date;
+                            }
+                        }
+
+                    },
+                    {
+                        data: "resultCalculation.completed",
+                        name: "completed",
+                        title: "Zakończono obliczenia",
+                        render: function (data, type, row, meta) {
+                            return (data === true) ? "Tak" : "Nie";
+                            }
+                    },
+                    {
+                        data: "resultCalculation.rseNetPrice",
+                        name: "netPrice",
+                        title: "Cena Netto",
+                        type: "num-fmt",
+                        render: function (data, type, row, meta) {
+                            switch (type) {
+                                case 'display':
+                                    return parseFloat(data).toFixed(2) + ' zł';
+                                default:
+                                    return parseFloat(data).toFixed(2);
+                            }
+                        }
+                    },
+                    {
+                        data: "resultCalculation.rseTax",
+                        name: "taxPrice",
+                        title: "VAT",
+                        type: "num-fmt",
+                        render: function (data, type, row, meta) {
+                            switch (type) {
+                                case 'display':
+                                    return parseFloat(data).toFixed(2) + ' zł';
+                                default:
+                                    return parseFloat(data).toFixed(2);
+                            }
+                        }
+                    },
+                    {
+                        data: "resultCalculation.rseGrossPrice",
+                        name: "grossPrice",
+                        title: "Cena Brutto",
+                        type: "num-fmt",
+                        render: function (data, type, row, meta) {
+                            switch (type) {
+                                case 'display':
+                                    return parseFloat(data).toFixed(2) + ' zł';
+                                default:
+                                    return parseFloat(data).toFixed(2);
+                            }
+                        }
+                    },
+                    {
+                        data: "resultCalculation.rseOwnerContrib",
+                        name: "ownerContrib",
+                        title: "Udział własny",
+                        type: "num-fmt",
+                        render: function (data, type, row, meta) {
+                            switch (type) {
+                                case 'display':
+                                    return parseFloat(data).toFixed(2) + ' zł';
+                                default:
+                                    return parseFloat(data).toFixed(2);
+                            }
+                        }
+                    },
+                    {
+                        data: "resultCalculation.finalRSEPower",
+                        name: "FinalPower",
+                        title: "Dobrana Moc",
+                        type: "html-num-fmt",
+                        render: function (data, type, row, meta) {
+                            switch (type) {
+                                case 'display':
+                                    switch (row.type.toString() + row.rseType.toString()) {
+                                        //case '01'://CO.PCG
+                                        //case '02'://CO.K
+                                        //case '03'://CO.PCP
+                                        case '13'://HW.SOL
+                                            return '<span title="' + row.finalSolConfig + '">' + parseFloat(data).toFixed(2) + ' KW ' + '</span>';
+                                        //case '14'://HW.PCP
+                                            return '<span title="' + row.finalPVConfig + '">' + parseFloat(data).toFixed(2) + ' KW ' + '</span>';
+                                        case '25'://EE.PV
+                                        default:
+                                            return '<span>' + parseFloat(data).toFixed(2) + ' KW</span>';
+                                    }
+                                default:
+                                    return data;
+                            }
+                        }
+                    },
+                    {
+                        data: null,
+                        className: 'all',
+                        name: "actions",
+                        title: "Akcje",
+                        orderable: false,
+                        searchable: false,
+                        type: 'html',
+                        autoWidth: false,
+                        visible: true,
+                        render: function (data, type, row, meta) {
+                            var content = "";
+                            var isAdmin = $("#SurveyListTable").data('admin');
+                            var linkClass = "btn btn-default btn-sm";
+
+                            if (row.investment.status === 2) //in review
+                            {
+                                linkClass = linkClass + " disabled";
+                            }
+
+                            content = '<div class="pull-right">';
+
+                            if (isAdmin === true) {
+                                content += '<button class="' + linkClass + '"';
+                                content += ' data-toggle="modal"';
+                                content += ' data-target="#SrvMoveModal"';
+                                content += ' data-survey-id="' + row.surveyId + '"';
+                                content += ' type="button">';
+                                content += '<span class="glyphicon glyphicon-transfer"></span>';
+                                content += '</button>';
+                            }
+
+                            switch (row.status) {
+                                case 0://new
+                                    content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                    content += ' class="btn btn-default btn-sm">';
+                                    content += '<span class="glyphicon glyphicon-eye-open"></span>';
+                                    content += '</a>';
+                                    content += '<button class="' + linkClass + '"';
+                                    content += ' data-toggle="modal"';
+                                    content += ' data-target="#SrvCancelModal"';
+                                    content += ' data-survey-id="' + row.surveyId + '"';
+                                    content += ' type="button">';
+                                    content += '<span class="glyphicon glyphicon-ban-circle"></span>';
+                                    content += '</button>';
+
+                                    break;
+                                case 1://draft
+                                    content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                    content += ' class="' + linkClass + '" title="Edytuj ankietę">';
+                                    content += ' <span class="glyphicon glyphicon-eye-open"></span>';
+                                    content += '</a>';
+                                    content += '<button class="' + linkClass + '"';
+                                    content += ' data-toggle="modal"';
+                                    content += ' data-target="#SrvCancelModal"';
+                                    content += ' data-survey-id="' + row.surveyId + '"';
+                                    content += ' type="button"';
+                                    content += ' title="Anuluj ankietę">';
+                                    content += '<span class="glyphicon glyphicon-ban-circle"></span>';
+                                    content += '</button>';
+                                    content += '<button class="' + linkClass + '"';
+                                    content += ' data-toggle="modal"';
+                                    content += ' data-target="#SrvSubmitModal"';
+                                    content += ' data-survey-id="' + row.surveyId + '"';
+                                    content += ' type="button"';
+                                    content += ' title="Zakończ wprowadzanie ';
+                                    content += '(Wyślij do akceptacji)">';
+                                    content += '<span class="glyphicon glyphicon-send"></span>';
+                                    content += '</button>';
+
+                                    break;
+                                case 2://submitted
+                                    if (isAdmin)
+                                    {
+                                        content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                        content += ' class="' + linkClass + '">';
+                                        content += '<span class="glyphicon glyphicon-eye-open"></span>';
+                                        content += '</a>';
+                                        content += '<button class="' + linkClass + '"';
+                                        content += ' data-toggle="modal"';
+                                        content += ' data-target="#SrvCancelModal"';
+                                        content += ' data-survey-id="' + row.surveyId + '"';
+                                        content += ' type="button"';
+                                        content += ' title="Anuluj ankietę">';
+                                        content += '<span class="glyphicon glyphicon-ban-circle"></span>';
+                                        content += '</button>';
+
+                                        content += '<button class="' + linkClass + '"';
+                                        content += ' data-toggle="modal"';
+                                        content += ' data-target="#SrvApprovalModal"';
+                                        content += ' data-survey-id="' + row.surveyId + '"';
+                                        content += ' type="button"';
+                                        content += ' title="Zatwierdź ankietę">';
+                                        content += '<span class="glyphicon glyphicon-ok-circle"></span>';
+                                        content += '</button>';
+                                        content += '<button class="' + linkClass + '"';
+                                        content += ' data-toggle="modal"';
+                                        content += ' data-target="#SrvRejectModal"';
+                                        content += ' data-survey-id="' + row.surveyId + '"';
+                                        content += ' type="button"';
+                                        content += ' title="Odrzuć ankietę">';
+                                        content += '<span class="glyphicon glyphicon-remove-circle"></span>';
+                                        content += '</button>';
+                                    }
+
+                                    break;
+                                case 3://rejected
+                                    content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                    content += ' class="' + linkClass + '">';
+                                    content += '<span class="glyphicon glyphicon-eye-open"></span>';
+                                    content += '</a>';
+                                    if (isAdmin)
+                                    {
+                                        content += '<button class="' + linkClass + '"';
+                                        content += ' data-toggle="modal"';
+                                        content += ' data-target="#SrvCancelModal"';
+                                        content += ' data-survey-id="' + row.surveyId + '"';
+                                        content += ' type="button"';
+                                        content += ' title="Anuluj Ankietę">';
+                                        content += '<span class="glyphicon glyphicon-ban-circle"></span>';
+                                        content += '</button>';
+                                    }
+                                    break;
+                                case 4://approved
+                                    if (isAdmin)
+                                    {
+                                        content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                        content += ' class="' + linkClass + '" title="Edytuj ankietę">';
+                                        content += ' <span class="glyphicon glyphicon-eye-open"></span>';
+                                        content += '</a>';
+                                        content += '<button class="' + linkClass + '"';
+                                        content += ' data-toggle="modal"';
+                                        content += ' data-target="#SrvCancelModal"';
+                                        content += ' data-survey-id="' + row.surveyId + '"';
+                                        content += ' type="button"';
+                                        content += ' title="Anuluj Ankietę">';
+                                        content += '<span class="glyphicon glyphicon-ban-circle"></span>';
+                                        content += '</button>';
+                                    }
+                                    break;
+                                case 5://cancelled
+                                    if (isAdmin)
+                                    {
+                                        content += '<a asp-action="Maintain" asp-controller="Surveys" asp-route-id="' + row.surveyId + '"';
+                                        content += ' class="' + linkClass + '" title="Edytuj ankietę">';
+                                        content += '<span class="glyphicon glyphicon-eye-open"></span>';
+                                        content += '</a>';
+                                        content += '<button class="' + linkClass + '"';
+                                        content += ' data-toggle="modal"';
+                                        content += ' data-target="#SrvRevertModal"';
+                                        content += ' data-survey-id="' + row.surveyId + '"';
+                                        content += ' type="button"';
+                                        content += ' title="Przywróć ankietę">';
+                                        content += '<span class="glyphicon glyphicon-repeat"></span>';
+                                        content += '</button>';
+                                    }
+                                    break;
+                                }
+
+                            content += '</div>';
+
+                            return content;
+                        }
+                    }
+        ],
+
+        stateSave: true,
+        pagingType: "full",
+        language: WgLanguage,
+        lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],
+        order: [[0, "asc"], [1, 'asc'], [2, 'asc'], [3, 'asc'], [4, 'asc']],
+        processing: true,
+        dom: "<'row wg-dt-padding'<'col-sm-6'B><'col-sm-6'f>>" +
+             "<'row'<'col-sm-12'tr>>" +
+             "<'row wg-dt-padding'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
+        buttons: [
+            {
+                extend: 'colvis',
+                text: '<span class="text-primary glyphicon glyphicon-th-list" title="Pokaż / Ukryj kolumny"></span>',
+                className: 'btn-sm'
+            },
+            {
+                text: '<span class="text-primary glyphicon glyphicon-refresh" title="Odśwież zawartość"></span>',
+                className: 'btn-sm',
+                action: function (e, dt, node, config) {
+                    dt.ajax.reload();
+                    dt.columns.adjust().draw();
+                }
+            },
+
+        ],
+        //select: 'single',
+        //responsive: {
+        //    details: {
+        //    }
+        //},
+        fixedHeader: {
+            headerOffset: $('#NavBarMain').outerHeight()
+        },
+    });
+}
+///////////////////////////////////////////////////////////////////////////////
 // SURVEY Move MODAL CONTROLS
 //---------------------------------------------------------------------------//
 $('body').on('click', '.btn[data-target]', function (event) {
@@ -43,7 +486,7 @@ function onAjaxSurveyMoveCompleted(data, status) {
 //---------------------------------------------------------------------------//
 //
 function onAjaxSurveyMoveFailed(xhr, status, error) {
-    WgTools.alert(error,false,'E')
+    WgTools.alert(error, false, 'E');
 }
 //---------------------------------------------------------------------------//
 //

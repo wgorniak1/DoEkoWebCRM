@@ -1,0 +1,3 @@
+﻿SET IDENTITY_INSERT [dbo].[Project] ON
+INSERT INTO [dbo].[Project] ([ProjectId], [Description], [EndDate], [ParentProjectId], [RealEnd], [RealStart], [ShortDescription], [StartDate], [Status], [UEFundsLevel], [CompanyId], [GrossNetFundsType], [ClimateZone], [ChangedAt], [ChangedBy], [CreatedAt], [CreatedBy]) VALUES (0, N'Ustawienia domyślne', N'2100-01-01 00:00:00', NULL, N'2100-01-01 00:00:00', N'1900-01-01 00:00:00', N'Ustawienia Domyślne', N'1900-01-01 00:00:00', 4, 0, 3, 0, 3, N'1900-01-01 00:00:00', N'00000000-0000-0000-0000-000000000000', N'1900-01-01 00:00:00', N'00000000-0000-0000-0000-000000000000')
+SET IDENTITY_INSERT [dbo].[Project] OFF

@@ -130,14 +130,14 @@ namespace DoEko.Controllers
                 model.Company = model.Project.Company;
                 model.CompanyId = model.Project.CompanyId;
 
-                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription", model.Project);
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.ProjectId != 1 && p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription", model.Project);
                 ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", model.Company);
                 ViewData["ReturnUrl"] = ReturnUrl;
 
             }
             else
             {
-                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription");
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.ProjectId != 1 && p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription");
                 ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name");
                 ViewData["ReturnUrl"] = ReturnUrl;
             }
@@ -186,13 +186,13 @@ namespace DoEko.Controllers
                 contract.Company = contract.Project.Company;
                 contract.CompanyId = contract.Project.CompanyId;
 
-                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription", contract.Project);
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.ProjectId != 1 && p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription", contract.Project);
                 ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.Company);
                 ViewData["ReturnUrl"] = ReturnUrl;
             }
             else
             {
-                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription");
+                ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p => p.ProjectId != 1 && p.Status != ProjectStatus.Closed && p.Status != ProjectStatus.Completed), "ProjectId", "ShortDescription");
                 ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name");
             }
 
@@ -224,7 +224,7 @@ namespace DoEko.Controllers
                 return NotFound();
             }
             ViewData["ReturnUrl"] = ReturnUrl;
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", contract.ProjectId);
+            ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).ToList(), "ProjectId", "ShortDescription", contract.ProjectId);
             ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
 
             
@@ -276,7 +276,7 @@ namespace DoEko.Controllers
                 }
             }
             ViewData["ReturnUrl"] = ReturnUrl;
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "ShortDescription", contract.ProjectId);
+            ViewData["ProjectId"] = new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).ToList(), "ProjectId", "ShortDescription", contract.ProjectId);
             ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
 
             ViewData["StateId"] = AddressesController.GetStates(_context, contract.ClusterDetails.StateId);

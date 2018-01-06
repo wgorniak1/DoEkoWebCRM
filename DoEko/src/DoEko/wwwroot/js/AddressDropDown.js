@@ -82,10 +82,10 @@
             return function (error) {
                 var selectType = '';
                 switch (type) {
-                    case "state":    selectType = 'województw';
-                    case "district": selectType = 'powiatów';
-                    case "commune":  selectType = 'gmin';
-                    default:         selectType = '';
+                    case "state": selectType = 'województw'; break;
+                    case "district": selectType = 'powiatów'; break;
+                    case "commune": selectType = 'gmin'; break;
+                    default: selectType = ''; break;
                 }
                 var message = "Wystąpił problem podczas pobierania listy " + selectType;
                 alert(message);

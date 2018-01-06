@@ -12,9 +12,10 @@ using DoEko.Models.Payroll;
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20180102145131_RSEPrice")]
+    partial class RSEPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -562,17 +563,13 @@ namespace DoEko.Migrations.DoEko
 
                     b.Property<int>("RSEType");
 
-                    b.Property<int>("Unit");
-
-                    b.Property<double>("NumberMin");
-
-                    b.Property<double>("NumberMax");
-
-                    b.Property<bool>("Multiply");
+                    b.Property<double>("Number");
 
                     b.Property<decimal>("NetPrice");
 
-                    b.HasKey("ProjectId", "SurveyType", "RSEType", "Unit", "NumberMin", "NumberMax");
+                    b.Property<int>("Unit");
+
+                    b.HasKey("ProjectId", "SurveyType", "RSEType", "Number");
 
                     b.ToTable("RSEPriceRules");
                 });

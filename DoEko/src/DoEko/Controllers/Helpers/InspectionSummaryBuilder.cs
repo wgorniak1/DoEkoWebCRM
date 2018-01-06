@@ -20,11 +20,12 @@ namespace DoEko.Controllers.Helpers
 
         //public DoEkoContext _context;
         public IFileStorage _fileStorage;
-
+        private readonly DoEkoContext _context;
         public InspectionSummaryBuilder(DoEkoContext context, IFileStorage fileStorage)
         {
-            //this._context = context;
+            this._context = context;
             this._fileStorage = fileStorage;
+            
         }
         /// <summary>
         /// 
@@ -164,16 +165,18 @@ namespace DoEko.Controllers.Helpers
 
             try
             {
-                if (true)
-                {
+                RSEPriceHelper rsePrice = new RSEPriceHelper(this._context, inv.Survey);
 
-                }
-                //inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100 + inv.Survey.ResultCalculation.RSETax;
-                inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
-                    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
-                    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
+                inv.Survey.ResultCalculation.RSENetPrice = Decimal.ToDouble(rsePrice.Net);
+                inv.Survey.ResultCalculation.RSETax = Decimal.ToDouble(rsePrice.Tax);
+                inv.Survey.ResultCalculation.RSEGrossPrice = Decimal.ToDouble(rsePrice.Gross);
+                inv.Survey.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(rsePrice.OwnerContribution);
+                ////inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100 + inv.Survey.ResultCalculation.RSETax;
+                //inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
+                //    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
+                //    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
             }
-            catch (Exception)
+            catch (Exception exc)
             {
                 
             }

@@ -1992,7 +1992,7 @@ namespace DoEko.Controllers
                 return 1;
         }
 
-        public bool isSurveyType( int type, Guid surveyId)
+        public bool IsSurveyType( int type, Guid surveyId)
         {
             int RSEType;
             switch (_context.Surveys.Where(s => s.SurveyId == surveyId).Select(s=>s.Type).SingleOrDefault())

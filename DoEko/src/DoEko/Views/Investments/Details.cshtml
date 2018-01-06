@@ -374,14 +374,23 @@ dla zakończonej inwestycji lub inwestycji w akceptacji">
                 }
             </div>
         </div>
-        <div id="surveys" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-survey">
+        <div id="surveys" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-survey">
             <div class="panel-body">
-                @Html.Partial("_SurveyListPartial", Model.Surveys)
+                <table class="table table-striped dt-responsive dataTable nowrap no-footer dtr-inline collapsed"
+                       id="SurveyListTable"
+                       style="width:100%;"
+                       data-investmentid="@Model.InvestmentId" data-admin="@User.IsInRole(Roles.Admin).ToString()"></table>
+@*                @Html.Partial("_SurveyListPartial", Model.Surveys)*@
             </div>
         </div>
     </div>
 </div>
+
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
 @section scripts{
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     @{await Html.RenderPartialAsync("_InvestmentDetailsScriptsPartial");}
 }
