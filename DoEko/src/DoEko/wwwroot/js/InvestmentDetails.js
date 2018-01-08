@@ -432,7 +432,7 @@ function InitializeSurveyListTab(investmentId) {
 
         ],
         //select: 'single',
-        //responsive: {
+        responsive: true,
         //    details: {
         //    }
         //},

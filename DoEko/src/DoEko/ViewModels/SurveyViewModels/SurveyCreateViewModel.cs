@@ -21,9 +21,17 @@ namespace DoEko.ViewModels.SurveyViewModels
         public int RSEType {
             get
             {
-                return (int?)RSETypeEN ?? 
-                       (int?)RSETypeCH ?? 
-                       (int?)RSETypeHW ?? 0;
+                switch (this.SurveyType)
+                {
+                    case SurveyType.CentralHeating:
+                        return (int?)RSETypeCH ?? 0;
+                    case SurveyType.HotWater:
+                        return (int?)RSETypeHW ?? 0;
+                    case SurveyType.Energy:
+                        return (int?)RSETypeEN ?? 0;
+                    default:
+                        return 0;
+                }
             }
             private set { }
         }

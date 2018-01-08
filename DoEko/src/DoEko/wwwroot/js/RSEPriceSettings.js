@@ -79,6 +79,13 @@ $(document).ready(function () {
     InitializeTaxTab(projectId);
     InitializeNetTab(projectId);
 
+    $('#TabsContainer ul li a').click(function () {
+        var link = $(this).attr('href');
+        var id = $('table', $(link)).attr('id');
+        var table = $('#' + id).dataTable().api();
+        table.ajax.reload();
+        table.rows().cells().invalidate().render();
+    });
     //table.on('responsive-display', function (e, datatable, row, showHide, update) {
     //    $('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');  
     //});
@@ -342,7 +349,7 @@ function InitializeNetTab(projectId) {
                             switch (type) {
                                 case 'display':
                                     var content =
-                                        '<select class="form-control input-sm">' +
+                                        '<select class="form-control input-sm" name="unit" >' +
                                            '<option value="1" ' + ((data === 1) ? 'selected' : '') + '>Moc ostateczna</option>' +
                                            '<option value="2" ' + ((data === 2) ? 'selected' : '') + '>Liczba zestawów</option>' +
                                         '</select>';
@@ -361,7 +368,7 @@ function InitializeNetTab(projectId) {
                         render: function (data, type, row, meta) {
                             switch (type) {
                                 case 'display':
-                                    var content = '<input type="number" class="form-control input-sm wg-number-min" value="' + data + '" step="0.1" min="0.0" max="99999.9">';
+                                    var content = '<input type="number" name="numberMin" class="form-control input-sm" value="' + data + '" step="0.1" min="0.0" max="99999.9" disabled>';
                                     return WgNetTableEdit === true ? content : data;
                                 default:
                                     return data;
@@ -380,7 +387,7 @@ function InitializeNetTab(projectId) {
 
                             switch (type) {
                                 case 'display':
-                                    var content = '<input type="number" class="form-control input-sm wg-number-max" value="' + data + '" step="0.1" min="0.0" max="99999.9">';
+                                    var content = '<input type="number" name="numberMax" class="form-control input-sm" value="' + data + '" step="0.1" min="0.0" max="99999.9">';
                                     return WgNetTableEdit === true ? content : data;
                                 default:
                                     return data;
@@ -398,7 +405,7 @@ function InitializeNetTab(projectId) {
                                     var content;
                                     content = '<div class="input-group">'; 
                                     content += '<span class="input-group-addon">zł</span>';
-                                    content += '<input type="number" min="0" max="99999" step="0.01" class="form-control input-sm wg-amount currency" value="'+ data +'"/>';
+                                    content += '<input type="number" name="netPrice" min="0" max="99999" step="0.01" class="form-control input-sm" value="'+ data +'"/>';
                                     content += '</div>';
                                     return (WgNetTableEdit === true) ? content : data;
                                 default:
@@ -415,7 +422,7 @@ function InitializeNetTab(projectId) {
                             switch (type) {
                                 case 'display':
                                     var content;
-                                    content = '<input class="form-control input-sm checkbox"  data-toggle="toggle" data-on="Tak" data-off="Nie" type="checkbox"';
+                                    content = '<input name="multiply"  class="form-control input-sm checkbox"  data-toggle="toggle" data-on="Tak" data-off="Nie" type="checkbox"';
                                     content += (data === true) ? ' checked />' : '/>';
                                     return WgNetTableEdit === true ? content : data;
                                 default:
@@ -483,46 +490,39 @@ function InitializeNetTab(projectId) {
                             text: '<span class="text-primary glyphicon glyphicon glyphicon-resize-full"></span> Podziel',
                             titleAttr: 'Podziel przedział wartości',
                             className: 'btn',
-                            action: function () {
-                                var table = $("#TaxTable").dataTable().api();
+                            action: function (e, dt, node, config) {
+                                
 
-                                var currentRow = table.eq(0).row({ selected: true, page: 'current' });
+                                var curRow = dt.row({ selected: true, page: 'current' });
+                                var index = curRow.index();
+                                
 
-                                if (currentRow === undefined)
-                                    return;
+                                //calculate new value                        
+                                var curRowData = curRow.data();
+                                var numberDivisor = curRowData.numberMax - (curRowData.numberMax - curRowData.numberMin) / 2;
+                                
+                                // add new row
+                                var newRow = dt.row.add({
+                                    project: null,
+                                    projectId: curRowData.projectId,
+                                    surveyType: curRowData.surveyType,
+                                    rseType: curRowData.rseType,
+                                    unit: curRowData.unit,
+                                    numberMin: numberDivisor,
+                                    numberMax: curRowData.numberMax,
+                                    netPrice: curRowData.netPrice,
+                                    multiply: curRowData.multiply
+                                });
 
-                                var rowData = currentRow.data();
 
-                                //new Max for currentRow
-                                var newNumberMax = rowData.numberMax - (rowData.numberMax - rowData.numberMin) / 2;
+                                //update value in current row
+                                curRowData.numberMax = numberDivisor;
 
-
-                                //add new row
-                                var nodeNew = table.row
-                                    .add({
-                                        project: null,
-                                        projectId: rowData.projectId,
-                                        surveyType: rowData.surveyType,
-                                        rseType: rowData.rseType,
-                                        numberMin: newNumberMax,
-                                        numberMax: rowData.numberMax,
-                                        netPrice: rowData.netPrice,
-                                        multiply: rowData.multiply
-                                    })
-                                    .invalidate()
-                                    .draw()
-                                    .node();
-                                //update max in current row
-                                rowData.numberMax = newNumberMax;
-
-                                var nodeCurrent = currentRow
-                                    .invalidate()
-                                    .draw()
-                                    .node();
-
-                                //var nc = $(nodeCurrent);
-                                //var nn = $()
-
+                                //redraw table so that new DOM elements are present
+                                curRow.invalidate();
+                                newRow.invalidate();
+                                curRow.draw();
+                                newRow.draw();
                             }
                         }
         ],
@@ -532,8 +532,39 @@ function InitializeNetTab(projectId) {
             headerOffset: $('#NavBarMain').outerHeight()
         },
         drawCallback: function (settings) {
+            var table = $("#NetTable").dataTable().api();
+
             $('input[data-toggle="toggle"]').bootstrapToggle();
+
         }
     });
+
+    $('#NetTable tbody')
+        .on('change', 'input[name="numberMax"]', function () {
+            var table = $('#NetTable').dataTable().api();
+
+            var curRow = table.row($(this).parent('td').parent('tr'));
+            var curRowData = curRow.data();
+            var index = curRow.index();
+
+            var nextRow = table.row(index + 1);
+            nextRow.data().numberMin = $(this).val();
+            nextRow.invalidate();
+            nextRow.draw();
+            //var rows = table.rows().data().filter(function (data, index) {
+            //    if (data.surveyType == curRowData.surveyType &&
+            //        data.rseType == curRowData.rseType &&
+            //        data.numberMax > curRowData.numberMax)
+            //        return true;
+            //    else
+            //        return false;
+            //});
+
+            //if (rows.length > 0)
+            //    rows[0].numberMin = $(this).val();
+
+            //$('input', table.cell(newRow.index(),'numberMin:name').node()).val($(this).val());
+        });
+
 
 }
