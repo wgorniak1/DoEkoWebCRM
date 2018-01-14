@@ -107,7 +107,7 @@ namespace DoEko.Controllers
                .Concat(new OpenXmlPart[] { doc.MainDocumentPart })
                .SelectMany(x => x.RootElement.Descendants<SimpleField>().Select(sf => new { text = sf.Instruction.Value, el = (OpenXmlElement)sf })
                                .Concat(x.RootElement.Descendants<FieldCode>().Select(fc => new { text = fc.Text, el = (OpenXmlElement)fc })))
-               .Select(a => new { words = a.text.Split(splitter, StringSplitOptions.RemoveEmptyEntries), el = a.el })
+               .Select(a => new { words = a.text.Split(splitter, StringSplitOptions.RemoveEmptyEntries),  a.el })
                .Where(a => tmergefield.Equals(a.words.FirstOrDefault(), StringComparison.OrdinalIgnoreCase))
                .ToLookup(k => string.Join(" ", k.words.Skip(1).TakeWhile(i => i != "\\*")), v => v.el);
 
@@ -1000,7 +1000,7 @@ namespace DoEko.Controllers
         [HttpPost]
         public IActionResult Test(TestViewModel model)
         {
-            return Ok(new { checkbox = model.checkbox, stringchk = model.checkbox.ToString() });
+            return Ok(new {  model.checkbox, stringchk = model.checkbox.ToString() });
         }
 
         public IActionResult TestDouble()

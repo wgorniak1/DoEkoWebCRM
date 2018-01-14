@@ -176,7 +176,9 @@ namespace DoEko.Controllers.Helpers
                 //    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
                 //    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception exc)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
                 
             }

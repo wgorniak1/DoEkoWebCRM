@@ -178,10 +178,10 @@ namespace DoEko.Controllers
                     case SurveyFormStep.SurveyRoofPlane:
                         //take first roofplane or pass null
                         var roofPlaneId = (Srv.RoofPlanes != null && Srv.RoofPlanes.Count > 0) ? Srv.RoofPlanes.First().RoofPlaneId : Guid.Empty;
-                        ViewComponentAttributes = new { surveyId = surveyId, roofPlaneId = roofPlaneId };
+                        ViewComponentAttributes = new {  surveyId,  roofPlaneId };
                         break;
                     default:
-                        ViewComponentAttributes = new { surveyId = surveyId };
+                        ViewComponentAttributes = new {  surveyId };
                         break;
                 }
 
@@ -317,18 +317,18 @@ namespace DoEko.Controllers
                     ViewComponentAttributes = new { investmentId = Srv.InvestmentId, ownerId = Srv.Investment.InvestmentOwners.ElementAt(NextStepNo - 1).OwnerId };
                     break;
                 case SurveyFormStep.SurveyRoofPlane:
-                    Guid roofId;
+                    Guid roofPlaneId;
                     if (Srv.RoofPlanes.Count != 0)
                     {
-                        roofId = Srv.RoofPlanes.ElementAt(NextStepNo - 1).RoofPlaneId;
+                        roofPlaneId = Srv.RoofPlanes.ElementAt(NextStepNo - 1).RoofPlaneId;
                     }
                     else
-                        roofId = Guid.Empty;
+                        roofPlaneId = Guid.Empty;
 
-                    ViewComponentAttributes = new { surveyId = surveyId, roofPlaneId = roofId };
+                    ViewComponentAttributes = new { surveyId,  roofPlaneId };
                     break;
                 default:
-                    ViewComponentAttributes = new { surveyId = surveyId };
+                    ViewComponentAttributes = new { surveyId };
                     break;
             }
             //4. Return viewcomponent
@@ -464,18 +464,18 @@ namespace DoEko.Controllers
                     ViewComponentAttributes = new { investmentId = Srv.InvestmentId, ownerId = Srv.Investment.InvestmentOwners.ElementAt(PreviousStepNo - 1).OwnerId };
                     break;
                 case SurveyFormStep.SurveyRoofPlane:
-                    Guid roofId;
+                    Guid roofPlaneId;
                     if (Srv.RoofPlanes.Count != 0)
                     {
-                        roofId = Srv.RoofPlanes.ElementAt(PreviousStepNo - 1).RoofPlaneId;
+                        roofPlaneId = Srv.RoofPlanes.ElementAt(PreviousStepNo - 1).RoofPlaneId;
                     }
                     else
-                        roofId = Guid.Empty;
+                        roofPlaneId = Guid.Empty;
 
-                    ViewComponentAttributes = new { surveyId = surveyId, roofPlaneId = roofId };
+                    ViewComponentAttributes = new { surveyId,  roofPlaneId };
                     break;
                 default:
-                    ViewComponentAttributes = new { surveyId = surveyId };
+                    ViewComponentAttributes = new {  surveyId };
                     break;
             }
             //4. Return viewcomponent
@@ -781,7 +781,7 @@ namespace DoEko.Controllers
         [HttpGet]
         public IActionResult CreateRoofPLaneAjax(Guid surveyId)
         {
-            return ViewComponent("SurveyRoofPlane", new { surveyId = surveyId, viewMode = SurveyViewMode.Maintain });
+            return ViewComponent("SurveyRoofPlane", new {  surveyId, viewMode = SurveyViewMode.Maintain });
         }
         [HttpPost]
         public async Task<IActionResult> CreateRoofPlaneAjax(SurveyRoofPlaneViewModel model)

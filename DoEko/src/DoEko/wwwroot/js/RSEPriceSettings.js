@@ -1,5 +1,34 @@
 ﻿'use strict';
 
+//plugin to add options to select
+(function( $ ) {
+
+    $.fn.addOptions = function(array, selected) {
+        
+        if (!array || Object.values(array[ 0 ]).length < 2) {
+            return this;
+        } else {
+
+            return this.filter("select").each(function () {
+                var select = this;
+                $(array).each(function () {
+                    var oPropValues = Object.values(this);
+                    $('<option/>', oPropValues[0] === selected ? { value: oPropValues[0], selected: true } : { value: oPropValues[0] })
+                        .text(oPropValues[ 1 ])
+                        .appendTo(select);
+                });
+            });
+        }
+ 
+    };
+ 
+}( jQuery ));
+
+class mySelect {
+
+}
+
+
 class WgRSEEnum {
 
     constructor() {
@@ -11,7 +40,7 @@ class WgRSEEnum {
         if (rseType === undefined)
             return this.surveyType[type];
         else if (single)
-            return this.rseType[type][rseType]
+            return this.rseType[type][rseType];
         else
             return this.rseType[type][rseType] + ' (' + this.surveyType[type] + ')';
     }
@@ -42,7 +71,7 @@ class WgRSEEnum {
 }
 class WgLocEnum{
     constructor() {
-        this._array = ["Dach","Grunt","Elewacja"]
+        this._array = ["Dach","Grunt","Elewacja"];
     }
     getText(value) {
         return this._array[value];
@@ -56,7 +85,7 @@ class WgLocEnum{
 }
 class WgBdgEnum{
     constructor() {
-        this._array = ["Gospodarczy", "Mieszkalny"]
+        this._array = ["Gospodarczy", "Mieszkalny"];
     }
     getText(value) {
         return this._array[value];
@@ -83,8 +112,11 @@ $(document).ready(function () {
         var link = $(this).attr('href');
         var id = $('table', $(link)).attr('id');
         var table = $('#' + id).dataTable().api();
-        table.ajax.reload();
-        table.rows().cells().invalidate().render();
+        
+        new $.fn.dataTable.FixedHeader(table, {
+            headerOffset: $('#NavBarMain').outerHeight()
+        });
+
     });
     //table.on('responsive-display', function (e, datatable, row, showHide, update) {
     //    $('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');  
@@ -150,7 +182,7 @@ function InitializeTaxTab(projectId) {
                         title: "Powierzchnia Do",
                         type: "html-num",
                         render: function (data, type, row, meta) {
-                            var maxValue = (data === Number.MAX_VALUE) ? '99999.99' : data;
+                            var maxValue = data === Number.MAX_VALUE ? '99999.99' : data;
 
                             switch (type) {
                                 case 'display':
@@ -167,20 +199,17 @@ function InitializeTaxTab(projectId) {
                         title: "VAT",
                         type: "html-num-fmt",
                         render: function (data, type, row, meta) {
-                            var value = data + " %";
 
                             switch (type) {
                                 case 'display':
-                                    var content =
-                                        '<select class="form-control input-sm">' +
-                                           '<option value="0" ' + ((data === 0) ? 'selected' : '') + '>0 %</option>' +
-                                           '<option value="5" ' + ((data === 5) ? 'selected' : '') + '>5 %</option>' +
-                                           '<option value="8" ' + ((data === 8) ? 'selected' : '') + '>8 %</option>' +
-                                           '<option value="23" ' + ((data === 23) ? 'selected' : '') + '>23 %</option>' +
-                                        '</select>';
-                                    return WgTaxTableEdit === true ? content : value;
+
+                                    var opt = [{ val: "0", text: "0 %" }, { val: "5", text: "5 %" }, { val: "8", text: "8 %" }, { val: "23", text: "23 %" }];
+                                    return $('<select>', { name: "vat", class: "form-control input-sm", disabled: !WgTaxTableEdit })
+                                        .addOptions(opt, data)
+                                        .prop('outerHTML');
+
                                 default:
-                                    return value;
+                                    return data;
                             }
 
                         }
@@ -314,7 +343,7 @@ function InitializeTaxTab(projectId) {
         responsive: true,
         fixedHeader: {
             headerOffset: $('#NavBarMain').outerHeight()
-        },
+        }
     });
 
     $('body').on('change', 'input.wg-area-max', function () {
@@ -348,12 +377,16 @@ function InitializeNetTab(projectId) {
                         render: function (data, type, row, meta) {
                             switch (type) {
                                 case 'display':
-                                    var content =
-                                        '<select class="form-control input-sm" name="unit" >' +
-                                           '<option value="1" ' + ((data === 1) ? 'selected' : '') + '>Moc ostateczna</option>' +
-                                           '<option value="2" ' + ((data === 2) ? 'selected' : '') + '>Liczba zestawów</option>' +
-                                        '</select>';
-                                    return WgNetTableEdit === true ? content : data;
+
+                                    var opt = [{ val: "1", text: "Moc ostateczna" }, { val: "2", text: "Liczba zestawów" }];
+
+                                    var a = $('<select />', { name: 'unit', class: 'form-control input-sm unit', disabled: !WgNetTableEdit })
+                                            .addOptions(opt, data + '')
+                                            .addClass(WgNetTableEdit === true ? '' : 'disabled');
+
+                                    return a.prop('outerHTML');
+
+
                                 default:
                                     return data;
                             }
@@ -383,11 +416,12 @@ function InitializeNetTab(projectId) {
                         type: "html-num",
                         render: function (data, type, row, meta) {
                             if (data === Number.MAX_VALUE)
-                                data = '999999.99';
+                                data = '99999.99';
 
                             switch (type) {
                                 case 'display':
-                                    var content = '<input type="number" name="numberMax" class="form-control input-sm" value="' + data + '" step="0.1" min="0.0" max="99999.9">';
+                                    var step = row.unit === 1 ? 0.1 : 1;
+                                    var content = '<input type="number" style="width: 100%; min-width: 30px; max-width: 100px;" name="numberMax" class="form-control input-sm number-max" value="' + data + '" step="' + step + '" min="0.0" max="99999.9">';
                                     return WgNetTableEdit === true ? content : data;
                                 default:
                                     return data;
@@ -403,11 +437,11 @@ function InitializeNetTab(projectId) {
                             switch (type) {
                                 case 'display':
                                     var content;
-                                    content = '<div class="input-group">'; 
-                                    content += '<span class="input-group-addon">zł</span>';
-                                    content += '<input type="number" name="netPrice" min="0" max="99999" step="0.01" class="form-control input-sm" value="'+ data +'"/>';
-                                    content += '</div>';
-                                    return (WgNetTableEdit === true) ? content : data;
+                                   // content = '<div class="input-group">'; 
+                                   // content += '<span class="input-group-addon">zł</span>';
+                                    content = '<input type="number" name="netPrice" min="0" max="99999" step="1" class="form-control input-sm" value="'+ data +'"/>';
+                                   // content += '</div>';
+                                    return WgNetTableEdit === true ? content : data;
                                 default:
                                     return data;
                             }
@@ -423,7 +457,7 @@ function InitializeNetTab(projectId) {
                                 case 'display':
                                     var content;
                                     content = '<input name="multiply"  class="form-control input-sm checkbox"  data-toggle="toggle" data-on="Tak" data-off="Nie" type="checkbox"';
-                                    content += (data === true) ? ' checked />' : '/>';
+                                    content += data === true ? ' checked />' : '/>';
                                     return WgNetTableEdit === true ? content : data;
                                 default:
                                     return data;
@@ -431,18 +465,24 @@ function InitializeNetTab(projectId) {
                         }
 
 
-                    },
+                    }
         ],
         stateSave: true,
         pagingType: "full",
         language: WgLanguage,
         lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],
-        order: [[0, "asc"], [1, "asc"], [2, "asc"], [3, "asc"]],
+        order: [[0, "asc"], [1, "asc"], [2, "asc"], [3, "asc"], [4, "asc"], [5, "asc"] ],
         processing: true,
         dom: "<'row wg-dt-padding'<'col-sm-6'B><'col-sm-6'f>>" +
              "<'row'<'col-sm-12'tr>>" +
              "<'row wg-dt-padding'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
         buttons: [
+                        {
+                            text: 'draw',
+                            action: function (e, dt, node, config) {
+                                dt.draw();
+                            }
+                        },
                         {
                             text: '<span class="text-primary glyphicon glyphicon glyphicon-retweet"></span> Przywróć',
                             titleAttr: 'Przywróć ustawienia domyślne',
@@ -519,12 +559,43 @@ function InitializeNetTab(projectId) {
                                 curRowData.numberMax = numberDivisor;
 
                                 //redraw table so that new DOM elements are present
-                                curRow.invalidate();
                                 newRow.invalidate();
-                                curRow.draw();
-                                newRow.draw();
+                                curRow.invalidate().draw();
+                            }
+                        },
+                        {
+                            text: '<span class="text-primary glyphicon glyphicon glyphicon-resize-small"></span> Usuń',
+                            titleAttr: 'Usuń przedział wartości',
+                            className: 'btn',
+                            action: function (e, dt, node, config) {
+
+                                var curRow = dt.row({ selected: true, page: 'current' });
+                                if  (curRow === undefined){
+                                    return;
+                                }
+                                var curRowData = curRow.data();
+                                //                                
+                                if (curRowData.numberMin === 0)
+                                    return;
+                                
+                                var prevRows = dt.rows(function (index, data, node) {
+                                    if (data.surveyType === curRowData.surveyType &&
+                                        data.rseType === curRowData.rseType &&
+                                        data.numberMax < curRowData.numberMax)
+                                        return true;
+                                    else
+                                        return false;
+                                });
+                                if (prevRows.length > 0) {
+                                    prevRows.data()[prevRows.count() - 1].numberMax = curRowData.numberMax;
+                                    prevRows.invalidate();
+                                }
+
+                                curRow.remove().draw();
+
                             }
                         }
+
         ],
         select: 'single',
         responsive:  true,
@@ -532,39 +603,132 @@ function InitializeNetTab(projectId) {
             headerOffset: $('#NavBarMain').outerHeight()
         },
         drawCallback: function (settings) {
+            var tableBody = $("#NetTable tbody");
             var table = $("#NetTable").dataTable().api();
 
-            $('input[data-toggle="toggle"]').bootstrapToggle();
+            //activate toggles
+            $('input[data-toggle="toggle"]',tableBody).bootstrapToggle();
+            
+
+            for (var i = 0; i < table.rows().count(); i++) {
+                var curRow = table.row(i);
+                var curRowData = curRow.data();
+
+                var nextRowData = table.row(function (index, data, node) {
+                    if (data.surveyType === curRowData.surveyType &&
+                        data.rseType === curRowData.rseType &&
+                        data.numberMax > curRowData.numberMax)
+                        return true;
+                    else
+                        return false;
+                }).data();
+                if (nextRowData !== undefined) {
+                    var maxValue = nextRowData.numberMax >= Number.MAX_VALUE ? 99999.98 : Number.parseFloat(nextRowData.numberMax) - 0.1;
+                    $('input[name="numberMax"]', $(curRow.node())).attr('max', maxValue);
+                }
+
+                var prevRowData = table.rows(function (index, data, node) {
+                    if (data.surveyType === curRowData.surveyType &&
+                        data.rseType === curRowData.rseType &&
+                        data.numberMax < curRowData.numberMax)
+                        return true;
+                    else
+                        return false;
+                }).data();
+                if (prevRowData.length > 0) {
+                    $('input[name="numberMax"]', $(curRow.node())).attr('min', Number.parseFloat(prevRowData[prevRowData.length - 1].numberMax) + 0.1);
+                }
+            }
 
         }
     });
 
-    $('#NetTable tbody')
-        .on('change', 'input[name="numberMax"]', function () {
-            var table = $('#NetTable').dataTable().api();
+    //
+    // one unit type for each RSE type
+    //
+    $('#NetTable tbody').on('change', '.unit', table, function (event) {
+        var dt = event.data;
+        var value = $(this).val();
+        var thisRowData = dt.row($(this).parent()).data();
 
-            var curRow = table.row($(this).parent('td').parent('tr'));
-            var curRowData = curRow.data();
-            var index = curRow.index();
+        dt
+            .rows(function (index, data, node) {
+                return data.surveyType === thisRowData.surveyType &&
+                        data.rseType === thisRowData.rseType ? true : false;
+            })
+            .every(function (index, tableLoop, rowLoop) {
+                this.data().unit = parseInt(value);
+                this.invalidate();
+            })
+            .draw();
 
-            var nextRow = table.row(index + 1);
-            nextRow.data().numberMin = $(this).val();
-            nextRow.invalidate();
-            nextRow.draw();
-            //var rows = table.rows().data().filter(function (data, index) {
-            //    if (data.surveyType == curRowData.surveyType &&
-            //        data.rseType == curRowData.rseType &&
-            //        data.numberMax > curRowData.numberMax)
-            //        return true;
-            //    else
-            //        return false;
-            //});
+        dt.draw();
+        
+        //everything has been done 
+        event.stopPropagation();
+    });
 
-            //if (rows.length > 0)
-            //    rows[0].numberMin = $(this).val();
+    //
+    // 
+    //
+    class inputNumber {
+        constructor(node) {
+            this.value = parseFloat(node.val());
+            this.max = parseFloat(node.attr('max'));
+            this.min = parseFloat(node.attr('min'));
+        }
 
-            //$('input', table.cell(newRow.index(),'numberMin:name').node()).val($(this).val());
+        isValid() {
+            return this.value <= this.max && this.value >= this.min ? true : false;
+        }
+        get value() {
+            return this.value >= this.max ? this.max : this.value <= this.min ? this.min : this.value;
+        }
+    }
+
+    $('#NetTable tbody').on('change', '.number-max',table,function (event) {
+                        
+        var n = $(this);
+        var newValue = parseFloat(n.val());
+        var allowedRange = { min: parseFloat(n.attr('min')), max: parseFloat(n.attr('max')) };
+
+        if (newValue < allowedRange.min) {
+            n.val(allowedRange.min);
+        }
+        else if (newValue > allowedRange.max) {
+            n.val(allowedRange.max);
+        }
+
+        var curRow = event.data.row($(this).parent());
+        var curRowData = curRow.data();
+
+        if (curRowData.numberMax === newValue)
+            return;
+
+        var nextRow = event.data.row(function (index,data, node) {
+            if (data.surveyType === curRowData.surveyType &&
+                data.rseType === curRowData.rseType &&
+                data.numberMax > curRowData.numberMax)
+                return true;
+            else
+                return false;
         });
 
+        curRowData.numberMax = newValue;
 
+        if (nextRow.length > 0) {
+            nextRow.data().numberMin = newValue;
+            nextRow.invalidate();
+            nextRow.draw(false);
+        }
+
+
+        event.stopPropagation();
+    });
+
+    $('#NetTable tbody').on('click', 'input, select, label',table,function (event) {
+        //when clicking on input or select or label (toggle checkbox)
+        //don't select the row
+        event.stopPropagation();
+    });
 }

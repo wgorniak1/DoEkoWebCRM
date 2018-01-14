@@ -318,6 +318,7 @@ $(document).ready(function () {
         fixedHeader: {
             headerOffset: $('#NavBarMain').outerHeight()
         },
+        deferRenderer: true,
         drawCallback: function (settings, json) {
             
 

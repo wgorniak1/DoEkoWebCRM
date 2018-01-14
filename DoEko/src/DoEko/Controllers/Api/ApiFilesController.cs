@@ -27,7 +27,7 @@ namespace DoEko.Controllers.Api
     public class ApiFilesController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        //private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
         private readonly IFileStorage _fileStorage;
 
