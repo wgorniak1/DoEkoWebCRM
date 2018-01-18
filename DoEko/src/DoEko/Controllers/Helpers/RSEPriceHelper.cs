@@ -20,17 +20,19 @@ namespace DoEko.Controllers.Helpers
 
         protected RSEPriceRuleUnit _unit;
 
-        public RSEPriceHelper(DoEkoContext context, Survey survey)
+        public RSEPriceHelper(DoEkoContext context, Survey survey, bool forceLoad = true)
         {
             _context = context;
             //_logger = loggerFactory.CreateLogger("RSEPRICE");
 
             _survey = survey;
-            _context.Entry(_survey).Reference(s => s.Investment).Load();
-            _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
-            _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
-            _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
-
+            if (forceLoad)
+            {
+                _context.Entry(_survey).Reference(s => s.Investment).Load();
+                _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
+                _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
+                _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+            }
             _taxRules = RSEPriceTaxRuleHelper.GetTaxRules(_context, survey.Investment.Contract.ProjectId);
             _priceRules = RSEPriceRuleHelper.GetPriceRules(_context, survey.Investment.Contract.ProjectId);
 
@@ -38,6 +40,7 @@ namespace DoEko.Controllers.Helpers
                                            r.RSEType == _survey.GetRSEType()).Unit;
 
         }
+
 
         #region Properties
         public virtual decimal Net
