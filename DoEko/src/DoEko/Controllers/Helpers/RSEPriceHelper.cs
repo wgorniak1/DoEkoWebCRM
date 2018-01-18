@@ -12,33 +12,50 @@ namespace DoEko.Controllers.Helpers
 {
     public class RSEPriceHelper
     {
-        protected readonly DoEkoContext _context;
-        protected readonly Survey _survey;
-        protected readonly ICollection<RSEPriceTaxRule> _taxRules;
-        protected ICollection<RSEPriceRule> _priceRules;
-        //protected readonly ILogger _logger;
+        private readonly DoEkoContext _context;
+        private readonly bool _forceLoad;
+        private Survey _survey;
+        private static ICollection<RSEPriceTaxRule> _taxRules;
+        private static ICollection<RSEPriceRule> _priceRules;
+        private static RSEPriceRuleUnit _unit;
 
-        protected RSEPriceRuleUnit _unit;
+        public Survey Survey
+        {
+            get { return _survey; }
+            set
+            {
+                if (_survey == value)
+                {
+                    return;
+                }
 
-        public RSEPriceHelper(DoEkoContext context, Survey survey, bool forceLoad = true)
+                _survey = value;
+
+                if (_forceLoad)
+                {
+                    _context.Entry(_survey).Reference(s => s.Investment).Load();
+                    _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
+                    _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
+                    _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+                }
+
+
+                if (_survey.Investment.Contract.ProjectId != value.Investment.Contract.ProjectId)
+                {
+                    _taxRules = RSEPriceTaxRuleHelper.GetTaxRules(_context, _survey.Investment.Contract.ProjectId);
+                    _priceRules = RSEPriceRuleHelper.GetPriceRules(_context, _survey.Investment.Contract.ProjectId);
+
+
+                }
+
+                _unit = _priceRules.First(r => r.SurveyType == _survey.Type &&
+                                               r.RSEType == _survey.GetRSEType()).Unit;
+            }
+        }
+        public RSEPriceHelper(DoEkoContext context, bool forceLoad = true)
         {
             _context = context;
-            //_logger = loggerFactory.CreateLogger("RSEPRICE");
-
-            _survey = survey;
-            if (forceLoad)
-            {
-                _context.Entry(_survey).Reference(s => s.Investment).Load();
-                _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
-                _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
-                _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
-            }
-            _taxRules = RSEPriceTaxRuleHelper.GetTaxRules(_context, survey.Investment.Contract.ProjectId);
-            _priceRules = RSEPriceRuleHelper.GetPriceRules(_context, survey.Investment.Contract.ProjectId);
-
-            _unit = _priceRules.First(r => r.SurveyType == _survey.Type &&
-                                           r.RSEType == _survey.GetRSEType()).Unit;
-
+            _forceLoad = forceLoad;
         }
 
 

@@ -59,7 +59,9 @@ namespace DoEko.Controllers.Api
                     s.PlannedInstall = new SurveyDetPlannedInstall();
                 }
 
-                RSEPriceHelper r = new RSEPriceHelper(_context, s);
+                RSEPriceHelper r = new RSEPriceHelper(_context);
+
+                r.Survey = s;
 
                 s.ResultCalculation.RSENetPrice = Convert.ToDouble(r.Net);
                 s.ResultCalculation.RSETax = Convert.ToDouble(r.Tax);

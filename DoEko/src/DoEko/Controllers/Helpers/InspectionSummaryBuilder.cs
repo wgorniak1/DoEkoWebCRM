@@ -165,7 +165,9 @@ namespace DoEko.Controllers.Helpers
 
             try
             {
-                RSEPriceHelper rsePrice = new RSEPriceHelper(this._context, inv.Survey, false);
+                //this part is run in parallel, so loading data 
+                RSEPriceHelper rsePrice = new RSEPriceHelper(this._context, false);
+                rsePrice.Survey = inv.Survey;
 
                 inv.Survey.ResultCalculation.RSENetPrice = Decimal.ToDouble(rsePrice.Net);
                 inv.Survey.ResultCalculation.RSETax = Decimal.ToDouble(rsePrice.Tax);
