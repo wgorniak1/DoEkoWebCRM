@@ -351,7 +351,7 @@ namespace DoEko.Controllers
 
                 string resultsFolder = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var im = new InvestmentViewModel(inv);
-                im.SetRSEPrice(_context);
+                //im.SetRSEPrice(_context);
 
                 await docBuilder.BuildAsync(im,resultsFolder);
                 //return single doc
@@ -437,7 +437,7 @@ namespace DoEko.Controllers
 
                 var im = new InvestmentViewModel(inv);
                 //required to calculate prices
-                im.SetRSEPrice(_context);
+                //im.SetRSEPrice(_context);
 
                 docList.Add(docBuilder.BuildAsync(im, resultsFolder));
             }

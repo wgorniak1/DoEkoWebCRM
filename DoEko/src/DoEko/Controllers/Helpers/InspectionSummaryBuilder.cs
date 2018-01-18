@@ -48,6 +48,7 @@ namespace DoEko.Controllers.Helpers
         {
             //1. Initialize:
             inv.ReadPictures(_fileStorage);
+            inv.SetRSEPrice(_context);
             try
             {
                 foreach (var s in inv.Surveys)
