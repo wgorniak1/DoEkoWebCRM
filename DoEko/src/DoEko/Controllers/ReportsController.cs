@@ -350,8 +350,10 @@ namespace DoEko.Controllers
                 InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);
 
                 string resultsFolder = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var im = new InvestmentViewModel(inv);
+                im.SetRSEPrice(_context);
 
-                await docBuilder.BuildAsync(new InvestmentViewModel(inv),resultsFolder);
+                await docBuilder.BuildAsync(im,resultsFolder);
                 //return single doc
                 //return PhysicalFile(docUrl,"");
                 var doc = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary/" + resultsFolder).ListBlobs(true).OfType<CloudBlockBlob>().First();
@@ -433,7 +435,11 @@ namespace DoEko.Controllers
                     .Include(i => i.Contract).ThenInclude(c => c.Project)
                     .Single(i => i.InvestmentId == invId);
 
-                docList.Add(docBuilder.BuildAsync(new InvestmentViewModel(inv), resultsFolder));
+                var im = new InvestmentViewModel(inv);
+                //required to calculate prices
+                im.SetRSEPrice(_context);
+
+                docList.Add(docBuilder.BuildAsync(im, resultsFolder));
             }
 
             Task.WaitAll(docList.ToArray());

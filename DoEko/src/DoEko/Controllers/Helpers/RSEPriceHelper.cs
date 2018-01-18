@@ -24,38 +24,50 @@ namespace DoEko.Controllers.Helpers
             get { return _survey; }
             set
             {
-                if (_survey == value)
+
+                if (_survey is null)
+                {
+                    _survey = value;
+                    refresh();
+                }
+                else if (_survey != value)
+                {
+                    int projectId = _survey.Investment.Contract.ProjectId;
+
+                    _survey = value;
+                    refresh();
+                }
+                else
                 {
                     return;
                 }
-
-                _survey = value;
-
-                if (_forceLoad)
-                {
-                    _context.Entry(_survey).Reference(s => s.Investment).Load();
-                    _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
-                    _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
-                    _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
-                }
-
-
-                if (_survey.Investment.Contract.ProjectId != value.Investment.Contract.ProjectId)
-                {
-                    _taxRules = RSEPriceTaxRuleHelper.GetTaxRules(_context, _survey.Investment.Contract.ProjectId);
-                    _priceRules = RSEPriceRuleHelper.GetPriceRules(_context, _survey.Investment.Contract.ProjectId);
-
-
-                }
-
-                _unit = _priceRules.First(r => r.SurveyType == _survey.Type &&
-                                               r.RSEType == _survey.GetRSEType()).Unit;
+                
             }
         }
-        public RSEPriceHelper(DoEkoContext context, bool forceLoad = true)
+
+        private void refresh()
+        {
+            if (_forceLoad)
+            {
+                _context.Entry(_survey).Reference(s => s.Investment).Load();
+                _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
+                _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
+                _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+            }
+
+            _unit = _priceRules.First(r => r.SurveyType == _survey.Type &&
+                                           r.RSEType == _survey.GetRSEType()).Unit;
+
+        }
+
+        public RSEPriceHelper(DoEkoContext context, bool forceLoad = true, int projectId = 1)
         {
             _context = context;
             _forceLoad = forceLoad;
+
+            _taxRules = RSEPriceTaxRuleHelper.GetTaxRules(_context, projectId);
+            _priceRules = RSEPriceRuleHelper.GetPriceRules(_context, projectId);
+
         }
 
 

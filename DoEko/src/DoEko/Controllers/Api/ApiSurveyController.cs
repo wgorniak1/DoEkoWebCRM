@@ -59,7 +59,7 @@ namespace DoEko.Controllers.Api
                     s.PlannedInstall = new SurveyDetPlannedInstall();
                 }
 
-                RSEPriceHelper r = new RSEPriceHelper(_context);
+                RSEPriceHelper r = new RSEPriceHelper(_context, true,s.Investment.Contract.ProjectId);
 
                 r.Survey = s;
 

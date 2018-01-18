@@ -48,6 +48,27 @@ namespace DoEko.Controllers.Helpers
         {
             //1. Initialize:
             inv.ReadPictures(_fileStorage);
+            try
+            {
+                foreach (var s in inv.Surveys)
+                {
+                    inv.Survey = s;
+                    s.ResultCalculation.RSENetPrice = Decimal.ToDouble(inv.RSEPrice.Net);
+                    s.ResultCalculation.RSETax = Decimal.ToDouble(inv.RSEPrice.Tax);
+                    s.ResultCalculation.RSEGrossPrice = Decimal.ToDouble(inv.RSEPrice.Gross);
+                    s.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(inv.RSEPrice.OwnerContribution);
+                }
+                //this part is run in parallel, so loading data 
+
+            }
+#pragma warning disable CS0168 // Variable is declared but never used
+            catch (Exception exc)
+#pragma warning restore CS0168 // Variable is declared but never used
+            {
+
+            }
+
+
 
             //1. Title section is always populated
             Stream MainStream = this.GetTemplate(ReportName, OfficeTemplateType.Title);
@@ -162,28 +183,6 @@ namespace DoEko.Controllers.Helpers
                 //NOT FOUND
                 return Stream.Null;
             }
-
-            try
-            {
-                //this part is run in parallel, so loading data 
-                RSEPriceHelper rsePrice = new RSEPriceHelper(this._context, false);
-                rsePrice.Survey = inv.Survey;
-
-                inv.Survey.ResultCalculation.RSENetPrice = Decimal.ToDouble(rsePrice.Net);
-                inv.Survey.ResultCalculation.RSETax = Decimal.ToDouble(rsePrice.Tax);
-                inv.Survey.ResultCalculation.RSEGrossPrice = Decimal.ToDouble(rsePrice.Gross);
-                inv.Survey.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(rsePrice.OwnerContribution);
-                //inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
-                //    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
-                //    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
-            }
-#pragma warning disable CS0168 // Variable is declared but never used
-            catch (Exception exc)
-#pragma warning restore CS0168 // Variable is declared but never used
-            {
-                
-            }
-
 
             Stream partStream = this.GetTemplate("InspectionSummary", type);
 

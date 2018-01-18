@@ -1,4 +1,5 @@
-﻿using DoEko.Models.DoEko;
+﻿using DoEko.Controllers.Helpers;
+using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Survey;
 using DoEko.Services;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -12,9 +13,13 @@ namespace DoEko.ViewModels.ReportsViewModels
 {
     public class InvestmentViewModel : Investment
     {
+        private RSEPriceHelper _rsePrice;
+        private Survey _survey;
+
         public InvestmentViewModel(InvestmentViewModel inv) : this((Investment)inv)
         {
             Pictures = inv.Pictures;
+            _rsePrice = inv._rsePrice;
         }
         public InvestmentViewModel(Investment inv)
         {
@@ -64,6 +69,7 @@ namespace DoEko.ViewModels.ReportsViewModels
                 return null;
             }
         }
+
         [NotMapped]
         private Dictionary<Guid, Dictionary<string, Uri>> Pictures { get; set; }
         public void ReadPictures(IFileStorage _fileStorage)
@@ -154,8 +160,19 @@ namespace DoEko.ViewModels.ReportsViewModels
         /// <summary>
         /// 
         /// </summary>
-        public Survey Survey { get; set; }
+        public Survey Survey
+        {
+            get => _survey;
+            set { _survey = value; _rsePrice.Survey = value; }
+        }
         [NotMapped]
         public InvestmentViewModel Investment { get; set; }
+
+        internal void SetRSEPrice(DoEkoContext context)
+        {
+            this._rsePrice = new RSEPriceHelper(context, false, this.Contract.ProjectId);
+        }
+
+        public RSEPriceHelper RSEPrice { get { return this._rsePrice; } set { } }
     }
 }
