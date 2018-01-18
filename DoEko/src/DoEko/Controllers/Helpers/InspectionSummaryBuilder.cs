@@ -170,11 +170,11 @@ namespace DoEko.Controllers.Helpers
                 inv.Survey.ResultCalculation.RSENetPrice = Decimal.ToDouble(rsePrice.Net);
                 inv.Survey.ResultCalculation.RSETax = Decimal.ToDouble(rsePrice.Tax);
                 inv.Survey.ResultCalculation.RSEGrossPrice = Decimal.ToDouble(rsePrice.Gross);
-                inv.Survey.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(rsePrice.OwnerContribution);
-                ////inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100 + inv.Survey.ResultCalculation.RSETax;
-                //inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
-                //    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
-                //    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
+                //inv.Survey.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(rsePrice.OwnerContribution);
+                //inv.Survey.ResultCalculation.RSEOwnerContrib = (100 - 60) * inv.Survey.ResultCalculation.RSENetPrice / 100 + inv.Survey.ResultCalculation.RSETax;
+                inv.Survey.ResultCalculation.RSEOwnerContrib = inv.Contract.Project.GrossNetFundsType ? 
+                    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSEGrossPrice / 100 :
+                    (100 - inv.Contract.Project.UEFundsLevel) * inv.Survey.ResultCalculation.RSENetPrice / 100;
             }
 #pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception exc)
