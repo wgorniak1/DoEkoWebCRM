@@ -351,8 +351,24 @@ namespace DoEko.Controllers
 
                 string resultsFolder = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var im = new InvestmentViewModel(inv);
-                //im.SetRSEPrice(_context);
+                im.SetRSEPrice(_context);
+                try
+                {
+                    foreach (var s in inv.Surveys)
+                    {
+                        im.Survey = s;
+                        s.ResultCalculation.RSENetPrice = Decimal.ToDouble(im.RSEPrice.Net);
+                        s.ResultCalculation.RSETax = Decimal.ToDouble(im.RSEPrice.Tax);
+                        s.ResultCalculation.RSEGrossPrice = Decimal.ToDouble(im.RSEPrice.Gross);
+                        s.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(im.RSEPrice.OwnerContribution);
+                    }
+                }
+#pragma warning disable CS0168 // Variable is declared but never used
+                catch (Exception exc)
+#pragma warning restore CS0168 // Variable is declared but never used
+                {
 
+                }
                 await docBuilder.BuildAsync(im,resultsFolder);
                 //return single doc
                 //return PhysicalFile(docUrl,"");
@@ -437,7 +453,24 @@ namespace DoEko.Controllers
 
                 var im = new InvestmentViewModel(inv);
                 //required to calculate prices
-                //im.SetRSEPrice(_context);
+                im.SetRSEPrice(_context);
+                //////////////////////////////
+                try
+                {
+                    foreach (var s in im.Surveys)
+                    {
+                        im.Survey = s;
+                        s.ResultCalculation.RSENetPrice = Decimal.ToDouble(im.RSEPrice.Net);
+                        s.ResultCalculation.RSETax = Decimal.ToDouble(im.RSEPrice.Tax);
+                        s.ResultCalculation.RSEGrossPrice = Decimal.ToDouble(im.RSEPrice.Gross);
+                        s.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(im.RSEPrice.OwnerContribution);
+                    }
+                }
+#pragma warning disable CS0168 // Variable is declared but never used
+                catch (Exception exc)
+#pragma warning restore CS0168 // Variable is declared but never used
+                {
+                }
 
                 docList.Add(docBuilder.BuildAsync(im, resultsFolder));
             }

@@ -137,9 +137,20 @@ namespace DoEko.Controllers.Helpers
                             .VAT;
 
                     }
-                    catch (Exception)
+                    catch (Exception exc)
                     {
+                        System.Diagnostics.Debug.Print("VAT not found|" + _survey.SurveyId.ToString() +
+                            "|Type:" + _survey.Type.ToString() +
+                            "|RSE:" + _survey.GetRSEType() +
+                            "|Purpose:" + _survey.PlannedInstall.Purpose.ToString() +
+                            "|Localization:" + _survey.PlannedInstall.Localization.ToString() +
+                            "|Area:" + _survey.Investment.UsableArea + "\n"); 
+
                     }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.Print("VAT not found: PlannedInstall is null " + _survey.SurveyId.ToString());
                 }
 
                 return Net * tax / 100;
