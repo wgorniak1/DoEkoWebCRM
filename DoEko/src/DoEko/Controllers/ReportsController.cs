@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.IO.Compression;
+using System.IO;
 
 namespace DoEko.Controllers
 {
@@ -67,7 +69,7 @@ namespace DoEko.Controllers
                 //.Include(io => io.Investment.Surveys).ThenInclude(s => s.ResultCalculation)
                 .Include(io => io.Owner.Address.Commune)
                 .Where(io => io.Investment.ContractId == Id)
-                .Select(io => new 
+                .Select(io => new
                 {
                     Investment = new {
                         Address = new {
@@ -92,9 +94,9 @@ namespace DoEko.Controllers
             IList<Survey> surveys = new List<Survey>();
 
             var surveysCH = _context.SurveysCH
-                .Where(s => s.Status != SurveyStatus.Cancelled && 
+                .Where(s => s.Status != SurveyStatus.Cancelled &&
                             iowners.Any(io => io.InvestmentId == s.InvestmentId))
-                .Select(s => new SurveyCentralHeating {InvestmentId = s.InvestmentId, RSEType = s.RSEType, Type = s.Type, ResultCalculation = new SurveyResultCalculations { FinalRSEPower = s.ResultCalculation.FinalRSEPower } })
+                .Select(s => new SurveyCentralHeating { InvestmentId = s.InvestmentId, RSEType = s.RSEType, Type = s.Type, ResultCalculation = new SurveyResultCalculations { FinalRSEPower = s.ResultCalculation.FinalRSEPower } })
                 .ToList()
                 ;
 
@@ -111,7 +113,7 @@ namespace DoEko.Controllers
                 .Select(s => new SurveyEnergy { InvestmentId = s.InvestmentId, RSEType = s.RSEType, Type = s.Type, ResultCalculation = new SurveyResultCalculations { FinalRSEPower = s.ResultCalculation.FinalRSEPower } })
                 .ToList()
                 ;
-            
+
 
             //iowners.SelectMany(io => io.Investment.Surveys.Select(s => new
             //{
@@ -180,7 +182,7 @@ namespace DoEko.Controllers
 
                 var workingSheet = ((WorksheetPart)wbPart.GetPartById(sheet.Id)).Worksheet;
 
-                
+
                 //Header
                 Row header = new Row();
                 header.RowIndex = (UInt32)1;
@@ -198,7 +200,7 @@ namespace DoEko.Controllers
 
                 foreach (var io in iowners)
                 {
-                    foreach(var srv in surveysCH.Where(s=>s.InvestmentId == io.InvestmentId))
+                    foreach (var srv in surveysCH.Where(s => s.InvestmentId == io.InvestmentId))
                     {
                         Row row = new Row();
                         row.RowIndex = (UInt32)rowindex;
@@ -261,7 +263,7 @@ namespace DoEko.Controllers
             //return file from memory stream
             memoryStream.Position = 0;
 
-            return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","RaportGiodo_"+Id+'_'+DateTime.Now.ToShortDateString()+".xlsx");
+            return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RaportGiodo_" + Id + '_' + DateTime.Now.ToShortDateString() + ".xlsx");
 
         }
 
@@ -291,14 +293,14 @@ namespace DoEko.Controllers
                 List<object> model = new List<object>();
 
                 var SurveysGroupedByManyFactors = _context.Surveys
-                    .Include(s => s.Investment).ThenInclude(i=>i.Contract).ThenInclude(c=>c.Project)
+                    .Include(s => s.Investment).ThenInclude(i => i.Contract).ThenInclude(c => c.Project)
                     .OrderBy(s => s.Investment.InspectorId)
                     .ThenBy(s => s.Investment.ContractId)
                     .ThenBy(s => s.ChangedAt)
                     .ThenBy(s => s.Status)
                     .GroupBy(s => new { InspectorId = s.Investment.InspectorId, Contract = s.Investment.Contract, Period = s.ChangedAt.Year + s.ChangedAt.Month.ToString("D2") });
 
-                await SurveysGroupedByManyFactors.ForEachAsync( surveyGroup => model.Add(new {
+                await SurveysGroupedByManyFactors.ForEachAsync(surveyGroup => model.Add(new {
                     inspectorId = surveyGroup.Key.InspectorId.HasValue ? surveyGroup.Key.InspectorId.Value : Guid.Empty,
                     inspectorName = surveyGroup.Key.InspectorId.HasValue ? _userManager.FindByIdAsync(surveyGroup.Key.InspectorId.Value.ToString()).GetAwaiter().GetResult().FullName : "Nie przypisanych",
                     projectDescr = surveyGroup.Key.Contract.Project.ShortDescription,
@@ -310,7 +312,7 @@ namespace DoEko.Controllers
                                                         (s.Status == SurveyStatus.Cancelled && s.CancelType == SurveyCancelType.TechnicalIssue)).Count()
                 }));
 
-                return Json( new { data = model });
+                return Json(new { data = model });
             }
             else
             {
@@ -347,7 +349,7 @@ namespace DoEko.Controllers
                     .Include(i => i.Contract).ThenInclude(c => c.Project)
                     .SingleAsync(i => i.InvestmentId == id.Value);
 
-                InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context,_fileStorage);
+                InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context, _fileStorage);
 
                 string resultsFolder = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var im = new InvestmentViewModel(inv);
@@ -369,7 +371,7 @@ namespace DoEko.Controllers
                 {
 
                 }
-                await docBuilder.BuildAsync(im,resultsFolder);
+                await docBuilder.BuildAsync(im, resultsFolder);
                 //return single doc
                 //return PhysicalFile(docUrl,"");
                 var doc = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary/" + resultsFolder).ListBlobs(true).OfType<CloudBlockBlob>().First();
@@ -380,7 +382,7 @@ namespace DoEko.Controllers
             {
                 GenericSelectionScreenViewModel model = new GenericSelectionScreenViewModel(_context);
 
-                return View(model);    
+                return View(model);
             }
 
         }
@@ -406,7 +408,7 @@ namespace DoEko.Controllers
             var invIdsQry = _context.Investments.AsQueryable();
             if (model.ProjectId != 0)
             {
-                invIdsQry = invIdsQry.Where(i=>i.Contract.ProjectId == model.ProjectId);
+                invIdsQry = invIdsQry.Where(i => i.Contract.ProjectId == model.ProjectId);
             };
             if (model.ContractId != 0)
             {
@@ -515,11 +517,11 @@ namespace DoEko.Controllers
             {
                 //
                 var project = _context.Projects
-                    .Include(p=>p.ChildProjects)
+                    .Include(p => p.ChildProjects)
                     .Single(p => p.ProjectId == projectId);
                 if (project.ChildProjects != null && project.ChildProjects.Count > 0)
                 {
-                    sl = sl.Where(s => s.Investment.Contract.ProjectId == projectId || project.ChildProjects.Any(cp=>cp.ProjectId == s.Investment.Contract.ProjectId));
+                    sl = sl.Where(s => s.Investment.Contract.ProjectId == projectId || project.ChildProjects.Any(cp => cp.ProjectId == s.Investment.Contract.ProjectId));
                 }
                 else
                 {
@@ -536,9 +538,9 @@ namespace DoEko.Controllers
                 .ThenBy(s => s.InvestmentId);
 
             sl = sl.Include(s => s.Investment).ThenInclude(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address)
-                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.State)
-                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.District)
-                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.State)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.District)
+                   .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
                    .Include(s => s.AirCondition)
                    .Include(s => s.Audit)
                    .Include(s => s.BathRoom)
@@ -554,7 +556,7 @@ namespace DoEko.Controllers
             CsvExport list = await SurveyListAsCSV(result);
             return File(list.ExportToBytes(), "application/csv", fileName);
         }
-        private void AddRow( ref CsvExport csv)
+        private void AddRow(ref CsvExport csv)
         {
             csv.AddRow();
 
@@ -745,7 +747,7 @@ namespace DoEko.Controllers
         private async Task<CsvExport> SurveyListAsCSV(List<Survey> data)
         {
             CsvExport myExport = new CsvExport(columnSeparator: ";");
-            
+
             foreach (var srv in data)
             {
                 //HEADER
@@ -777,7 +779,7 @@ namespace DoEko.Controllers
                 myExport["INWEST - ADRES - ULICA"] = srv.Investment.Address.Street;
                 myExport["INWEST - ADRES - NR BUD."] = "=\"" + srv.Investment.Address.BuildingNo + "\"";
                 myExport["INWEST - ADRES - NR MIESZK"] = "=\"" + srv.Investment.Address.ApartmentNo + "\"";
-                
+
                 //WŁAŚCICIELE
                 for (int i = 0; i < 3; i++)
                 {
@@ -902,7 +904,7 @@ namespace DoEko.Controllers
                     var usr = await _userManager.FindByIdAsync(srv.ChangedBy.ToString());
                     myExport["OST.ZM. - PRZEZ"] = usr.LastName + " " + usr.FirstName;
                 }
-                
+
                 myExport["UWAGI"] = srv.FreeCommments != null ? srv.FreeCommments.ToString() : "";
                 myExport["ZAPLACONA"] = srv.IsPaid.AsYesNo();
 
@@ -970,7 +972,7 @@ namespace DoEko.Controllers
                     myExport[item.Key] =
                         "=HIPERŁĄCZE(\"" + item.Value + "\";\"" + item.Key + "\")";
                 }
-                
+
             }
 
             return myExport;
@@ -995,22 +997,22 @@ namespace DoEko.Controllers
                     ShortDescription = c.ShortDescription,
                     Status = c.Status,
                     Type = c.Type,
-                    Project = new Models.DoEko.Project {ShortDescription = c.Project.ShortDescription }
+                    Project = new Models.DoEko.Project { ShortDescription = c.Project.ShortDescription }
                 })
                 .ToListAsync();
 
             foreach (var contract in contracts)
             {
                 //load survey data for stats
-                List<SurveyCentralHeating> lsch = _context.SurveysCH.Where(s => s.Investment.Contract.ContractId == contract.ContractId).Select(s=> new SurveyCentralHeating {SurveyId = s.SurveyId, Status = s.Status, RSEType = s.RSEType, InvestmentId = s.InvestmentId, Type = s.Type, Investment = new Investment { InvestmentId = s.Investment.InvestmentId, InspectorId = s.Investment.InspectorId } }).ToList();
-                List<SurveyHotWater> lshw = _context.SurveysHW.Where(s => s.Investment.Contract.ContractId == contract.ContractId).Select(s=> new SurveyHotWater {SurveyId = s.SurveyId, Status = s.Status, RSEType = s.RSEType, InvestmentId = s.InvestmentId, Type = s.Type, Investment = new Investment { InvestmentId = s.Investment.InvestmentId, InspectorId = s.Investment.InspectorId } }).ToList();
-                List<SurveyEnergy> lsen = _context.SurveysEN.Where(s => s.Investment.Contract.ContractId == contract.ContractId).Select(s=> new SurveyEnergy {SurveyId = s.SurveyId, Status = s.Status, RSEType = s.RSEType, InvestmentId = s.InvestmentId, Type = s.Type, Investment = new Investment { InvestmentId = s.Investment.InvestmentId, InspectorId = s.Investment.InspectorId } }).ToList();
+                List<SurveyCentralHeating> lsch = _context.SurveysCH.Where(s => s.Investment.Contract.ContractId == contract.ContractId).Select(s => new SurveyCentralHeating { SurveyId = s.SurveyId, Status = s.Status, RSEType = s.RSEType, InvestmentId = s.InvestmentId, Type = s.Type, Investment = new Investment { InvestmentId = s.Investment.InvestmentId, InspectorId = s.Investment.InspectorId } }).ToList();
+                List<SurveyHotWater> lshw = _context.SurveysHW.Where(s => s.Investment.Contract.ContractId == contract.ContractId).Select(s => new SurveyHotWater { SurveyId = s.SurveyId, Status = s.Status, RSEType = s.RSEType, InvestmentId = s.InvestmentId, Type = s.Type, Investment = new Investment { InvestmentId = s.Investment.InvestmentId, InspectorId = s.Investment.InspectorId } }).ToList();
+                List<SurveyEnergy> lsen = _context.SurveysEN.Where(s => s.Investment.Contract.ContractId == contract.ContractId).Select(s => new SurveyEnergy { SurveyId = s.SurveyId, Status = s.Status, RSEType = s.RSEType, InvestmentId = s.InvestmentId, Type = s.Type, Investment = new Investment { InvestmentId = s.Investment.InvestmentId, InspectorId = s.Investment.InspectorId } }).ToList();
 
                 //new contract statistic
                 ContractStatistic cs = new ContractStatistic();
 
                 cs.Contract = contract;
-                cs.InvestmentCount = _context.Investments.Count(i=>i.ContractId == contract.ContractId);
+                cs.InvestmentCount = _context.Investments.Count(i => i.ContractId == contract.ContractId);
 
                 //start survey statistics
                 cs.Surveys.Add(this.SurveyStatsFor(lsch, SurveyType.CentralHeating, (int)SurveyRSETypeCentralHeating.HeatPump));
@@ -1019,14 +1021,14 @@ namespace DoEko.Controllers
                 cs.Surveys.Add(this.SurveyStatsFor(lshw, SurveyType.HotWater, (int)SurveyRSETypeHotWater.Solar));
                 cs.Surveys.Add(this.SurveyStatsFor(lshw, SurveyType.HotWater, (int)SurveyRSETypeHotWater.HeatPump));
                 cs.Surveys.Add(this.SurveyStatsFor(lsen, SurveyType.Energy, (int)SurveyRSETypeEnergy.PhotoVoltaic));
-                
+
                 model.Contracts.Add(cs);
             }
 
             return View(model);
         }
 
-        private SurveyStatistic SurveyStatsFor( IEnumerable<Survey> srvList, SurveyType type, int rseType)
+        private SurveyStatistic SurveyStatsFor(IEnumerable<Survey> srvList, SurveyType type, int rseType)
         {
             SurveyStatistic ss = new SurveyStatistic();
 
@@ -1044,7 +1046,7 @@ namespace DoEko.Controllers
                     ss.InApproval = lsch.Count(s => s.RSEType == (SurveyRSETypeCentralHeating)rseType && s.Status == SurveyStatus.Approval);
                     ss.NotStarted = lsch.Count(s => s.RSEType == (SurveyRSETypeCentralHeating)rseType && s.Status == SurveyStatus.New);
                     ss.Rejected = lsch.Count(s => s.RSEType == (SurveyRSETypeCentralHeating)rseType && s.Status == SurveyStatus.Rejected);
-                    ss.NotStartedNotassigned = lsch.Count(s => s.RSEType == (SurveyRSETypeCentralHeating)rseType && s.Status == SurveyStatus.New && ( s.Investment.InspectorId == Guid.Empty || s.Investment.InspectorId == null));
+                    ss.NotStartedNotassigned = lsch.Count(s => s.RSEType == (SurveyRSETypeCentralHeating)rseType && s.Status == SurveyStatus.New && (s.Investment.InspectorId == Guid.Empty || s.Investment.InspectorId == null));
                     ss.Total = lsch.Count(s => s.RSEType == (SurveyRSETypeCentralHeating)rseType);
 
                     break;
@@ -1079,7 +1081,7 @@ namespace DoEko.Controllers
             return ss;
         }
 
-        private Dictionary<string,string> SurveyPhotos(Guid surveyId, Guid investmentId)
+        private Dictionary<string, string> SurveyPhotos(Guid surveyId, Guid investmentId)
         {
             CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
             var SurveyBlockBlobs = Container.ListBlobs(prefix: surveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
@@ -1108,12 +1110,39 @@ namespace DoEko.Controllers
                     {
                         FileList.Add(partNames[1], BlockBlob.Uri.ToString());
                     }
-                    catch (Exception){ }
+                    catch (Exception) { }
                 }
             };
 
             return FileList;
-    }
+        }
+
+        [HttpGet]
+        [Route("InspectionSummary/{reportName}")]
+        public IActionResult InspectionSummary([FromRoute] string reportName)
+        {
+            var container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults);
+            var fileList = container.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
+                {
+                    foreach (var blob in fileList)
+                    {
+                        MemoryStream str = new MemoryStream() ;
+                        blob.DownloadToStream(str);
+                        var strArray = str.ToArray();
+                        var zipArchiveEntry = archive.CreateEntry(blob.Name.Split('/')[2], CompressionLevel.Fastest);
+                        using (var zipStream = zipArchiveEntry.Open())
+                        {
+                            zipStream.Write(strArray, 0, strArray.Length);
+                        }
+                    }
+                }
+                return File(ms.ToArray(), "application/zip", reportName.ToLower()+".zip");
+            }
+        }
 
         [HttpGet]
         public IActionResult InspectionSummaryList(bool singleDocuments, string reportName)
