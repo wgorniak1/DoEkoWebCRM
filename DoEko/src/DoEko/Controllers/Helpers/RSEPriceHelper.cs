@@ -43,8 +43,11 @@ namespace DoEko.Controllers.Helpers
                 }
 
                 if (_survey.PlannedInstall == null &&
-                    _survey.Type == SurveyType.CentralHeating &&
-                    _survey.GetRSEType() == (int)SurveyRSETypeCentralHeating.PelletBoiler)
+                    (
+                    ( _survey.Type == SurveyType.CentralHeating &&
+                      _survey.GetRSEType() != (int)SurveyRSETypeCentralHeating.HeatPumpAir) || 
+                    ( _survey.Type == SurveyType.HotWater &&
+                      _survey.GetRSEType() != (int)SurveyRSETypeHotWater.Solar)))
                 {
                     _survey.PlannedInstall = new SurveyDetPlannedInstall() { Purpose = BuildingPurpose.Housing, Localization = InstallationLocalization.Ground };
                 }

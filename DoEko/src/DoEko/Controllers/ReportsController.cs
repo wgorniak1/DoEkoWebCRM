@@ -1118,7 +1118,7 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        [Route("InspectionSummary/{reportName}")]
+        [Route("~/reports/inspectionsummary/{reportname}")]
         public IActionResult InspectionSummary([FromRoute] string reportName)
         {
             var container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults);
