@@ -52,9 +52,9 @@
                             content += '<button class="btn btn-default btn-sm report-delete" type="button" title="Usuń">' +
                                             '<span class="glyphicon glyphicon-trash"></span>' +
                                           '</button>';
-                            content += '<button class="btn btn-default btn-sm report-download" type="button" title="Pobierz">' +
+                            content += '<a class="btn btn-default btn-sm" title="Pobierz" target="_blank" href="/Reports/InspectionSummary/Download/' + row.reportName + '">' +
                                          '<span class="glyphicon glyphicon-download-alt"></span>' +
-                                       '</button>';
+                                       '</a>';
                             content += '</div>';
                             return content;
                             }
@@ -158,13 +158,10 @@ $('body').on('click', 'button.report-download', function () { $(this).attr("disa
 function onReportDownload(row){
     var report = row.data().reportName;
 
-    //get modal with form
     var getModal = $.ajax({
         type: "GET",
-        url: "InspectionSummaryList",
-        data: { singleDocuments: true,
-                reportName: report
-               },
+        url: "InspectionSummary/Download/" + report,
+        data: null,
         dataType: "json"
     });
     getModal.done(function (data, success) {
