@@ -140,5 +140,11 @@
     "inputFiles": [
       "wwwroot/js/RSEPriceSettings.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ProjectDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/ProjectDetails.js"
+    ]
   }
 ]
