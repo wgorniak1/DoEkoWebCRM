@@ -12,12 +12,26 @@ namespace DoEko.Controllers.Helpers
 {
     public class RSEPriceHelper
     {
-        private readonly DoEkoContext _context;
         private readonly bool _forceLoad;
-        private Survey _survey;
         private static ICollection<RSEPriceTaxRule> _taxRules;
         private static ICollection<RSEPriceRule> _priceRules;
-        private static RSEPriceRuleUnit _unit;
+        private readonly DoEkoContext _context;
+        private Survey _survey;
+        private RSEPriceTaxRule _taxRuleCondition;
+        private RSEPriceRule _priceRuleCondition;
+
+        public RSEPriceHelper(DoEkoContext context, bool forceLoad = true, int projectId = 1)
+        {
+            _forceLoad = forceLoad;
+            _context = context;
+
+            _taxRules = RSEPriceTaxRuleHelper.GetTaxRules(context, projectId);
+            _priceRules = RSEPriceRuleHelper.GetPriceRules(context, projectId);
+
+            _taxRuleCondition = new RSEPriceTaxRule();
+            _priceRuleCondition = new RSEPriceRule();
+
+        }
 
         public Survey Survey
         {
@@ -28,92 +42,137 @@ namespace DoEko.Controllers.Helpers
                 if (_survey is null)
                 {
                     _survey = value;
-                    refresh();
+                    if (_forceLoad)
+                    {
+                        _context.Entry(_survey).Reference(s => s.Investment).Load();
+                        _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
+                        _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
+                        _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+                    }
                 }
                 else if (_survey != value)
                 {
-                    int projectId = _survey.Investment.Contract.ProjectId;
-
                     _survey = value;
-                    refresh();
+                    if (_forceLoad)
+                    {
+                        _context.Entry(_survey).Reference(s => s.Investment).Load();
+                        _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
+                        _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
+                        _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+                    }
                 }
                 else
                 {
                     return;
                 }
 
-                if (_survey.PlannedInstall == null &&
-                    (
-                    ( _survey.Type == SurveyType.CentralHeating &&
-                      _survey.GetRSEType() != (int)SurveyRSETypeCentralHeating.HeatPumpAir) || 
-                    ( _survey.Type == SurveyType.HotWater &&
-                      _survey.GetRSEType() != (int)SurveyRSETypeHotWater.Solar)))
+                //TAX CONDITIONS
+                _taxRuleCondition.SurveyType = _survey.Type;
+                _taxRuleCondition.RSEType = _survey.GetRSEType();
+                _taxRuleCondition.UsableAreaMax = _survey.Investment.UsableArea;
+                switch (_survey.Type)
                 {
-                    _survey.PlannedInstall = new SurveyDetPlannedInstall() { Purpose = BuildingPurpose.Housing, Localization = InstallationLocalization.Ground };
+                    case SurveyType.CentralHeating:
+                        switch (((SurveyCentralHeating)_survey).RSEType)
+                        {
+                            case SurveyRSETypeCentralHeating.HeatPump:
+                                _taxRuleCondition.BuildingPurpose = _survey.PlannedInstall != null ? _survey.PlannedInstall.Purpose : BuildingPurpose.Housing;
+                                _taxRuleCondition.InstallationLocalization = _survey.PlannedInstall != null ? _survey.PlannedInstall.Localization : InstallationLocalization.Ground;
+                                break;
+                            case SurveyRSETypeCentralHeating.PelletBoiler:
+                                _taxRuleCondition.BuildingPurpose = BuildingPurpose.Housing;
+                                _taxRuleCondition.InstallationLocalization = InstallationLocalization.Ground;
+                                break;
+                            case SurveyRSETypeCentralHeating.HeatPumpAir:
+                                _taxRuleCondition.BuildingPurpose = BuildingPurpose.Housing;
+                                _taxRuleCondition.InstallationLocalization = InstallationLocalization.Ground;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case SurveyType.HotWater:
+                        switch (((SurveyHotWater)_survey).RSEType)
+                        {
+                            case SurveyRSETypeHotWater.Solar:
+                                _taxRuleCondition.BuildingPurpose = _survey.PlannedInstall != null ? _survey.PlannedInstall.Purpose : BuildingPurpose.Housing;
+                                _taxRuleCondition.InstallationLocalization = _survey.PlannedInstall != null ? _survey.PlannedInstall.Localization : InstallationLocalization.Ground;
+                                break;
+                            case SurveyRSETypeHotWater.HeatPump:
+                                _taxRuleCondition.BuildingPurpose = BuildingPurpose.Housing;
+                                _taxRuleCondition.InstallationLocalization = InstallationLocalization.Ground;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case SurveyType.Energy:
+                        _taxRuleCondition.BuildingPurpose = _survey.PlannedInstall != null ? _survey.PlannedInstall.Purpose : BuildingPurpose.Housing;
+                        _taxRuleCondition.InstallationLocalization = _survey.PlannedInstall != null ? _survey.PlannedInstall.Localization : InstallationLocalization.Ground;
+                        break;
+                    default:
+                        break;
                 }
-                
-            }
-        }
 
-        private void refresh()
-        {
-            if (_forceLoad)
-            {
-                _context.Entry(_survey).Reference(s => s.Investment).Load();
-                _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
-                _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
-                _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
-            }
-
-            _unit = _priceRules.First(r => r.SurveyType == _survey.Type &&
-                                           r.RSEType == _survey.GetRSEType()).Unit;
-
-        }
-
-        public RSEPriceHelper(DoEkoContext context, bool forceLoad = true, int projectId = 1)
-        {
-            _context = context;
-            _forceLoad = forceLoad;
-
-            _taxRules = RSEPriceTaxRuleHelper.GetTaxRules(_context, projectId);
-            _priceRules = RSEPriceRuleHelper.GetPriceRules(_context, projectId);
-
-        }
-
-
-        #region Properties
-        public virtual decimal Net
-        {
-            get
-            {
-                double compareValue = double.MinValue;
-
-                switch (_unit)
+                //NET PRICE CONDITIONS
+                _priceRuleCondition.SurveyType = _survey.Type;
+                _priceRuleCondition.RSEType = _survey.GetRSEType();
+                _priceRuleCondition.Unit = _priceRules.First(r => r.SurveyType == _priceRuleCondition.SurveyType &&
+                                           r.RSEType == _priceRuleCondition.RSEType).Unit;
+                switch (_priceRuleCondition.Unit)
                 {
                     case RSEPriceRuleUnit.FinalRSEPower:
-                        compareValue = _survey.ResultCalculation.FinalRSEPower;
+                        _priceRuleCondition.NumberMax = _survey.ResultCalculation.FinalRSEPower;
                         break;
                     case RSEPriceRuleUnit.FinalSolConfig:
                         if (!string.IsNullOrEmpty(_survey.ResultCalculation.FinalSOLConfig))
                         {
+                            double compareValue;
                             double.TryParse(_survey.ResultCalculation.FinalSOLConfig.Split(' ').First(), out compareValue);
+                            _priceRuleCondition.NumberMax = compareValue;
                         }
                         break;
                     default:
                         break;
                 }
 
+            }
+        }
+        
+
+
+        #region Properties
+        public decimal Net
+        {
+            get
+            {
+                //double compareValue = double.MinValue;
+                //switch (_unit)
+                //{
+                //    case RSEPriceRuleUnit.FinalRSEPower:
+                //        compareValue = _survey.ResultCalculation.FinalRSEPower;
+                //        break;
+                //    case RSEPriceRuleUnit.FinalSolConfig:
+                //        if (!string.IsNullOrEmpty(_survey.ResultCalculation.FinalSOLConfig))
+                //        {
+                //            double.TryParse(_survey.ResultCalculation.FinalSOLConfig.Split(' ').First(), out compareValue);
+                //        }
+                //        break;
+                //    default:
+                //        break;
+                //}
+
                 try
                 {
                     var priceRule = _priceRules.Single(r =>
-                                r.SurveyType == _survey.Type &&
-                                r.RSEType == _survey.GetRSEType() &&
-                                r.Unit == _unit && 
-                                r.NumberMin.CompareTo(compareValue) < 0 &&
-                                r.NumberMax.CompareTo(compareValue) >= 0);
+                                r.SurveyType == _priceRuleCondition.SurveyType &&
+                                r.RSEType == _priceRuleCondition.RSEType &&
+                                r.Unit == _priceRuleCondition.Unit && 
+                                r.NumberMin.CompareTo(_priceRuleCondition.NumberMax) < 0 &&
+                                r.NumberMax.CompareTo(_priceRuleCondition.NumberMax) >= 0);
 
                     return priceRule.Multiply ? 
-                        decimal.Multiply(priceRule.NetPrice, Convert.ToDecimal(compareValue)) : 
+                        decimal.Multiply(priceRule.NetPrice, Convert.ToDecimal(_priceRuleCondition.NumberMax)) : 
                         priceRule.NetPrice;
 
                 }
@@ -132,35 +191,28 @@ namespace DoEko.Controllers.Helpers
             {
                 short tax = 0;
 
-                if (_survey.PlannedInstall != null)
+                try
                 {
-                    try
-                    {
-                        tax = _taxRules
-                            .Single(r =>
-                                    r.SurveyType == _survey.Type &&
-                                    r.RSEType == _survey.GetRSEType() &&
-                                    r.BuildingPurpose == _survey.PlannedInstall.Purpose &&
-                                    r.InstallationLocalization == _survey.PlannedInstall.Localization &&
-                                    r.UsableAreaMin < _survey.Investment.UsableArea &&
-                                    r.UsableAreaMax >= _survey.Investment.UsableArea)
-                            .VAT;
+                    tax = _taxRules
+                        .Single(r =>
+                                r.SurveyType == _taxRuleCondition.SurveyType &&
+                                r.RSEType == _taxRuleCondition.RSEType &&
+                                r.BuildingPurpose == _taxRuleCondition.BuildingPurpose &&
+                                r.InstallationLocalization == _taxRuleCondition.InstallationLocalization &&
+                                r.UsableAreaMin < _taxRuleCondition.UsableAreaMax &&
+                                r.UsableAreaMax >= _taxRuleCondition.UsableAreaMax )
+                        .VAT;
 
-                    }
-                    catch (Exception exc)
-                    {
-                        System.Diagnostics.Debug.Print("VAT not found|" + _survey.SurveyId.ToString() +
-                            "|Type:" + _survey.Type.ToString() +
-                            "|RSE:" + _survey.GetRSEType() +
-                            "|Purpose:" + _survey.PlannedInstall.Purpose.ToString() +
-                            "|Localization:" + _survey.PlannedInstall.Localization.ToString() +
-                            "|Area:" + _survey.Investment.UsableArea + "\n"); 
-
-                    }
                 }
-                else
+                catch (Exception exc)
                 {
-                    System.Diagnostics.Debug.Print("VAT not found: PlannedInstall is null " + _survey.SurveyId.ToString());
+                    // System.Diagnostics.Debug.Print("VAT not found: PlannedInstall is null " + _survey.SurveyId.ToString());
+                    System.Diagnostics.Debug.Print("VAT not found|" + _survey.SurveyId.ToString() +
+                        "|Type:" + _survey.Type.ToString() +
+                        "|RSE:" + _survey.GetRSEType() + "\n");
+                   //     "|Purpose:" + _survey.PlannedInstall.Purpose.ToString() +
+                   //     "|Localization:" + _survey.PlannedInstall.Localization.ToString() +
+                   //     "|Area:" + _survey.Investment.UsableArea + "\n"); 
                 }
 
                 return Net * tax / 100;

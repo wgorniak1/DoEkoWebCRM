@@ -68,6 +68,7 @@ namespace DoEko.Controllers.Api
                 s.ResultCalculation.RSEGrossPrice = Convert.ToDouble(r.Gross);
                 s.ResultCalculation.RSEOwnerContrib = Convert.ToDouble(r.OwnerContribution);
             }
+            //this is workaround for json serialization issue (crossreference survey.investment.surveys[1].investment...)
             foreach (var s in result)
             {
                 s.PlannedInstall.Survey = null;

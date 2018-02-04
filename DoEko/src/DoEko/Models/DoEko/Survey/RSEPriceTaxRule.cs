@@ -12,7 +12,13 @@ namespace DoEko.Models.DoEko.Survey
         public RSEPriceTaxRule()
         {
 
+            ProjectId = 1;
+            BuildingPurpose = BuildingPurpose.Housing;
+            InstallationLocalization = InstallationLocalization.Ground;
+            UsableAreaMin = 0;
+            UsableAreaMax = double.MaxValue;
         }
+
         public RSEPriceTaxRule(SurveyType surveyType, int rseType, InstallationLocalization localization, BuildingPurpose purpose, double areaMin = 0, double areaMax = double.MaxValue, short tax = 0, int projectId = 0)
         {
             this.ProjectId = projectId;

@@ -20,7 +20,12 @@ namespace DoEko.Models.DoEko.Survey
        
         public RSEPriceRule()
         {
-
+            ProjectId = 1;
+            Unit = RSEPriceRuleUnit.FinalRSEPower;
+            NumberMin = 0;
+            NumberMax = double.MinValue;
+            NetPrice = 0;
+            Multiply = false;
         }
 
         public RSEPriceRule(SurveyType surveyType, int rseType, RSEPriceRuleUnit unit = RSEPriceRuleUnit.FinalRSEPower, double numberMin = 0, double numberMax = 999999.99, decimal netPrice = 0, bool multiply = false, int projectId = 0)
