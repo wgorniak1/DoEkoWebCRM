@@ -1152,6 +1152,7 @@ namespace DoEko.Controllers
                         if (SrvEN.ResultCalculation != null && User.IsInRole(Roles.Admin))
                         {
                             SrvEN.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
+                            SrvEN.ResultCalculation.FinalPVConfig = SrvEN.ResultCalculation.FinalRSEPower / 0.28;
                         }
                         _context.SurveysEN.Update(SrvEN);
                         break;

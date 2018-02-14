@@ -23,6 +23,9 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.IO.Compression;
 using System.IO;
+using DoEko.Controllers.ActionResults;
+using Microsoft.Net.Http.Headers;
+using System.Net.Http;
 
 namespace DoEko.Controllers
 {
@@ -1124,24 +1127,47 @@ namespace DoEko.Controllers
             var rootDir = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
             var fileList = rootDir.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>();
 
-            using (MemoryStream ms = new MemoryStream())
+            //using (MemoryStream ms = new MemoryStream())
+            //{
+            //    using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
+            //    {
+            //        foreach (var blob in fileList)
+            //        {
+            //            MemoryStream str = new MemoryStream();
+            //            blob.DownloadToStream(str);
+            //            var strArray = str.ToArray();
+            //            var zipArchiveEntry = archive.CreateEntry(blob.Name.Split('/')[2], CompressionLevel.Optimal);
+            //            using (var zipStream = zipArchiveEntry.Open())
+            //            {
+            //                zipStream.Write(strArray, 0, strArray.Length);
+            //            }
+            //        }
+            //    }
+            //    return File(ms.ToArray(), "application/zip", reportName.ToLower()+".zip");
+            //}
+
+            return new FileCallbackResult(new MediaTypeHeaderValue("application/octet-stream"), async (outputStream, _) =>
             {
-                using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
+                using (var zipArchive = new ZipArchive(new WriteOnlyStreamWrapper(outputStream), ZipArchiveMode.Create))
                 {
                     foreach (var blob in fileList)
                     {
-                        MemoryStream str = new MemoryStream() ;
-                        blob.DownloadToStream(str);
-                        var strArray = str.ToArray();
-                        var zipArchiveEntry = archive.CreateEntry(blob.Name.Split('/')[2], CompressionLevel.Optimal);
-                        using (var zipStream = zipArchiveEntry.Open())
+                        var zipEntry = zipArchive.CreateEntry(blob.Name.Split('/')[2], CompressionLevel.Optimal);
+                        using (var zipStream = zipEntry.Open())
+                        using (var stream = new MemoryStream())
                         {
-                            zipStream.Write(strArray, 0, strArray.Length);
+                            await blob.DownloadToStreamAsync(stream);
+                            await stream.CopyToAsync(zipStream);
                         }
                     }
                 }
-                return File(ms.ToArray(), "application/zip", reportName.ToLower()+".zip");
-            }
+            })
+            {
+                FileDownloadName = reportName.ToLower() + ".zip"
+            };
+
+
+
         }
 
         [HttpGet]
