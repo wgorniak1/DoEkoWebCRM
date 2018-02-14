@@ -1160,7 +1160,7 @@ namespace DoEko.Controllers
                 {
                     foreach (var blob in fileList)
                     {
-                        var zipEntry = zipArchive.CreateEntry(blob.Name.Split('/')[2], CompressionLevel.Optimal);
+                        var zipEntry = zipArchive.CreateEntry(blob.Name.Split('/')[2], CompressionLevel.NoCompression);
                         using (var zipStream = zipEntry.Open())
                             await blob.DownloadToStreamAsync(zipStream);
                         
