@@ -1124,27 +1124,33 @@ namespace DoEko.Controllers
         [Route("~/reports/inspectionsummary/download/{reportname}")]
         public IActionResult InspectionSummary([FromRoute] string reportName)
         {
-            var rootDir = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
-            var fileList = rootDir.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>();
 
-            //using (MemoryStream ms = new MemoryStream())
+            //HttpClient Client = new HttpClient();
+            //var filenamesAndUrls = new Dictionary<string, string>
             //{
-            //    using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
+            //    { "README.md", "https://raw.githubusercontent.com/StephenClearyExamples/AsyncDynamicZip/master/README.md" },
+            //    { ".gitignore", "https://raw.githubusercontent.com/StephenClearyExamples/AsyncDynamicZip/master/.gitignore" },
+            //};
+
+            //return new FileCallbackResult(new MediaTypeHeaderValue("application/octet-stream"), async(outputStream, _) =>
+            //{
+            //    using (var zipArchive = new ZipArchive(new WriteOnlyStreamWrapper(outputStream), ZipArchiveMode.Create))
             //    {
-            //        foreach (var blob in fileList)
+            //        foreach (var kvp in filenamesAndUrls)
             //        {
-            //            MemoryStream str = new MemoryStream();
-            //            blob.DownloadToStream(str);
-            //            var strArray = str.ToArray();
-            //            var zipArchiveEntry = archive.CreateEntry(blob.Name.Split('/')[2], CompressionLevel.Optimal);
-            //            using (var zipStream = zipArchiveEntry.Open())
-            //            {
-            //                zipStream.Write(strArray, 0, strArray.Length);
-            //            }
+            //            var zipEntry = zipArchive.CreateEntry(kvp.Key);
+            //            using (var zipStream = zipEntry.Open())
+            //            using (var stream = await Client.GetStreamAsync(kvp.Value))
+            //                await stream.CopyToAsync(zipStream);
             //        }
             //    }
-            //    return File(ms.ToArray(), "application/zip", reportName.ToLower()+".zip");
-            //}
+            //})
+            //{
+            //    FileDownloadName = "MyZipfile.zip"
+            //};
+
+            var rootDir = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
+            var fileList = rootDir.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>();
 
             return new FileCallbackResult(new MediaTypeHeaderValue("application/octet-stream"), async (outputStream, _) =>
             {
@@ -1154,11 +1160,8 @@ namespace DoEko.Controllers
                     {
                         var zipEntry = zipArchive.CreateEntry(blob.Name.Split('/')[2], CompressionLevel.Optimal);
                         using (var zipStream = zipEntry.Open())
-                        using (var stream = new MemoryStream())
-                        {
-                            await blob.DownloadToStreamAsync(stream);
-                            await stream.CopyToAsync(zipStream);
-                        }
+                            await blob.DownloadToStreamAsync(zipStream);
+                        
                     }
                 }
             })
