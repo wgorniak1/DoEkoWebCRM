@@ -102,7 +102,7 @@ namespace DoEko.Controllers.ActionResults
             {
                 
                 SetHeadersAndLog(context, result);
-                context.HttpContext.Response.Headers.Add(HeaderNames.ContentLength, result.FileSize.ToString());
+                //context.HttpContext.Response.Headers.Add(HeaderNames.ContentLength, result.FileSize.ToString());
                 return result.Callback(context.HttpContext.Response.Body, context);
             }
         }
