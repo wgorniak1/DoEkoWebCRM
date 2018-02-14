@@ -1152,7 +1152,9 @@ namespace DoEko.Controllers
             var rootDir = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
             var fileList = rootDir.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>();
 
-            return new FileCallbackResult(new MediaTypeHeaderValue("application/octet-stream"), async (outputStream, _) =>
+            var totalSize = fileList.Sum(b => b.Properties.Length);
+
+            return new FileCallbackResult(new MediaTypeHeaderValue("application/octet-stream"), totalSize,async (outputStream, _) =>
             {
                 using (var zipArchive = new ZipArchive(new WriteOnlyStreamWrapper(outputStream), ZipArchiveMode.Create))
                 {

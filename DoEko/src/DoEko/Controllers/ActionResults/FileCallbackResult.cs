@@ -17,14 +17,15 @@ namespace DoEko.Controllers.ActionResults
     public class FileCallbackResult : FileResult
     {
         private Func<Stream, ActionContext, Task> _callback;
+        private double _contentLength;
 
         /// <summary>
         /// Creates a new <see cref="FileCallbackResult"/> instance.
         /// </summary>
         /// <param name="contentType">The Content-Type header of the response.</param>
         /// <param name="callback">The stream with the file.</param>
-        public FileCallbackResult(string contentType, Func<Stream, ActionContext, Task> callback)
-            : this(MediaTypeHeaderValue.Parse(contentType), callback)
+        public FileCallbackResult(string contentType, double contentLength, Func<Stream, ActionContext, Task> callback)
+            : this(MediaTypeHeaderValue.Parse(contentType), contentLength, callback)
         {
         }
 
@@ -33,7 +34,7 @@ namespace DoEko.Controllers.ActionResults
         /// </summary>
         /// <param name="contentType">The Content-Type header of the response.</param>
         /// <param name="callback">The stream with the file.</param>
-        public FileCallbackResult(MediaTypeHeaderValue contentType, Func<Stream, ActionContext, Task> callback)
+        public FileCallbackResult(MediaTypeHeaderValue contentType, double contentLength, Func<Stream, ActionContext, Task> callback)
             : base(contentType?.ToString())
         {
             if (callback == null)
@@ -42,6 +43,20 @@ namespace DoEko.Controllers.ActionResults
             }
 
             Callback = callback;
+            FileSize = contentLength;
+            
+        }
+
+        public double FileSize
+        {
+            get
+            {
+                return _contentLength;
+            }
+            set
+            {
+                _contentLength = value;
+            }
         }
 
         /// <summary>
@@ -85,7 +100,9 @@ namespace DoEko.Controllers.ActionResults
 
             public Task ExecuteAsync(ActionContext context, FileCallbackResult result)
             {
+                
                 SetHeadersAndLog(context, result);
+                context.HttpContext.Response.Headers.Add(HeaderNames.ContentLength, result.FileSize.ToString());
                 return result.Callback(context.HttpContext.Response.Body, context);
             }
         }
