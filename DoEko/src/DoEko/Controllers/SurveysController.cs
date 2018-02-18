@@ -1143,6 +1143,21 @@ namespace DoEko.Controllers
                         var SrvEN = _context.SurveysEN
                             .Include(s=>s.ResultCalculation)
                             .Single(s => s.SurveyId == survey.SurveyId);
+
+                        double PVNominalPower = 280;
+                        try
+                        {
+                            PVNominalPower = _context
+                                .Investments
+                                .Include(i => i.Contract).ThenInclude(c => c.Project)
+                                .Where(i => i.InvestmentId == SrvEN.InvestmentId)
+                                .Select(i => i.Contract.Project.PVNominalPower).First();
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        
+
                         SrvEN.FreeCommments = survey.FreeCommments;
                         if (SrvEN.FirstEditAt == null)
                         {
@@ -1152,7 +1167,7 @@ namespace DoEko.Controllers
                         if (SrvEN.ResultCalculation != null && User.IsInRole(Roles.Admin))
                         {
                             SrvEN.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
-                            SrvEN.ResultCalculation.FinalPVConfig = SrvEN.ResultCalculation.FinalRSEPower / 0.28;
+                            SrvEN.ResultCalculation.FinalPVConfig = ( SrvEN.ResultCalculation.FinalRSEPower * 1000 ) / PVNominalPower; //KW => W
                         }
                         _context.SurveysEN.Update(SrvEN);
                         break;

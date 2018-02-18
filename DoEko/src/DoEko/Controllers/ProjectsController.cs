@@ -171,9 +171,6 @@ namespace DoEko.Controllers
             ViewData["ReturnUrl"] = ReturnUrl;
             ViewData["ParentProjectId"] = new SelectList(_context.Projects.Where(p=>p.ProjectId != 1).ToList(), "ProjectId", "ShortDescription", project.ParentProjectId);
 
-            //ViewData["Status"] = new SelectList(from ProjectStatus e in Enum.GetValues(typeof(ProjectStatus)) select new { Id = e, Name = e.ToString() }, "Id", "Name", project.Status);
-            //ViewData["UEFundsLevel"] = new SelectList(from UEFundsLevel e in Enum.GetValues(typeof(UEFundsLevel)) select new { Id = e, Name = e.ToString() }, "Id", "Name", project.UEFundsLevel);
-
             return View(project);
         }
 

@@ -128,7 +128,14 @@ namespace DoEko.Models.DoEko
                  ShortName = "Brutto",
                 Prompt = "Brutto?")]
         public bool GrossNetFundsType { get; set; }
-        
+        /// <summary>
+        /// This is used to calculate number of pv panels for the installation on a single investment.
+        /// </summary>
+        [Display(Description = "Moc nominalna ogniwa PV", Name = "Moc ogniwa PV", ShortName = "Moc PV")]
+        [Range(1, 999, ErrorMessage = "Proszę podać warość od 1 do 999")]
+        [UIHint("Watt")]
+        public double PVNominalPower { get; set; }
+
         [Display(Description = "Strefa klimatyczna",Name = "Strefa Klimatyczna", ShortName ="Strefa Kl.")]
         [EnumDataType(typeof(ClimateZone), ErrorMessage = "Proszę podać prawidłową wartość")]
         public ClimateZone ClimateZone { get; set; }
