@@ -138,7 +138,7 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// This is used to calculate yearly production 
         /// </summary>
-        [Display(Description = "Moc nominalna ogniwa PV", Name = "Moc ogniwa PV", ShortName = "Moc PV")]
+        [Display(Description = "Wsp. rocznej prod.", Name = "Wsp. rocznej prod.", ShortName = "Wsp. rocznej prod.")]
         [Range(1, 50000, ErrorMessage = "Proszę podać warość od 1 do 50000")]
         public double YearlyProductionFactor { get; set; }
 
