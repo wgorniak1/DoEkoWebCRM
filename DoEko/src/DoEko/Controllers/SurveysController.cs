@@ -1144,17 +1144,25 @@ namespace DoEko.Controllers
                             .Include(s=>s.ResultCalculation)
                             .Single(s => s.SurveyId == survey.SurveyId);
 
-                        double PVNominalPower = 280;
+                        Models.DoEko.Project project;
                         try
                         {
-                            PVNominalPower = _context
+                            project = _context
                                 .Investments
                                 .Include(i => i.Contract).ThenInclude(c => c.Project)
                                 .Where(i => i.InvestmentId == SrvEN.InvestmentId)
-                                .Select(i => i.Contract.Project.PVNominalPower).First();
+                                .Select(i => new Models.DoEko.Project() {
+                                    PVNominalPower = i.Contract.Project.PVNominalPower,
+                                    YearlyProductionFactor = i.Contract.Project.YearlyProductionFactor })
+                                .First();
                         }
                         catch (Exception)
                         {
+                            project = new Models.DoEko.Project
+                            {
+                                PVNominalPower = 280,
+                                YearlyProductionFactor = 10000
+                            };
                         }
                         
 
@@ -1167,7 +1175,8 @@ namespace DoEko.Controllers
                         if (SrvEN.ResultCalculation != null && User.IsInRole(Roles.Admin))
                         {
                             SrvEN.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
-                            SrvEN.ResultCalculation.FinalPVConfig = ( SrvEN.ResultCalculation.FinalRSEPower * 1000 ) / PVNominalPower; //KW => W
+                            SrvEN.ResultCalculation.FinalPVConfig = ( SrvEN.ResultCalculation.FinalRSEPower * 1000 ) / project.PVNominalPower; //KW => W
+                            SrvEN.ResultCalculation.RSEYearlyProduction = project.YearlyProductionFactor * survey.ResultCalculation.FinalRSEPower;
                         }
                         _context.SurveysEN.Update(SrvEN);
                         break;

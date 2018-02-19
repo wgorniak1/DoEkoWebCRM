@@ -135,6 +135,12 @@ namespace DoEko.Models.DoEko
         [Range(1, 999, ErrorMessage = "Proszę podać warość od 1 do 999")]
         [UIHint("Watt")]
         public double PVNominalPower { get; set; }
+        /// <summary>
+        /// This is used to calculate yearly production 
+        /// </summary>
+        [Display(Description = "Moc nominalna ogniwa PV", Name = "Moc ogniwa PV", ShortName = "Moc PV")]
+        [Range(1, 50000, ErrorMessage = "Proszę podać warość od 1 do 50000")]
+        public double YearlyProductionFactor { get; set; }
 
         [Display(Description = "Strefa klimatyczna",Name = "Strefa Klimatyczna", ShortName ="Strefa Kl.")]
         [EnumDataType(typeof(ClimateZone), ErrorMessage = "Proszę podać prawidłową wartość")]
