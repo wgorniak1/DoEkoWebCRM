@@ -93,6 +93,8 @@ namespace DoEko.Controllers.Api
                 return BadRequest(ModelState);
             }
 
+            //_context.Addresses.Where(a=>a.)
+
             _context.Addresses.Add(address);
             await _context.SaveChangesAsync();
 

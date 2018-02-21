@@ -331,26 +331,35 @@ namespace DoEko.Controllers
 
             if (id.HasValue && id.Value != Guid.Empty)
             {
+                Investment inv;
+                try
+                {
+                    inv = await _context.Investments
+                        .Include(i => i.Address).ThenInclude(a => a.State)
+                        .Include(i => i.Address).ThenInclude(a => a.District)
+                        .Include(i => i.Address).ThenInclude(a => a.Commune)
+                        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+                        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+                        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+                        //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                        .Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                        //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                        .Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                        .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                        .Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                        .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                        .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                        .Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                        .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
+                        .Include(i => i.Contract).ThenInclude(c => c.Project)
+                        .SingleAsync(i => i.InvestmentId == id.Value & i.Surveys.Any(s => s.Status != SurveyStatus.Cancelled));
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Brak ankiet lub wszystkie ankiety są anulowane");
+                    return NotFound(ModelState);
 
-                var inv = await _context.Investments
-                    .Include(i => i.Address).ThenInclude(a => a.State)
-                    .Include(i => i.Address).ThenInclude(a => a.District)
-                    .Include(i => i.Address).ThenInclude(a => a.Commune)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Audit)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
-                    .Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Ground)
-                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
-                    .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Wall)
-                    .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
-                    .Include(i => i.Contract).ThenInclude(c => c.Project)
-                    .SingleAsync(i => i.InvestmentId == id.Value);
+                }
 
                 InspectionSummaryBuilder docBuilder = new InspectionSummaryBuilder(_context, _fileStorage);
 
@@ -359,7 +368,7 @@ namespace DoEko.Controllers
                 im.SetRSEPrice(_context);
                 try
                 {
-                    foreach (var s in inv.Surveys)
+                    foreach (var s in inv.Surveys.Where(s=>s.Status != SurveyStatus.Cancelled))
                     {
                         im.Survey = s;
                         s.ResultCalculation.RSENetPrice = Decimal.ToDouble(im.RSEPrice.Net);
@@ -436,25 +445,35 @@ namespace DoEko.Controllers
 
             foreach (var invId in invIds)
             {
-                var inv = _context.Investments
-                    .Include(i => i.Address).ThenInclude(a => a.State)
-                    .Include(i => i.Address).ThenInclude(a => a.District)
-                    .Include(i => i.Address).ThenInclude(a => a.Commune)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
-                    .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Audit)
-                    //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
-                    .Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Building)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Ground)
-                    .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
-                    .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
-                    .Include(i => i.Surveys).ThenInclude(s => s.Wall)
-                    .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
-                    .Include(i => i.Contract).ThenInclude(c => c.Project)
-                    .Single(i => i.InvestmentId == invId);
+                Investment inv;
+                try
+                {
+                    inv = _context.Investments
+                        .Include(i => i.Address).ThenInclude(a => a.State)
+                        .Include(i => i.Address).ThenInclude(a => a.District)
+                        .Include(i => i.Address).ThenInclude(a => a.Commune)
+                        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.State)
+                        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.District)
+                        .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner).ThenInclude(o => o.Address).ThenInclude(a => a.Commune)
+                        //.Include(i => i.Surveys).ThenInclude(s => s.AirCondition)
+                        .Include(i => i.Surveys).ThenInclude(s => s.Audit)
+                        //.Include(i => i.Surveys).ThenInclude(s => s.BathRoom)
+                        .Include(i => i.Surveys).ThenInclude(s => s.BoilerRoom)
+                        .Include(i => i.Surveys).ThenInclude(s => s.Building)
+                        .Include(i => i.Surveys).ThenInclude(s => s.Ground)
+                        .Include(i => i.Surveys).ThenInclude(s => s.PlannedInstall)
+                        .Include(i => i.Surveys).ThenInclude(s => s.RoofPlanes)
+                        .Include(i => i.Surveys).ThenInclude(s => s.Wall)
+                        .Include(i => i.Surveys).ThenInclude(s => s.ResultCalculation)
+                        .Include(i => i.Contract).ThenInclude(c => c.Project)
+                        .Single(i => i.InvestmentId == invId & i.Surveys.Any(s=>s.Status != SurveyStatus.Cancelled));
+
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+                
 
                 var im = new InvestmentViewModel(inv);
                 //required to calculate prices
@@ -462,7 +481,7 @@ namespace DoEko.Controllers
                 //////////////////////////////
                 try
                 {
-                    foreach (var s in im.Surveys)
+                    foreach (var s in im.Surveys.Where(s=>s.Status != SurveyStatus.Cancelled))
                     {
                         im.Survey = s;
                         s.ResultCalculation.RSENetPrice = Decimal.ToDouble(im.RSEPrice.Net);
