@@ -117,6 +117,10 @@ namespace DoEko.Models.DoEko.Addresses
         /// 
         /// </summary>
         public Commune Commune { get; set; }
+        
+        public string SearchTerm { get; set; }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -171,6 +175,17 @@ namespace DoEko.Models.DoEko.Addresses
             {
 
             }
+        }
+        public static string GetSearchTerm( Address address)
+        {
+            return string.Concat(address.State?.Text ?? "", '/',
+                                                 address.District?.Text ?? "", '/',
+                                                 address.Commune?.Text ?? "", '/',
+                                                 address.PostalCode, '/',
+                                                 address.City, '/',
+                                                 address.Street, '/',
+                                                 address.BuildingNo, '/',
+                                                 address.ApartmentNo).ToUpper();
         }
     }
 }

@@ -23,6 +23,30 @@ namespace DoEko.Controllers.Api
             _context = context;
         }
 
+        [HttpGet("Search")]
+        public async Task<IEnumerable<Address>> Search([FromQuery] string state, string district, string commune, string city, string postalCode, string street, string building, string apartmentNo, string searchTerm)
+        {
+            var qry = _context.Addresses.AsNoTracking().AsQueryable();
+            if (searchTerm != string.Empty)
+            {
+                qry = qry.Where(a => a.SearchTerm.Contains(searchTerm.ToUpper()) == true);
+            }
+            else
+            {
+                qry = (state == null) ? qry : qry.Where(a => a.State.Text.ToUpper() == state.ToUpper());
+                qry = (district == null) ? qry : qry.Where(a => a.District.Text.ToUpper() == district.ToUpper());
+                qry = (commune == null) ? qry : qry.Where(a => a.Commune.Text.ToUpper() == commune.ToUpper());
+                qry = (city == null) ? qry : qry.Where(a => a.City.ToUpper() == city.ToUpper());
+                qry = (postalCode == null) ? qry : qry.Where(a => a.PostalCode == postalCode);
+                qry = (street == null) ? qry : qry.Where(a => a.Street.ToUpper() == street.ToUpper());
+                qry = (building == null) ? qry : qry.Where(a => a.BuildingNo.ToUpper() == building.ToUpper());
+                qry = (apartmentNo == null) ? qry : qry.Where(a => a.ApartmentNo.ToUpper() == apartmentNo.ToUpper());
+            }
+
+            return await qry.ToListAsync();
+
+        }
+
         // GET: api/ApiAddress
         [HttpGet]
         public IEnumerable<Address> GetAddresses()
@@ -92,8 +116,8 @@ namespace DoEko.Controllers.Api
             {
                 return BadRequest(ModelState);
             }
-
-            //_context.Addresses.Where(a=>a.)
+            //
+            var i = _context.Addresses.Where(a => a.SearchTerm.CompareTo(Address.GetSearchTerm(address)) == 0).Count();
 
             _context.Addresses.Add(address);
             await _context.SaveChangesAsync();

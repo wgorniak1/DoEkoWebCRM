@@ -188,7 +188,21 @@ namespace DoEko.Controllers.Api
                 {
                     Address = e.Address,
                     AddressId = e.AddressId,
-                    BasicPay = e.BasicPay,
+                    BasicPay = e.BasicPay.Select(bp => new EmployeeBasicPay {
+                        Amount = bp.Amount,
+                        Code = bp.Code,
+                        ContractId = bp.ContractId,
+                        Currency = bp.Currency,
+                        EmployeeId = bp.EmployeeId,
+                        Employee = null,
+                        End = bp.End,
+                        Number = bp.Number,
+                        ProjectId = bp.ProjectId,
+                        Rate = bp.Rate,
+                        ShortDescription = bp.ShortDescription,
+                        Start = bp.Start,
+                        Unit = bp.Unit
+                    }).ToList(),
                     BusinessPartnerId = e.BusinessPartnerId,
                     Email = e.Email,
                     FirstName = e.FirstName,
@@ -202,17 +216,36 @@ namespace DoEko.Controllers.Api
 
                 foreach (var u in e.Users)
                 {
+                    var user = await _userManager.FindByIdAsync(u.UserId.ToString());
                     itemvm.Users.Add(new EmployeeUserVM
                     {
                         EmployeeId = u.EmployeeId,
                         End = u.End,
                         Start = u.Start,
                         UserId = u.UserId,
-                        User = await _userManager.FindByIdAsync(u.UserId.ToString())
+                        User = new ApplicationUser
+                        {
+                            Email = user.Email,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Name = user.Name,
+                            Id = user.Id,
+                            PhoneNumber = user.PhoneNumber,
+                            UserName = user.UserName
+                        }
                     });
                 }
-    
-                itemvm.CurrentUser = await _userManager.FindByIdAsync(e.CurrentUserId.ToString());
+                var currentUser = await _userManager.FindByIdAsync(e.CurrentUserId.ToString());
+                itemvm.CurrentUser = new ApplicationUser
+                {
+                    Email = currentUser.Email,
+                    FirstName = currentUser.FirstName,
+                    LastName = currentUser.LastName,
+                    Name = currentUser.Name,
+                    Id = currentUser.Id,
+                    PhoneNumber = currentUser.PhoneNumber,
+                    UserName = currentUser.UserName
+                };
                 result.Add(itemvm);
 
             }

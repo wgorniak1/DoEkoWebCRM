@@ -9,6 +9,8 @@ using DoEko.Models.DoEko.Survey;
 using Microsoft.EntityFrameworkCore.Metadata;
 using DoEko.Models.Payroll;
 using DoEko.Models.DoEko.ClusterImport;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DoEko.Models.DoEko
 {
@@ -17,6 +19,8 @@ namespace DoEko.Models.DoEko
         public DoEkoContext(DbContextOptions<DoEkoContext> options)
             : base(options)
         { }
+
+        public Guid CurrentUserId { get; set; }
 
         public DbSet<Test> Tests { get; set; }
         public DbSet<Test1> Tests1 { get; set; }
@@ -156,135 +160,59 @@ namespace DoEko.Models.DoEko
 
         public override int SaveChanges()
         {
-            this.ChangeTracker.DetectChanges();
-            var newEntries = this.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added);
+            ChangeTracker.DetectChanges();
 
-            foreach (var entry in newEntries)
-            {
-                try
-                {
-                    entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
-                }
-                catch (Exception)
-                {
-                }
+            var newEntries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
 
-                try
-                {
-                    entry.Property("ChangedAt").CurrentValue = DateTime.UtcNow;
-                }
-                catch (Exception)
-                {
-                }
+            UpdateProperty(newEntries, "ChangedAt", DateTime.UtcNow);
+            UpdateProperty(newEntries, "ChangedBy", this.CurrentUserId);
+            UpdateProperty(newEntries, "ChangedAt", DateTime.UtcNow);
+            UpdateProperty(newEntries, "ChangedBy", this.CurrentUserId);
 
-                try
-                {
-                    entry.Property("CreatedBy").CurrentValue = this.CurrentUserId;
-                }
-                catch (Exception)
-                {
-                }
+            UpdateAddress(newEntries.Where(e => e.Entity.GetType() == typeof(Address)));
 
-                try
-                {
-                    entry.Property("ChangedBy").CurrentValue = this.CurrentUserId;
-                }
-                catch (Exception)
-                {
-                }
-            }
+            var modifiedEntries = this.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified);
 
-            var modifiedEntries = this.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Modified);
-            foreach (var entry in modifiedEntries)
-            {
-                try
-                {
-                    entry.Property("ChangedAt").CurrentValue = DateTime.UtcNow;
-                }
-                catch (Exception)
-                {
-                }
+            UpdateProperty(modifiedEntries, "ChangedAt", DateTime.UtcNow);
+            UpdateProperty(modifiedEntries, "ChangedBy", this.CurrentUserId);
 
-                try
-                {
-                    entry.Property("ChangedBy").CurrentValue = this.CurrentUserId;
-                }
-                catch (Exception)
-                {
-                }
-            }
+            UpdateAddress(modifiedEntries.Where(e => e.Entity.GetType() == typeof(Address)));
+
             return base.SaveChanges();
         }
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="OperationCanceledException">If task cancellation is requested</exception>
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) 
         {
-            this.ChangeTracker.DetectChanges();
-            var newEntries = this.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added);
-
-            foreach (var entry in newEntries)
-            {
-                try
-                {
-                    entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
-                }
-                catch (Exception)
-                {
-                }
-
-                try
-                {
-                    entry.Property("ChangedAt").CurrentValue = DateTime.UtcNow;
-                }
-                catch (Exception)
-                {
-                }
-
-                try
-                {
-                    entry.Property("CreatedBy").CurrentValue = this.CurrentUserId;
-                }
-                catch (Exception)
-                {
-                }
-
-                try
-                {
-                    entry.Property("ChangedBy").CurrentValue = this.CurrentUserId;
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            var modifiedEntries = this.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Modified);
-            foreach (var entry in modifiedEntries)
-            {
-                try
-                {
-                    entry.Property("ChangedAt").CurrentValue = DateTime.UtcNow;
-                }
-                catch (Exception)
-                {
-                }
-
-                try
-                {
-                    entry.Property("ChangedBy").CurrentValue = CurrentUserId;
-                }
-                catch (Exception)
-                {
-                }
-            }
+            SaveChanges();
 
             return base.SaveChangesAsync(cancellationToken);
         }
 
-        public Guid CurrentUserId { get; set; }
 
+        private void UpdateProperty( IEnumerable<EntityEntry> entities, string propertyName, object value)
+        {
+
+            foreach (var Property in entities.SelectMany(e=>e.Properties.Where(p=>p.Metadata.Name == propertyName)))
+                Property.CurrentValue = value;
+
+        }
         
+        private void UpdateAddress( IEnumerable<EntityEntry> entities)
+        {
+            foreach (var entry in entities.Select(e => (Address)(e.Entity)))
+            {
 
+                this.Entry(entry).Reference(e => e.State).Load();
+                this.Entry(entry).Reference(e => e.District).Load();
+                this.Entry(entry).Reference(e => e.Commune).Load();
+
+                entry.SearchTerm = Address.GetSearchTerm(entry);
+            }
+        }
     }
 }
