@@ -204,8 +204,14 @@ namespace DoEko.Models.DoEko
         
         private void UpdateAddress( IEnumerable<EntityEntry> entities)
         {
-            foreach (var entry in entities.Select(e => (Address)(e.Entity)))
+            //var enumerator = entities.GetEnumerator();
+            //while (enumerator.MoveNext() == true)
+            //{
+
+            //}
+            for (var i = 0; i < entities.Count(); i++)
             {
+                Address entry = (Address)(entities.ElementAt(i).Entity);
 
                 this.Entry(entry).Reference(e => e.State).Load();
                 this.Entry(entry).Reference(e => e.District).Load();

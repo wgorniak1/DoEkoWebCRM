@@ -211,7 +211,7 @@ namespace DoEko.Controllers.Api
                     Pesel = e.Pesel,
                     PhoneNumber = e.PhoneNumber,
                     TaxId = e.TaxId,
-                    Users = new Collection<EmployeeUserVM>()
+                    EmployeeId = e.EmployeeId
                 };
 
                 foreach (var u in e.Users)

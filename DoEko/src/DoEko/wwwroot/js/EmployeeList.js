@@ -1,7 +1,5 @@
 ﻿//
 $(document).ready(function () {
-    var editMode = false;
-
     var table = $('#EETable').DataTable({
         ajax: {
             url: "/api/v1/Employees/List",
@@ -10,9 +8,14 @@ $(document).ready(function () {
         },
         columns: [
             {
-                data: "fullName",
-                name: "fullName",
-                title: "fullName"
+                data: "firstName",
+                name: "firstName",
+                title: "firstName"
+            },
+            {
+                data: "lastName",
+                name: "lastName",
+                title: "lastName"
             },
             {
                 data: "currentUser.userName",
@@ -31,98 +34,6 @@ $(document).ready(function () {
         "<'row'<'col-sm-12'tr>>" +
         "<'row'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
         buttons: [
-        //    {
-        //        extend: 'copyHtml5',
-        //        text: '<span class="glyphicon glyphicon-copy"></span>',
-        //        className: 'btn text-primary',
-        //        copySuccess: {
-        //            1: 'Skopiowano 1 rekord do schowka',
-        //            _: 'Skopiowano %d rekordów do schowka'
-        //        },
-        //        copyTitle: 'Kopiowanie do schowka',
-        //        copyKeys: 'Naciśnij <i>ctrl</i> lub <i>\u2318</i> + <i>C</i> aby skopiować tabelę<br>do schowka.<br><br>aby anulować, kliknij ten komunikat lub naciśnij ESC.'
-        //    },
-        //    {
-        //        extend: 'csvHtml5',
-        //        text: '<span class="glyphicon glyphicon-download-alt" title="Export do CSV"></span>',
-        //        className: 'btn text-primary',
-        //        fieldSeparator: ';',
-        //        charset: 'UTF-8'
-        //    },
-        //    {
-        //        extend: 'colvis',
-        //        text: '<span class="glyphicon glyphicon-th-list" title="Pokaż / Ukryj kolumny"></span>',
-        //        className: 'btn text-primary'
-        //    },
-            //{
-            //    name: 'new',
-            //    text: '<span class="glyphicon glyphicon-plus" title="Nowy Pracownik"></span> Nowy',
-            //    className: 'btn',
-            //    action: function (e, dt, node, config) {
-
-            //        $.get("Employees/Create").done(function (data) {
-            //            var popup = null,
-            //                popupForm = null;
-
-            //            //insert html form
-            //            $("#ModalSection").html(data);
-
-            //            //prepare modal
-            //            popup = $("#EEModal");
-
-            //            popup.modal({ backdrop: 'static', keyboard: true });
-
-            //            popup.one("hide.bs.modal", function () {
-            //                //force modal to hide
-            //                $('#EEModal').modal('hide');
-            //                $('body').removeClass('modal-open');
-            //                $('.modal-backdrop').remove();
-            //                //clear modal html
-            //                $("#ModalSection").html("");
-            //            });
-
-            //            //prepare form inside modal
-            //            popupForm = $("form", popup);
-
-            //            popupForm.removeData("validator");
-            //            popupForm.removeData("unobtrusiveValidation");
-            //            $.validator.unobtrusive.parse(popupForm);
-            //            popupForm.data("validator").settings.ignore = ".data-val-ignore, :hidden, :disabled";
-
-            //            //prepare form submit events
-            //            $(".ee-btn-submit").on("click", function () {
-            //                var form = $("#EEModal form");
-
-            //                if (form.length === 0) {
-            //                    return;
-            //                }
-
-            //                form.validate({ lang: 'pl' });
-
-            //                if (form.valid()) {
-            //                    //form.submit();
-            //                    var data = {};
-            //                    form.serializeArray().map(function (x) { data[x.name] = x.value; });
-            //                    var id = $('[name="EmployeeId"]', form);
-            //                    var method = form.type || "POST";
-            //                    var url = form.action || "api/Employees";
-            //                    var call = $.ajax({
-            //                        url: url,
-            //                        type: method,
-            //                        contentType: "application/json",
-            //                        data: data
-            //                    });
-
-            //                    call.done(EECreateCompleted());
-            //                    call.fail(EECreateFailed());
-            //                }
-
-            //            });
-            //            //show modal
-            //            popupForm.modal("show");
-            //        });
-            //    }
-            //},
             {
                 text: '<span class="text-primary glyphicon glyphicon-refresh" title="Odśwież zawartość"></span>',
                 className: 'btn',
@@ -133,7 +44,6 @@ $(document).ready(function () {
                     dt.rows().cells().invalidate().render();
                 }
             },
-
             {
                 extend: 'collection',
                 text: 'Nowy',
@@ -226,13 +136,6 @@ function btnNew(e, dt, node, config) {
     alert('aa');
 } 
 
-function WTCCreateFailed(xhr, status, error) {
-    WgTools.alert(error, true, 'E');
-}
-
-function WTCCreateCompleted() {
-    WgTools.alert('Pomyślnie zapisano dane sekcji.', true, 'S');
-}
 //$('body').on('change', 'input.person-confirmationchange', onConfirmationChange);
 //$('body').on('click', 'button.person-edit', function () { $(this).attr("disabled", "disabled"); onPersonEdit($('#BPPersonListTable').DataTable().row($(this).parents('tr'))); $(this).removeAttr("disabled"); });
 //$('body').on('click', 'button.person-delete', function () { $(this).attr("disabled", "disabled"); onPersonDelete($('#BPPersonListTable').DataTable().row($(this).parents('tr'))); $(this).removeAttr("disabled"); });
