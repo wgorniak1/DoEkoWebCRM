@@ -76,7 +76,7 @@ namespace DoEko.Controllers
                     var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, true);// PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
-                        _logger.LogInformation( new EventId(), "Użytkownik %1 zalogowany",new object[] { user });
+                        _logger.LogInformation( new EventId(), "Użytkownik %1 zalogowany",new { user.UserName });
 
                         await _userManager.ResetAccessFailedCountAsync(user);
 

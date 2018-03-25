@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using Microsoft.AspNetCore.Authorization;
 using DoEko.Models.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace DoEko.Controllers.Api
 {
@@ -17,10 +18,12 @@ namespace DoEko.Controllers.Api
     public class ApiContractController : Controller
     {
         private readonly DoEkoContext _context;
+        private readonly ILogger _logger;
 
-        public ApiContractController(DoEkoContext context)
+        public ApiContractController(DoEkoContext context, ILoggerFactory iLoggerFactory)
         {
             _context = context;
+            _logger = iLoggerFactory.CreateLogger("API_CONTRACTS");
         }
 
         [AllowAnonymous]
@@ -28,6 +31,15 @@ namespace DoEko.Controllers.Api
         [Route("Clusters")]
         public async Task<IActionResult> GetClusterContracts([FromQuery] string cluster)
         {
+            try
+            {
+                _logger.LogInformation("URL nadawcy: {url}", HttpContext.Request.Host.Value);
+                _logger.LogInformation("URL nadawcy: {url}", Request.Headers["Referer"]); 
+            }
+            catch (Exception)
+            {
+            }
+
             return Ok(await _context.Contracts
                 .Where(c => c.Type == ContractType.Cluster && c.Project.ShortDescription == cluster)
                 .Select(c => new { id = c.ContractId, text = c.ClusterDetails.Commune.Text })
