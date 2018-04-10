@@ -571,7 +571,8 @@ namespace DoEko.Controllers
                    .Include(s => s.Ground)
                    .Include(s => s.PlannedInstall)
                    .Include(s => s.RoofPlanes)
-                   .Include(s => s.Wall);
+                   .Include(s => s.Wall)
+                   .Include(s => s.ResultCalculation);
 
             var result = await sl.ToListAsync();
 
@@ -588,6 +589,7 @@ namespace DoEko.Controllers
             csv["ID ANKIETY"] = "";
             csv["TYP OZE"] = "";
             csv["STATUS ANKIETY"] = "";
+            csv["MOC Z DOBORU"] = "";
             csv["INWEST - ADRES - WOJ."] = "";
             csv["INWEST - ADRES - POW."] = "";
             csv["INWEST - ADRES - GM."] = "";
@@ -783,6 +785,7 @@ namespace DoEko.Controllers
                 //SURVEY GENERAL
                 myExport["TYP OZE"] = srv.TypeFullDescription();
                 myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
+                myExport["MOC Z DOBORU"] = srv.ResultCalculation != null ? srv.ResultCalculation.FinalRSEPower.ToString() : "0000.00";
 
                 //INSPEKTOR
                 if (srv.Investment.InspectorId.HasValue &&
