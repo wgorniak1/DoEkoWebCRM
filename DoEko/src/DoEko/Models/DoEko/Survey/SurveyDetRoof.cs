@@ -38,7 +38,10 @@ namespace DoEko.Models.DoEko.Survey
         [Display(Name = "Gont")]
         Material_14,
         [Display(Name = "Inne")]
-        Material_15
+        Material_15,
+        [Display(Name = "Papa na deskach")]
+        Material_16,
+
     }
     public enum RoofType
     {
