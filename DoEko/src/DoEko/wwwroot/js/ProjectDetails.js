@@ -115,7 +115,5 @@ class RSEPriceSettings {
 
     static GetInstance() {
         var a = new RSEPriceSettings();
-        a.
     }
-
 }

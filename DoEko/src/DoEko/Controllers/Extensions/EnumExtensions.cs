@@ -9,7 +9,6 @@ namespace DoEko.Controllers.Extensions
 {
     public static class EnumExtensions
     {
-
         public static string DisplayShortName(this Enum value)
         {
             if (value != null && Enum.GetName(value.GetType(), value) != null)
@@ -37,28 +36,6 @@ namespace DoEko.Controllers.Extensions
                 return "";
             }
                 
-            
-
-            //((DisplayAttribute)EnumMember.GetCustomAttributes(typeof(DisplayAttribute), false)[0]).Name;
-
-            //Type enumType = value.GetType();
-            //var enumValue = Enum.GetName(enumType, value);
-            //MemberInfo member = enumType.GetMember(enumValue)[0];
-            //var attrs = member.GetCustomAttributes(typeof(DisplayAttribute), false);
-            //if (attrs.Any()) {
-            //    var displayAttr = ((DisplayAttribute)attrs[0]);
-
-            //    outString = displayAttr.Name;
-
-            //    if (displayAttr.ResourceType != null) {
-            //        outString = displayAttr.GetName();
-            //    }
-            //} else {
-            //    outString = value.ToString();
-            //}
-
-            //return outString;
-
         }
     }
 }
