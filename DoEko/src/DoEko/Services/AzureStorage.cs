@@ -31,16 +31,15 @@ namespace DoEko.Services
             Account = CloudStorageAccount.Parse(options.Value.AzureStorageOptions.ConnectionString);
         }
 
-        public CloudBlobContainer GetBlobContainer(EnuAzureStorageContainerType ContainerType)
+        public async Task<CloudBlobContainer> GetBlobContainerAsync(EnuAzureStorageContainerType ContainerType)
         {
             string ContainerName = ContainerType.ToString().ToLower();// + "/" + Id.ToString();
 
             CloudBlobClient BlobClient = Account.CreateCloudBlobClient();
             CloudBlobContainer container = BlobClient.GetContainerReference(ContainerName);
-            container.CreateIfNotExists( accessType: BlobContainerPublicAccessType.Blob);
+            bool result = await container.CreateIfNotExistsAsync();//BlobContainerPublicAccessType.Blob, new BlobRequestOptions() { }, new OperationContext() { });
 
             return container;
-            
         }
 
         public void Upload(IFormFile File, EnuAzureStorageContainerType Type, string Key = "Not assigned")
@@ -79,5 +78,6 @@ namespace DoEko.Services
             return true;
             
         }
+
     }
 }

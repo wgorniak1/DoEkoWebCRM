@@ -49,7 +49,7 @@ namespace DoEko.Models
                 }
             }
 
-            return TaskCache.CompletedTask;
+            return Task.CompletedTask;
         }
     }
 

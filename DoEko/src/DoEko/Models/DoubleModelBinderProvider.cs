@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +11,16 @@ namespace DoEko.Models
 {
     public class DoubleModelBinderProvider : IModelBinderProvider
     {
+        private readonly ILoggerFactory _loggerFactory;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="loggerFactory"></param>
+        public DoubleModelBinderProvider(ILoggerFactory loggerFactory)
+        {
+            _loggerFactory = loggerFactory;
+        }
+
         public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
             if (context == null)
@@ -25,7 +36,7 @@ namespace DoEko.Models
             //        propertyBinders.Add(property, context.CreateBinder(property));
             //    }
 
-                return new DoubleModelBinder(new SimpleTypeModelBinder(typeof(double)));
+                return new DoubleModelBinder(new SimpleTypeModelBinder(typeof(double),_loggerFactory));
             }
 
             return null;

@@ -8,13 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using DoEko.Models.DoEko;
 using Microsoft.AspNetCore.Identity;
 using DoEko.Models.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 using DoEko.Controllers.Extensions;
-using System.Runtime.Remoting.Contexts;
 using Microsoft.AspNetCore.Http;
 using DoEko.Models.DoEko.Survey;
 
@@ -399,7 +396,15 @@ namespace DoEko.Controllers
                 }
 
                 //get survey Ids from excel table
-                var surveyIds = dt.Rows.OfType<DataRow>().Where(dr => !string.IsNullOrEmpty(dr.Field<string>(1))).Select(dr => Guid.Parse(dr.Field<string>(1))).ToList();
+                //var surveyIds = dt.Rows.OfType<DataRow>().Where(dr => !string.IsNullOrEmpty(dr.Field<string>(1))).Select(dr => Guid.Parse(dr.Field<string>(1))).ToList();
+
+                var surveyIds = (new DataView(dt))
+                    .ToTable(true, dt.Columns[1].ColumnName)
+                    .AsEnumerable()
+                    .Where(dr => !string.IsNullOrEmpty(dr.ToString()))
+                    .Select(dr => Guid.Parse(dr.ToString()))
+                    .ToList<Guid>();
+
                 if (surveyIds.Count == 0)
                 {
                     ModelState.AddModelError(nameof(neoenergetyka), "B³ad odczytu kolumny z ID ankiety");
@@ -408,8 +413,8 @@ namespace DoEko.Controllers
 
                 //get all surveys that will be updated.
                 var surveys = _context.Surveys
-                    .Where(s => surveyIds.Contains<Guid>(s.SurveyId))
-                    .Include(s => s.Investment).ThenInclude(i=>i.Surveys)
+                    .Where(s => surveyIds.Contains(s.SurveyId))
+                    .Include(s => s.Investment).ThenInclude(i => i.Surveys)
                     .Include(s => s.ResultCalculation)
                     .ToList();
 

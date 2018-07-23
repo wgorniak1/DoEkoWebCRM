@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace DoEko.Controllers.ActionResults
 {
@@ -100,9 +100,9 @@ namespace DoEko.Controllers.ActionResults
 
             public Task ExecuteAsync(ActionContext context, FileCallbackResult result)
             {
-                
-                SetHeadersAndLog(context, result);
-                //context.HttpContext.Response.Headers.Add(HeaderNames.ContentLength, result.FileSize.ToString());
+                //after framework upgrade:
+                //SetHeadersAndLog(context, result);
+                SetHeadersAndLog(context, result, (long)(result.FileSize), true);
                 return result.Callback(context.HttpContext.Response.Body, context);
             }
         }

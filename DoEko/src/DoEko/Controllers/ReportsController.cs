@@ -1106,9 +1106,9 @@ namespace DoEko.Controllers
             return ss;
         }
 
-        private Dictionary<string, string> SurveyPhotos(Guid surveyId, Guid investmentId)
+        private async Task<Dictionary<string, string>> SurveyPhotos(Guid surveyId, Guid investmentId)
         {
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
+            CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Survey);
             var SurveyBlockBlobs = Container.ListBlobs(prefix: surveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
             Dictionary<string, string> FileList = new Dictionary<string, string>();

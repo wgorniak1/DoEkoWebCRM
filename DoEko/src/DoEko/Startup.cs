@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using DoEko.Models.Identity;
 using DoEko.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -16,14 +15,15 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using DoEko.Controllers.Settings;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNetCore.Http;
+//using Microsoft.AspNet.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 
 namespace DoEko
 {
@@ -43,6 +43,7 @@ namespace DoEko
             }
 
             builder.AddEnvironmentVariables();
+
             Configuration = builder.Build();
         }
 
@@ -81,11 +82,17 @@ namespace DoEko
                 options.Lockout.MaxFailedAccessAttempts = 3;
                 options.Lockout.AllowedForNewUsers = true;
 
+                // User settings
+                options.User.RequireUniqueEmail = true;
+            });
+
                 // Cookie settings
-                options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-                options.Cookies.ApplicationCookie.LoginPath = "/Account/LogIn";
-                options.Cookies.ApplicationCookie.LogoutPath = "/Account/LogOut";
-                options.Cookies.ApplicationCookie.Events =
+            services.ConfigureApplicationCookie(options => {
+
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.LoginPath = "/Account/LogIn";
+                options.LogoutPath = "/Account/LogOut";
+                options.Events =
                     new CookieAuthenticationEvents
                     {
                         OnRedirectToLogin = ctx =>
@@ -99,12 +106,40 @@ namespace DoEko
                             return Task.FromResult<object>(null);
                         }
                     };
-                // User settings
-                options.User.RequireUniqueEmail = true;
+
             });
 
 
             //Authorization & authentication
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddCookie(cfg => {
+
+                    //cfg.AuthenticationScheme = "Cookie";
+                    cfg.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login/");
+                    cfg.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/");
+                    //cfg.AutomaticAuthenticate = true,
+                    //cfg.AutomaticChallenge = false,
+                    cfg.Cookie.Name = "TokenAuth";
+                    cfg.LogoutPath = "/Account/Logout";
+                    cfg.SlidingExpiration = true;
+                    cfg.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                })
+                .AddJwtBearer(cfg => {
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:TokenOptions:Key").Value)),
+                        ValidAudience = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value
+                    };
+                    //,
+                    //AutomaticAuthenticate = true,
+                    //AutomaticChallenge = true,
+                });
+
+
+
             AuthorizationPolicy requireAuthenticatedUser = new 
                 AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
@@ -130,7 +165,7 @@ namespace DoEko
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(10);
-                options.CookieName = ".DoEko";
+                options.Cookie.Name = ".DoEko";
             });
 
             // Add application services.
@@ -147,11 +182,11 @@ namespace DoEko
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<AppSettings> settings)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<AppSettings> settings)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -176,37 +211,12 @@ namespace DoEko
             ////
             app.UseStaticFiles();
             //
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
-            {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:TokenOptions:Key").Value)),
-                    ValidAudience = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    ValidIssuer = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value
-                }
-            });
-            //
-            app.UseIdentity();
+            app.UseAuthentication();
             //
             app.UseSession();
 
             //
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = "Cookie",
-                LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login/"),
-                AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/"),
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = false,
-                CookieName = "TokenAuth",
-                LogoutPath="/Account/Logout",
-                SlidingExpiration = true,
-                ExpireTimeSpan = TimeSpan.FromMinutes(10)
-            });
+           
 
             //app.UseCookieAuthentication(new CookieAuthenticationOptions
             //{

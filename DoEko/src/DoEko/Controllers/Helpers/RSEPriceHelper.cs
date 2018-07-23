@@ -204,7 +204,7 @@ namespace DoEko.Controllers.Helpers
                         .VAT;
 
                 }
-                catch (Exception exc)
+                catch (Exception)
                 {
                     // System.Diagnostics.Debug.Print("VAT not found: PlannedInstall is null " + _survey.SurveyId.ToString());
                     System.Diagnostics.Debug.Print("VAT not found|" + _survey.SurveyId.ToString() +
