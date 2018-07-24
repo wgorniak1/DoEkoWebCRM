@@ -8,9 +8,10 @@ using DoEko.Models.Identity;
 namespace DoEko.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180724073418_Authorization_0")]
+    partial class Authorization_0
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -76,19 +77,6 @@ namespace DoEko.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
-                });
-
-            modelBuilder.Entity("DoEko.Models.Identity.UserProject", b =>
-                {
-                    b.Property<string>("UserId");
-
-                    b.Property<int>("ProjectId");
-
-                    b.Property<int>("AccessType");
-
-                    b.HasKey("UserId", "ProjectId");
-
-                    b.ToTable("UserProjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -196,13 +184,6 @@ namespace DoEko.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("DoEko.Models.Identity.UserProject", b =>
-                {
-                    b.HasOne("DoEko.Models.Identity.ApplicationUser", "User")
-                        .WithMany("Projects")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

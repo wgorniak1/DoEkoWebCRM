@@ -2,8 +2,10 @@
 using DoEko.Controllers.Helpers;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Addresses;
+using DoEko.Models.Identity;
 using DoEko.ViewComponents.ViewModels;
 using DoEko.ViewModels.InvestmentViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,18 +20,24 @@ namespace DoEko.ViewComponents
     public class InvestmentListViewComponent : ViewComponent
     {
         private DoEkoContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public InvestmentListViewComponent(DoEkoContext context)
+        public InvestmentListViewComponent(DoEkoContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
         public async Task<IViewComponentResult> InvokeAsync(InvestmentListViewModel model)
         {
             try
             {
+                ApplicationUser _user = await _userManager.GetUserAsync(UserClaimsPrincipal);
+                _user = _userManager.Users.Include(u => u.Projects).Single(u => u.Id == _user.Id);
+
                 IQueryable<InvestmentOwner> qry;
 
                 qry = _context.InvestmentOwners
+                    .Where(io => _user.ProjectIds.Any(id => id == io.Investment.Contract.ProjectId))
                     .Include(io => io.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
                     .Include(io => io.Investment).ThenInclude(i=> i.Surveys)
                     .Include(io => io.Owner);
@@ -169,7 +177,6 @@ namespace DoEko.ViewComponents
         private IQueryable<InvestmentOwner> ApplyFiltering(InvestmentListFilter filter, IQueryable<InvestmentOwner> query)
         {
             IQueryable<InvestmentOwner> qry = query;
-
             if (filter.ProjectId != 0)
                 qry = qry.Where(i => i.Investment.Contract.ProjectId == filter.ProjectId);
             if (filter.ContractId != 0)

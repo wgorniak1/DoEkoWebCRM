@@ -106,22 +106,27 @@ namespace DoEko.Controllers
             string sortBy = null
             )
         {
+            ApplicationUser _user = await _userManager.GetUserAsync(User);
+            _user = _userManager.Users.Include(u => u.Projects).Single(u => u.Id == _user.Id);
+
             InvestmentListViewModel model = new InvestmentListViewModel();
             //
             model.Filtering.FilterByInspector = true;
-            model.Filtering.UserId = Guid.Parse(_userManager.GetUserId(User));
+            model.Filtering.UserId = Guid.Parse(_user.Id);
             model.Paging.CurrentNumber = 1;
             model.Paging.PageSize = PageSize.ps_25;
             model.Sorting.sortBy = nameof(Investment.Address) + InvestmentListSorting.postfixUp;
             
             //needed to initiate table display, see view implementation
             model.List = await _context.InvestmentOwners
+                .Where(i => _user.ProjectIds.Any(id => id == i.Investment.Contract.ProjectId))
                 .Where(i => i.Investment.InspectorId == model.Filtering.UserId)
                 .Select(i => new InvestmentOwner { InvestmentId = i.InvestmentId })
                 .Take(1)
                 .ToListAsync();
             //needed to build filtering dropdowns
             List <Address> list = await _context.Investments
+                .Where(i => _user.ProjectIds.Any(id => id == i.Contract.ProjectId))
                 .Where(i => i.InspectorId == model.Filtering.UserId)
                 .Include(i => i.Address).ThenInclude(a=>a.Commune)
                 .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
@@ -166,6 +171,9 @@ namespace DoEko.Controllers
                                              string searchPhrase = null,
                                              string sortBy = null)
         {
+            ApplicationUser _user = await _userManager.GetUserAsync(User);
+
+            _user = _userManager.Users.Include(u => u.Projects).Single(u => u.Id == _user.Id);
 
             InvestmentListViewModel model = new InvestmentListViewModel();
             model.Filtering.FilterByInspector = true;
@@ -177,12 +185,14 @@ namespace DoEko.Controllers
 
             //needed to initiate table display, see view implementation
             model.List = await _context.InvestmentOwners
+                .Where(i => _user.ProjectIds.Any(id => id == i.Investment.Contract.ProjectId))
                 .Where(i => i.Investment.InspectorId == null)
                 .Select(i => new InvestmentOwner { InvestmentId = i.InvestmentId })
                 .Take(1)
                 .ToListAsync();
             //needed to build filtering dropdowns
             List<Address> list = await _context.Investments
+                .Where(i => _user.ProjectIds.Any(id => id == i.Contract.ProjectId))
                 .Where(i => i.InspectorId == null)
                 .Include(i => i.Address).ThenInclude(a => a.Commune)
                 .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
