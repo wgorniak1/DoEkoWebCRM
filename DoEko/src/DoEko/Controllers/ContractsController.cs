@@ -601,10 +601,12 @@ namespace DoEko.Controllers
             return Json(result);
         }
 
-        public static SelectList GetOpenContracts(DoEkoContext context, int contractId)
+        public static SelectList GetOpenContracts(DoEkoContext context, int contractId, ApplicationUser currentUser)
         {
+
             var list = context.Contracts
-                .Include(c=>c.Project)
+                .Include(c => c.Project)
+                .Where(c => currentUser.ProjectIds.Any(id => id == c.ProjectId))
                 .Where(c => c.Status != ContractStatus.Completed)
                 .Select(c => new { Text = c.Number + " " + c.Project.ShortDescription, Value = c.ContractId })
                 .OrderBy(c => c.Text)

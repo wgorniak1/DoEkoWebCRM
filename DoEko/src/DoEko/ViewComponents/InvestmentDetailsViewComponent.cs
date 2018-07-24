@@ -30,6 +30,9 @@ namespace DoEko.ViewComponents
         }
         public async Task<IViewComponentResult> InvokeAsync(Guid? investmentId, ViewMode viewMode)
         {
+            ApplicationUser _user = await _userManager.GetUserAsync(UserClaimsPrincipal);
+            _user = await _userManager.Users.Include(u => u.Projects).SingleAsync(u => u.Id == _user.Id);
+
             var qry = _context.Investments
                 .Include(i => i.Address)
                 .Include(i => i.Contract);
@@ -42,7 +45,8 @@ namespace DoEko.ViewComponents
             //ViewData["InvAddrDistrictId"] = AddressesController.GetDistricts(_context, model.Address.StateId, model.Address.DistrictId);
             //ViewData["InvAddrCommuneId"] = AddressesController.GetCommunes(_context, model.Address.StateId, model.Address.DistrictId, model.Address.CommuneId, model.Address.CommuneType);
             //model.Address.CommuneId = model.Address.CommuneId * 10 + (int)model.Address.CommuneType;
-            ViewData["ContractId"] = ContractsController.GetOpenContracts(_context, model.ContractId);
+
+            ViewData["ContractId"] = ContractsController.GetOpenContracts(_context, model.ContractId, _user);
 
             IdentityRole inspectorRole = await _roleManager.FindByNameAsync(Roles.Inspector);
 
