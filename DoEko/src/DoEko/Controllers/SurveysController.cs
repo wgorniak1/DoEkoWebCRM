@@ -1107,10 +1107,20 @@ namespace DoEko.Controllers
                             SrvCH.FirstEditAt = DateTime.Now;
                             SrvCH.FirstEditBy = _context.CurrentUserId;
                         }
-                        if (SrvCH.ResultCalculation != null && 
-                            User.IsInRole(Roles.Admin))
+                        if (User.IsInRole(Roles.Admin))
                         {
-                            SrvCH.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
+                            if (SrvCH.ResultCalculation == null)
+                            {
+                                SrvCH.ResultCalculation = new SurveyResultCalculations()
+                                {
+                                    SurveyId = SrvCH.SurveyId,
+                                    FinalRSEPower = survey.ResultCalculation.FinalRSEPower
+                                };
+                            }
+                            else
+                            {
+                                SrvCH.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
+                            }
                         }
 
                         _context.SurveysCH.Update(SrvCH);
@@ -1125,8 +1135,16 @@ namespace DoEko.Controllers
                             SrvHW.FirstEditAt = DateTime.Now;
                             SrvHW.FirstEditBy = _context.CurrentUserId;
                         }
-                        if (SrvHW.ResultCalculation != null && User.IsInRole(Roles.Admin))
+                        if (User.IsInRole(Roles.Admin))
                         {
+                            if (SrvHW.ResultCalculation == null)
+                            {
+                                SrvHW.ResultCalculation = new SurveyResultCalculations()
+                                {
+                                    SurveyId = SrvHW.SurveyId
+                                };
+                            }
+
                             switch (SrvHW.RSEType)
                             {
                                 case SurveyRSETypeHotWater.Solar:
@@ -1172,8 +1190,16 @@ namespace DoEko.Controllers
                             SrvEN.FirstEditAt = DateTime.Now;
                             SrvEN.FirstEditBy = _context.CurrentUserId;
                         }
-                        if (SrvEN.ResultCalculation != null && User.IsInRole(Roles.Admin))
+                        if (User.IsInRole(Roles.Admin))
                         {
+                            if (SrvEN.ResultCalculation == null)
+                            {
+                                SrvEN.ResultCalculation = new SurveyResultCalculations()
+                                {
+                                    SurveyId = SrvEN.SurveyId
+                                };
+                            }
+
                             SrvEN.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
                             SrvEN.ResultCalculation.FinalPVConfig = ( SrvEN.ResultCalculation.FinalRSEPower * 1000 ) / project.PVNominalPower; //KW => W
                             SrvEN.ResultCalculation.RSEYearlyProduction = project.YearlyProductionFactor * survey.ResultCalculation.FinalRSEPower;

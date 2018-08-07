@@ -26,6 +26,13 @@ namespace DoEko.ViewComponents
             Survey srv = await _context.Surveys
                 .Include(s=>s.ResultCalculation)
                 .SingleAsync(s => s.SurveyId == surveyId);
+            if (srv.ResultCalculation == null)
+            {
+                srv.ResultCalculation = new SurveyResultCalculations()
+                {
+                    SurveyId = srv.SurveyId
+                };
+            }
 
             return View("Summary", srv);
         }
