@@ -86,23 +86,23 @@
                     switch (((SurveyCentralHeating)item.Survey).RSEType)
                     {
                         case SurveyRSETypeCentralHeating.HeatPump:
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item" , item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture1" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture2" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture3" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item", item } });
+
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture1" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture2" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture3" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item" , item } }'></partial>
                             break;
                         case SurveyRSETypeCentralHeating.PelletBoiler:
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture2" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item", item } });
-
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture2" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item" , item } }'></partial>
                             break;
                         case SurveyRSETypeCentralHeating.HeatPumpAir:
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture2" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture4" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item", item } });
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture2" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture4" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item" , item } }'></partial>
                             break;
                         default:
                             break;
@@ -112,27 +112,27 @@
                     switch (((SurveyHotWater)item.Survey).RSEType)
                     {
                         case SurveyRSETypeHotWater.Solar:
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture6" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture7" }, { "Item", item } });
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture6" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture7" }, { "Item" , item } }'></partial>
                             break;
                         case SurveyRSETypeHotWater.HeatPump:
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture2" }, { "Item", item } });
-                            @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item", item } });
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture2" }, { "Item" , item } }'></partial>
+                            <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item" , item } }'></partial>
                             break;
                         default:
                             break;
                     }
                     break;
                 case DoEko.Models.DoEko.Survey.SurveyType.Energy:
-                    @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item", item } });
-                    @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item", item } });
-                    @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture6" }, { "Item", item } });
-                    @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture7" }, { "Item", item } });
-                    @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture8" }, { "Item", item } });
-                    @Html.Partial("_PicturePartial", new ViewDataDictionary(this.ViewData) { { "Id", "Picture9" }, { "Item", item } });
+                    <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture0" }, { "Item" , item } }'></partial>
+                    <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture5" }, { "Item" , item } }'></partial>
+                    <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture6" }, { "Item" , item } }'></partial>
+                    <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture7" }, { "Item" , item } }'></partial>
+                    <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture8" }, { "Item" , item } }'></partial>
+                    <partial name="_PicturePartial" view-data='new ViewDataDictionary(this.ViewData) { { "Id", "Picture9" }, { "Item" , item } }'></partial>
                     break;
                 default:
                     break;

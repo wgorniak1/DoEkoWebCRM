@@ -24,7 +24,7 @@
                 <h4 class="modal-title" id="SrvCancelModalTitle">Anulowanie ankiety</h4>
             </div>
             <div class="modal-body">
-                @Html.Partial("Survey/_SurveyCancelForm", new DoEko.ViewModels.SurveyViewModels.SurveyCancelViewModel())
+                <partial name="Survey/_SurveyCancelForm" model="new DoEko.ViewModels.SurveyViewModels.SurveyCancelViewModel()"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger srvcancelmodal-btn-cancel" data-dismiss="modal">Anuluj</button>
@@ -51,7 +51,7 @@
                 <h4 class="modal-title" id="SrvCreateModalTitle">Nowe źródło</h4>
             </div>
             <div class="modal-body">
-                @Html.Partial("Survey/_SurveyCreateForm", new DoEko.ViewModels.SurveyViewModels.SurveyCreateViewModel() { InvestmentId = Model.InvestmentId })
+                <partial name="Survey/_SurveyCreateForm" model="new DoEko.ViewModels.SurveyViewModels.SurveyCreateViewModel() { InvestmentId = Model.InvestmentId }"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger srvcreatemodal-btn-cancel" data-dismiss="modal">Anuluj</button>
@@ -332,7 +332,7 @@ else
         </div>
         <div id="owners" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-owners">
             <div class="panel-body">
-                @Html.Partial("_InvestmentOwnerListPartial", Model.InvestmentOwners)
+                <partial name="_InvestmentOwnerListPartial" model="Model.InvestmentOwners"/>
             </div>
         </div>
     </div>

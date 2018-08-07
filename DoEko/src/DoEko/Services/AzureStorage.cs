@@ -22,6 +22,7 @@ namespace DoEko.Services
         ReportResults,
         NeoDownloads
     }
+
     public class AzureStorage : IFileStorage
     {
         private readonly CloudStorageAccount Account;
@@ -44,7 +45,7 @@ namespace DoEko.Services
 
         public void Upload(IFormFile File, EnuAzureStorageContainerType Type, string Key = "Not assigned")
         {
-            CloudBlobContainer Container = GetBlobContainer(Type);
+            CloudBlobContainer Container = GetBlobContainerAsync(Type).GetAwaiter().GetResult();
             if (File.Length > 0)
             {
                 string BlobName = Key + '/' + File.FileName;
@@ -52,22 +53,19 @@ namespace DoEko.Services
                 Stream stream = File.OpenReadStream();
                 CloudBlockBlob BlockBlob = Container.GetBlockBlobReference(BlobName);
 
-                BlockBlob.UploadFromStream(stream);
-                //if (BlockBlob.Properties.LeaseState)
-                //{
-                //return true;
-                //}
+                BlockBlob.UploadFromStreamAsync(stream).GetAwaiter().GetResult();
+
                 stream.Close();
             }
-            //else
-                //return false;
         }
 
-        public async Task<bool> DeleteFolderAsync(EnuAzureStorageContainerType ContainerType, string FolderName)
+        public async Task<bool> DeleteFolderAsync(EnuAzureStorageContainerType ContainerType, string FolderName, BlobContinuationToken blobContinuationToken = null)
         {
-            CloudBlobContainer container = GetBlobContainer(ContainerType);
-            
-            foreach (IListBlobItem blob in container.GetDirectoryReference(FolderName.ToLower()).ListBlobs(true))
+            CloudBlobContainer container = await GetBlobContainerAsync(ContainerType);
+
+            var l = await container.GetDirectoryReference(FolderName.ToLower()).ListBlobsAsync(blobContinuationToken);
+
+            foreach (IListBlobItem blob in l)
             {
                 if (blob.GetType() == typeof(CloudBlob) || blob.GetType().BaseType == typeof(CloudBlob))
                 {

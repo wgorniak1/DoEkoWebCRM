@@ -47,10 +47,10 @@ namespace DoEko.Controllers.Helpers
         public Task BuildAsync(InvestmentViewModel inv, string resultsFolder)
         {
             //1. Initialize:
-            inv.ReadPictures(_fileStorage);
+            inv.ReadPicturesAsync(_fileStorage).GetAwaiter().GetResult();
 
             //1. Title section is always populated
-            Stream MainStream = this.GetTemplate(ReportName, OfficeTemplateType.Title);
+            Stream MainStream = GetTemplateAsync(ReportName, OfficeTemplateType.Title).GetAwaiter().GetResult();
 
             WordprocessingDocument doc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(stream: MainStream, isEditable: true);
             doc = doc.MergeFields(inv).MergePictures(inv);
@@ -76,10 +76,10 @@ namespace DoEko.Controllers.Helpers
             doc.Dispose();
 
             //Save data into file
-
-            
             var blob = _fileStorage
-                .GetBlobContainer(EnuAzureStorageContainerType.ReportResults)
+                .GetBlobContainerAsync(EnuAzureStorageContainerType.ReportResults)
+                .GetAwaiter()
+                .GetResult()
                 .GetBlockBlobReference(CreateFileName(resultsFolder, inv));
 
             MainStream.Position = 0;
@@ -99,16 +99,21 @@ namespace DoEko.Controllers.Helpers
             //                inv.Address.ApartmentNo)) + ".docm";
         }
 
-        private Stream GetTemplate(string templateType, OfficeTemplateType templateSection)
+        private async Task<Stream> GetTemplateAsync(string templateType, OfficeTemplateType templateSection)
         {
             try
             {
-                var templates = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Templates);
+                var templates = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Templates);
+
                 var template = templates.GetDirectoryReference(templateType);
-                var templateDoc = template.GetDirectoryReference(templateSection.ToString()).ListBlobs().OfType<CloudBlockBlob>().First();
+
+                var templateDoc = (await (template.GetDirectoryReference(templateSection.ToString()))
+                    .ListBlobsAsync(new BlobContinuationToken()))
+                    .OfType<CloudBlockBlob>()
+                    .First();
 
                 Stream stream = new MemoryStream();
-                templateDoc.DownloadToStream(stream);
+                await templateDoc.DownloadToStreamAsync(stream);
 
                 return stream;
             }
@@ -163,7 +168,7 @@ namespace DoEko.Controllers.Helpers
                 return Stream.Null;
             }
 
-            Stream partStream = this.GetTemplate("InspectionSummary", type);
+            Stream partStream = GetTemplateAsync("InspectionSummary", type).GetAwaiter().GetResult();
 
             WordprocessingDocument tmpDoc = WordprocessingDocument.Open(stream: partStream, isEditable: true);
             tmpDoc

@@ -186,11 +186,14 @@ namespace DoEko.ViewComponents
             if (filter.Status != 0)
                 qry = qry.Where(i => i.Investment.InspectionStatus == filter.Status);
             if (!string.IsNullOrEmpty(filter.CommuneId))
+            {
+                var communeIds = filter.CommuneId.Split('_').ToArray();
                 qry = qry.Where(i => 
-                i.Investment.Address.StateId == int.Parse(filter.CommuneId.Split('_')[0]) &&
-                i.Investment.Address.DistrictId == int.Parse(filter.CommuneId.Split('_')[1]) &&
-                i.Investment.Address.CommuneId == int.Parse(filter.CommuneId.Split('_')[2]) &&
-                i.Investment.Address.CommuneType == (CommuneType)Enum.Parse(typeof(CommuneType),filter.CommuneId.Split('_')[3]));
+                i.Investment.Address.StateId == int.Parse(communeIds.ElementAt(0)) &&
+                i.Investment.Address.DistrictId == int.Parse(communeIds.ElementAt(1)) &&
+                i.Investment.Address.CommuneId == int.Parse(communeIds.ElementAt(2)) &&
+                i.Investment.Address.CommuneType == (CommuneType)Enum.Parse(typeof(CommuneType), communeIds.ElementAt(3)));
+            }
             if (!string.IsNullOrEmpty(filter.City))
                 qry = qry.Where(i => i.Investment.Address.City == filter.City);
             if (!string.IsNullOrEmpty(filter.FreeText))

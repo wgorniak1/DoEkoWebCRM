@@ -42,7 +42,7 @@
             {
                 <tr class="InvestmentRow wg-table-row-clickable" data-bind="@item.InvestmentId">
                     <td>
-                        @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
+                        <partial name="../Shared/Address/_AddressDetailPartial" model="item" />
                     </td>
                     <td>
                         <table>

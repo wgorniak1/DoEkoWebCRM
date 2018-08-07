@@ -29,96 +29,77 @@ namespace DoEko.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult Upload(EnuAzureStorageContainerType Type, int? ID, Guid? Guid, string ReturnUrl = null)
+        public async Task<IActionResult> Upload(EnuAzureStorageContainerType Type, int? ID, Guid? Guid, string ReturnUrl = null)
         {
+            CloudBlobContainer cloudBlobContainer = await _fileStorage.GetBlobContainerAsync(Type);
             
-            //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
-            List<string> blobs = new List<string>();
-            foreach (var blobItem in Container.ListBlobs())
-            {
-                blobs.Add(blobItem.Uri.ToString());
-            }
+            var model = (await cloudBlobContainer.ListBlobsAsync(new BlobContinuationToken())).Select(i => i.Uri.AbsoluteUri).ToList();
 
-            if (ID != null)
-            {
-                ViewData["Id"] = ID.ToString();
-            }
-            else if (Guid != null)
-            {
-                ViewData["Id"] = Guid.ToString();
-            }
-            return View(blobs);
+            ViewData["Id"] = ID?.ToString() ?? Guid?.ToString();
+            ViewData["ReturnURL"] = ReturnUrl;
 
-        }
+            return View(model);
 
-//        [HttpPost]
-        public JsonResult Upload(EnuAzureStorageContainerType Type, int? Id, Guid? Guid,
-                                 IFormCollection Form, string ReturnUrl = null)
-        {
-            //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
-            string Key = "Not assigned";
-            if (Id != null)
-            {
-                Key = Id.ToString();
-            }
-            else if (Guid != null)
-            {
-                Key = Guid.ToString();
-            }
-
-            foreach (var file in Request.Form.Files)
-            {
-                Stream stream = file.OpenReadStream();
-                if (file.Length == 0)
-                    continue;
-
-                if (file.Length > 0)
-                {
-                    string name = Key + '/' + file.FileName;
-                    CloudBlockBlob blob = Container.GetBlockBlobReference(name);
-                    blob.UploadFromStream(file.OpenReadStream());
-                }
-            }
-            //if (true)
-            //{
-
-            //}
-            return Json("OK");
         }
 
         [HttpPost]
-        public IActionResult UploadPhoto(EnuAzureStorageContainerType type, Guid guid)
+        public async Task<IActionResult> Upload(EnuAzureStorageContainerType Type, int? Id, Guid? Guid, IFormCollection Form, string ReturnUrl = null)
         {
-            string TargetUrl = "";
+            CloudBlobContainer cloudBlobContainer = await _fileStorage.GetBlobContainerAsync(Type);
+
+            string Key = Id?.ToString() ?? Guid?.ToString() ?? "NoID";
+
+            foreach (var file in Request.Form.Files.Where(f => f.Length > 0))
+            {
+                string blobName = Key + '/' + file.FileName;
+
+                CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
+
+                await cloudBlockBlob.UploadFromStreamAsync(file.OpenReadStream());
+
+            }
+
+            return Ok("OK");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadPhoto(EnuAzureStorageContainerType type, Guid guid)
+        {
 
             if (guid == Guid.Empty)
+                ModelState.AddModelError("GuID", "Nr Ankiety nie może być pusty");
+
+            if (Request.Form.Files.Count != 1)
+                ModelState.AddModelError("File", "Proszę wskazać plik ze zdjęciem");
+
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("guid", "Nr Ankiety nie może być pusty");
                 return BadRequest(ModelState);
             }
-            if (Request.Form.Files.Count == 0)
-                return Ok(TargetUrl);
             
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(type);
+            CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(type);
             var file = Request.Form.Files.First();
-            //foreach (var file in Request.Form.Files)
-            //{
-            Stream stream = file.OpenReadStream();
+            
             if (file.Length > 0)
             {
                 // surveyId / Picture0 / filename
-                string name = guid.ToString() + '/' + file.Name + '/' + file.FileName;
-                CloudBlockBlob blob = Container.GetBlockBlobReference(name);
-                blob.UploadFromStream(file.OpenReadStream());
-                blob.Properties.ContentType = this.GetFileContentType(file.FileName);
-                blob.SetProperties();
+                string blobName = guid.ToString() + '/' + file.Name + '/' + file.FileName;
 
-                TargetUrl = blob.Uri.ToString();
+                CloudBlockBlob cloudBlockBlob = Container.GetBlockBlobReference(blobName);
+
+                await cloudBlockBlob.UploadFromStreamAsync(file.OpenReadStream());
+                //cloudBlockBlob.Properties.ContentType = file.ContentType;
+                cloudBlockBlob.Properties.ContentType = this.GetFileContentType(file.FileName);
+
+                await cloudBlockBlob.SetPropertiesAsync();
+
+                return Ok(cloudBlockBlob.Uri.AbsoluteUri);
             }
-            //}
-            return Ok(TargetUrl);
+            else
+            {
+                return Ok();
+            }
+
         }
 
         private string GetFileContentType(string fileName)
@@ -176,17 +157,17 @@ namespace DoEko.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeletePhoto(EnuAzureStorageContainerType type, Guid guid, string pictureId, string fileName)
+        public async Task<IActionResult> DeletePhoto(EnuAzureStorageContainerType type, Guid guid, string pictureId, string fileName)
         {
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(type);
-            string RootKey = guid.ToString();
-
-            string fullname = RootKey + '/' + pictureId + '/' + fileName;
             try
             {
+                CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(type);
+            
+                string fullname = guid.ToString() + '/' + pictureId + '/' + fileName;
+
                 CloudBlockBlob blob = Container.GetBlockBlobReference(fullname);
 
-                blob.Delete();
+                await blob.DeleteIfExistsAsync();
 
                 return Ok();
             }
@@ -197,26 +178,16 @@ namespace DoEko.Controllers
 
         }
 
-        public JsonResult Delete(EnuAzureStorageContainerType Type, int? Id, Guid? Guid,
-                                         string Name, string ReturnUrl = null)
+        [HttpPost]
+        public async Task<JsonResult> Delete(EnuAzureStorageContainerType Type, int? Id, Guid? Guid, string Name, string ReturnUrl = null)
         {
-            //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
-            string Key = "Not assigned";
-            if (Id != null)
-            {
-                Key = Id.ToString();
-            }
-            else if (Guid != null)
-            {
-                Key = Guid.ToString();
-            }
-            
-            string fullname = Key + '/' + Name;
-            CloudBlockBlob blob = Container.GetBlockBlobReference(fullname);
+            CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(Type);
+
+            string blobName = ( Id?.ToString() ?? Guid?.ToString() ?? "NoID" ) + '/' + Name;
+            CloudBlockBlob cloudBlobkBlob = Container.GetBlockBlobReference(blobName);
             try
             {
-                blob.Delete();
+                await cloudBlobkBlob.DeleteIfExistsAsync();
 
                 return Json("OK");
             }
@@ -226,32 +197,23 @@ namespace DoEko.Controllers
             }
         }
 
-        private IList<Models.DoEko.File> Files(EnuAzureStorageContainerType Type, string Key)
+        private async Task<IList<Models.DoEko.File>> Files(EnuAzureStorageContainerType Type, string Key)
         {
-            //CloudBlobContainer Container = _azureStorage.GetBlobContainer(Type);
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(Type);
-            var ContainerBlockBlobs = Container.ListBlobs(prefix: Key, useFlatBlobListing: true).OfType<CloudBlockBlob>();
+            CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(Type);
 
-            List<Models.DoEko.File> FileList = new List<Models.DoEko.File>();
+            var ContainerBlockBlobs = await Container.ListBlobsAsync(Key, true, BlobListingDetails.None, null, new BlobContinuationToken(), null, null);
 
-            foreach (var BlockBlob in ContainerBlockBlobs)
-            {
-                FileList.Add(new Models.DoEko.File
-                {
+            var fileList = ContainerBlockBlobs
+                .OfType<CloudBlockBlob>()
+                .Select(b => new Models.DoEko.File {
                     ParentType = Type.ToString(),
-                    //ParentId = Key,
-                    //ProjectId = Key,
-                    Name = BlockBlob.Uri.Segments.Last(),
-                    ChangedAt = BlockBlob.Properties.LastModified.Value.LocalDateTime,
-                    Url = BlockBlob.Uri.ToString()
-                });
-            };
-            return FileList;
+                    Name = b.Uri.Segments.Last(),
+                    ChangedAt = b.Properties.LastModified.Value.LocalDateTime,
+                    Url = b.Uri.AbsoluteUri })
+                .ToList();
+
+            return fileList;
 
         }
-
-
-
-
     }
 }

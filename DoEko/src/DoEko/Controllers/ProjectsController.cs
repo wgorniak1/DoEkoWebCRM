@@ -81,7 +81,7 @@ namespace DoEko.Controllers
                 return NotFound();
             }
 
-            project.Attachments = GetAttachments(project.ProjectId);
+            project.Attachments = await GetAttachmentsAsync(project.ProjectId);
 
             return View(project);
         }
@@ -359,10 +359,10 @@ namespace DoEko.Controllers
                 //delete contract's attachments
                 foreach (var contract in project.Contracts)
                 {
-                    result = _fileStorage.DeleteFolderAsync(EnuAzureStorageContainerType.Contract, contract.ContractId.ToString());
+                    result = _fileStorage.DeleteFolderAsync(EnuAzureStorageContainerType.Contract, contract.ContractId.ToString(), new BlobContinuationToken());
                 }
                 //delete project's attachments
-                result = _fileStorage.DeleteFolderAsync(EnuAzureStorageContainerType.Project, project.ProjectId.ToString());
+                result = _fileStorage.DeleteFolderAsync(EnuAzureStorageContainerType.Project, project.ProjectId.ToString(), new BlobContinuationToken());
 
 
             }
@@ -394,27 +394,39 @@ namespace DoEko.Controllers
             return _context.Projects.Any(e => e.ProjectId == id);
         }
 
-        private IList<File> GetAttachments(int id)
+        private async Task<IList<File>> GetAttachmentsAsync(int id)
         {
-            //AzureStorage account = new AzureStorage(_configuration.GetConnectionString("doekostorage_AzureStorageConnectionString"));
+            CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Project);
+            CloudBlobDirectory cloudBlobDirectory = Container.GetDirectoryReference(id.ToString());
 
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Project);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
-            var ContainerBlockBlobs = Container.ListBlobs(prefix: id.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+            return cloudBlobDirectory
+                .ListBlobsAsync(new BlobContinuationToken())
+                .GetAwaiter()
+                .GetResult()
+                .OfType<CloudBlockBlob>()
+                .Select(b => new File() {
+                    Name = WebUtility.UrlDecode(b.Uri.Segments.Last()),
+                    ChangedAt = b.Properties.LastModified.HasValue ? b.Properties.LastModified.Value.LocalDateTime : DateTime.MinValue,
+                    Url = b.Uri.AbsoluteUri
+                })
+                .ToList();
+            //    .ListBlobsAsync(id.ToString(), true, BlobListingDetails.None, null, new BlobContinuationToken(), null, null, System.Threading.CancellationToken.None);
+                //.OfType<CloudBlockBlob>();
 
-            List<File> FileList = new List<File>(10); //each row represent different picture type
-
-            foreach (var BlockBlob in ContainerBlockBlobs)
-            {
-                var name = BlockBlob.Name;
-                //FileList.Add(new File
-                //{
-                //    Name = WebUtility.UrlDecode(BlockBlob.Uri.Segments.Last()),
-                //    ChangedAt = BlockBlob.Properties.LastModified.Value.LocalDateTime,
-                //    Url = BlockBlob.Uri.ToString(),
+            //List<File> FileList = new List<File>(10); //each row represent different picture type
+             
+            //foreach (var BlockBlob in ContainerBlockBlobs)
+            //{
+            //    var name = BlockBlob.Name;
+            //    //FileList.Add(new File
+            //    //{
+            //    //    Name = WebUtility.UrlDecode(BlockBlob.Uri.Segments.Last()),
+            //    //    ChangedAt = BlockBlob.Properties.LastModified.Value.LocalDateTime,
+            //    //    Url = BlockBlob.Uri.ToString(),
                     
-                //});
-            };
-            return FileList;
+            //    //});
+            //};
+            //return FileList;
 
         }
     }

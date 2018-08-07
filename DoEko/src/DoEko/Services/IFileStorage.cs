@@ -11,6 +11,6 @@ namespace DoEko.Services
     {
         Task<CloudBlobContainer> GetBlobContainerAsync(EnuAzureStorageContainerType ContainerType);
         void Upload(IFormFile File, EnuAzureStorageContainerType Type, string Key = "Not assigned");
-        Task<bool> DeleteFolderAsync(EnuAzureStorageContainerType ContainerType, string FolderName);
+        Task<bool> DeleteFolderAsync(EnuAzureStorageContainerType ContainerType, string FolderName, BlobContinuationToken blobContinuationToken);
     }
 }

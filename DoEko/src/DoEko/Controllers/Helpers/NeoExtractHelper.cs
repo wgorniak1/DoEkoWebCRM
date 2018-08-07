@@ -78,8 +78,7 @@ namespace DoEko.Controllers.Helpers
             //Create file on AzureStorage
             string fileName = "OZEDoAnalizy_" + DateTime.Now.ToFileTime() + ".xlsx";
             
-            var blob = _fileStorage
-                .GetBlobContainer(EnuAzureStorageContainerType.NeoDownloads)
+            var blob = (await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.NeoDownloads))
                 .GetDirectoryReference(this.contractId.ToString() + "/")
                 .GetBlockBlobReference(fileName);
             

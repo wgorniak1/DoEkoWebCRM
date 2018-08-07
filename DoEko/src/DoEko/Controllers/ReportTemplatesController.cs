@@ -38,7 +38,7 @@ namespace DoEko.Controllers
                 if (Request.Form.Files.Count == 0)
                     return BadRequest();
 
-                CloudBlobContainer Container = _fileStorage.GetBlobContainer(containerType);
+                CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(containerType);
                 var file = Request.Form.Files.First();
 
                 Stream stream = file.OpenReadStream();
@@ -71,13 +71,17 @@ namespace DoEko.Controllers
             {
                 EnuAzureStorageContainerType containerType = EnuAzureStorageContainerType.Templates;
 
-                CloudBlobContainer Container = _fileStorage.GetBlobContainer(containerType);
+                var blobsToDelete = (await (await _fileStorage
+                    .GetBlobContainerAsync(containerType))
+                    .GetDirectoryReference(templateName)
+                    .GetDirectoryReference(templateSection.ToString())
+                    .ListBlobsAsync(new BlobContinuationToken()))
+                    .OfType<CloudBlockBlob>();
+                    
+                //string fullname = templateName + '/' + templateSection.ToString();
+                //var TemplateBlockBlobs = Container.ListBlobs(prefix: fullname, useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
-                string fullname = templateName + '/' + templateSection.ToString();
-
-                var TemplateBlockBlobs = Container.ListBlobs(prefix: fullname, useFlatBlobListing: true).OfType<CloudBlockBlob>();
-
-                foreach (var blob in TemplateBlockBlobs)
+                foreach (var blob in blobsToDelete)
                 {
                     await blob.DeleteIfExistsAsync();
                 }
@@ -114,20 +118,27 @@ namespace DoEko.Controllers
 
         #region Private
 
-        private Dictionary<OfficeTemplateType, OfficeTemplate> GetTemplates(string templateCategory = null)
+        //private Dictionary<OfficeTemplateType, OfficeTemplate> GetTemplates(string templateCategory = null)
+        private IEnumerable<KeyValuePair<OfficeTemplateType, OfficeTemplate>> GetTemplates(string templateCategory = null)
         {
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Templates);
-            var TemplateBlockBlobs = Container.ListBlobs(prefix: templateCategory, useFlatBlobListing: true).OfType<CloudBlockBlob>();
+            var TemplateBlockBlobs = _fileStorage
+                .GetBlobContainerAsync(EnuAzureStorageContainerType.Templates)
+                .GetAwaiter()
+                .GetResult()
+                .GetDirectoryReference(templateCategory)
+                .ListBlobsAsync(true,BlobListingDetails.None,null,new BlobContinuationToken(),null,null)
+                .GetAwaiter()
+                .GetResult()
+                .OfType<CloudBlockBlob>();
 
-            Dictionary<OfficeTemplateType, OfficeTemplate> TemplateList = new Dictionary<OfficeTemplateType, OfficeTemplate>();
-
+            //Dictionary<OfficeTemplateType, OfficeTemplate> TemplateList = new Dictionary<OfficeTemplateType, OfficeTemplate>();
             foreach (var BlockBlob in TemplateBlockBlobs)
             {
                 var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
-                TemplateList.Add((OfficeTemplateType)Enum.Parse(typeof(OfficeTemplateType), partNames[1]), new OfficeTemplate { Name = partNames[0], Url = BlockBlob.Uri.ToString() });
+                yield return new KeyValuePair<OfficeTemplateType, OfficeTemplate>(
+                    (OfficeTemplateType)Enum.Parse(typeof(OfficeTemplateType), partNames[1]), 
+                    new OfficeTemplate { Name = partNames[0], Url = BlockBlob.Uri.ToString() });
             };
-
-            return TemplateList;
         }
 
         #endregion

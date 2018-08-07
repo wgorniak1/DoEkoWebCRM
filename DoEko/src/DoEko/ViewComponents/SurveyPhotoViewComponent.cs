@@ -38,7 +38,7 @@ namespace DoEko.ViewComponents
 
                     SurveyCentralHeating srvCH = await _context.SurveysCH.SingleAsync(s => s.SurveyId == surveyId);
 
-                    model.Attachments = this.GetAttachments(srvCH.SurveyId, srvCH.InvestmentId);
+                    model.Attachments = await this.GetAttachmentsAsync(srvCH.SurveyId, srvCH.InvestmentId);
                     model.InvestmentId = srvCH.InvestmentId;
                     model.SurveyId = srvCH.SurveyId;
                     model.Type_CH = srvCH.RSEType;
@@ -47,7 +47,7 @@ namespace DoEko.ViewComponents
                 case SurveyType.HotWater:
                     SurveyHotWater srvHW = await _context.SurveysHW.SingleAsync(s => s.SurveyId == surveyId);
 
-                    model.Attachments = this.GetAttachments(srvHW.SurveyId, srvHW.InvestmentId);
+                    model.Attachments = await this.GetAttachmentsAsync(srvHW.SurveyId, srvHW.InvestmentId);
                     model.InvestmentId = srvHW.InvestmentId;
                     model.SurveyId = srvHW.SurveyId;
                     model.Type_HW = srvHW.RSEType;
@@ -56,7 +56,7 @@ namespace DoEko.ViewComponents
                 case SurveyType.Energy:
                     SurveyEnergy srvEN = await _context.SurveysEN.SingleAsync(s => s.SurveyId == surveyId);
 
-                    model.Attachments = this.GetAttachments(srvEN.SurveyId, srvEN.InvestmentId);
+                    model.Attachments = await this.GetAttachmentsAsync(srvEN.SurveyId, srvEN.InvestmentId);
                     model.InvestmentId = srvEN.InvestmentId;
                     model.SurveyId = srvEN.SurveyId;
                     model.Type_EN = srvEN.RSEType;
@@ -67,54 +67,30 @@ namespace DoEko.ViewComponents
             }
         }
 
-        private Dictionary<string,SurveyPhoto> GetAttachments(Guid surveyId, Guid investmentId)
+        private async Task<Dictionary<string,SurveyPhoto>> GetAttachmentsAsync(Guid surveyId, Guid investmentId)
         {
-            CloudBlobContainer Container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
-            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);//account.GetBlobContainer(enuAzureStorageContainerType.Project);
-            var SurveyBlockBlobs     = Container.ListBlobs(prefix: surveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+            var surveyBlockBlobs = (await (await _fileStorage
+                .GetBlobContainerAsync(EnuAzureStorageContainerType.Survey))
+                .GetDirectoryReference(surveyId.ToString())
+                .ListBlobsAsync(true, BlobListingDetails.None, null, new BlobContinuationToken(), null, null))
+                .OfType<CloudBlockBlob>();
 
+            var investmentBlockBlobs = (await (await _fileStorage
+                .GetBlobContainerAsync(EnuAzureStorageContainerType.Investment))
+                .GetDirectoryReference(investmentId.ToString())
+                .ListBlobsAsync(true, BlobListingDetails.None, null, new BlobContinuationToken(), null, null))
+                .OfType<CloudBlockBlob>()
+                .Where(b => b.Name.Split('/').Reverse().ToArray().First().Contains("Picture"));
+
+            
             Dictionary<string,SurveyPhoto> FileList = new Dictionary<string, SurveyPhoto>();
 
-            foreach (var BlockBlob in SurveyBlockBlobs)
+            foreach (var item in surveyBlockBlobs.Union(investmentBlockBlobs).OrderBy(i=>i.Name))
             {
-                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
+                var partNames = item.Name.Split('/').Reverse().ToArray();
 
-                if (partNames[1].Equals("Picture0") || partNames[1].Equals("Picture5") || partNames[1].Equals("Picture10"))
-                {
-                    partNames[2] = investmentId.ToString();
-                    string targetName = partNames[2] + '/' + partNames[1] + '/' + partNames[0];
-                    CloudBlockBlob targetBlob = ContainerInv.GetBlockBlobReference(targetName);
-                    targetBlob.StartCopy(BlockBlob);
-                    while (targetBlob.CopyState.Status != CopyStatus.Success)
-                    {
-                        //
-                    }
-                    BlockBlob.Delete();
-                }
-                else
-                {
-                    FileList.Add(partNames[1], new SurveyPhoto {Name = partNames[0], Url = BlockBlob.Uri.ToString() });
-                }
-            };
-            
-            //
-            var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: investmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
-
-            foreach (var BlockBlob in InvestmentBlockBlobs)
-            {
-                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
-                if (partNames[1].Contains("Picture"))
-                {
-                    try
-                    {
-                        FileList.Add(partNames[1], new SurveyPhoto { Name = partNames[0], Url = BlockBlob.Uri.ToString() });
-                    }
-                    catch (Exception)
-                    {
-                        
-                    }
-                }
-            };
+                FileList.Add(partNames[1], new SurveyPhoto { Name = partNames[0], Url = item.Uri.AbsoluteUri });
+            }
 
             return FileList;
 

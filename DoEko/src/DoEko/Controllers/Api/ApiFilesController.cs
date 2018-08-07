@@ -1,22 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using DoEko.Services;
 using Microsoft.Extensions.Logging;
 using DoEko.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
-using DoEko.ViewModels.AccountViewModels;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.Extensions.Options;
-using DoEko.Controllers.Settings;
-using System.Security.Claims;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace DoEko.Controllers.Api
@@ -43,11 +32,11 @@ namespace DoEko.Controllers.Api
 
         [HttpGet]
         [Route("Templates")]
-        public IActionResult GetTemplate([FromQuery] string Type)
+        public async Task<IActionResult> GetTemplate([FromQuery] string Type)
         {
-            var container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Templates);
-            var files = container.ListBlobs(prefix: Type, useFlatBlobListing: true).OfType<CloudBlockBlob>();
-
+            var container = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Templates);
+            var files = await container.ListBlobsAsync(Type, true, BlobListingDetails.None, null, new BlobContinuationToken(), null, null);
+            
             if (files.Count() > 0)
             {
                 return Ok(new { url = files.First().Uri.AbsoluteUri });

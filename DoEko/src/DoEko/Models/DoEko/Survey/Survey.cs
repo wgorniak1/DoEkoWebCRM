@@ -258,40 +258,39 @@ namespace DoEko.Models.DoEko.Survey
         //    return FileList;
         //}
 
-        public Dictionary<string, Uri> Photos(IFileStorage iFileStorage)
+        //public Dictionary<string, Uri> Photos(IFileStorage ifileStorage)
+        public IEnumerable<KeyValuePair<string,Uri>> Photos(IFileStorage ifileStorage)
         {
-            CloudBlobContainer Container = iFileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
-            var SurveyBlockBlobs = Container.ListBlobs(prefix: this.SurveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+            var surveyBlockBlobs = ifileStorage
+                .GetBlobContainerAsync(EnuAzureStorageContainerType.Survey)
+                .GetAwaiter()
+                .GetResult()
+                .GetDirectoryReference(this.SurveyId.ToString())
+                .ListBlobsAsync(true, BlobListingDetails.None, null, new BlobContinuationToken(), null, null)
+                .GetAwaiter()
+                .GetResult()
+                .OfType<CloudBlockBlob>();
 
-            Dictionary<string, Uri> FileList = new Dictionary<string, Uri>();
+            var investmentBlockBlobs = ifileStorage
+                .GetBlobContainerAsync(EnuAzureStorageContainerType.Investment)
+                .GetAwaiter()
+                .GetResult()
+                .GetDirectoryReference(this.InvestmentId.ToString())
+                .ListBlobsAsync(true, BlobListingDetails.None, null, new BlobContinuationToken(), null, null)
+                .GetAwaiter()
+                .GetResult()
+                .OfType<CloudBlockBlob>()
+                .Where(b => b.Name.Split('/').Reverse().ToArray().Contains("Picture"));
+                //.ToAsyncEnumerable();
 
-            foreach (var BlockBlob in SurveyBlockBlobs)
+
+            foreach (var item in surveyBlockBlobs
+                .Union(investmentBlockBlobs)
+                .OrderBy(b => b.Name))
             {
-                try
-                {
-                    FileList.Add(BlockBlob.Name.Split('/').Reverse().ToArray().ElementAt(1), BlockBlob.Uri);
-                }
-                catch (Exception) { }
-            };
-
-            //
-            CloudBlobContainer ContainerInv = iFileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
-            var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: this.InvestmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
-
-            foreach (var BlockBlob in InvestmentBlockBlobs)
-            {
-                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
-                if (partNames[1].Contains("Picture"))
-                {
-                    try
-                    {
-                        FileList.Add(partNames[1], BlockBlob.Uri);
-                    }
-                    catch (Exception) { }
-                }
-            };
-
-            return FileList;
+                //item.Name.Split('/').Reverse().ToArray().ElementAt(1)
+                yield return new KeyValuePair<string, Uri>(item.Name, item.Uri);
+            }
         }
 
 

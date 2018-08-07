@@ -72,15 +72,15 @@ namespace DoEko.ViewModels.ReportsViewModels
 
         [NotMapped]
         private Dictionary<Guid, Dictionary<string, Uri>> Pictures { get; set; }
-        public void ReadPictures(IFileStorage _fileStorage)
+        public async Task ReadPicturesAsync(IFileStorage _fileStorage)
         {
             this.Pictures = new Dictionary<Guid, Dictionary<string, Uri>>();
 
             //Investment
             try
             {
-                var cont = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
-                var files = cont.ListBlobs(prefix: this.InvestmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+                var cont = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Investment);
+                var files = (await cont.ListBlobsAsync(this.InvestmentId.ToString(), true,BlobListingDetails.None,null,new BlobContinuationToken(),null,null)).OfType<CloudBlockBlob>();
 
                 Dictionary<string, Uri> tmpList = new Dictionary<string, Uri>();
 
@@ -110,8 +110,8 @@ namespace DoEko.ViewModels.ReportsViewModels
             {
                 try
                 {
-                    var cont = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
-                    var files = cont.ListBlobs(prefix: srv.SurveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+                    var cont = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Survey);
+                    var files = (await cont.ListBlobsAsync(srv.SurveyId.ToString(), true,BlobListingDetails.None,null,new BlobContinuationToken(),null,null)).OfType<CloudBlockBlob>();
 
                     Dictionary<string, Uri> tmpList = new Dictionary<string, Uri>();
 

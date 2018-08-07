@@ -384,9 +384,15 @@ namespace DoEko.Controllers
 
                 }
                 await docBuilder.BuildAsync(im, resultsFolder);
+                
                 //return single doc
                 //return PhysicalFile(docUrl,"");
-                var doc = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary/" + resultsFolder).ListBlobs(true).OfType<CloudBlockBlob>().First();
+                var doc = (await (await _fileStorage
+                    .GetBlobContainerAsync(EnuAzureStorageContainerType.ReportResults))
+                    .GetDirectoryReference("InspectionSummary/" + resultsFolder)
+                    .ListBlobsAsync(true,BlobListingDetails.None,null,new BlobContinuationToken(),null,null))
+                    //.OfType<CloudBlockBlob>()
+                    .First();
 
                 return Redirect(doc.Uri.AbsoluteUri);
             }
@@ -992,7 +998,7 @@ namespace DoEko.Controllers
                 }
 
                 //ZDJECIA
-                foreach (var item in this.SurveyPhotos(srv.SurveyId, srv.InvestmentId))
+                foreach (var item in srv.Photos(_fileStorage))//this.SurveyPhotos(srv.SurveyId, srv.InvestmentId))
                 {
                     myExport[item.Key] =
                         "=HIPERŁĄCZE(\"" + item.Value + "\";\"" + item.Key + "\")";
@@ -1106,41 +1112,41 @@ namespace DoEko.Controllers
             return ss;
         }
 
-        private async Task<Dictionary<string, string>> SurveyPhotos(Guid surveyId, Guid investmentId)
-        {
-            CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Survey);
-            var SurveyBlockBlobs = Container.ListBlobs(prefix: surveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+        //private async Task<Dictionary<string, string>> SurveyPhotos(Guid surveyId, Guid investmentId)
+        //{
+        //    CloudBlobContainer Container = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Survey);
+        //    var SurveyBlockBlobs = Container.ListBlobs(prefix: surveyId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
-            Dictionary<string, string> FileList = new Dictionary<string, string>();
+        //    Dictionary<string, string> FileList = new Dictionary<string, string>();
 
-            foreach (var BlockBlob in SurveyBlockBlobs)
-            {
-                try
-                {
-                    FileList.Add(BlockBlob.Name.Split('/').Reverse().ToArray().ElementAt(1), BlockBlob.Uri.ToString());
-                }
-                catch (Exception) { }
-            };
+        //    foreach (var BlockBlob in SurveyBlockBlobs)
+        //    {
+        //        try
+        //        {
+        //            FileList.Add(BlockBlob.Name.Split('/').Reverse().ToArray().ElementAt(1), BlockBlob.Uri.ToString());
+        //        }
+        //        catch (Exception) { }
+        //    };
 
-            //
-            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
-            var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: investmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
+        //    //
+        //    CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
+        //    var InvestmentBlockBlobs = ContainerInv.ListBlobs(prefix: investmentId.ToString(), useFlatBlobListing: true).OfType<CloudBlockBlob>();
 
-            foreach (var BlockBlob in InvestmentBlockBlobs)
-            {
-                var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
-                if (partNames[1].Contains("Picture"))
-                {
-                    try
-                    {
-                        FileList.Add(partNames[1], BlockBlob.Uri.ToString());
-                    }
-                    catch (Exception) { }
-                }
-            };
+        //    foreach (var BlockBlob in InvestmentBlockBlobs)
+        //    {
+        //        var partNames = BlockBlob.Name.Split('/').Reverse().ToArray();
+        //        if (partNames[1].Contains("Picture"))
+        //        {
+        //            try
+        //            {
+        //                FileList.Add(partNames[1], BlockBlob.Uri.ToString());
+        //            }
+        //            catch (Exception) { }
+        //        }
+        //    };
 
-            return FileList;
-        }
+        //    return FileList;
+        //}
 
         [HttpGet]
         [Route("~/reports/inspectionsummary/download/{reportname}")]
@@ -1170,9 +1176,17 @@ namespace DoEko.Controllers
             //{
             //    FileDownloadName = "MyZipfile.zip"
             //};
-
-            var rootDir = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
-            var fileList = rootDir.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>();
+            
+            var fileList = _fileStorage
+                .GetBlobContainerAsync(EnuAzureStorageContainerType.ReportResults)
+                .GetAwaiter()
+                .GetResult()
+                .GetDirectoryReference("InspectionSummary")
+                .GetDirectoryReference(reportName)
+                .ListBlobsAsync(new BlobContinuationToken())
+                .GetAwaiter()
+                .GetResult()
+                .OfType<CloudBlockBlob>();
 
             var totalSize = fileList.Sum(b => b.Properties.Length);
 
@@ -1198,7 +1212,7 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        public IActionResult InspectionSummaryList(bool singleDocuments, string reportName)
+        public async Task<IActionResult> InspectionSummaryList(bool singleDocuments, string reportName)
         {
             if (!Request.IsAjaxRequest())
             {
@@ -1207,12 +1221,15 @@ namespace DoEko.Controllers
 
             List<Object> files = new List<Object>();
 
-            var rootDir = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.ReportResults).GetDirectoryReference("InspectionSummary");
+            var rootDir = (await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.ReportResults)).GetDirectoryReference("InspectionSummary");
 
             if (singleDocuments)
             {
                 int i = 1;
-                foreach (var singleDoc in rootDir.GetDirectoryReference(reportName).ListBlobs().OfType<CloudBlockBlob>())
+                foreach (var singleDoc in (await rootDir
+                    .GetDirectoryReference(reportName)
+                    .ListBlobsAsync(new BlobContinuationToken()))
+                    .OfType<CloudBlockBlob>())
                 {
                     files.Add(new
                     {
@@ -1227,7 +1244,9 @@ namespace DoEko.Controllers
             else
             {
                 int i = 1;
-                foreach (var singleRep in rootDir.ListBlobs().OfType<CloudBlobDirectory>())
+                foreach (var singleRep in (await rootDir
+                    .ListBlobsAsync(new BlobContinuationToken()))
+                    .OfType<CloudBlobDirectory>())
                 {
                     //parent row
                     files.Add(new
@@ -1236,7 +1255,10 @@ namespace DoEko.Controllers
                         reportName = singleRep.Prefix.Split('/')[1],
                         name = "",
                         url = "",
-                        count = singleRep.ListBlobs().OfType<CloudBlockBlob>().Count()
+                        count = (await singleRep
+                        .ListBlobsAsync(new BlobContinuationToken()))
+                        .OfType<CloudBlockBlob>()
+                        .Count()
                     });
                     i++;
                 }

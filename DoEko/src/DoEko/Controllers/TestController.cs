@@ -163,21 +163,28 @@ namespace DoEko.Controllers
             return Ok();
         }
 
-        private Stream GetTemplate (string templateType, OfficeTemplateType templateSection)
+        private async Task<Stream> GetTemplate (string templateType, OfficeTemplateType templateSection)
         {
             try
             {
-                var templates = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Templates);            
-                var template = templates.GetDirectoryReference(templateType);
-                var templateDoc = template.GetDirectoryReference(templateSection.ToString()).ListBlobs().OfType<CloudBlockBlob>().First();
-            
                 Stream stream = new MemoryStream();
-                templateDoc.DownloadToStream(stream);
+
+                CloudBlockBlob cloudBlockBlob = (await (await _fileStorage
+                    .GetBlobContainerAsync(EnuAzureStorageContainerType.Templates))
+                    .GetDirectoryReference(templateType)
+                    .GetDirectoryReference(templateSection.ToString())
+                    .ListBlobsSegmentedAsync(new BlobContinuationToken()))
+                    .Results
+                    .OfType<CloudBlockBlob>()
+                    .First();
+
+                await cloudBlockBlob.DownloadToStreamAsync(stream);
 
                 return stream;
             }
-            catch (Exception)
+            catch (Exception exc)
             {
+                //exc.Message;
                 throw;
             }
         }
@@ -186,30 +193,28 @@ namespace DoEko.Controllers
         {
             try
             {
-                CloudBlobContainer container;
-                CloudBlobDirectory directory;
-                if (investmentId.HasValue)
-                {
-                    container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
-                    directory = container.GetDirectoryReference(investmentId.ToString());
-                }
-                else
-                {
-                    container = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
-                    directory = container.GetDirectoryReference(surveyId.ToString());
-                }
-
-                var pictureFile = directory.GetDirectoryReference(pictureName).ListBlobs().OfType<CloudBlockBlob>().First();
+                CloudBlockBlob cloudBlockBlob = _fileStorage
+                    .GetBlobContainerAsync(investmentId.HasValue ? EnuAzureStorageContainerType.Investment : EnuAzureStorageContainerType.Survey)
+                    .GetAwaiter()
+                    .GetResult()
+                    .GetDirectoryReference(investmentId?.ToString() ?? surveyId?.ToString())
+                    .ListBlobsAsync(new BlobContinuationToken())
+                    .GetAwaiter()
+                    .GetResult()
+                    .OfType<CloudBlockBlob>()
+                    .First();
 
                 Stream stream = new MemoryStream();
-                pictureFile.DownloadToStream(stream);
-                //pictureFile.Properties.ContentType;
+                cloudBlockBlob
+                    .DownloadToStreamAsync(stream)
+                    .GetAwaiter()
+                    .GetResult();
 
-                switch (pictureFile.Uri.ToString().Split('.').Reverse().First().ToLower())
+                switch (cloudBlockBlob.Uri.AbsoluteUri.Split('.').Reverse().First().ToLower())
                 {
                     case "jpg": type = ImagePartType.Jpeg;
                                 break;
-                    default:    Enum.TryParse(pictureFile.Uri.ToString().Split('.').Reverse().First(), out type);
+                    default:    Enum.TryParse(cloudBlockBlob.Uri.AbsoluteUri.Split('.').Reverse().First(), out type);
                                 break;
                 }
                 
@@ -362,10 +367,10 @@ namespace DoEko.Controllers
             ListPhotosViewModel modelItem;
 
             //read photos from azurestorage
-            CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
-            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
-            var SurveyBlockBlobs = ContainerSrv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
-            var InvestBlockBlobs = ContainerInv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
+            CloudBlobContainer ContainerSrv = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Survey);
+            CloudBlobContainer ContainerInv = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Investment);
+            var SurveyBlockBlobs = (await ContainerSrv.ListBlobsAsync(string.Empty,true,BlobListingDetails.None,null,new BlobContinuationToken(),null,null)).OfType<CloudBlockBlob>();
+            var InvestBlockBlobs = (await ContainerInv.ListBlobsAsync(string.Empty,true,BlobListingDetails.None,null,new BlobContinuationToken(),null,null)).OfType<CloudBlockBlob>();
 
             //collect additional information
             foreach (var BlockBlob in SurveyBlockBlobs)
@@ -782,9 +787,10 @@ namespace DoEko.Controllers
         [HttpGet]
         public async Task<ActionResult> PhotosAdjust()
         {
-            CloudBlobContainer ContainerSrv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Survey);
-            CloudBlobContainer ContainerInv = _fileStorage.GetBlobContainer(EnuAzureStorageContainerType.Investment);
-            var SurveyBlockBlobs = ContainerSrv.ListBlobs(useFlatBlobListing: true).OfType<CloudBlockBlob>();
+            CloudBlobContainer ContainerSrv = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Survey);
+            CloudBlobContainer ContainerInv = await _fileStorage.GetBlobContainerAsync(EnuAzureStorageContainerType.Investment);
+            var SurveyBlockBlobs = (await ContainerSrv
+                .ListBlobsAsync(string.Empty, true, BlobListingDetails.None, null, new BlobContinuationToken(), null, null)).OfType<CloudBlockBlob>();
 
             foreach (var BlockBlob in SurveyBlockBlobs)
             {
@@ -802,12 +808,12 @@ namespace DoEko.Controllers
                         string targetName = partNames[2] + '/' + partNames[1] + '/' + partNames[0];
 
                         CloudBlockBlob targetBlob = ContainerInv.GetBlockBlobReference(targetName);
-                        targetBlob.StartCopy(BlockBlob);
+                        await targetBlob.StartCopyAsync(BlockBlob);
                         while (targetBlob.CopyState.Status != CopyStatus.Success)
                         {
                             //
                         }
-                        BlockBlob.Delete();
+                        await BlockBlob.DeleteIfExistsAsync();
                     }
                 }
             };
