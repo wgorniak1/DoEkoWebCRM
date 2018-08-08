@@ -15,7 +15,8 @@
     <Company>DoEko</Company>
     <DelaySign>False</DelaySign>
     <ApplicationIcon>wwwroot\images\favicon_doekogroup.ico</ApplicationIcon>
-    <StartupObject></StartupObject>
+    <StartupObject>DoEko.Program</StartupObject>
+    <Version>1.0.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -34,18 +35,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot/js\s4au55tz.zr4~" />
-  </ItemGroup>
-
-  <!--<ItemGroup>
-    <Content Include="wwwroot\js\BusinessPartnerPersonList.js" />
-    <Content Include="wwwroot\js\BusinessPartnerPersonList.min.js" />
-    <Content Include="wwwroot\js\ContractDetails - Copy.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>-->
 
   <ItemGroup>
     <None Include="App.config" />

@@ -25,9 +25,53 @@
 }( jQuery ));
 
 class mySelect {
+    ///optArray = [{value: "",text:""},{value: "",text:""},...]
+    constructor(
+        optArray = [{ value: "", text: "" }],
+        setEmpty = true,
+        defaultOpt = -1,
+        labelText = "") {
+        
+        var select = document.createElement("select"),
+            div = document.createElement('div'),
+            option,
+            i = 0,
+            il = optArray.length;
+        //
+        div.className = "form-group form-inline";
+        select.setAttribute("id", "selRSEType");
+        select.className = "form-control input-sm";
 
+        //empty option
+        if (setEmpty === true) {
+            option = document.createElement('option');
+            option.setAttribute('value', '');
+            option.appendChild(document.createTextNode(''));
+            select.appendChild(option);
+        }
+
+        for (; i < il; i += 1) {
+            option = document.createElement('option');
+            option.setAttribute('value', optArray[i].value);
+            option.appendChild(document.createTextNode(optArray[i].text));
+            select.appendChild(option);
+        }
+
+        if (labelText.length > 0) {
+            var label = document.createElement('label');
+            label.setAttribute('for', 'selRSEType');
+            label.appendChild(document.createTextNode(labelText));
+            label.appendChild(select);
+            div.appendChild(label);
+        }
+        else {
+
+            div.appendChild(select);
+        }
+
+        this.domNode = div;
+    }
 }
-
 
 class WgRSEEnum {
 
@@ -66,7 +110,24 @@ class WgRSEEnum {
         }
 
         return rseType;
+    }
 
+    asKeyValueArray(withIds = false) {
+        var keyValues = [];
+
+        for (var i = 0; i < this.surveyType.length; i++) {
+            var type = this.surveyType[i];
+
+            this.rseType[i].forEach(function (value, index) {
+                if (value.length > 0) {
+                    keyValues.push(withIds === true ?
+                        { value: i.toString().concat(index.toString()), text: value + ' (' + type + ')' } :
+                        { value: value + ' (' + type + ')', text: value + ' (' + type + ')' } );
+                }
+            });            
+        }
+
+        return keyValues;
     }
 }
 class WgLocEnum{
@@ -82,6 +143,20 @@ class WgLocEnum{
                 return i;
         }
     }
+
+    asKeyValueArray(withIds = false) {
+        var keyValues = [];
+
+        this._array.forEach(function (value, index) {
+            if (value.length > 0) {
+                keyValues.push(withIds === true ?
+                    { value: index.toString(), text: value } :
+                    { value: value,            text: value });
+            }
+        });
+
+        return keyValues;
+    }
 }
 class WgBdgEnum{
     constructor() {
@@ -96,12 +171,28 @@ class WgBdgEnum{
                 return i;
         }
     }
+
+    asKeyValueArray(withIds = false) {
+        var keyValues = [];
+
+        this._array.forEach(function (value, index) {
+            if (value.length > 0) {
+                keyValues.push(withIds === true ?
+                    { value: index.toString(), text: value } :
+                    { value: value, text: value });
+            }
+        });
+
+        return keyValues;
+    }
+
 }
 
 var WgEnums = { rse: new WgRSEEnum(), localization: new WgLocEnum(), building: new WgBdgEnum() };
 
 var WgTaxTableEdit = true;
 var WgNetTableEdit = true;
+
 
 $(document).ready(function () {
     var projectId = $("#TaxTable").data('projectid');
@@ -123,8 +214,81 @@ $(document).ready(function () {
     //});
 });
 
+
+function onResetModalCancel() {
+
+    //
+    var modal = $("#ResetModal");
+    var section = modal.data("section");
+    modal.data("section", "");
+    modal.reset();
+
+    //
+    if (section === "tax") {
+        table = $('#TaxTable').DataTable();
+
+        var loading = $('div#TaxTable_processing');
+        loading.hide();
+    }
+    else {
+        table = $('#NetTable').DataTable();
+
+        var loading = $('div#NetTable_processing');
+        loading.hide();
+
+    }
+
+    table.buttons().enable();
+}
+function onResetModalSubmit() {
+
+    //
+    var modal = $("#ResetModal");
+    var section = modal.data("section");
+    modal.data("section", "");
+    modal.reset();
+
+    var table,
+        ajaxUrl;
+
+    if (section === "tax") {
+        var table = table = $('#TaxTable').DataTable();
+        var ajaxUrl = "/api/v1/RSERules/Tax?projectId=" + projectId;
+
+    }
+    else if (section === "net") {
+        var table = table = $('#NetTable').DataTable();
+        var ajaxUrl = "/api/v1/RSERules/Net?projectId=" + projectId;
+    }
+    else {
+        //
+        WgTools.alert("Coś poszło nie tak. Proszę skontaktować się z administratorem strony.", false, 'E');
+        return;
+    }
+
+    //Call API
+    var call = $.ajax({
+        url: ajaxUrl,
+        type: 'DELETE',
+        data: {},
+        contentType: 'application/json'
+    });
+
+    call.done(function (result) {
+        table.buttons().enable();
+        table.ajax.reload();
+        table.rows().cells().invalidate().render();
+        WgTools.alert("Pomyślnie przywrócono wartości początkowe.", false, 'S');
+    });
+
+    call.fail(function (result) {
+        WgTools.alert("Coś poszło nie tak. Proszę skontaktować się z administratorem strony.", false, 'E');
+    });
+    
+}
 function InitializeTaxTab(projectId) {
-    var ajaxUrl = "/api/v1/RSERules/Tax?projectId=" + projectId;
+
+    var ajaxUrl = "/api/v1/RSERules/Tax?projectId=" + projectId + "&getDefaults=True";
 
     var table = $('#TaxTable').DataTable({
         ajax: {
@@ -239,14 +403,14 @@ function InitializeTaxTab(projectId) {
         ],
 
         stateSave: false,
-        pagingType: "full",
+        paging: false,
         language: WgLanguage,
-        lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Wszystkie"]],
-        order: [[0, "asc"], [1, 'asc'], [2, 'asc'], [3, 'asc'], [4, 'asc']],
+        //order: [[0, "asc"], [1, 'asc'], [2, 'asc'], [3, 'asc'], [4, 'asc']],
+        ordering: false,
         processing: true,
-        dom: "<'row wg-dt-padding'<'col-sm-6'B><'col-sm-6'f>>" +
+        dom: "<'row wg-dt-padding'<'col-sm-12'B>>" +
              "<'row'<'col-sm-12'tr>>" +
-             "<'row wg-dt-padding'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
+             "<'row wg-dt-padding'<'col-sm-12'i>>",
         buttons: [
                         {
                             text: '<span class="text-primary glyphicon glyphicon glyphicon-retweet"></span> Przywróć',
@@ -255,30 +419,11 @@ function InitializeTaxTab(projectId) {
                             action: function (e, dt, node, config) {
                                 //
                                 dt.table().buttons().disable();
-                                var loading = $('div#TaxTable_processing');
-                                loading.show();
+                                $('div#TaxTable_processing').show();
 
-                                //
-                                //missing confirmation popup
-                                //
-
-                                //call
-                                var call = $.ajax({
-                                    url: ajaxUrl,
-                                    type: 'DELETE',
-                                    data: {},
-                                    contentType: 'application/json'
-                                });
-
-                                call.done(function (result) {
-                                    dt.table().buttons().enable();
-                                    dt.ajax.reload();
-                                    dt.rows().cells().invalidate().render();
-                                    WgTools.alert("Pomyślnie przywrócono wartości początkowe.", false, 'S');
-                                });
-                                call.fail(function (result) {
-                                    WgTools.alert("Coś poszło nie tak. Proszę skontaktować się z administratorem strony.", false, 'E');
-                                });
+                                var modal = $("#ResetModal");
+                                modal.data("section", "tax");
+                                modal.modal('show');
                             }
                         },
                         {
@@ -346,10 +491,54 @@ function InitializeTaxTab(projectId) {
         }
     });
 
+
+    $('#TaxTable thead tr th').each(function (i) {
+        var title = $(this).text() + ": ";
+        switch (i) {
+            case 0:
+                //new select node
+                var mySel1 = new mySelect(WgEnums.rse.asKeyValueArray(false), true, -1,title);
+                $(this).html(mySel1.domNode);
+                break;
+            case 1:
+                var mySel1 = new mySelect(WgEnums.localization.asKeyValueArray(false), true, -1, title);
+                $(this).html(mySel1.domNode);
+                break;
+            case 2:
+                var mySel1 = new mySelect(WgEnums.building.asKeyValueArray(false), true, -1, title);
+                $(this).html(mySel1.domNode);
+
+                break;
+            default:
+                var div = document.createElement('div');
+                div.className = "form-group form-inline";
+                var label = document.createElement('p');
+                label.appendChild(document.createTextNode(title));
+                label.className = "form-control-static";
+                div.appendChild(label);
+                
+                $(this).html(div);
+        }
+        
+
+        $('select', this).on('change', function () {
+            if (table.column(i).search() !== this.value) {
+                table
+                    .column(i)
+                    .search(this.value)
+                    .draw();
+            }
+        });
+    });
+
+
     $('body').on('change', 'input.wg-area-max', function () {
         var min = $(this).parents('tr').next('tr').children('td').find('input.wg-area-min');
         min.val($(this).val());
     });
+
+    $('body').on('click', 'button.resetmodal-btn-cancel', onResetModalCancel);
+    $('body').on('click', 'button.resetmodal-btn-submit', onResetModalSubmit);
 }
 
 function InitializeNetTab(projectId) {

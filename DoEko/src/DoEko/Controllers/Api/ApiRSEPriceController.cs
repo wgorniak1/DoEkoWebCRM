@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using DoEko.Models.DoEko;
 using DoEko.Models.DoEko.Survey;
 using DoEko.Controllers.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace DoEko.Controllers.Api
 {
@@ -59,15 +60,26 @@ namespace DoEko.Controllers.Api
 
         [HttpDelete]
         [Route("Tax")]
-        public IActionResult DeleteTaxRules(int projectId)
+        public IActionResult DeleteTaxRules([FromQuery] int projectId, RSEPriceTaxRule rSEPriceTaxRule = null)
         {
-            if (projectId < 1)
-                return BadRequest("Nieprawid³owy Id projektu");
-
-            foreach (var r in _context.RSEPriceTaxRules.Where(r => r.ProjectId == projectId).ToList())
+            if (projectId <= 1)
             {
-                _context.Entry(r).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                return BadRequest("Nieprawid³owy Id projektu");
             }
+
+            if (rSEPriceTaxRule == null)
+            {
+                foreach (var r in _context.RSEPriceTaxRules.Where(r => r.ProjectId == projectId).ToList())
+                {
+                    _context.Entry(r).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                }
+                
+            }
+            else
+            {
+                _context.Entry(rSEPriceTaxRule).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            }
+            
 
             _context.SaveChanges();
 
@@ -77,19 +89,23 @@ namespace DoEko.Controllers.Api
 
         [HttpGet]
         [Route("Tax")]
-        public IEnumerable<RSEPriceTaxRule> GetTaxRule([FromQuery] int projectId = 1)
+        public async Task<IEnumerable<RSEPriceTaxRule>> GetTaxRulesAsync([FromQuery] int projectId = 1,[FromQuery] bool getDefaults = true)
         {
-            var qry = _context.RSEPriceTaxRules.Where(r => r.ProjectId == projectId);
-
-            ICollection<RSEPriceTaxRule> rules = qry.ToList();
-            if (rules.Count == 0 && projectId == 1)
+            //Create default configuration if doesn't exists
+            if (!(await _context.RSEPriceTaxRules.AnyAsync(t => t.ProjectId == 1)))
             {
                 RSEPriceTaxRuleHelper.CreateDefaultConfiguration(_context);
-
-                rules = qry.ToList();
             }
-            
-            return rules;
+
+            //Return default configuration if specific doesn't exists
+            if (await _context.RSEPriceTaxRules.AnyAsync(t => t.ProjectId == projectId))
+            {
+                return await _context.RSEPriceTaxRules.Where(t => t.ProjectId == projectId).ToListAsync();
+            }            
+            else
+            {
+                return await _context.RSEPriceTaxRules.Where(t => t.ProjectId == 1).ToListAsync();
+            }
         }
 
     }
