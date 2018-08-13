@@ -1273,7 +1273,8 @@ function InitializeNetTab(projectId) {
             //var table = $("#NetTable").dataTable().api();
 
             //activate toggles
-            $('input[data-toggle="toggle"]',tableBody).bootstrapToggle();
+            $('input[data-toggle="toggle"]', tableBody).bootstrapToggle({ size: "small" });
+
             
 
             //for (var i = 0; i < dt.rows().count(); i++) {
