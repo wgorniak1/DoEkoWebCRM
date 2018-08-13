@@ -1049,7 +1049,7 @@ function InitializeNetTab(projectId) {
                                     var content = '<div class="form-group form-inline">' +
                                                         '<input name="multiply"  class="form-control input-sm checkbox wg-data wg-data-multiply"  data-toggle="toggle" data-on="Tak" data-off="Nie" type="checkbox"';
                                     content += data === true ? ' checked />' : ' />';
-                                    content += '/div>';
+                                    content += '</div>';
                                     return WgNetTableEdit === true ? content : data;
                                 default:
                                     return data;
