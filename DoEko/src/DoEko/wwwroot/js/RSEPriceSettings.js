@@ -885,6 +885,19 @@ function InitializeTaxTab(projectId) {
 
     $('body').on('click', 'button.resetmodal-btn-cancel', onResetModalCancel);
     $('body').on('click', 'button.resetmodal-btn-submit', onResetModalSubmit);
+
+    $('#TaxTable tbody').on('click', 'input, select, label', table, function (event) {
+        //when clicking on input or select or label (toggle checkbox)
+        //don't select the row
+        event.stopPropagation();
+
+        //if ($(this).hasClass('toggle-off') || $(this).hasClass('toggle-on') && $(this).hasClass('active')) {
+        //    var val = ($(this).prop('checked') === 'true');
+
+        //    $(this).bootstrapToggle(val === true ? 'off' : 'on');
+        //}
+    });
+
 }
 
 function InitializeNetTab(projectId) {
