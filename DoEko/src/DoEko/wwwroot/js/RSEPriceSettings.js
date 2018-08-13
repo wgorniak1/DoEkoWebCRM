@@ -249,10 +249,11 @@ $(document).ready(function () {
         var link = $(this).attr('href');
         var id = $('table', $(link)).attr('id');
         var table = $('#' + id).dataTable().api();
-        
-        new $.fn.dataTable.FixedHeader(table, {
-            headerOffset: $('#NavBarMain').outerHeight()
-        });
+
+        table.fixedHeader.adjust();
+        //new $.fn.dataTable.FixedHeader(table, {
+        //    headerOffset: $('#NavBarMain').outerHeight()
+        //});
 
     });
     //table.on('responsive-display', function (e, datatable, row, showHide, update) {
