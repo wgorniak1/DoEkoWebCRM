@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DoEko.Models.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko.Survey
 {
+    [RangeFromTo(nameof(UsableAreaMin),nameof(UsableAreaMax))]
     public class RSEPriceTaxRule
     {
         public RSEPriceTaxRule()
@@ -43,8 +45,10 @@ namespace DoEko.Models.DoEko.Survey
         [Display(Name = "Lokalizacja instalacji")]
         public InstallationLocalization InstallationLocalization { get; set; }
         [Display(Name = "Powierzchnia min.")]
+        [Range(0.00,Double.MaxValue)]
         public double UsableAreaMin { get; set; }
         [Display(Name = "Powierzchnia maks.")]
+        [Range(0.00,Double.MaxValue)]
         public double UsableAreaMax { get; set; }
         [Display(Name = "Stawka VAT")]
         public short VAT { get; set; }

@@ -34,31 +34,26 @@ class elementFactory{
 //</div>
 
 class options{
-    var root;
-    var header;
-    var body;
-    var footer;
 
     constructor(){
-        root = new root();
-        header = new header();
-        body = new body();
-        footer = new footer();
+        this.root = new root();
+        this.header = new header();
+        this.body = new body();
+        this.footer = new footer();
     }
 }
 
 class root{
-    var id = '';
-    var className = '';
+    constructor() {
+        this.id = '';
+        this.className = '';
+    }
 }
 class header{
-
     }
 class body{
-
     }
 class footer{
-
     }
 
 class myModal{
@@ -71,8 +66,7 @@ class myModal{
         
         options.root = {
             className: 'modal fade ' + options.root.className,
-            id: options.root.Id || 'ModalWindowNo' + (++modalCount).toString(),
-
+            id: options.root.Id || 'ModalWindowNo' + (++modalCount).toString()
         }
     }
 

@@ -110,7 +110,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\RSEPriceSettings\" />
     <Folder Include="Views\Payroll\" />
   </ItemGroup>
 

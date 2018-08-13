@@ -242,6 +242,10 @@ a.wg-link-default::before{
     -moz-animation: spinm .7s infinite linear;
 }
 
+.wg-bg-danger {
+    background-color: #f2dede !important;
+}
+
 div.dataTables_processing {
     font-size: xx-large;
     /*z-index: 99999;*/

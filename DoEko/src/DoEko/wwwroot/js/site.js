@@ -39,10 +39,16 @@ function alertClass() {
         //
         if (msgText.constructor === Array) {
             for (var i = 0; i < msgText.length; i++) {
-                alertMessageContainer.appendChild(document.createTextNode(msgText[i]));
+                var pnode = document.createElement('span');
+                pnode.appendChild(document.createTextNode(msgText[i]));
+                alertMessageContainer.appendChild(pnode);
+                alertMessageContainer.appendChild(document.createElement('br'));
             }
         } else {
-            alertMessageContainer.appendChild(document.createTextNode(msgText));
+            var pnode = document.createElement('span');
+            pnode.appendChild(document.createTextNode(msgText));
+            alertMessageContainer.appendChild(pnode);
+            alertMessageContainer.appendChild(document.createElement('br'));
         }
             
         switch (msgType) {
