@@ -420,7 +420,7 @@ function onTableDataChanged(event) {
                 var method;
                 var projectId = $(dt.table().node()).data('projectid');
 
-                if (data[0].projectId == '1') {
+                if (data[0].projectId == '1' && projectId !== '1') {
 
                     for (var i = 0; i < data.length; i++) {
                         data[i].ProjectId = projectId;
