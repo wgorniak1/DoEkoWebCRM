@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Lista Projektów";
+}
+
+<!--Navigation-->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">@ViewData["Title"]</li>
+</ol>
+
+<!--Title-->
+<h2>@ViewData["Title"]</h2>
+<hr />
+<!--List-->
+<div class="container-fluid">
+    <table class="table table-striped dt-responsive dataTable nowrap no-footer dtr-inline collapsed small"
+           id="ProjectList"
+           style="width:100%;">
+    </table>
+</div>

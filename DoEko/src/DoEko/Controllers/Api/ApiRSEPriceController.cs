@@ -29,7 +29,7 @@ namespace DoEko.Controllers.Api
         [Route("Price")]
         public IActionResult DeletePriceRules([FromQuery] int projectId, [FromBody] RSEPriceRule priceRule = null)
         {
-            if (projectId <= 1)
+            if (projectId < 1)
             {
                 return BadRequest("Nieprawid³owy Id projektu");
             }

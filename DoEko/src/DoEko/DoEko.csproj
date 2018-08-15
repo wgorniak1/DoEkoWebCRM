@@ -113,4 +113,10 @@
     <Folder Include="Views\Payroll\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Projects\Index - Copy.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>

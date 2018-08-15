@@ -6,7 +6,8 @@ $(document).read(function () {
 var application = {
 
     init() {
-        alert('aaa');
+        this.$table = $('#ProjectList');
+        this.dt = this.$table.Data
     },
 
     attachEvents() {
@@ -15,43 +16,6 @@ var application = {
 
 }
 
-
-//plugin to add options to select
-(function( $ ) {
-
-    $.fn.addOptions = function(array, selected) {
-        
-        if (!array || Object.values(array[ 0 ]).length < 2) {
-            return this;
-        } else {
-
-            return this.filter("select").each(function () {
-                var select = this;
-                //$(array).each(function () {
-                //    var oPropValues = Object.values(this);
-                //    $('<option/>', oPropValues[0] === selected ? { value: oPropValues[0], selected: true } : { value: oPropValues[0] })
-                //        .text(oPropValues[ 1 ])
-                //        .appendTo(select);
-                //});
-
-                array.forEach(function (item) {
-                    var option = document.createElement('option');
-
-                    option.setAttribute('value', item.value);
-
-                    if (item.value === selected.toString()) {
-                        option.setAttribute('selected', '');
-                    }
-
-                    option.appendChild(document.createTextNode(item.text));
-                    select.appendChild(option);
-                });
-            });
-        }
- 
-    };
- 
-}( jQuery ));
 
 class mySelect {
     ///optArray = [{value: "",text:""},{value: "",text:""},...]
@@ -102,180 +66,6 @@ class mySelect {
         this.domNode = div;
     }
 }
-
-class WgRSEEnum {
-
-    constructor() {
-        this.surveyType = ["CO", "CWU", "EE"];
-        this.rseType = [["", "Pompa Ciepła Grunt.", "Kocioł na Pellet", "Pompa Ciepła Powietrzna"],["", "", "", "Solary", "Pompa Ciepła"],["","","","","","Panele Fotowolt."]];
-    }
-    
-    getText(type, rseType, single) {
-        if (rseType === undefined)
-            return this.surveyType[type];
-        else if (single)
-            return this.rseType[type][rseType];
-        else
-            return this.rseType[type][rseType] + ' (' + this.surveyType[type] + ')';
-    }
-
-    
-    getId(typeText, rseTypeText) {
-        var type = -1;
-        var rseType = -1;
-
-        for (var i = 0; i < this.surveyType.length; i++)
-        {
-            if (this.surveyType[i] === typeText) type = i;
-        }
-
-        if (rseTypeText === undefined) {
-            return type;
-        }
-
-        if (type >= 0) {
-            for (var j = 0; j < this.rseType[type].length; j++) {
-                if (this.surveyType[type][i] === typeText) rseType = i;
-            }
-        }
-
-        return rseType;
-    }
-
-    asKeyValueArray(withIds = false) {
-        var keyValues = [];
-
-        for (var i = 0; i < this.surveyType.length; i++) {
-            var type = this.surveyType[i];
-
-            this.rseType[i].forEach(function (value, index) {
-                if (value.length > 0) {
-                    keyValues.push(withIds === true ?
-                        { value: i.toString().concat(index.toString()), text: value + ' (' + type + ')' } :
-                        { value: value + ' (' + type + ')', text: value + ' (' + type + ')' } );
-                }
-            });            
-        }
-
-        return keyValues;
-    }
-}
-class WgLocEnum{
-    constructor() {
-        this._array = ["Dach","Grunt","Elewacja"];
-    }
-    getText(value) {
-        return this._array[value];
-    }
-    getValue(text) {
-        for (var i = 0; i < this._array.length; i++) {
-            if (this._array[i] === text)
-                return i;
-        }
-    }
-
-    asKeyValueArray(withIds = false) {
-        var keyValues = [];
-
-        this._array.forEach(function (value, index) {
-            if (value.length > 0) {
-                keyValues.push(withIds === true ?
-                    { value: index.toString(), text: value } :
-                    { value: value,            text: value });
-            }
-        });
-
-        return keyValues;
-    }
-}
-class WgBdgEnum{
-    constructor() {
-        this._array = ["Gospodarczy", "Mieszkalny"];
-    }
-    Text(value) {
-        return this._array[value];
-    }
-    Value(text) {
-        for (var i = 0; i < this._array.length; i++) {
-            if (this._array[i] === text)
-                return i;
-        }
-    }
-
-    asKeyValueArray(withIds = false) {
-        var keyValues = [];
-
-        this._array.forEach(function (value, index) {
-            if (value.length > 0) {
-                keyValues.push(withIds === true ?
-                    { value: index.toString(), text: value } :
-                    { value: value, text: value });
-            }
-        });
-
-        return keyValues;
-    }
-
-}
-
-//class KeyValuePair {
-//    constructor(key,value) {
-//        this._id = key;
-//        this._value = value;
-//    }
-
-//    get id() { return this._id }
-//    get value() { return this._value }
-//}
-
-//class SimpleEnum {
-//    constructor(array = []) {
-//        this._array = array;
-//    }
-
-//    Text(id = 0) {
-//        return (this._array.length > 0) ? this._array[id] : null;
-//    }
-
-//    Value(text = "") {
-//        return this._array.indexOf(text);
-//    }
-
-//    get KeyValuePairs() {
-//        var kvp = new ();
-//    }
-//}
-
-//const WG_RANGE_MIN = (double)0;
-//const 
-
-var WgEnums = { rse: new WgRSEEnum(), localization: new WgLocEnum(), building: new WgBdgEnum() };
-
-var WgTaxTableEdit = true;
-var WgNetTableEdit = true;
-
-
-$(document).ready(function () {
-    var projectId = $("#TaxTable").data('projectid');
-    InitializeTaxTab(projectId);
-
-    InitializeNetTab(projectId);
-
-    $('#TabsContainer ul li a').click(function () {
-        var link = $(this).attr('href');
-        var id = $('table', $(link)).attr('id');
-        var table = $('#' + id).dataTable().api();
-
-        table.fixedHeader.adjust();
-        //new $.fn.dataTable.FixedHeader(table, {
-        //    headerOffset: $('#NavBarMain').outerHeight()
-        //});
-
-    });
-    //table.on('responsive-display', function (e, datatable, row, showHide, update) {
-    //    $('input[name=dataProcessingConfirmation]').bootstrapToggle(editMode ? '' : 'destroy');  
-    //});
-});
 
 
 function onResetModalCancel() {
@@ -552,7 +342,9 @@ function onTableDataMaxChanged(event) {
     //});
 }
 
+class Button {
 
+}
 
 function InitializeTaxTab(projectId) {
 
