@@ -114,7 +114,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Projects\Index - Copy.cshtml">
+    <Content Update="Views\Projects\IndexAdmin.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>

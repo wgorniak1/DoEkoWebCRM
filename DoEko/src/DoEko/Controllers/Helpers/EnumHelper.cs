@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DoEko.Controllers.Extensions;
 
 namespace DoEko.Controllers.Helpers
 {
     public class EnumHelper
     {
 
-        public static IDictionary<int, string> GetKeyValuePairs(Type enumType)
+        public static Dictionary<int, string> GetKeyValuePairs(Type enumType)
         {
-            Dictionary<int, string> keyValuePairs = new Dictionary<int, string>();
+            Dictionary<int,string> keyValuePairs = new Dictionary<int, string>();
 
-            foreach (int item in Enum.GetValues(enumType))
+            foreach (var item in Enum.GetValues(enumType))
             {
-                keyValuePairs.Add(item, Enum.GetName(enumType, item));
+                //Enum obj = (Enum)(Enum.ToObject(enumType, item));
+                keyValuePairs.Add((int)item, ((Enum)item).DisplayName());
             }
 
             return keyValuePairs;

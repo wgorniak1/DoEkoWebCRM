@@ -140,10 +140,10 @@ namespace DoEko.Controllers.Api
                                  t.Unit == group.Key.Unit).ToList();
 
                         _context.RSEPriceRules.RemoveRange(Old);
-                        int result = _context.SaveChanges();
+                        int result = await _context.SaveChangesAsync();
 
                         _context.RSEPriceRules.AddRange(group.ToList());
-                        result = _context.SaveChanges();
+                        result = await _context.SaveChangesAsync();
                     }
 
 
@@ -164,9 +164,6 @@ namespace DoEko.Controllers.Api
                 }
             }
         }
-
-
-
 
         [HttpDelete]
         [Route("Tax")]
@@ -288,10 +285,10 @@ namespace DoEko.Controllers.Api
                                  t.BuildingPurpose == group.Key.BuildingPurpose).ToList();
 
                         _context.RSEPriceTaxRules.RemoveRange(Old);
-                        int result = _context.SaveChanges();
+                        int result = await _context.SaveChangesAsync();
 
                         _context.RSEPriceTaxRules.AddRange(group.ToList());
-                        result = _context.SaveChanges();
+                        result = await _context.SaveChangesAsync();
                     }
 
 

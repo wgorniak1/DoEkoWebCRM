@@ -34,10 +34,18 @@ namespace DoEko.ViewComponents
                 ApplicationUser _user = await _userManager.GetUserAsync(UserClaimsPrincipal);
                 _user = _userManager.Users.Include(u => u.Projects).Single(u => u.Id == _user.Id);
 
+                var projectIds = _context
+                .Projects
+                .Where(p => _user.ProjectIds.Any(id => id == p.ProjectId))
+                .Include(p => p.ChildProjects)
+                .ToList()
+                .SelectMany(p => p.ChildProjects.Select(cp => cp.ProjectId))
+                .Union(_user.ProjectIds);
+
                 IQueryable<InvestmentOwner> qry;
 
                 qry = _context.InvestmentOwners
-                    .Where(io => _user.ProjectIds.Any(id => id == io.Investment.Contract.ProjectId))
+                    .Where(io => projectIds.Any(id => id == io.Investment.Contract.ProjectId))
                     .Include(io => io.Investment).ThenInclude(i => i.Address).ThenInclude(a=>a.Commune)
                     .Include(io => io.Investment).ThenInclude(i=> i.Surveys)
                     .Include(io => io.Owner);

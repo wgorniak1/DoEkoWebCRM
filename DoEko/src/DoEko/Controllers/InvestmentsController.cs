@@ -108,7 +108,7 @@ namespace DoEko.Controllers
         {
             ApplicationUser _user = await _userManager.GetUserAsync(User);
             _user = _userManager.Users.Include(u => u.Projects).Single(u => u.Id == _user.Id);
-
+            
             InvestmentListViewModel model = new InvestmentListViewModel();
             //
             model.Filtering.FilterByInspector = true;
@@ -116,17 +116,26 @@ namespace DoEko.Controllers
             model.Paging.CurrentNumber = 1;
             model.Paging.PageSize = PageSize.ps_25;
             model.Sorting.sortBy = nameof(Investment.Address) + InvestmentListSorting.postfixUp;
+
+            var projectIds = _context
+                .Projects
+                .Where(p => _user.ProjectIds.Any(id => id == p.ProjectId))
+                .Include(p => p.ChildProjects)
+                .ToList()
+                .SelectMany(p => p.ChildProjects.Select(cp => cp.ProjectId))
+                .Union(_user.ProjectIds);
             
             //needed to initiate table display, see view implementation
             model.List = await _context.InvestmentOwners
-                .Where(i => _user.ProjectIds.Any(id => id == i.Investment.Contract.ProjectId))
+                .Where(i => projectIds.Any(id => id == i.Investment.Contract.ProjectId))
                 .Where(i => i.Investment.InspectorId == model.Filtering.UserId)
                 .Select(i => new InvestmentOwner { InvestmentId = i.InvestmentId })
                 .Take(1)
                 .ToListAsync();
             //needed to build filtering dropdowns
             List <Address> list = await _context.Investments
-                .Where(i => _user.ProjectIds.Any(id => id == i.Contract.ProjectId))
+                //.Where(i => resourceAuthorizationHelper.CheckStructAuthAsync)
+                .Where(i => projectIds.Any(id => id == i.Contract.ProjectId))
                 .Where(i => i.InspectorId == model.Filtering.UserId)
                 .Include(i => i.Address).ThenInclude(a=>a.Commune)
                 .Include(i => i.InvestmentOwners).ThenInclude(io => io.Owner)
@@ -139,6 +148,7 @@ namespace DoEko.Controllers
                     StateId = l.Address.StateId })    
                 .Distinct()
                 .ToListAsync();
+
             //filtering drop downs
             ViewData["CommuneList"] = new SelectList(
                 list.Select(l => new {

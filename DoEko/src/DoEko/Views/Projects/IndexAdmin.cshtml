@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Lista Projektów";
+}
+
+<!--Navigation-->
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home"><span class="glyphicon glyphicon-home"></span></a></li>
+    <li class="active">@ViewData["Title"]</li>
+</ol>
+
+<!--Title-->
+<h2>@ViewData["Title"]</h2>
+<hr />
+<!--List-->
+<div class="container-fluid">
+    <table class="table table-striped dt-responsive dataTable nowrap no-footer dtr-inline collapsed small"
+           id="ProjectList"
+           style="width:100%;">
+        <thead>
+            <tr>
+                <th>Nr</th>
+                <th>Nazwa</th>
+                <th>Projekt Nadrzędny</th>
+                <th>Status</th>
+                <th>Liczba źródeł</th>
+                <th>Moc całkowita</th>
+                <th>Kwota</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+@section stylesheets{
+    @{await Html.RenderPartialAsync("_DataTablesCSSPartial");}
+}
+@section scripts{
+    @{await Html.RenderPartialAsync("_DataTablesScriptsPartial");}
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/ProjectList.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/ProjectList.min.js" asp-append-version="true"></script>
+    </environment>
+}

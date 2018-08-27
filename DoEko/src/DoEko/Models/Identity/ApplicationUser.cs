@@ -9,6 +9,13 @@ using DoEko.Models.DoEko;
 
 namespace DoEko.Models.Identity
 {
+    public enum ResourceType
+    {
+        Project = 1,
+        Contract,
+        Investment,
+        Survey
+    }
 
     public enum AccessType
     {

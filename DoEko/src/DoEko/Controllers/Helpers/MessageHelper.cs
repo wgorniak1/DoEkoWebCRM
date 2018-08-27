@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DoEko.Controllers.Helpers
 {
-    public enum Project
+    public enum ProjectNumber
     {
         ParentProjectNotFound = 1,
         Other = 999
@@ -18,7 +18,7 @@ namespace DoEko.Controllers.Helpers
         {
             switch (Id)
             {
-                case (int)Project.ParentProjectNotFound:
+                case (int)ProjectNumber.ParentProjectNotFound:
                     return "Nie znaleziono projektu o numerze ";
                 default:
                     return "";

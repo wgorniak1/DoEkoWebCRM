@@ -97,7 +97,7 @@ namespace DoEko.Controllers.Api
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException exc)
+            catch (DbUpdateConcurrencyException)
             {
                 if (!EmployeeExists(id))
                 {
