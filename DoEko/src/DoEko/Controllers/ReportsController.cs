@@ -376,6 +376,21 @@ namespace DoEko.Controllers
                         s.ResultCalculation.RSETax = Decimal.ToDouble(im.RSEPrice.Tax);
                         s.ResultCalculation.RSEGrossPrice = Decimal.ToDouble(im.RSEPrice.Gross);
                         s.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(im.RSEPrice.OwnerContribution);
+
+                        if (s.Type == SurveyType.HotWater &&
+                           s.GetRSEType() == (int)SurveyRSETypeHotWater.Solar)
+                        {
+                            try
+                            {
+                                double number = Double.Parse(s.ResultCalculation.FinalSOLConfig.Split(' ').First());
+                                double factor = Double.Parse(_context.Settings.SingleOrDefault(st => st.Name == "MOC_KOLEKTORA").Value);
+                                s.ResultCalculation.FinalRSEPower = number * factor / 1000;
+                            }
+                            catch (Exception exc)
+                            {
+
+                            }
+                        }
                     }
                 }
 #pragma warning disable CS0168 // Variable is declared but never used
@@ -489,6 +504,22 @@ namespace DoEko.Controllers
                         s.ResultCalculation.RSETax = Decimal.ToDouble(im.RSEPrice.Tax);
                         s.ResultCalculation.RSEGrossPrice = Decimal.ToDouble(im.RSEPrice.Gross);
                         s.ResultCalculation.RSEOwnerContrib = Decimal.ToDouble(im.RSEPrice.OwnerContribution);
+
+                        if (s.Type == SurveyType.HotWater && 
+                            s.GetRSEType() == (int)SurveyRSETypeHotWater.Solar)
+                        {
+                            try
+                            {
+                                double number = Double.Parse(s.ResultCalculation.FinalSOLConfig.Split(' ').First());
+                                double factor = Double.Parse(_context.Settings.SingleOrDefault(st => st.Name == "MOC_KOLEKTORA").Value);
+                                s.ResultCalculation.FinalRSEPower = number * factor / 1000;
+                            }
+                            catch (Exception exc)
+                            {
+
+                            }
+
+                        }
                     }
                 }
 #pragma warning disable CS0168 // Variable is declared but never used
@@ -593,6 +624,21 @@ namespace DoEko.Controllers
                 srv.ResultCalculation.RSETaxLevel = Convert.ToDouble(r.TaxLevel);
                 srv.ResultCalculation.RSEGrossPrice = Convert.ToDouble(r.Gross);
                 srv.ResultCalculation.RSEOwnerContrib = Convert.ToDouble(r.OwnerContribution);
+                if (srv.Type == SurveyType.HotWater &&
+                           srv.GetRSEType() == (int)SurveyRSETypeHotWater.Solar)
+                {
+                   try
+                    {
+                        double number = Double.Parse(srv.ResultCalculation.FinalSOLConfig.Split(' ').First());
+                        double factor = Double.Parse(_context.Settings.SingleOrDefault(st => st.Name == "MOC_KOLEKTORA").Value);
+                        srv.ResultCalculation.FinalRSEPower = number * factor / 1000;
+                    }
+                    catch (Exception exc)
+                    {
+
+                    }
+
+                }
 
             }
 

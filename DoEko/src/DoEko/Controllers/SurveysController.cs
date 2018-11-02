@@ -1149,6 +1149,16 @@ namespace DoEko.Controllers
                             {
                                 case SurveyRSETypeHotWater.Solar:
                                     SrvHW.ResultCalculation.FinalSOLConfig = survey.ResultCalculation.FinalSOLConfig;
+                                    try
+                                    {
+                                        double number = Double.Parse(SrvHW.ResultCalculation.FinalSOLConfig.Split(' ').First());
+                                        double factor = Double.Parse(_context.Settings.SingleOrDefault(s => s.Name == "MOC_KOLEKTORA").Value);
+                                        SrvHW.ResultCalculation.FinalRSEPower = number * factor / 1000;
+                                    }
+                                    catch (Exception exc)
+                                    {
+                                        
+                                    }
                                     break;
                                 default:
                                     SrvHW.ResultCalculation.FinalRSEPower = survey.ResultCalculation.FinalRSEPower;
