@@ -806,7 +806,7 @@ namespace DoEko.Controllers
                 myExport["TYP OZE"] = srv.TypeFullDescription();
                 myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
                 myExport["MOC Z DOBORU"] = "=\"" + string.Format("{0:F2}", srv.ResultCalculation.FinalRSEPower) + "\"";
-                myExport["VAT"] = String.Format("{0:P2}",srv.ResultCalculation.RSETaxLevel);
+                myExport["VAT"] = String.Format("{0:P2}",srv.ResultCalculation.RSETaxLevel / 100);
 
                 //INSPEKTOR
                 if (srv.Investment.InspectorId.HasValue &&
