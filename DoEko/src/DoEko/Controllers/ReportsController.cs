@@ -563,6 +563,7 @@ namespace DoEko.Controllers
                    .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.State)
                    .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.District)
                    .Include(s => s.Investment).ThenInclude(i => i.Address).ThenInclude(a => a.Commune)
+                   .Include(s => s.Investment).ThenInclude(i => i.Contract)
                    .Include(s => s.AirCondition)
                    .Include(s => s.Audit)
                    .Include(s => s.BathRoom)
