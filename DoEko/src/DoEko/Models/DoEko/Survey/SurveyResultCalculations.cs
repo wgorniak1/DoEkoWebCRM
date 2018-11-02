@@ -162,6 +162,9 @@ namespace DoEko.Models.DoEko.Survey
         public double RSENetPrice { get; set; }
         [Display(Name = "VAT")]
         public double RSETax { get; set; }
+        [NotMapped]
+        [Display(Name = "Stawka VAT")]
+        public double RSETaxLevel { get; set; }
         [Display(Name = "Kwota brutto")]
         public double RSEGrossPrice { get; set; }
         [NotMapped]

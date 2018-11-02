@@ -236,6 +236,39 @@ namespace DoEko.Controllers.Helpers
             }
             private set { }
         }
+        public decimal TaxLevel
+        {
+            get
+            {
+                short tax = 0;
+
+                try
+                {
+                    tax = _taxRules
+                        .Single(r =>
+                                r.SurveyType == _taxRuleCondition.SurveyType &&
+                                r.RSEType == _taxRuleCondition.RSEType &&
+                                r.BuildingPurpose == _taxRuleCondition.BuildingPurpose &&
+                                r.InstallationLocalization == _taxRuleCondition.InstallationLocalization &&
+                                r.UsableAreaMin < _taxRuleCondition.UsableAreaMax &&
+                                r.UsableAreaMax >= _taxRuleCondition.UsableAreaMax)
+                        .VAT;
+                }
+                catch (Exception)
+                {
+                    // System.Diagnostics.Debug.Print("VAT not found: PlannedInstall is null " + _survey.SurveyId.ToString());
+                    System.Diagnostics.Debug.Print("VAT not found|" + _survey.SurveyId.ToString() +
+                        "|Type:" + _survey.Type.ToString() +
+                        "|RSE:" + _survey.GetRSEType() + "\n");
+                    //     "|Purpose:" + _survey.PlannedInstall.Purpose.ToString() +
+                    //     "|Localization:" + _survey.PlannedInstall.Localization.ToString() +
+                    //     "|Area:" + _survey.Investment.UsableArea + "\n"); 
+                }
+
+                return tax;
+            }
+            private set { }
+        }
         #endregion  
     }
 

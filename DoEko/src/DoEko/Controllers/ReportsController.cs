@@ -589,6 +589,7 @@ namespace DoEko.Controllers
 
                 srv.ResultCalculation.RSENetPrice = Convert.ToDouble(r.Net);
                 srv.ResultCalculation.RSETax = Convert.ToDouble(r.Tax);
+                srv.ResultCalculation.RSETaxLevel = Convert.ToDouble(r.TaxLevel);
                 srv.ResultCalculation.RSEGrossPrice = Convert.ToDouble(r.Gross);
                 srv.ResultCalculation.RSEOwnerContrib = Convert.ToDouble(r.OwnerContribution);
 
@@ -805,7 +806,7 @@ namespace DoEko.Controllers
                 myExport["TYP OZE"] = srv.TypeFullDescription();
                 myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
                 myExport["MOC Z DOBORU"] = "=\"" + string.Format("{0:F2}", srv.ResultCalculation.FinalRSEPower) + "\"";
-                myExport["VAT"] = String.Format("{0:P2}",srv.ResultCalculation.RSETax);
+                myExport["VAT"] = String.Format("{0:P2}",srv.ResultCalculation.RSETaxLevel);
 
                 //INSPEKTOR
                 if (srv.Investment.InspectorId.HasValue &&
