@@ -26,6 +26,7 @@ using System.IO;
 using DoEko.Controllers.ActionResults;
 using Microsoft.Net.Http.Headers;
 using System.Net.Http;
+using System.Globalization;
 
 namespace DoEko.Controllers
 {
@@ -609,7 +610,11 @@ namespace DoEko.Controllers
             csv["TYP OZE"] = "";
             csv["STATUS ANKIETY"] = "";
             csv["MOC Z DOBORU"] = "";
-            csv["VAT"] = "";
+            csv["KWOTA NETTO"] = "";
+            csv["STAWKA VAT"] = "";
+            csv["KWOTA VAT"] = "";
+            csv["KWOTA BRUTTO"] = "";
+
             csv["INWEST - ADRES - WOJ."] = "";
             csv["INWEST - ADRES - POW."] = "";
             csv["INWEST - ADRES - GM."] = "";
@@ -790,6 +795,8 @@ namespace DoEko.Controllers
         }
         private async Task<CsvExport> SurveyListAsCSV(List<Survey> data)
         {
+            var culture = CultureInfo.CreateSpecificCulture("pl-PL");
+
             CsvExport myExport = new CsvExport(columnSeparator: ";");
 
             foreach (var srv in data)
@@ -806,7 +813,10 @@ namespace DoEko.Controllers
                 myExport["TYP OZE"] = srv.TypeFullDescription();
                 myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
                 myExport["MOC Z DOBORU"] = "=\"" + string.Format("{0:F2}", srv.ResultCalculation.FinalRSEPower) + "\"";
-                myExport["VAT"] = String.Format("{0:P2}",srv.ResultCalculation.RSETaxLevel / 100);
+                myExport["KWOTA NETTO"] = srv.ResultCalculation.RSENetPrice.ToString("C2", culture);
+                myExport["STAWKA VAT"] = String.Format("{0:P2}",srv.ResultCalculation.RSETaxLevel / 100);
+                myExport["KWOTA VAT"] = srv.ResultCalculation.RSETax.ToString("C2", culture);
+                myExport["KWOTA BRUTTO"] = srv.ResultCalculation.RSEGrossPrice.ToString("C2", culture);
 
                 //INSPEKTOR
                 if (srv.Investment.InspectorId.HasValue &&
@@ -822,7 +832,7 @@ namespace DoEko.Controllers
                 myExport["INWEST - ADRES - GM."] = srv.Investment.Address.Commune.FullName;
                 myExport["INWEST - ADRES - KOD"] = srv.Investment.Address.PostalCode;
                 myExport["INWEST - ADRES - MIEJSC"] = srv.Investment.Address.City;
-                myExport["INWEST - ADRES - ULICA"] = srv.Investment.Address.Street;
+                myExport["INWEST - ADRES - ULICA"] = "=\"" + srv.Investment.Address.Street + "\"";
                 myExport["INWEST - ADRES - NR BUD."] = "=\"" + srv.Investment.Address.BuildingNo + "\"";
                 myExport["INWEST - ADRES - NR MIESZK"] = "=\"" + srv.Investment.Address.ApartmentNo + "\"";
 
