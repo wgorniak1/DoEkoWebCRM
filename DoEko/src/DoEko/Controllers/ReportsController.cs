@@ -576,6 +576,23 @@ namespace DoEko.Controllers
 
             var result = await sl.ToListAsync();
 
+            foreach (var srv in result)
+            {
+                if (srv.ResultCalculation == null)
+                {
+                    srv.ResultCalculation = new SurveyResultCalculations();
+                }
+                RSEPriceHelper r = new RSEPriceHelper(_context, true, srv.Investment.Contract.ProjectId);
+
+                r.Survey = srv;
+
+                srv.ResultCalculation.RSENetPrice = Convert.ToDouble(r.Net);
+                srv.ResultCalculation.RSETax = Convert.ToDouble(r.Tax);
+                srv.ResultCalculation.RSEGrossPrice = Convert.ToDouble(r.Gross);
+                srv.ResultCalculation.RSEOwnerContrib = Convert.ToDouble(r.OwnerContribution);
+
+            }
+
             CsvExport list = await SurveyListAsCSV(result);
             return File(list.ExportToBytes(), "application/csv", fileName);
         }
@@ -590,6 +607,7 @@ namespace DoEko.Controllers
             csv["TYP OZE"] = "";
             csv["STATUS ANKIETY"] = "";
             csv["MOC Z DOBORU"] = "";
+            csv["VAT"] = "";
             csv["INWEST - ADRES - WOJ."] = "";
             csv["INWEST - ADRES - POW."] = "";
             csv["INWEST - ADRES - GM."] = "";
@@ -785,7 +803,8 @@ namespace DoEko.Controllers
                 //SURVEY GENERAL
                 myExport["TYP OZE"] = srv.TypeFullDescription();
                 myExport["STATUS ANKIETY"] = srv.Status.DisplayName();
-                myExport["MOC Z DOBORU"] = srv.ResultCalculation != null ? srv.ResultCalculation.FinalRSEPower.ToString() : "0000.00";
+                myExport["MOC Z DOBORU"] = "=\"" + string.Format("{0:F2}", srv.ResultCalculation.FinalRSEPower) + "\"";
+                myExport["VAT"] = String.Format("{0:P2}",srv.ResultCalculation.RSETax);
 
                 //INSPEKTOR
                 if (srv.Investment.InspectorId.HasValue &&
