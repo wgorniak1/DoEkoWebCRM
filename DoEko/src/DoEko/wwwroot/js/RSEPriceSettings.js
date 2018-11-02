@@ -1,19 +1,19 @@
 ﻿'use strict';
-$(document).read(function () {
-    application.init();
-});
+//$(document).read(function () {
+//    application.init();
+//});
 
-var application = {
+//var application = {
 
-    init() {
-        alert('aaa');
-    },
+//    init() {
+//        alert('aaa');
+//    },
 
-    attachEvents() {
-        alert('events');
-    }
+//    attachEvents() {
+//        alert('events');
+//    }
 
-}
+//}
 
 
 //plugin to add options to select
