@@ -146,5 +146,17 @@
     "inputFiles": [
       "wwwroot/js/ProjectDetails.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ProjectList.min.js",
+    "inputFiles": [
+      "wwwroot/js/ProjectList.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/SettingsList.min.js",
+    "inputFiles": [
+      "wwwroot/js/SettingsList.js"
+    ]
   }
 ]
