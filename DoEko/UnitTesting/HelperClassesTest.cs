@@ -22,10 +22,12 @@ namespace HelperClassesTesting
         public void EnumHelperTest()
         {
 
-            Dictionary<int, string> expectedResult = new Dictionary<int, string>();
-            expectedResult.Add(1, "Jeden");
-            expectedResult.Add(2, "Dwa");
-            expectedResult.Add(3, "Trzy");
+            Dictionary<int, string> expectedResult = new Dictionary<int, string>
+            {
+                { 1, "Jeden" },
+                { 2, "Dwa" },
+                { 3, "Trzy" }
+            };
 
             var result = EnumHelper.GetKeyValuePairs(typeof(TestEnum));
             

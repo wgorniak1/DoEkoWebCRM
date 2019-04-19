@@ -386,7 +386,9 @@ namespace DoEko.Controllers
                                 double factor = Double.Parse(_context.Settings.SingleOrDefault(st => st.Name == "MOC_KOLEKTORA").Value);
                                 s.ResultCalculation.FinalRSEPower = number * factor / 1000;
                             }
+#pragma warning disable CS0168 // Variable is declared but never used
                             catch (Exception exc)
+#pragma warning restore CS0168 // Variable is declared but never used
                             {
 
                             }
@@ -514,7 +516,9 @@ namespace DoEko.Controllers
                                 double factor = Double.Parse(_context.Settings.SingleOrDefault(st => st.Name == "MOC_KOLEKTORA").Value);
                                 s.ResultCalculation.FinalRSEPower = number * factor / 1000;
                             }
+#pragma warning disable CS0168 // Variable is declared but never used
                             catch (Exception exc)
+#pragma warning restore CS0168 // Variable is declared but never used
                             {
 
                             }
@@ -633,7 +637,9 @@ namespace DoEko.Controllers
                         double factor = Double.Parse(_context.Settings.SingleOrDefault(st => st.Name == "MOC_KOLEKTORA").Value);
                         srv.ResultCalculation.FinalRSEPower = number * factor / 1000;
                     }
+#pragma warning disable CS0168 // Variable is declared but never used
                     catch (Exception exc)
+#pragma warning restore CS0168 // Variable is declared but never used
                     {
 
                     }

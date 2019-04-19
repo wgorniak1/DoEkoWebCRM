@@ -1155,7 +1155,9 @@ namespace DoEko.Controllers
                                         double factor = Double.Parse(_context.Settings.SingleOrDefault(s => s.Name == "MOC_KOLEKTORA").Value);
                                         SrvHW.ResultCalculation.FinalRSEPower = number * factor / 1000;
                                     }
+#pragma warning disable CS0168 // Variable is declared but never used
                                     catch (Exception exc)
+#pragma warning restore CS0168 // Variable is declared but never used
                                     {
                                         
                                     }

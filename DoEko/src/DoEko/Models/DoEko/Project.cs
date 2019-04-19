@@ -1,5 +1,6 @@
 ﻿//using DoEkoWebCRM.Data;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace DoEko.Models.DoEko
@@ -151,11 +153,14 @@ namespace DoEko.Models.DoEko
         /// <summary>
         /// 
         /// </summary>
+
         [Display(Description = "Projekt nadrzędny", Name = "Projekt nadrzędny", ShortName = "Proj.Nad.")]
         public Project ParentProject { get; set; }
         /// <summary>
         /// 
         /// </summary>
+        [JsonIgnore]
+        [IgnoreDataMember]
         [Display(Description = "Pod projekty", Name = "Pod projekty", ShortName = "Pod projekty")]
         public ICollection<Project> ChildProjects { get; set; }
         /// <summary>

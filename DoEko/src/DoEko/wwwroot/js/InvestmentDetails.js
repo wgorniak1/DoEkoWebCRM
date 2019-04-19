@@ -11,7 +11,7 @@ class WgRSEEnum {
         if (rseType === undefined)
             return this.surveyType[type];
         else if (single)
-            return this.rseType[type][rseType]
+            return this.rseType[type][rseType];
         else
             return this.rseType[type][rseType] + ' (' + this.surveyType[type] + ')';
     }
@@ -41,7 +41,7 @@ class WgRSEEnum {
 }
 class WgLocEnum {
     constructor() {
-        this._array = ["Dach", "Grunt", "Elewacja"]
+        this._array = ["Dach", "Grunt", "Elewacja"];
     }
     getText(value) {
         return this._array[value];
@@ -55,7 +55,7 @@ class WgLocEnum {
 }
 class WgBdgEnum {
     constructor() {
-        this._array = ["Gospodarczy", "Mieszkalny"]
+        this._array = ["Gospodarczy", "Mieszkalny"];
     }
     getText(value) {
         return this._array[value];
@@ -132,7 +132,7 @@ function InitializeSurveyListTab(investmentId) {
                         title: "Status inspekcji",
                         type: "html",
                         render: function (data, type, row, meta) {
-                            return '<span title="' + ((data === 5) ? WgEnums.cancel.getText(row.cancelType) : '' ) + '">' + WgEnums.status.getText(data) + '</span>';
+                            return '<span title="' + (data === 5 ? WgEnums.cancel.getText(row.cancelType) : '' ) + '">' + WgEnums.status.getText(data) + '</span>';
                         }
                     },
                     {
@@ -156,7 +156,7 @@ function InitializeSurveyListTab(investmentId) {
                         name: "completed",
                         title: "Zakończono obliczenia",
                         render: function (data, type, row, meta) {
-                            return (data === true) ? "Tak" : "Nie";
+                            return data === true ? "Tak" : "Nie";
                             }
                     },
                     {
@@ -229,8 +229,9 @@ function InitializeSurveyListTab(investmentId) {
                                         //case '03'://CO.PCP
                                         case '13'://HW.SOL
                                             return '<span title="' + row.finalSolConfig + '">' + parseFloat(data).toFixed(2) + ' KW ' + '</span>';
+                                            
                                         //case '14'://HW.PCP
-                                            return '<span title="' + row.finalPVConfig + '">' + parseFloat(data).toFixed(2) + ' KW ' + '</span>';
+                                        //    return '<span title="' + row.finalPVConfig + '">' + parseFloat(data).toFixed(2) + ' KW ' + '</span>';
                                         case '25'://EE.PV
                                         default:
                                             return '<span>' + parseFloat(data).toFixed(2) + ' KW</span>';
@@ -428,8 +429,7 @@ function InitializeSurveyListTab(investmentId) {
                     dt.ajax.reload();
                     dt.columns.adjust().draw();
                 }
-            },
-
+            }
         ],
         //select: 'single',
         responsive: true,
@@ -438,7 +438,7 @@ function InitializeSurveyListTab(investmentId) {
         //},
         fixedHeader: {
             headerOffset: $('#NavBarMain').outerHeight()
-        },
+        }
     });
 }
 ///////////////////////////////////////////////////////////////////////////////

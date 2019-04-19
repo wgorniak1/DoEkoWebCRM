@@ -8,12 +8,15 @@ $(document).ready(function () {
 
 
 class application {
+    
+    
+    self = this;
+
     constructor() {
         this._initialized = false;
-
         this.$table = $('#ProjectList');
         this.url = '/api/v1/Projects';
-
+        
     }
 
     init() {
@@ -23,12 +26,12 @@ class application {
 
         //initialize table properties
         var btn = new Button();
-        titleAttr
-        className
-        name
-        action(delegate, e, dt, node, config) { this.action = delegate(e, dt, node, config); }
-        extend
-        text
+        //titleAttr
+        //className
+        //name
+        //action(delegate, e, dt, node, config) { this.action = delegate(e, dt, node, config); }
+        //extend
+        //text
 
 
         //set event handlers
@@ -48,17 +51,17 @@ class application {
 }
 
 class DTColumn {
-    get name() { return this._name }
+    get name() { return this._name; }
     set name(value) { this._name = value; }
     get data() { return this._data; }
     set data(value) { this._data = data; }
-    get title() { return this._title }
+    get title() { return this._title; }
     set title(value) { this._title = value; }
-    get type() { return this._type }
+    get type() { return this._type; }
     set type(value) { this._type = value; }
-    get visible() { return this._visible }
+    get visible() { return this._visible; }
     set visible(value) { this._visible = value; }
-    get orderable() { return this._orderable }
+    get orderable() { return this._orderable; }
     set orderable(value) { this._orderable = value; }
     get render() { return this._render; }    //: function (data, type, row, meta);
     set render(func) { this._render = func; } //: function (data, type, row, meta);
@@ -123,16 +126,17 @@ function onResetModalCancel() {
     modal.data("section", "");
 
     //
+    var loading;
     if (section === "tax") {
         var table = $('#TaxTable').DataTable();
 
-        var loading = $('div#TaxTable_processing');
+        loading = $('div#TaxTable_processing');
         loading.hide();
     }
     else {
         table = $('#NetTable').DataTable();
 
-        var loading = $('div#NetTable_processing');
+        loading = $('div#NetTable_processing');
         loading.hide();
 
     }
@@ -243,7 +247,7 @@ function onTableDataChanged(event) {
             rowData.netPrice = parseFloat(fieldValue);
             break;
         case 'multiply':
-            rowData.multiply = (fieldValue === "on") ? true : false;
+            rowData.multiply = fieldValue === "on" ? true : false;
             break;
         default:
             break;
@@ -273,7 +277,7 @@ function onTableDataChanged(event) {
                 var method;
                 var projectId = $(dt.table().node()).data('projectid');
 
-                if (data[0].projectId == '1' && projectId !== '1') {
+                if (data[0].projectId === '1' && projectId !== '1') {
 
                     for (var i = 0; i < data.length; i++) {
                         data[i].ProjectId = projectId;
@@ -288,7 +292,7 @@ function onTableDataChanged(event) {
                 }
                 var ajaxUrl;
                 var payload;
-                if (dt.table().node().id == 'TaxTable') {
+                if (dt.table().node().id === 'TaxTable') {
 
                     ajaxUrl = '/api/v1/RSERules/Tax';
 
@@ -354,7 +358,7 @@ function onTableDataChanged(event) {
 
                                 var rowNumber = parseInt(field.match(/\d+/));
 
-                                if (rowNumber !== NaN) {
+                                if (isNaN(rowNumber)) {
                                     //rowNumber += 1;
                                     var $row = $(dt.row(rowNumber).node());
                                     $row.addClass('wg-bg-danger');
@@ -390,18 +394,18 @@ function onTableDataMaxChanged(event) {
 }
 
 class Button {
-    get titleAttr() { return this.titleAttr; }
-    set titleAttr(value) { this.titleAttr = value; }
-    get className() { return this.className; }
-    set className(value) { this.className = value; }
-    get name() { return this.name; }
-    set name(value) { this.name = value; }
-    get action() { return this.action; }
-    set action(delegate, e, dt, node, config) { this.action = delegate(e, dt, node, config); }
-    get extend() { return this.extend; }
-    set extend(value) { this.extend = value; }
-    get text() { return this.text; }
-    set text(value) { this.text = value; }
+    get titleAttr() { return this._titleAttr; }
+    set titleAttr(value) { this._titleAttr = value; }
+    get className() { return this._className; }
+    set className(value) { this._className = value; }
+    get name() { return this._name; }
+    set name(value) { this._name = value; }
+    get action() { return this._action; }
+    action = function(delegate, e, dt, node, config) { this._action = delegate(e, dt, node, config); }
+    get extend() { return this._extend; }
+    set extend(value) { this._extend = value; }
+    get text() { return this._text; }
+    set text(value) { this._text = value; }
 }
 
 function InitializeTaxTab(projectId) {
@@ -534,14 +538,14 @@ function InitializeTaxTab(projectId) {
                                 'step = "0.1" ' +
                                 'min = "' + minValue + '" ' +
                                 'max = "' + maxValue + '" ' +
-                                ((status === false) ? 'disabled> ' : '> ');
+                                (status === false ? 'disabled> ' : '> ');
 
 
                             return WgTaxTableEdit === true ? content : currentValue;
                         //var currentValue = data === Number.MAX_VALUE ? '99999.99' : data;
                         //return currentValue;
                         default:
-                            return (data === Number.MAX_VALUE) ? '99999.99' : data;
+                            return data === Number.MAX_VALUE ? '99999.99' : data;
                     }
                 }
             },
@@ -560,7 +564,6 @@ function InitializeTaxTab(projectId) {
                                 .addOptions(opt, data)
                                 .prop('outerHTML');
 
-                            return data;
                     }
 
                 }
@@ -709,18 +712,20 @@ function InitializeTaxTab(projectId) {
     $('#TaxTable thead tr th').each(function (i) {
 
         var title = $(this).text() + ": ";
+        var mySel1;
+
         switch (i) {
             case 0:
                 //new select node
-                var mySel1 = new mySelect(WgEnums.rse.asKeyValueArray(false), true, -1, title, "searchRSEType");
+                mySel1 = new mySelect(WgEnums.rse.asKeyValueArray(false), true, -1, title, "searchRSEType");
                 $(this).html(mySel1.domNode);
                 break;
             case 1:
-                var mySel1 = new mySelect(WgEnums.localization.asKeyValueArray(false), true, -1, title, "searchLocalization");
+                mySel1 = new mySelect(WgEnums.localization.asKeyValueArray(false), true, -1, title, "searchLocalization");
                 $(this).html(mySel1.domNode);
                 break;
             case 2:
-                var mySel1 = new mySelect(WgEnums.building.asKeyValueArray(false), true, -1, title, "searchBuilding");
+                mySel1 = new mySelect(WgEnums.building.asKeyValueArray(false), true, -1, title, "searchBuilding");
                 $(this).html(mySel1.domNode);
 
                 break;
@@ -814,7 +819,7 @@ function InitializeNetTab(projectId) {
 
                             return '<div class="form-group form-inline">' +
                                 '<p class="form-control-static">' + WgEnums.rse.getText(data.surveyType, data.rseType) +
-                                '</p></div>'
+                                '</p></div>';
 
                         default:
                             return WgEnums.rse.getText(data.surveyType, data.rseType);
@@ -870,7 +875,7 @@ function InitializeNetTab(projectId) {
                 type: "html-num",
                 orderable: false,
                 render: function (data, type, row, meta) {
-                    var currentValue = (data === Number.MAX_VALUE) ? '99999.99' : data;
+                    var currentValue = data === Number.MAX_VALUE ? '99999.99' : data;
 
                     switch (type) {
                         case 'display':
@@ -1039,7 +1044,7 @@ function InitializeNetTab(projectId) {
                     currentRow.remove().draw();
 
                 }
-            },
+            }
 
             //{
             //    text: '<span class="text-primary glyphicon glyphicon glyphicon-resize-full"></span> Podziel',

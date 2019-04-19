@@ -34,7 +34,7 @@ namespace DoEko.Controllers
         }
 
         // GET: Projects
-        public async Task<IActionResult> Index(int? StatusMessage)
+        public IActionResult Index(int? StatusMessage)
         {
             if (StatusMessage.HasValue)
             {
@@ -58,9 +58,9 @@ namespace DoEko.Controllers
                 ViewData["ProjectDeleteFinished"] = false;
             }
 
-            var doEkoContext = _context.Projects.Where(p => p.ProjectId != 1).Include(p => p.ParentProject);
-            return View(await doEkoContext.ToListAsync());
-            //return View("IndexAdmin");
+            //var doEkoContext = await _context.Projects.Where(p => p.ProjectId != 1).Include(p => p.ParentProject).ToListAsync();
+            //return View(await doEkoContext.ToListAsync());
+            return View("IndexAdmin");
         }
 
         // GET: Projects/Details/5

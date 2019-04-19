@@ -606,7 +606,7 @@ namespace DoEko.Controllers
 
             var list = context.Contracts
                 .Include(c => c.Project)
-                .Where(c => currentUser.ProjectIds.Any(id => id == c.ProjectId))
+                //.Where(c => currentUser.ProjectIds.Any(id => id == c.ProjectId))
                 .Where(c => c.Status != ContractStatus.Completed)
                 .Select(c => new { Text = c.Number + " " + c.Project.ShortDescription, Value = c.ContractId })
                 .OrderBy(c => c.Text)
