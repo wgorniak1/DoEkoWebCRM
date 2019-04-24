@@ -50,10 +50,11 @@ namespace DoEko.ViewComponents
 
             IdentityRole inspectorRole = await _roleManager.FindByNameAsync(Roles.Inspector);
 
-            var users = _userManager.Users
-                .Where(u => u.Roles.Select(r => r.RoleId).Contains(inspectorRole.Id))
-                .OrderBy(k => k.FullName)
-                .ToList();
+            var users = (await _userManager.GetUsersInRoleAsync(inspectorRole.Name)).OrderBy(u=>u.FullName);
+                //.Users
+                //.Where(u => u.Roles.Select(r => r.RoleId).Contains(inspectorRole.Id))
+                //.OrderBy(k => k.FullName)
+                //.ToList();
 
             ViewData["InspectorId"] = new SelectList(users, "Id", "FullName",model.InspectorId);
 

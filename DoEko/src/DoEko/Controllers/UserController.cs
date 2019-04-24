@@ -11,6 +11,7 @@ using DoEko.ViewModels.UserViewModel;
 using DoEko.Controllers.Extensions;
 using DoEko.ViewComponents.ViewModels;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace DoEko.Controllers
 {
@@ -29,14 +30,23 @@ namespace DoEko.Controllers
         }
 
         [HttpGet]
-        public IActionResult List()
+        public async Task<IActionResult> List()
         {
             //
             if (HttpContext.Request.IsAjaxRequest())
             {
-                var model = _userManager.Users
-                    .Select(u => new {
+                List<object> model = new List<object>();
 
+                foreach (var u in _userManager.Users.ToList())
+                {
+                    var roles = new List<IdentityRole>();
+                    var roleNames = await _userManager.GetRolesAsync(u);
+                    foreach (var roleName in roleNames)
+                    {
+                        roles.Add(await _roleManager.FindByNameAsync(roleName));
+                    }
+
+                    model.Add(new {
                         u.Id,
                         u.UserName,
                         u.FirstName,
@@ -47,11 +57,9 @@ namespace DoEko.Controllers
                         u.AccessFailedCount,
                         u.LockoutEnabled,
                         LockoutEnd = u.LockoutEnd.HasValue ? u.LockoutEnd.Value == DateTimeOffset.MinValue ? "" : u.LockoutEnd.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss") : "",
-                        _roles = u.Roles.Select(r => new {
-                            r.RoleId,
-                            _roleManager.Roles.Single(rm => rm.Id == r.RoleId).Name
-                        })
-                    }).ToList();
+                        _roles = roles.Select(r => new { r.Id, r.Name }).ToList()
+                    });
+                }
 
                 return Json(new { data = model });
             }
@@ -128,7 +136,7 @@ namespace DoEko.Controllers
         {
             if (Request.IsAjaxRequest())
             {
-                return ViewComponent("MaintainUser", new { userId = userId });
+                return ViewComponent("MaintainUser", new { userId });
             }
             else
             {

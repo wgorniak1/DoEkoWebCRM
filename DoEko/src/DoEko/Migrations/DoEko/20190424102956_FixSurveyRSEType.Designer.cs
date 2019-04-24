@@ -4,14 +4,16 @@ using DoEko.Models.DoEko;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20190424102956_FixSurveyRSEType")]
+    partial class FixSurveyRSEType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

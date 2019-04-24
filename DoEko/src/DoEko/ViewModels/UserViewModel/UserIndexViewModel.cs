@@ -71,7 +71,9 @@ namespace DoEko.ViewModels.UserViewModel
 
             if (!string.IsNullOrEmpty(roleId))
             {
-                allUsers = _userManager.Users.Where(u => u.Roles.Any(r => r.RoleId == roleId ));
+                var role = await _roleManager.FindByIdAsync(roleId);
+
+                allUsers = (await _userManager.GetUsersInRoleAsync(role.Name)).AsQueryable();
             }
             else
             {

@@ -158,5 +158,29 @@
     "inputFiles": [
       "wwwroot/js/SettingsList.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/EmployeeList.min.js",
+    "inputFiles": [
+      "wwwroot/js/EmployeeList.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ContractDetails - Copy.min.js",
+    "inputFiles": [
+      "wwwroot/js/ContractDetails - Copy.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ProjectList - Copy.min.js",
+    "inputFiles": [
+      "wwwroot/js/ProjectList - Copy.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/WageTypeCatalogList.min.js",
+    "inputFiles": [
+      "wwwroot/js/WageTypeCatalogList.js"
+    ]
   }
 ]

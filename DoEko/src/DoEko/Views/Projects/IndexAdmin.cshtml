@@ -17,15 +17,15 @@
         <div class="row" id="toolbar">
             <div class="col-lg-4">
                 <div class="form-group">
-                    <button type="button" id="projectList-refresh" class="btn btn-default" title="Odśwież"><span class="glyphicon glyphicon-refresh"></span></button>
-                    <button type="button" id="projectList-summary" class="btn btn-default"><span>Wł./Wył. Sumy</span></button>
-                    <a asp-action="Create" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>Nowy</a>
+                    <button type="button" id="projectList-refresh" class="btn btn-sm btn-default" title="Odśwież"><span class="glyphicon glyphicon-refresh"></span></button>
+                    <button type="button" id="projectList-summary" class="btn btn-sm btn-default"><span>Wł./Wył. Sumy</span></button>
+                    <a asp-action="Create" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-plus"></span>Nowy</a>
                 </div>
             </div>
             <div class="col-lg-8 text-right">
                 <div class="form-group">
-                    <label for="status">Status</label>
-                    <select class="form-control" title="Status projektu" id="status" name="status">
+                    <label for="status" class="control-label">Status</label>
+                    <select class="form-control input-sm" title="Status projektu" id="status" name="status">
                         <option value="0">Nowy</option>
                         <option value="1">W trakcie realizacji</option>
                         <option value="2">Zweryfikowany</option>
@@ -37,10 +37,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="name">Nazwa</label>
-                    <input type="text" class="form-control" id="name" placeholder="wyszukaj...">
+                    <label for="name" class="control-label">Nazwa</label>
+                    <input type="text" class="form-control input-sm" id="name" placeholder="wyszukaj...">
                 </div>
-                <button type="button" class="btn btn-default" id="projectList-filter" title="Filtruj"><span class="glyphicon glyphicon-filter"></span></button>
+                <button type="button" class="btn btn-sm btn-default" id="projectList-filter" title="Filtruj"><span class="glyphicon glyphicon-filter"></span></button>
             </div>
         </div>
     </form>

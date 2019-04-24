@@ -40,7 +40,7 @@
                                 <td><input type="checkbox" class="singlerowselector" name="InvestmentId[]" value="@item.InvestmentId" /></td>
 
                                 <td>
-                                    @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
+                                    <partial name="../Shared/Address/_AddressDetailPartial" model="item" />
                                 </td>
                                 <td>
                                     <table>
@@ -126,7 +126,7 @@ else
     {
                 <tr>
                     <td>
-                        @Html.Partial("../Shared/Address/_AddressDetailPartial", item)
+                        <partial name="../Shared/Address/_AddressDetailPartial" model="item" />
                     </td>
                     <td>
                         <table>

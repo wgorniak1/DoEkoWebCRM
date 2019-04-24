@@ -15,7 +15,7 @@
         <input type="hidden" asp-for="InvestmentId" />
         <input type="hidden" asp-for="ContractId" />
         
-        @Html.Partial("_BPPersonFormPartial.cshtml", Model)
+        <partial name="_BPPersonFormPartial.cshtml" model="Model" />
 
         <div class="form-group">
             <label asp-for="Sponsor" class="col-md-2 control-label"></label>
@@ -58,7 +58,7 @@
         </div>
 
         <div id="AddressForm" class="collapse">
-            @Html.Partial("../Shared/Address/_AddressFormPartial.cshtml", Model)
+            <partial name="../Shared/Address/_AddressFormPartial.cshtml" model="Model" />
         </div>
 
 

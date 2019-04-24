@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace DoEko
 {
@@ -11,14 +14,23 @@ namespace DoEko
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
+            CreateWebHostBuilder(args)
+                .Build()
+                .Run();
+        }
+
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+           new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
-        }
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                    logging.AddDebug();
+                    logging.AddEventSourceLogger();
+                })
+                .UseStartup<Startup>();
     }
 }

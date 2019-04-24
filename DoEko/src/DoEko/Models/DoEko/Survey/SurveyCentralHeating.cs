@@ -19,7 +19,7 @@ namespace DoEko.Models.DoEko.Survey
             this.InvestmentId = investmentId;
             this.RSEType = rseType;
         }
-
+        [Column("RSEType")]
         public SurveyRSETypeCentralHeating RSEType { get; set; }   
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using DoEko.Models.Identity;
 using DoEko.ViewModels.ManageViewModels;
 using DoEko.Services;
+using Microsoft.AspNetCore.Http.Authentication;
 
 namespace DoEko.Controllers
 {
@@ -295,12 +296,15 @@ namespace DoEko.Controllers
                 return View("Error");
             }
             var userLogins = await _userManager.GetLoginsAsync(user);
-            var otherLogins = _signInManager.GetExternalAuthenticationSchemes().Where(auth => userLogins.All(ul => auth.AuthenticationScheme != ul.LoginProvider)).ToList();
+            var otherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
+                .Where(auth => userLogins.All(ul => auth.Name != ul.LoginProvider))
+                .ToList();
+
             ViewData["ShowRemoveButton"] = user.PasswordHash != null || userLogins.Count > 1;
             return View(new ManageLoginsViewModel
             {
                 CurrentLogins = userLogins,
-                OtherLogins = otherLogins
+                OtherLogins = new List<AuthenticationDescription>()//otherLogins
             });
         }
 

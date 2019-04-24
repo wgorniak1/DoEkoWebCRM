@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,14 +15,11 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using DoEko.Controllers.Settings;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace DoEko
 {
@@ -51,22 +47,65 @@ namespace DoEko
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //
+            
             services.AddAuthorization();
-            //
             services.AddSingleton<IConfiguration>(Configuration);
 
             //DB connections
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<DoEkoContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
             //
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-            //
+
+            // If you want to tweak Identity cookies, they're no longer part of IdentityOptions.
+            services.ConfigureApplicationCookie(options => {
+                options.LoginPath = "/Account/LogIn";
+                options.LogoutPath = "/Account/LogOut";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.Events.OnRedirectToLogin = ctx =>
+                {
+                    if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                    {
+                        ctx.Response.StatusCode = 401;
+                        return Task.FromResult<object>(null);
+                    }
+                    ctx.Response.Redirect(ctx.RedirectUri);
+                    return Task.FromResult<object>(null);
+                };
+            });
+            services.AddAuthentication()
+                .AddCookie(options =>
+                {
+                    // AuthenticationScheme = "Cookie",
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login/");
+                    options.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/");
+                    // AutomaticAuthenticate = true,
+                    // AutomaticChallenge = false,
+                    options.Cookie.Name = "TokenAuth";
+                    options.LogoutPath = "/Account/Logout";
+                    options.SlidingExpiration = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                })
+                .AddJwtBearer(options => {
+                    // AutomaticAuthenticate = true,
+                    // AutomaticChallenge = true,
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:TokenOptions:Key").Value)),
+                        ValidAudience = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value
+                    };
+                });
+
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings
@@ -81,24 +120,6 @@ namespace DoEko
                 options.Lockout.MaxFailedAccessAttempts = 3;
                 options.Lockout.AllowedForNewUsers = true;
 
-                // Cookie settings
-                options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-                options.Cookies.ApplicationCookie.LoginPath = "/Account/LogIn";
-                options.Cookies.ApplicationCookie.LogoutPath = "/Account/LogOut";
-                options.Cookies.ApplicationCookie.Events =
-                    new CookieAuthenticationEvents
-                    {
-                        OnRedirectToLogin = ctx =>
-                        {
-                            if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
-                            {
-                                ctx.Response.StatusCode = 401;
-                                return Task.FromResult<object>(null);
-                            }
-                            ctx.Response.Redirect(ctx.RedirectUri);
-                            return Task.FromResult<object>(null);
-                        }
-                    };
                 // User settings
                 options.User.RequireUniqueEmail = true;
             });
@@ -110,18 +131,14 @@ namespace DoEko
                     .RequireAuthenticatedUser()
                     .Build();
 
-            services.AddMvc();// options =>
-            //{
-              //  options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));
-                //options.RequireHttpsPermanent = true;
-                //options.ModelBinderProviders.Insert(0,new Models.DoubleModelBinderProvider());
-                //options.OutputFormatters.Insert(0, new Models.DoubleFormatProvider());
-            //});
+            services.AddMvc();
+
             services.Configure<MvcOptions>(options => 
             {
                 options.Filters.Add(new AuthorizeFilter(requireAuthenticatedUser));
                 options.Filters.Add(new RequireHttpsAttribute());
             });
+
             //services.AddSignalR();
             services.AddCors();
 
@@ -130,39 +147,33 @@ namespace DoEko
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(10);
-                options.CookieName = ".DoEko";
+                options.Cookie.Name = ".DoEko";
             });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-
             services.AddTransient<IFileStorage, AzureStorage>();
 
             //Options mapped to class
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
-            //
-            services.AddLogging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<AppSettings> settings)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-            
                 app.UseBrowserLink();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
 
@@ -172,60 +183,12 @@ namespace DoEko
                 // UI strings that we have localized.
                 SupportedUICultures = new List<CultureInfo>() { new CultureInfo("en-GB"), new CultureInfo("pl-PL") },
             });
-
-            ////
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
-            //
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
-            {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:TokenOptions:Key").Value)),
-                    ValidAudience = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    ValidIssuer = Configuration.GetSection("AppSettings:TokenOptions:SiteUrl").Value
-                }
-            });
-            //
-            app.UseIdentity();
-            //
+            
+            app.UseAuthentication();
             app.UseSession();
-
-            //
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = "Cookie",
-                LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login/"),
-                AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/"),
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = false,
-                CookieName = "TokenAuth",
-                LogoutPath="/Account/Logout",
-                SlidingExpiration = true,
-                ExpireTimeSpan = TimeSpan.FromMinutes(10)
-            });
-
-            //app.UseCookieAuthentication(new CookieAuthenticationOptions
-            //{
-            //    AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-            //    LoginPath = new PathString("/Account/Login"),
-            //    Provider = new CookieAuthenticationProvider
-            //    {
-            //        OnApplyRedirect = ctx =>
-            //        {
-            //            if (!IsAjaxRequest(ctx.Request))
-            //            {
-            //                ctx.Response.Redirect(ctx.RedirectUri);
-            //            }
-            //        }
-            //    }
-            //});
-
-            // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
-
+            app.UseCors(b => b.AllowAnyHeader());
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -233,14 +196,7 @@ namespace DoEko
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.UseCors(b => b.AllowAnyHeader());
             
-            //force https
-            var options = new RewriteOptions()
-                .AddRedirectToHttps();
-
-            app.UseRewriter(options);
-
             // Seed Address initial catalog
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {

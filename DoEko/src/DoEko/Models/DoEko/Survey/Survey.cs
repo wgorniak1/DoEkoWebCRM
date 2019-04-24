@@ -97,6 +97,7 @@ namespace DoEko.Models.DoEko.Survey
             SurveyId = Guid.NewGuid();
             Status = SurveyStatus.New;
             InspectionDateTime = DateTime.MinValue;
+            CancelComments = string.Empty;
         }
 
         public Survey(SurveyType type) : this()

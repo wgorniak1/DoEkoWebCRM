@@ -48,7 +48,8 @@
                 <span asp-validation-for="KRSId" class="text-danger" />
             </div>
         </div>
-        @Html.Partial("../Shared/Address/_AddressFormPartial", Model)
+
+        <partial name="../Shared/Address/_AddressFormPartial" model="Model"/>
         <div class="form-group">
             <label asp-for="Email" class="col-md-2 control-label"></label>
             <div class="col-md-10">

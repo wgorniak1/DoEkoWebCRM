@@ -12,7 +12,7 @@ namespace DoEko.Models.Identity
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<UserProject> UserProjects { get; set; }
-
+        
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -32,7 +32,7 @@ namespace DoEko.Models.Identity
             modelBuilder.Entity<UserProject>().HasOne(u => u.User)
                             .WithMany(o => o.Projects)
                             .HasForeignKey(u => u.UserId)
-                            .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+                            .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

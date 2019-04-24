@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace DoEko.Controllers.ActionResults
 {
@@ -37,12 +37,7 @@ namespace DoEko.Controllers.ActionResults
         public FileCallbackResult(MediaTypeHeaderValue contentType, double contentLength, Func<Stream, ActionContext, Task> callback)
             : base(contentType?.ToString())
         {
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-
-            Callback = callback;
+            Callback = callback ?? throw new ArgumentNullException(nameof(callback));
             FileSize = contentLength;
             
         }
@@ -70,12 +65,7 @@ namespace DoEko.Controllers.ActionResults
             }
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                _callback = value;
+                _callback = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 
@@ -100,8 +90,8 @@ namespace DoEko.Controllers.ActionResults
 
             public Task ExecuteAsync(ActionContext context, FileCallbackResult result)
             {
-                
-                SetHeadersAndLog(context, result);
+
+                SetHeadersAndLog(context: context, result: result, null, enableRangeProcessing: result.EnableRangeProcessing);
                 //context.HttpContext.Response.Headers.Add(HeaderNames.ContentLength, result.FileSize.ToString());
                 return result.Callback(context.HttpContext.Response.Body, context);
             }

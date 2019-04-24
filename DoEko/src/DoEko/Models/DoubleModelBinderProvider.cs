@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,13 +20,16 @@ namespace DoEko.Models
 
             if (context.Metadata.ModelType == typeof(double))
             {
-            //    var propertyBinders = new Dictionary<ModelMetadata, IModelBinder>();
-            //    foreach (var property in context.Metadata.Properties)
-            //    {
-            //        propertyBinders.Add(property, context.CreateBinder(property));
-            //    }
+                //    var propertyBinders = new Dictionary<ModelMetadata, IModelBinder>();
+                //    foreach (var property in context.Metadata.Properties)
+                //    {
+                //        propertyBinders.Add(property, context.CreateBinder(property));
+                //    }
+                var loggerFactory = (ILoggerFactory)context.Services.GetService(typeof(ILoggerFactory));
 
-                return new DoubleModelBinder(new SimpleTypeModelBinder(typeof(double)));
+                var simpleTypeModelBinder = new SimpleTypeModelBinder(typeof(double), loggerFactory);
+
+                return new DoubleModelBinder(simpleTypeModelBinder);
             }
 
             return null;

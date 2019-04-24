@@ -320,8 +320,8 @@ class application {
                     orderable: false,
                     render: function (data, type, row, meta) {
                         
-                        let edit = '<a href="/Projects/Edit/' + row.projectId + '" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>';
-                        let del = '<a href="/Projects/Delete/' + row.projectId + '" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span></a>';
+                        let edit = '<a href="/Projects/Edit/' + row.projectId + '" class="btn btn-sm btn-primary"><span class="small glyphicon glyphicon-pencil"></span></a>';
+                        let del = '<a href="/Projects/Delete/' + row.projectId + '" class="btn btn-sm btn-danger"><span class="small glyphicon glyphicon-trash"></span></a>';
 
                         return edit + '|' + del;
                     }

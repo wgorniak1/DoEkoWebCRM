@@ -4,14 +4,16 @@ using DoEko.Models.DoEko;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoEko.Migrations.DoEko
 {
     [DbContext(typeof(DoEkoContext))]
-    partial class DoEkoContextModelSnapshot : ModelSnapshot
+    [Migration("20190424092138_TestPoUpgrade")]
+    partial class TestPoUpgrade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1243,8 +1245,7 @@ namespace DoEko.Migrations.DoEko
                 {
                     b.HasBaseType("DoEko.Models.DoEko.Survey.Survey");
 
-                    b.Property<int>("RSEType")
-                        .HasColumnName("RSEType");
+                    b.Property<int>("RSEType");
 
                     b.ToTable("SurveyCentralHeating");
 
@@ -1256,7 +1257,7 @@ namespace DoEko.Migrations.DoEko
                     b.HasBaseType("DoEko.Models.DoEko.Survey.Survey");
 
                     b.Property<int>("RSEType")
-                        .HasColumnName("RSEType");
+                        .HasColumnName("SurveyEnergy_RSEType");
 
                     b.ToTable("SurveyEnergy");
 
@@ -1268,7 +1269,7 @@ namespace DoEko.Migrations.DoEko
                     b.HasBaseType("DoEko.Models.DoEko.Survey.Survey");
 
                     b.Property<int>("RSEType")
-                        .HasColumnName("RSEType");
+                        .HasColumnName("SurveyHotWater_RSEType");
 
                     b.ToTable("SurveyHotWater");
 

@@ -70,7 +70,7 @@ namespace DoEko.Models.DoEko.Addresses
         /// <summary>
         /// 
         /// </summary>
-        [ForeignKey("StateId,DistrictId")]
+        //[ForeignKey("StateId,DistrictId")]
         public virtual District District { get; set; }
 
         [NotMapped]

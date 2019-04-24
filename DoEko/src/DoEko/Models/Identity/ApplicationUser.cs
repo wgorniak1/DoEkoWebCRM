@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DoEko.Models.DoEko;
+using Microsoft.AspNetCore.Identity;
 
 namespace DoEko.Models.Identity
 {

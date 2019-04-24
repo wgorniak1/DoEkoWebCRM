@@ -15,10 +15,7 @@ namespace DoEko.Models
 
         public DoubleModelBinder(IModelBinder fallbackBinder)
         {
-            if (fallbackBinder == null)
-                throw new ArgumentNullException(nameof(fallbackBinder));
-
-            _fallbackBinder = fallbackBinder;
+            _fallbackBinder = fallbackBinder ?? throw new ArgumentNullException(nameof(fallbackBinder));
         }
 
         public Task BindModelAsync(ModelBindingContext bindingContext)
@@ -32,9 +29,8 @@ namespace DoEko.Models
             {
                 if (bindingContext.ModelType == typeof(double))
                 {
-                    double temp;
                     var attempted = valueProviderResult.FirstValue.Replace(".", ",");
-                    if (double.TryParse(attempted,out temp)
+                    if (double.TryParse(attempted,out double temp)
                         
                         //double.TryParse(
                         //attempted,
@@ -49,7 +45,7 @@ namespace DoEko.Models
                 }
             }
 
-            return TaskCache.CompletedTask;
+            return Task.CompletedTask; //TaskCache.CompletedTask;
         }
     }
 

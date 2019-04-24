@@ -96,9 +96,10 @@ namespace DoEko.Controllers
             ViewData["EditInspector"] = editInspector;
             ViewData["CompanyId"] = new SelectList(_context.Companies, "CompanyId", "Name", contract.CompanyId);
             ViewData["ReturnUrl"] = returnUrl;
-            IdentityRole inspectorRole = await _roleManager.FindByNameAsync(Roles.Inspector);
 
-            var users = _userManager.Users.Where(u => u.Roles.Select(r => r.RoleId).Contains(inspectorRole.Id)).ToList();
+            IdentityRole inspectorRole = await _roleManager.FindByNameAsync(Roles.Inspector);
+            var users = await _userManager.GetUsersInRoleAsync(inspectorRole.Name);
+            //var users = _userManager Users.Where(u => u.Roles.Select(r => r.RoleId).Contains(inspectorRole.Id)).ToList();
 
             ViewData["InspectorId"] = new SelectList(users, "Id", "UserName");
 

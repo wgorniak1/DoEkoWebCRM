@@ -12,7 +12,7 @@
         <hr />
         <div asp-validation-summary="All" class="text-danger"></div>
         
-        @Html.Partial("../Shared/Address/_AddressFormPartial", Model)
+        <partial name="../Shared/Address/_AddressFormPartial" model="Model" />
 
         <input asp-for="ContractId" hidden/>
 
