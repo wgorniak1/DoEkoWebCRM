@@ -44,10 +44,16 @@ namespace DoEko.Controllers.Helpers
                     _survey = value;
                     if (_forceLoad)
                     {
-                        _context.Entry(_survey).Reference(s => s.Investment).Load();
-                        _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
-                        _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
-                        _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+                        try
+                        {
+                            _context.Entry(_survey).Reference(s => s.Investment).Load();
+                            _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
+                            _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
+                            _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
                 }
                 else if (_survey != value)
@@ -55,10 +61,16 @@ namespace DoEko.Controllers.Helpers
                     _survey = value;
                     if (_forceLoad)
                     {
-                        _context.Entry(_survey).Reference(s => s.Investment).Load();
-                        _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
-                        _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
-                        _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+                        try
+                        {
+                            _context.Entry(_survey).Reference(s => s.Investment).Load();
+                            _context.Entry(_survey).Reference(s => s.PlannedInstall).Load();
+                            _context.Entry(_survey.Investment).Reference(i => i.Contract).Load();
+                            _context.Entry(_survey.Investment.Contract).Reference(c => c.Project).Load();
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
                 }
                 else
